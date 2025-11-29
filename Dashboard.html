@@ -13,6 +13,14 @@
     </style>
 </head>
 <body class="bg-[#f5f6fa]">
+
+    if (!localStorage.getItem("user_logged_in")) {
+    // User login nahi hai
+    // Par sirf login.html me hi allow karo
+    if (!window.location.href.includes("login.html")) {
+        window.location.href = "login.html";
+    }
+}
     
     <!-- Header / Navbar -->
     <nav class="bg-white shadow-md sticky top-0 z-50">
@@ -152,6 +160,10 @@
         mobileMenuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("user_logged_in");
+    window.location.href = "login.html";
+});
     </script>
 
 </body>
