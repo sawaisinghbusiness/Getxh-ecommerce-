@@ -1,221 +1,121 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en"><head>
+<html class="light" lang="en">
+<head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>GETXH - New Order</title>
+
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-    </style>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
 <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#3856ff",
-                        "background-light": "#f5f6f8",
-                        "background-dark": "#0f1223",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                },
+tailwind.config = {
+    theme: {
+        extend: {
+            colors: {
+                primary: "#3856ff"
             },
-        }
-    </script>
-</head>
-<body class="font-display bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100">
-<div class="relative flex min-h-screen w-full flex-col bg-background-light dark:bg-background-dark">
-<!-- TopNavBar -->
-<header class="sticky top-0 z-10 flex items-center justify-between whitespace-nowrap border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-sm px-4 sm:px-6 lg:px-8 h-16">
-<div class="flex items-center gap-4 text-gray-900 dark:text-white">
-<div class="h-6 w-6 text-primary">
-<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-<path d="M36.7273 44C33.9891 44 31.6043 39.8386 30.3636 33.69C29.123 39.8386 26.7382 44 24 44C21.2618 44 18.877 39.8386 17.6364 33.69C16.3957 39.8386 14.0109 44 11.2727 44C7.25611 44 4 35.0457 4 24C4 12.9543 7.25611 4 11.2727 4C14.0109 4 16.3957 8.16144 17.6364 14.31C18.877 8.16144 21.2618 4 24 4C26.7382 4 29.123 8.16144 30.3636 14.31C31.6043 8.16144 33.9891 4 36.7273 4C40.7439 4 44 12.9543 44 24C44 35.0457 40.7439 44 36.7273 44Z" fill="currentColor"></path>
-</svg>
-</div>
-<h2 class="text-xl font-bold tracking-tight">GETXH</h2>
-</div>
-<nav class="hidden items-center gap-6 md:flex">
-<a class="text-sm font-medium text-primary" href="#">New Order</a>
-<a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors" href="#">Orders</a>
-<a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors" href="#">Add Funds</a>
-</nav>
-<div class="flex items-center gap-3">
-<button class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-<span class="material-symbols-outlined text-xl">notifications</span>
-</button>
-<div class="h-10 w-10 rounded-full bg-cover bg-center" data-alt="User profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCQIuCA0_Gp3fCSfaD2FlSUbOO5IkEsTuf-sSWX9ujzCRc9bUhxwJGrx5qJoRxL9yQOFtUU2waznSG-n9iwZgK4X-Z4IkXiDiWHrNUhtFeRjp1XsR2FsdgmcPBWU4h9My81qxjLdHiubdJkrJadNBOSPZBPFV_MGDcU48Bb3gzoHLWoy8XsKZpFRyWcLIywqqnBtNMTXuWMtPMX01kV1_JUw2tkygp8z2Nv4dlBRswKRB60PbTEpZxKiJVxx6iFX8aSLTvkz77X7Gg");'></div>
-</div>
-</header>
-<!-- Main Content -->
-<main class="container mx-auto max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
-<!-- PageHeading -->
-<div class="mb-8">
-<p class="text-4xl font-black tracking-tighter text-gray-900 dark:text-white">Create New Order</p>
-</div>
-<div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-<!-- Left Column: Form -->
-<div class="flex flex-col gap-6 lg:col-span-2">
-<div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark p-6">
-<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-<!-- Category Dropdown -->
-<label class="flex flex-col">
-<p class="pb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Category</p>
-<select class="form-select h-12 w-full flex-1 resize-none overflow-hidden rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 placeholder:text-gray-500 focus:border-primary focus:ring-2 focus:ring-primary/50 text-base font-normal">
-<option>Select a category</option>
-<option selected="">Instagram</option>
-<option>YouTube</option>
-<option>TikTok</option>
-</select>
-</label>
-<!-- Service Dropdown -->
-<label class="flex flex-col">
-<p class="pb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Service</p>
-<select class="form-select h-12 w-full flex-1 resize-none overflow-hidden rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 placeholder:text-gray-500 focus:border-primary focus:ring-2 focus:ring-primary/50 text-base font-normal">
-<option>Select a service</option>
-<option selected="">Instagram Followers [Real AR]</option>
-<option>Instagram Likes [Fast]</option>
-</select>
-</label>
-</div>
-</div>
-<!-- Service Details Card -->
-<div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark p-6">
-<h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">Service Details</h3>
-<!-- DescriptionList -->
-<div class="grid grid-cols-2 gap-x-4 border-t border-gray-200 dark:border-gray-800">
-<div class="flex flex-col gap-1 py-4">
-<p class="text-sm font-normal text-gray-500 dark:text-gray-400">Price per 1000</p>
-<p class="text-sm font-medium text-gray-800 dark:text-gray-200">₹50.00</p>
-</div>
-<div class="flex flex-col gap-1 py-4">
-<p class="text-sm font-normal text-gray-500 dark:text-gray-400">Min Order</p>
-<p class="text-sm font-medium text-gray-800 dark:text-gray-200">100</p>
-</div>
-<div class="flex flex-col gap-1 border-t border-gray-200 dark:border-gray-800 py-4">
-<p class="text-sm font-normal text-gray-500 dark:text-gray-400">Max Order</p>
-<p class="text-sm font-medium text-gray-800 dark:text-gray-200">10000</p>
-</div>
-<div class="flex flex-col gap-1 border-t border-gray-200 dark:border-gray-800 py-4">
-<p class="text-sm font-normal text-gray-500 dark:text-gray-400">Average Time</p>
-<p class="text-sm font-medium text-gray-800 dark:text-gray-200">1 Hour</p>
-</div>
-</div>
-</div>
-<!-- Order Form -->
-<div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark p-6">
-<div class="flex flex-col gap-6">
-<label class="flex flex-col">
-<p class="pb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Link</p>
-<input class="form-input h-12 w-full flex-1 resize-none overflow-hidden rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 placeholder:text-gray-500 focus:border-primary focus:ring-2 focus:ring-primary/50 text-base font-normal" placeholder="https://instagram.com/username" type="text"/>
-</label>
-<label class="flex flex-col">
-<p class="pb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</p>
-<input class="form-input h-12 w-full flex-1 resize-none overflow-hidden rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 placeholder:text-gray-500 focus:border-primary focus:ring-2 focus:ring-primary/50 text-base font-normal" placeholder="Enter quantity" type="number"/>
-<p class="pt-2 text-xs text-gray-500 dark:text-gray-400">Min: 100 / Max: 10000</p>
-</label>
-</div>
-</div>
-</div>
-<!-- Right Column: Summary & Info -->
-<div class="flex flex-col gap-6 lg:col-span-1">
-<!-- Order Summary -->
-<div class="rounded-xl border border-primary/50 bg-primary/5 dark:bg-primary/10 p-6">
-<h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">Order Summary</h3>
-<div class="flex items-center justify-between border-t border-primary/20 pt-4">
-<p class="text-base font-medium text-gray-700 dark:text-gray-300">Total Cost:</p>
-<p class="text-2xl font-bold text-primary">₹0.00</p>
-</div>
-</div>
-<!-- Read before you order -->
-<div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark p-6">
-<div class="flex items-center gap-3 mb-3">
-<span class="material-symbols-outlined text-xl text-yellow-500">info</span>
-<h3 class="text-base font-bold text-gray-900 dark:text-white">Read before you order</h3>
-</div>
-<ul class="space-y-2 pl-4 text-sm text-gray-600 dark:text-gray-400 list-disc">
-<li>Ensure your account is public before placing an order.</li>
-<li>Do not change your username after placing an order.</li>
-<li>Do not place multiple orders for the same link simultaneously.</li>
-<li>Allow up to 24 hours for the order to be processed.</li>
-</ul>
-</div>
-<!-- Place Order Button -->
-<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 bg-primary text-white gap-2 text-base font-bold leading-normal tracking-wide hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-<span class="material-symbols-outlined">shopping_cart</span>
-                        Place Order
-                    </button>
-</div>
-</div>
-</main>
-</div>
-<!-- 
-    Simple script for real-time cost calculation. 
-    This is for demonstration purposes as per the prompt.
-    -->
-<script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const quantityInput = document.querySelector('input[type="number"]');
-        const serviceSelect = document.querySelectorAll('select')[1]; // Second select is the service
-        const totalCostElement = document.querySelector('.text-2xl.text-primary');
-        const minMaxText = document.querySelector('.text-xs.text-gray-500');
-
-        const services = {
-          "Instagram Followers [Real AR]": { price: 50.00, min: 100, max: 10000 },
-          "Instagram Likes [Fast]": { price: 25.50, min: 50, max: 20000 }
-        };
-
-        function updateCost() {
-          const selectedServiceName = serviceSelect.value;
-          const service = services[selectedServiceName];
-          
-          if (!service) {
-            totalCostElement.textContent = '₹0.00';
-            return;
-          }
-          
-          const pricePer1000 = service.price;
-          const quantity = parseInt(quantityInput.value, 10) || 0;
-          
-          if (quantity > 0) {
-            const total = (pricePer1000 / 1000) * quantity;
-            totalCostElement.textContent = `₹${total.toFixed(2)}`;
-          } else {
-            totalCostElement.textContent = '₹0.00';
-          }
-        }
-        
-        function updateServiceDetails() {
-            const selectedServiceName = serviceSelect.value;
-            const service = services[selectedServiceName];
-            if (service) {
-                 minMaxText.textContent = `Min: ${service.min} / Max: ${service.max}`;
-                 quantityInput.placeholder = `Min ${service.min}`;
-                 quantityInput.min = service.min;
-                 quantityInput.max = service.max;
-                 // Ideally you would update the service details card here as well
+            fontFamily: {
+                display: ["Inter", "sans-serif"]
             }
-            updateCost();
         }
+    }
+}
+</script>
 
-        quantityInput.addEventListener('input', updateCost);
-        serviceSelect.addEventListener('change', updateServiceDetails);
-        
-        // Initial setup
-        updateServiceDetails();
-      });
-    </script>
-</body></html>
+</head>
+
+<body class="font-display bg-[#f5f6f8]">
+
+<!-- TOP NAV -->
+<header class="w-full bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center shadow-sm">
+    <h1 class="text-2xl font-bold text-[#111827]">GETXH</h1>
+
+    <nav class="hidden gap-8 lg:flex">
+        <a href="Dashboard.html" class="text-sm font-medium">Dashboard</a>
+        <a href="Neworder.html" class="text-sm font-medium text-primary">New Order</a>
+        <a href="Servicepage.html" class="text-sm font-medium">Services</a>
+        <a href="Totalorder.html" class="text-sm font-medium">Orders</a>
+        <a href="Login.html" class="text-sm font-medium text-red-600">Logout</a>
+    </nav>
+</header>
+
+<div class="w-full max-w-3xl mx-auto px-4 py-10">
+
+    <div class="bg-white shadow rounded-xl p-6">
+
+        <h2 class="text-xl font-bold text-[#111827]">Place New Order</h2>
+        <p class="text-gray-500 text-sm mt-1">Select a category and service to continue</p>
+
+        <!-- CATEGORY -->
+        <div class="mt-6">
+            <label class="text-sm font-semibold text-gray-700">Category</label>
+            <select id="category" class="mt-2 w-full border rounded-lg px-4 py-3">
+                <option>Instagram</option>
+            </select>
+        </div>
+
+        <!-- SERVICE -->
+        <div class="mt-6">
+            <label class="text-sm font-semibold text-gray-700">Service</label>
+            <select id="service" class="mt-2 w-full border rounded-lg px-4 py-3">
+                <option value="171.66">50 Indian Males – ₹171.66 / 1000</option>
+                <option value="214.57">50 Indian Females – ₹214.57 / 1000</option>
+                <option value="412.78">Share Post on Story – ₹412.78 / 1000</option>
+                <option value="604.31">Story + Mention – ₹604.31 / 1000</option>
+                <option value="251.63">Positive Comments – ₹251.63 / 1000</option>
+            </select>
+        </div>
+
+        <!-- LINK INPUT -->
+        <div class="mt-6">
+            <label class="text-sm font-semibold text-gray-700">Link</label>
+            <input id="link" type="text" placeholder="Enter your link"
+            class="w-full border rounded-lg px-4 py-3 mt-2"/>
+        </div>
+
+        <!-- QUANTITY -->
+        <div class="mt-6">
+            <label class="text-sm font-semibold text-gray-700">Quantity</label>
+            <input id="quantity" type="number" placeholder="1000"
+            class="w-full border rounded-lg px-4 py-3 mt-2" value="1000" min="1000"/>
+        </div>
+
+        <!-- TOTAL PRICE -->
+        <div class="mt-6 bg-gray-100 rounded-xl p-4">
+            <p class="text-sm text-gray-600">Total Price</p>
+            <p id="total" class="text-2xl font-bold mt-1">₹171.66</p>
+        </div>
+
+        <!-- PLACE ORDER BUTTON -->
+        <button class="mt-6 w-full bg-primary text-white rounded-lg py-3 font-semibold">
+            Place Order
+        </button>
+
+    </div>
+
+</div>
+
+<!-- PRICE CALCULATION SCRIPT -->
+<script>
+function updatePrice() {
+    let pricePer1000 = parseFloat(document.getElementById("service").value);
+    let quantity = parseInt(document.getElementById("quantity").value);
+
+    if (quantity < 1000) quantity = 1000;
+
+    let total = (pricePer1000 / 1000) * quantity;
+    document.getElementById("total").innerText = "₹" + total.toFixed(2);
+}
+
+document.getElementById("service").addEventListener("change", updatePrice);
+document.getElementById("quantity").addEventListener("input", updatePrice);
+
+updatePrice();
+</script>
+
+</body>
+</html>
