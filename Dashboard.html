@@ -1,120 +1,86 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>GETXH - Dashboard</title>
-
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-
-    <script>
-    tailwind.config = {
-        darkMode: "class",
-        theme: {
-            extend: {
-                colors: {
-                    "primary": "#3856ff",
-                    "background-light": "#f5f6f8",
-                    "background-dark": "#0f1223",
-                },
-                fontFamily: {
-                    "display": ["Inter", "sans-serif"]
-                },
-                borderRadius: {
-                    "DEFAULT": "0.5rem",
-                    "lg": "0.75rem",
-                    "xl": "1.5rem",
-                    "full": "9999px"
-                },
-            },
-        },
-    }
-    </script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GETXH Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="font-display bg-[#f5f6f8]">
+<body class="bg-gray-100">
 
-<!-- TOP NAV -->
-<header class="w-full bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center shadow-sm">
-    <h1 class="text-2xl font-bold text-[#111827]">GETXH</h1>
+<!-- NAVBAR -->
+<nav class="bg-white shadow-sm px-4 py-3 flex items-center justify-between">
+  <div class="text-xl font-semibold">GETXH</div>
 
-    <nav class="hidden gap-8 lg:flex">
-        <a href="Dashboard.html" class="text-sm font-medium">Dashboard</a>
-        <a href="Neworder.html" class="text-sm font-medium">New Order</a>
-        <a href="Servicepage.html" class="text-sm font-medium">Services</a>
-        <a href="Totalorder.html" class="text-sm font-medium">Orders</a>
-        <a href="Login.html" class="text-sm font-medium text-red-600">Logout</a>
-    </nav>
-</header>
+  <div class="hidden md:flex gap-6 text-gray-700">
+    <a href="Dashboard.html" class="hover:text-blue-600">Dashboard</a>
+    <a href="Neworder.html" class="hover:text-blue-600">New Order</a>
+    <a href="Totalorder.html" class="hover:text-blue-600">Orders</a>
+    <a href="Servicepage.html" class="hover:text-blue-600">Services</a>
+    <a href="Support.html" class="hover:text-blue-600">Support</a>
+  </div>
 
-<div class="flex flex-col items-center w-full px-4 py-10">
+  <a href="Login.html" class="bg-gray-200 px-4 py-2 rounded-lg text-sm">Logout</a>
+</nav>
 
-    <div class="w-full max-w-4xl mx-auto">
+<!-- MAIN SECTION -->
+<section class="px-4 py-6">
+  <h1 class="text-3xl font-bold">Welcome back, User!</h1>
+  <p class="text-gray-600 mt-1">Here’s a summary of your account activity.</p>
 
-        <!-- WELCOME CARD -->
-        <div class="bg-white rounded-xl shadow p-6 mb-6">
-            <h2 class="text-xl font-bold text-[#111827]">Welcome Back</h2>
-            <p class="text-gray-500 text-sm mt-1">Your GETXH Dashboard</p>
+  <!-- CARDS GRID -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-                
-                <!-- Balance -->
-                <div class="bg-[#f5f6ff] p-4 rounded-xl">
-                    <p class="text-sm text-gray-500">Balance</p>
-                    <p class="text-2xl font-bold mt-2">₹0.00</p>
-                </div>
-
-                <!-- Total Orders -->
-                <div onclick="window.location.href='Totalorder.html'" class="bg-[#f5f6ff] p-4 rounded-xl cursor-pointer">
-                    <p class="text-sm text-gray-500">Total Orders</p>
-                    <p class="text-2xl font-bold mt-2">0</p>
-                </div>
-
-                <!-- Total Spent -->
-                <div class="bg-[#f5f6ff] p-4 rounded-xl">
-                    <p class="text-sm text-gray-500">Total Spent</p>
-                    <p class="text-2xl font-bold mt-2">₹0.00</p>
-                </div>
-
-            </div>
+    <!-- Balance -->
+    <div class="bg-white shadow rounded-xl p-5">
+      <div class="flex items-center gap-3">
+        <div class="bg-blue-100 p-3 rounded-xl">
+          💳
         </div>
-
-        <!-- QUICK ACTIONS -->
-        <div class="bg-white rounded-xl shadow p-6 mb-6">
-            <h3 class="text-lg font-semibold text-[#111827]">Quick Actions</h3>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-
-                <button onclick="window.location.href='Neworder.html'" 
-                        class="w-full bg-[#3856ff] text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition">
-                    Create New Order
-                </button>
-
-                <button onclick="window.location.href='Servicepage.html'" 
-                        class="w-full bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-black transition">
-                    View All Services
-                </button>
-
-                <button onclick="window.location.href='Totalorder.html'" 
-                        class="w-full bg-gray-200 text-black py-3 rounded-lg font-semibold hover:bg-gray-300 transition">
-                    View Orders
-                </button>
-
-                <button onclick="window.location.href='Support.html'" 
-                        class="w-full bg-red-500 text-white py-3 rounded-lg font-semibold hover:bg-red-600 transition">
-                    Support
-                </button>
-
-            </div>
-        </div>
-
+        <p class="font-semibold text-gray-600">Your Balance</p>
+      </div>
+      <p class="text-3xl font-bold mt-3">₹0.00</p>
     </div>
-</div>
+
+    <!-- Total Orders -->
+    <div class="bg-white shadow rounded-xl p-5">
+      <div class="flex items-center gap-3">
+        <div class="bg-purple-100 p-3 rounded-xl">
+          🛒
+        </div>
+        <p class="font-semibold text-gray-600">Total Orders</p>
+      </div>
+      <p class="text-3xl font-bold mt-3">0</p>
+    </div>
+
+    <!-- Total Spent -->
+    <div class="bg-white shadow rounded-xl p-5">
+      <div class="flex items-center gap-3">
+        <div class="bg-pink-100 p-3 rounded-xl">
+          💰
+        </div>
+        <p class="font-semibold text-gray-600">Total Spent</p>
+      </div>
+      <p class="text-3xl font-bold mt-3">₹0.00</p>
+    </div>
+
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="flex gap-4 mt-8">
+    <a href="Neworder.html" class="bg-blue-600 text-white px-5 py-3 rounded-lg">Create New Order</a>
+    <a href="Totalorder.html" class="bg-gray-300 px-5 py-3 rounded-lg">Go to Orders</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="text-center text-gray-600 text-sm mt-10 pb-6">
+  <a class="px-3" href="#">Privacy Policy</a>
+  <a class="px-3" href="#">Terms of Service</a>
+  <a class="px-3" href="#">Contact Us</a>
+  <p class="mt-3">© 2024 GETXH. All rights reserved.</p>
+</footer>
 
 </body>
 </html>
