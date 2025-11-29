@@ -439,7 +439,7 @@
     if (!serviceId) {
       serviceDetails.classList.add("hidden");
       selectedService = null;
-      if (minMaxText) minMaxText.textContent = "Min: 0 – Max: 0";
+      minMaxText.textContent = `Min: ${selectedService.minQuantity.toLocaleString('en-IN')} – Max: ${selectedService.maxQuantity.toLocaleString('en-IN')}`;
       validateForm();
       return;
     }
@@ -447,20 +447,18 @@
     selectedService = servicesData.find(s => s.serviceId === serviceId);
 
     if (selectedService) {
-      serviceDetails.classList.remove("hidden");
-      serviceDescription.textContent = selectedService.description;
-      serviceCancel.textContent = selectedService.cancel;
-      serviceDrop.textContent = selectedService.drop;
-      serviceQuality.textContent = selectedService.quality;
+    serviceDetails.classList.remove('hidden');
+    serviceDescription.textContent = selectedService.description;
+    serviceCancel.textContent = selectedService.cancel;
+    serviceDrop.textContent = selectedService.drop;
+    serviceQuality.textContent = selectedService.quality;
 
-      if (minMaxText) {
-        minMaxText.textContent = `Min: ${selectedService.minQuantity.toLocaleString("en-IN")} – Max: ${selectedService.maxQuantity.toLocaleString("en-IN")}`;
-      }
-      calculateTotal();
-    }
+    // Fixed line
+    minMaxText.textContent = `Min: ${selectedService.minQuantity.toLocaleString('en-IN')} – Max: ${selectedService.maxQuantity.toLocaleString('en-IN')}`;
 
+    calculateTotal();
     validateForm();
-  });
+    }
 
   // ------- TOTAL CALCULATION -------
   function calculateTotal() {
