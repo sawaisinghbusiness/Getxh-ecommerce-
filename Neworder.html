@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>New Order - GETXH</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -66,6 +66,8 @@
     </div>
 </nav>
 
+
+
 <!-- Main Content -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
@@ -74,94 +76,159 @@
         <h1 class="text-3xl font-bold text-gray-800">Place New Order</h1>
         <p class="text-gray-600 mt-1">Select a category and service to continue.</p>
     </div>
+
     <!-- New Order Card -->
-<div class="bg-white rounded-xl shadow-md p-6 sm:p-8 max-w-4xl mx-auto mb-8">
-    <form id="orderForm">
+    <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 max-w-4xl mx-auto mb-8">
+        <form id="orderForm">
 
-        <!-- Search Bar -->
-        <div class="mb-6">
-            <input type="text" id="searchService" placeholder="Search for a service..."
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-        </div>
-
-        <!-- Category Select -->
-        <div class="mb-6">
-            <label class="block text-gray-700 font-semibold mb-2">Category</label>
-            <select id="categorySelect"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                <option value="">Select a category</option>
-                <option value="Instagram Followers">Instagram Followers</option>
-                <option value="Instagram Reel Views">Instagram Reel Views</option>
-                <option value="Instagram Likes">Instagram Likes</option>
-                <option value="Instagram Indian Likes">Instagram Indian Likes</option>
-            </select>
-        </div>
-
-        <!-- Service Select -->
-        <div class="mb-6">
-            <label class="block text-gray-700 font-semibold mb-2">Service</label>
-            <select id="serviceSelect"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                disabled>
-                <option value="">Select a service</option>
-            </select>
-        </div>
-
-        <!-- Service Details -->
-        <div id="serviceDetails" class="hidden mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-            <h3 class="font-semibold text-gray-800 mb-3">Service Details</h3>
-            <p id="serviceDescription" class="text-sm text-gray-700 mb-3"></p>
-            <div class="flex flex-wrap gap-4 text-sm">
-                <div><span class="font-semibold">Cancel:</span> <span id="serviceCancel"></span></div>
-                <div><span class="font-semibold">Drop:</span> <span id="serviceDrop"></span></div>
-                <div><span class="font-semibold">Quality:</span> <span id="serviceQuality"></span></div>
+            <!-- Search Bar -->
+            <div class="mb-6">
+                <input
+                    type="text"
+                    id="searchService"
+                    placeholder="Search for a service..."
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
             </div>
-        </div>
 
-        <!-- Read Before You Order -->
-        <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h3 class="font-semibold text-gray-800 mb-2">Read before you order</h3>
-            <ul class="text-sm text-gray-700 space-y-1">
-                <li>• Your account must be public.</li>
-                <li>• Sometimes there is change in start time and speed.</li>
-                <li>• Both post and reel links are accepted.</li>
-                <li>• Make sure the link is correct before placing the order.</li>
-            </ul>
-        </div>
+            <!-- Category Select -->
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Category</label>
+                <select
+                    id="categorySelect"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                    <option value="">Select a category</option>
+                    <option value="Instagram Followers">Instagram Followers</option>
+                    <option value="Instagram Reel Views">Instagram Reel Views</option>
+                    <option value="Instagram Likes">Instagram Likes</option>
+                    <option value="Instagram Indian Likes">Instagram Indian Likes</option>
+                </select>
+            </div>
 
-        <!-- Link Input -->
-        <div class="mb-6">
-            <label class="block text-gray-700 font-semibold mb-2">Link</label>
-            <input type="text" id="linkInput" placeholder="Paste your link here"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-        </div>
+            <!-- Service Select -->
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Service</label>
+                <select
+                    id="serviceSelect"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    disabled
+                >
+                    <option value="">Select a service</option>
+                </select>
+            </div>
 
-        <!-- Quantity Input -->
-        <div class="mb-6">
-            <label class="block text-gray-700 font-semibold mb-2">Quantity</label>
-            <p id="minMaxText" class="text-sm text-gray-500 mb-2">Min: 0 – Max: 0</p>
-            <input type="number" id="quantityInput" placeholder="Enter quantity"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-            <p id="quantityError" class="hidden text-sm text-red-600 mt-2">
-                Quantity must be between Min and Max
-            </p>
-        </div>
+            <!-- Service Details -->
+            <div id="serviceDetails" class="hidden mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                <h3 class="font-semibold text-gray-800 mb-3">Service Details</h3>
+                <p id="serviceDescription" class="text-sm text-gray-700 mb-3"></p>
+                <div class="flex flex-wrap gap-4 text-sm">
+                    <div><span class="font-semibold">Cancel:</span> <span id="serviceCancel"></span></div>
+                    <div><span class="font-semibold">Drop:</span> <span id="serviceDrop"></span></div>
+                    <div><span class="font-semibold">Quality:</span> <span id="serviceQuality"></span></div>
+                </div>
+            </div>
 
-        <!-- Total Price -->
-        <div class="mb-6 p-4 bg-gray-50 rounded-lg flex justify-between items-center border border-gray-200">
-            <span class="font-semibold text-gray-800">Total Price</span>
-            <span id="totalPrice" class="text-2xl font-bold text-blue-600">₹0.00</span>
-        </div>
+            <!-- Read Before You Order -->
+            <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h3 class="font-semibold text-gray-800 mb-2">Read before you order</h3>
+                <ul class="text-sm text-gray-700 space-y-1">
+                    <li>• Your account must be public.</li>
+                    <li>• Sometimes there is change in start time and speed.</li>
+                    <li>• Both post and reel links are accepted.</li>
+                    <li>• Make sure the link is correct before placing the order.</li>
+                </ul>
+            </div>
 
-        <!-- Place Order Button -->
-        <button id="placeOrderBtn" type="submit"
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-lg transition disabled:bg-gray-300 disabled:cursor-not-allowed"
-            disabled>
-            Place Order
-        </button>
-    </form>
+            <!-- Link Input -->
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Link</label>
+                <input
+                    type="text"
+                    id="linkInput"
+                    placeholder="Paste your link here"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+
+            <!-- Quantity Input -->
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Quantity</label>
+                <p id="minMaxText" class="text-sm text-gray-500 mb-2">Min: 0 – Max: 0</p>
+                <input
+                    type="number"
+                    id="quantityInput"
+                    placeholder="Enter quantity"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+                <p id="quantityError" class="hidden text-sm text-red-600 mt-2">
+                    Quantity must be between Min and Max
+                </p>
+            </div>
+
+            <!-- Total Price -->
+            <div class="mb-6 p-4 bg-gray-50 rounded-lg flex justify-between items-center border border-gray-200">
+                <span class="font-semibold text-gray-800">Total Price</span>
+                <span id="totalPrice" class="text-2xl font-bold text-blue-600">₹0.00</span>
+            </div>
+
+            <!-- Place Order Button -->
+            <button
+                id="placeOrderBtn"
+                type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-lg transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+                disabled
+            >
+                Place Order
+            </button>
+        </form>
+    </div>
+
+    <!-- Recent Orders Section -->
+    <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 max-w-4xl mx-auto">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Your Recent Orders</h3>
+        <div id="recentOrdersContainer"></div>
+        <div class="mt-4 text-right">
+            <a href="Totalorder.html" class="text-blue-600 hover:text-blue-700 font-semibold text-sm">
+                View all orders →
+            </a>
+        </div>
+    </div>
+
 </div>
-<script>
+
+<!-- Success Modal -->
+<div
+    id="successModal"
+    class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+>
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+        <div class="text-center mb-4">
+            <div class="mx-auto flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">Order placed successfully</h3>
+            <p class="text-gray-600">Your order has been processed.</p>
+        </div>
+        <div class="flex gap-3">
+            <button
+                id="viewOrdersBtn"
+                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
+            >
+                View Orders
+            </button>
+            <button
+                id="closeModalBtn"
+                class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg transition"
+            >
+                Close
+            </button>
+        </div>
+    </div>
+                </div>
+    <script>
 // ------- SERVICES DATA -------
 const servicesData = [
 
@@ -178,7 +245,6 @@ const servicesData = [
         drop: "Low",
         quality: "High"
     },
-
     {
         serviceId: "IF002",
         serviceName: "Instagram Followers – Used by Influencers – Same Day Delivery 2",
@@ -191,7 +257,6 @@ const servicesData = [
         drop: "Low",
         quality: "High"
     },
-
     {
         serviceId: "IF003",
         serviceName: "Instagram Followers – Used by Celebrities – Same Day Delivery",
@@ -218,7 +283,6 @@ const servicesData = [
         drop: "No",
         quality: "Real"
     },
-
     {
         serviceId: "IRV002",
         serviceName: "Instagram Reel Views – Used by Influencers – Real Views 2",
@@ -231,7 +295,6 @@ const servicesData = [
         drop: "No",
         quality: "Real"
     },
-
     {
         serviceId: "IRV003",
         serviceName: "Instagram Reel Views – Used by Celebrities – From Explore Page",
@@ -244,7 +307,6 @@ const servicesData = [
         drop: "No",
         quality: "Premium"
     },
-
     {
         serviceId: "IRV004",
         serviceName: "Instagram Reel Views – Used by Influencers – Indian Real Views",
@@ -271,7 +333,6 @@ const servicesData = [
         drop: "Low",
         quality: "High"
     },
-
     {
         serviceId: "IL002",
         serviceName: "Instagram Likes – Used by Celebrities",
@@ -298,7 +359,6 @@ const servicesData = [
         drop: "Low",
         quality: "Indian High"
     },
-
     {
         serviceId: "IIL002",
         serviceName: "Instagram Indian Likes – Used by Celebrities",
@@ -311,180 +371,143 @@ const servicesData = [
         drop: "Very Low",
         quality: "Indian Premium"
     }
-
 ];
-    /* ------- DOM ELEMENTS ------- */
-const mobileMenuBtn     = document.getElementById("mobileMenuBtn");
-const mobileMenu        = document.getElementById("mobileMenu");
 
-const searchService     = document.getElementById("searchService");
-const categorySelect    = document.getElementById("categorySelect");
-const serviceSelect     = document.getElementById("serviceSelect");
 
-const serviceDetails    = document.getElementById("serviceDetails");
-const serviceDescription= document.getElementById("serviceDescription");
-const serviceCancel     = document.getElementById("serviceCancel");
-const serviceDrop       = document.getElementById("serviceDrop");
-const serviceQuality    = document.getElementById("serviceQuality");
 
-const linkInput         = document.getElementById("linkInput");
-const quantityInput     = document.getElementById("quantityInput");
-const minMaxText        = document.getElementById("minMaxText");
-const quantityError     = document.getElementById("quantityError");
+// DOM ELEMENTS
+const mobileMenuBtn      = document.getElementById("mobile-menu-btn");
+const mobileMenu         = document.getElementById("mobile-menu");
 
-const totalPrice        = document.getElementById("totalPrice");
-const placeOrderBtn     = document.getElementById("placeOrderBtn");
-const orderForm         = document.getElementById("orderForm");
+const searchService      = document.getElementById("searchService");
+const categorySelect     = document.getElementById("categorySelect");
+const serviceSelect      = document.getElementById("serviceSelect");
 
-const successModal      = document.getElementById("successModal");
-const viewOrdersBtn     = document.getElementById("viewOrdersBtn");
-const closeModalBtn     = document.getElementById("closeModalBtn");
+const serviceDetails     = document.getElementById("serviceDetails");
+const serviceDescription = document.getElementById("serviceDescription");
+const serviceCancel      = document.getElementById("serviceCancel");
+const serviceDrop        = document.getElementById("serviceDrop");
+const serviceQuality     = document.getElementById("serviceQuality");
+
+const linkInput          = document.getElementById("linkInput");
+const quantityInput      = document.getElementById("quantityInput");
+const minMaxText         = document.getElementById("minMaxText");
+const quantityError      = document.getElementById("quantityError");
+
+const totalPrice         = document.getElementById("totalPrice");
+const placeOrderBtn      = document.getElementById("placeOrderBtn");
+
+const successModal       = document.getElementById("successModal");
+const viewOrdersBtn      = document.getElementById("viewOrdersBtn");
+const closeModalBtn      = document.getElementById("closeModalBtn");
 
 const recentOrdersContainer = document.getElementById("recentOrdersContainer");
 
 let selectedService = null;
-let currentSearchTerm = "";
 
-/* ------- MOBILE MENU ------- */
+
+// MOBILE MENU
 mobileMenuBtn.addEventListener("click", () => {
     mobileMenu.classList.toggle("hidden");
 });
 
-/* ------- SERVICE DROPDOWN UPDATE ------- */
-function updateServiceSelect() {
-    const selectedCategory = categorySelect.value;
-    const searchTerm = searchService.value.trim().toLowerCase();
 
-    // Reset dropdown
+// UPDATE SERVICE DROPDOWN
+function updateServiceSelect() {
+    const category = categorySelect.value;
+    const searchTerm = searchService.value.toLowerCase();
+
     serviceSelect.innerHTML = `<option value="">Select a service</option>`;
 
-    if (!selectedCategory) {
-        selectedService = null;
-        serviceDetails.classList.add("hidden");
-        validateForm();
+    if (!category) {
+        serviceSelect.disabled = true;
         return;
     }
 
-    // Filter services
     const filtered = servicesData.filter(s =>
-        s.category === selectedCategory &&
+        s.category === category &&
         s.serviceName.toLowerCase().includes(searchTerm)
     );
 
-    // Populate dropdown
-    filtered.forEach(s => {
+    filtered.forEach(service => {
         const option = document.createElement("option");
-        option.value = s.serviceId;
-        option.textContent = `${s.serviceName} – ₹${s.pricePer1000.toFixed(2)} per 1000`;
+        option.value = service.serviceId;
+        option.textContent = `${service.serviceName} – ₹${service.pricePer1000.toFixed(2)} per 1000`;
         serviceSelect.appendChild(option);
     });
 
-    // Disable if empty
     serviceSelect.disabled = filtered.length === 0;
-    selectedService = null;
-    serviceDetails.classList.add("hidden");
-    validateForm();
 }
 
-/* SEARCH BAR */
-searchService.addEventListener("input", () => {
-    currentSearchTerm = searchService.value.trim();
+
+// ON SEARCH
+searchService.addEventListener("input", updateServiceSelect);
+
+
+// ON CATEGORY CHANGE
+categorySelect.addEventListener("change", () => {
     updateServiceSelect();
+    resetServiceSelection();
 });
 
-/* CATEGORY CHANGE */
-categorySelect.addEventListener("change", updateServiceSelect);
 
-/* SERVICE SELECT CHANGE */
-serviceSelect.addEventListener("change", (e) => {
-    const id = e.target.value;
+// ON SERVICE SELECT
+serviceSelect.addEventListener("change", () => {
+    const id = serviceSelect.value;
     selectedService = servicesData.find(s => s.serviceId === id);
 
-    if (!selectedService) {
-        serviceDetails.classList.add("hidden");
-        minMaxText.textContent = "Min: 0 – Max: 0";
-        validateForm();
-        return;
-    }
+    if (!selectedService) return;
 
-    // Populate service info
     serviceDetails.classList.remove("hidden");
     serviceDescription.textContent = selectedService.description;
     serviceCancel.textContent = selectedService.cancel;
     serviceDrop.textContent = selectedService.drop;
     serviceQuality.textContent = selectedService.quality;
 
-    // Min – Max update
     minMaxText.textContent =
-        `Min: ${selectedService.minQuantity.toLocaleString('en-IN')} – Max: ${selectedService.maxQuantity.toLocaleString('en-IN')}`;
+        `Min: ${selectedService.minQuantity} – Max: ${selectedService.maxQuantity}`;
 
-    calculateTotal();
-    validateForm();
+    quantityInput.value = "";
+    totalPrice.textContent = "₹0.00";
 });
-    /* ------- QUANTITY VALIDATION ------- */
-function validateQuantity() {
-    if (!selectedService) {
-        quantityError.classList.add("hidden");
-        return false;
-    }
 
-    const qty = parseInt(quantityInput.value);
+
+// QUANTITY INPUT
+quantityInput.addEventListener("input", () => {
+    if (!selectedService) return;
+
+    let qty = parseInt(quantityInput.value);
 
     if (!qty || qty < selectedService.minQuantity || qty > selectedService.maxQuantity) {
-        quantityError.textContent =
-            `Quantity must be between ${selectedService.minQuantity} and ${selectedService.maxQuantity}`;
         quantityError.classList.remove("hidden");
-        return false;
-    }
-
-    quantityError.classList.add("hidden");
-    return true;
-}
-
-/* ------- PRICE CALCULATION ------- */
-function calculateTotal() {
-    if (!selectedService) {
         totalPrice.textContent = "₹0.00";
-        return;
-    }
-
-    const qty = parseInt(quantityInput.value);
-
-    if (!qty || qty < selectedService.minQuantity) {
-        totalPrice.textContent = "₹0.00";
-        return;
-    }
-
-    // Formula: (qty / 1000) * pricePer1000
-    const raw = (qty / 1000) * selectedService.pricePer1000;
-    const finalAmount = raw.toFixed(2);
-
-    totalPrice.textContent = `₹${Number(finalAmount).toLocaleString("en-IN")}`;
-}
-
-/* ------- INPUT EVENTS ------- */
-quantityInput.addEventListener("input", () => {
-    validateQuantity();
-    calculateTotal();
-    validateForm();
-});
-
-linkInput.addEventListener("input", validateForm);
-
-/* ------- FORM VALIDATION (ENABLE/DISABLE BUTTON) ------- */
-function validateForm() {
-    if (!selectedService) {
         placeOrderBtn.disabled = true;
         return;
     }
-    const qtyValid = validateQuantity();
-    const linkValid = linkInput.value.trim().length > 0;
 
-    placeOrderBtn.disabled = !(qtyValid && linkValid);
+    quantityError.classList.add("hidden");
+
+    const final = (qty / 1000) * selectedService.pricePer1000;
+    totalPrice.textContent = `₹${final.toFixed(2)}`;
+
+    placeOrderBtn.disabled = false;
+});
+
+
+// RESET SERVICE
+function resetServiceSelection() {
+    selectedService = null;
+    serviceDetails.classList.add("hidden");
+    quantityInput.value = "";
+    minMaxText.textContent = "Min: 0 – Max: 0";
+    totalPrice.textContent = "₹0.00";
+    placeOrderBtn.disabled = true;
 }
-    /* ------- SAVE ORDER TO LOCAL STORAGE ------- */
+
+
+// SAVE ORDER
 function saveOrder(service, qty, link, price) {
-    const allOrders = JSON.parse(localStorage.getItem("getxh_orders") || "[]");
+    const allOrders = JSON.parse(localStorage.getItem("orders") || "[]");
 
     const newOrder = {
         id: Date.now(),
@@ -497,169 +520,42 @@ function saveOrder(service, qty, link, price) {
     };
 
     allOrders.unshift(newOrder);
-    localStorage.setItem("getxh_orders", JSON.stringify(allOrders));
+    localStorage.setItem("orders", JSON.stringify(allOrders));
 }
 
-/* ------- PLACE ORDER BUTTON ------- */
-placeOrderBtn.addEventListener("click", () => {
+
+// PLACE ORDER BUTTON
+placeOrderBtn.addEventListener("click", (e) => {
+    e.preventDefault();
     if (!selectedService) return;
 
     const qty = parseInt(quantityInput.value);
     const link = linkInput.value.trim();
     const price = totalPrice.textContent.replace("₹", "");
 
+    if (!qty || !link) return;
+
     saveOrder(selectedService, qty, link, price);
 
-    // Show success popup
     successModal.classList.remove("hidden");
 });
 
-/* ------- CLOSE POPUP ------- */
+
+// CLOSE POPUP
 closeModalBtn.addEventListener("click", () => {
     successModal.classList.add("hidden");
 });
 
-/* ------- VIEW ORDERS BUTTON ------- */
+
+// VIEW ORDERS
 viewOrdersBtn.addEventListener("click", () => {
     window.location.href = "Totalorder.html";
 });
 
-/* ------- LOAD RECENT ORDERS ------- */
+
+// LOAD RECENT ORDERS
 function loadRecentOrders() {
-    const allOrders = JSON.parse(localStorage.getItem("getxh_orders") || "[]");
-
-    recentOrdersContainer.innerHTML = "";
-
-    if (allOrders.length === 0) {
-        recentOrdersContainer.innerHTML =
-            `<p class="text-gray-500 text-sm">No recent orders found.</p>`;
-        return;
-    }
-
-    allOrders.slice(0, 5).forEach(order => {
-        const row = document.createElement("div");
-        row.className = "border-b py-3 flex justify-between items-center";
-
-        row.innerHTML = `
-            <div>
-                <p class="font-semibold text-gray-800">${order.serviceName}</p>
-                <p class="text-gray-500 text-sm">Qty: ${order.quantity}</p>
-            </div>
-            <div class="text-right">
-                <p class="text-blue-600 font-semibold">₹${order.price}</p>
-                <p class="text-gray-400 text-xs">${order.date}</p>
-            </div>
-        `;
-        recentOrdersContainer.appendChild(row);
-    });
-}
-
-loadRecentOrders();
-    /* ------- RESET SERVICE WHEN CATEGORY CHANGES ------- */
-function resetServiceSelection() {
-    selectedService = null;
-    serviceDetails.classList.add("hidden");
-    quantityInput.value = "";
-    quantityRange.textContent = "Min: 0 – Max: 0";
-    totalPrice.textContent = "₹0.00";
-    placeOrderBtn.disabled = true;
-}
-
-/* ------- WHEN SERVICE SELECTED ------- */
-serviceSelect.addEventListener("change", () => {
-    const serviceId = parseInt(serviceSelect.value);
-    selectedService = servicesData.find(s => s.serviceId === serviceId);
-
-    if (!selectedService) return;
-
-    // Show service details
-    serviceDetails.classList.remove("hidden");
-    serviceDescription.textContent = selectedService.description;
-    serviceCancel.textContent = selectedService.cancel;
-    serviceDrop.textContent = selectedService.drop;
-    serviceQuality.textContent = selectedService.quality;
-
-    // Set min/max text
-    quantityRange.textContent =
-        `Min: ${selectedService.minQuantity} – Max: ${selectedService.maxQuantity}`;
-
-    // Reset quantity & price
-    quantityInput.value = "";
-    totalPrice.textContent = "₹0.00";
-    placeOrderBtn.disabled = true;
-});
-
-/* ------- QUANTITY INPUT LOGIC ------- */
-quantityInput.addEventListener("input", () => {
-    if (!selectedService) return;
-
-    let qty = parseInt(quantityInput.value);
-
-    if (isNaN(qty)) {
-        totalPrice.textContent = "₹0.00";
-        quantityError.classList.add("hidden");
-        placeOrderBtn.disabled = true;
-        return;
-    }
-
-    // Validation
-    if (qty < selectedService.minQuantity || qty > selectedService.maxQuantity) {
-        quantityError.classList.remove("hidden");
-        placeOrderBtn.disabled = true;
-        totalPrice.textContent = "₹0.00";
-        return;
-    }
-
-    quantityError.classList.add("hidden");
-
-    // Price calculation (Correct Formula)
-    const finalPrice = (qty / 1000) * selectedService.pricePer1000;
-
-    totalPrice.textContent = `₹${finalPrice.toFixed(2)}`;
-    placeOrderBtn.disabled = false;
-});
-    /* ------- PLACE ORDER BUTTON ------- */
-placeOrderBtn.addEventListener("click", () => {
-
-    if (!selectedService) return;
-    if (!linkInput.value.trim()) {
-        alert("Please enter a valid link.");
-        return;
-    }
-
-    // Prepare Order Data
-    const order = {
-        id: Date.now(),
-        serviceName: selectedService.serviceName,
-        category: selectedService.category,
-        link: linkInput.value,
-        quantity: parseInt(quantityInput.value),
-        price: totalPrice.textContent,
-        date: new Date().toLocaleString()
-    };
-
-    // Save order in LocalStorage
-    let oldOrders = JSON.parse(localStorage.getItem("orders") || "[]");
-    oldOrders.unshift(order);
-    localStorage.setItem("orders", JSON.stringify(oldOrders));
-
-    // Show Success Modal
-    successModal.classList.remove("hidden");
-});
-
-/* ------- VIEW ORDERS BUTTON ------- */
-viewOrdersBtn.addEventListener("click", () => {
-    window.location.href = "Totalorder.html";
-});
-
-/* ------- CLOSE SUCCESS MODAL ------- */
-closeModalBtn.addEventListener("click", () => {
-    successModal.classList.add("hidden");
-});
-
-/* ------- SHOW RECENT ORDERS IN NEW ORDER PAGE ------- */
-function loadRecentOrders() {
-    let orders = JSON.parse(localStorage.getItem("orders") || "[]");
+    const orders = JSON.parse(localStorage.getItem("orders") || "[]");
 
     recentOrdersContainer.innerHTML = "";
 
@@ -669,20 +565,24 @@ function loadRecentOrders() {
         return;
     }
 
-    orders.slice(0, 3).forEach(o => {
-        const item = document.createElement("div");
-        item.className =
-            "p-4 border border-gray-200 rounded-lg bg-gray-50 mb-3";
+    orders.slice(0, 3).forEach(order => {
+        const box = document.createElement("div");
+        box.className = "p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3";
 
-        item.innerHTML = `
-            <div class="text-sm font-semibold text-gray-800">${o.serviceName}</div>
-            <div class="text-xs text-gray-600">Qty: ${o.quantity}</div>
-            <div class="text-xs text-gray-600">${o.price}</div>
-            <div class="text-xs text-gray-500">Date: ${o.date}</div>
+        box.innerHTML = `
+            <div class="font-semibold text-gray-800 text-sm">${order.serviceName}</div>
+            <div class="text-xs text-gray-600">Qty: ${order.quantity}</div>
+            <div class="text-xs text-gray-600">₹${order.price}</div>
+            <div class="text-xs text-gray-500">${order.date}</div>
         `;
 
-        recentOrdersContainer.appendChild(item);
+        recentOrdersContainer.appendChild(box);
     });
 }
 
 loadRecentOrders();
+</script>
+
+</body>
+</html>
+                
