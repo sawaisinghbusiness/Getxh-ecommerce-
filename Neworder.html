@@ -220,416 +220,440 @@
     </div>
 
     <script>
-        // Service Data
-        const servicesData = [
-            // Instagram Followers
-            {
-                serviceId: 'IF001',
-                serviceName: 'Instagram Followers – Used by Influencers – Same Day Delivery',
-                category: 'Instagram Followers',
-                pricePer1000: 169.43,
-                minQuantity: 100,
-                maxQuantity: 1000000,
-                description: 'High quality followers with same day delivery',
-                cancel: 'Yes',
-                drop: 'Low',
-                quality: 'High'
-            },
-            {
-                serviceId: 'IF002',
-                serviceName: 'Instagram Followers – Used by Influencers – Same Day Delivery 2',
-                category: 'Instagram Followers',
-                pricePer1000: 172.47,
-                minQuantity: 100,
-                maxQuantity: 1000000,
-                description: 'Premium followers with guaranteed delivery',
-                cancel: 'Yes',
-                drop: 'Low',
-                quality: 'High'
-            },
-            {
-                serviceId: 'IF003',
-                serviceName: 'Instagram Followers – Used by Celebrities – Same Day Delivery',
-                category: 'Instagram Followers',
-                pricePer1000: 159.44,
-                minQuantity: 100,
-                maxQuantity: 1000000,
-                description: 'Celebrity-grade followers',
-                cancel: 'Yes',
-                drop: 'Very Low',
-                quality: 'Premium'
-            },
-            // Instagram Reel Views
-            {
-                serviceId: 'IRV001',
-                serviceName: 'Instagram Reel Views – Used by Influencers – Real Views',
-                category: 'Instagram Reel Views',
-                pricePer1000: 0.36,
-                minQuantity: 100,
-                maxQuantity: 2147483647,
-                description: 'Genuine views from real accounts',
-                cancel: 'No',
-                drop: 'None',
-                quality: 'Real'
-            },
-            {
-                serviceId: 'IRV002',
-                serviceName: 'Instagram Reel Views – Used by Influencers – Real Views 2',
-                category: 'Instagram Reel Views',
-                pricePer1000: 0.54,
-                minQuantity: 100,
-                maxQuantity: 2147483647,
-                description: 'Fast real views delivery',
-                cancel: 'No',
-                drop: 'None',
-                quality: 'Real'
-            },
-            {
-                serviceId: 'IRV003',
-                serviceName: 'Instagram Reel Views – Used by Celebrities – From Explore Page',
-                category: 'Instagram Reel Views',
-                pricePer1000: 0.72,
-                minQuantity: 100,
-                maxQuantity: 2147483647,
-                description: 'Views from explore page',
-                cancel: 'No',
-                drop: 'None',
-                quality: 'Premium'
-            },
-            {
-                serviceId: 'IRV004',
-                serviceName: 'Instagram Reel Views – Used by Influencers – Indian Real Views',
-                category: 'Instagram Reel Views',
-                pricePer1000: 1.08,
-                minQuantity: 100,
-                maxQuantity: 2147483647,
-                description: 'Real views from Indian accounts',
-                cancel: 'No',
-                drop: 'None',
-                quality: 'Indian Real'
-            },
-            // Instagram Likes
-            {
-                serviceId: 'IL001',
-                serviceName: 'Instagram Likes – Used by Influencers',
-                category: 'Instagram Likes',
-                pricePer1000: 27.68,
-                minQuantity: 10,
-                maxQuantity: 1000000,
-                description: 'Quality likes from real accounts',
-                cancel: 'Yes',
-                drop: 'Low',
-                quality: 'High'
-            },
-            {
-                serviceId: 'IL002',
-                serviceName: 'Instagram Likes – Used by Celebrities',
-                category: 'Instagram Likes',
-                pricePer1000: 37.38,
-                minQuantity: 10,
-                maxQuantity: 1000000,
-                description: 'Premium likes for celebrity accounts',
-                cancel: 'Yes',
-                drop: 'Very Low',
-                quality: 'Premium'
-            },
-            // Instagram Indian Likes
-            {
-                serviceId: 'IIL001',
-                serviceName: 'Instagram Indian Likes – Used by Influencers',
-                category: 'Instagram Indian Likes',
-                pricePer1000: 44.27,
-                minQuantity: 10,
-                maxQuantity: 1000000,
-                description: 'Indian likes from real accounts',
-                cancel: 'Yes',
-                drop: 'Low',
-                quality: 'Indian High'
-            },
-            {
-                serviceId: 'IIL002',
-                serviceName: 'Instagram Indian Likes – Used by Celebrities',
-                category: 'Instagram Indian Likes',
-                pricePer1000: 53.01,
-                minQuantity: 10,
-                maxQuantity: 1000000,
-                description: 'Premium Indian likes',
-                cancel: 'Yes',
-                drop: 'Very Low',
-                quality: 'Indian Premium'
-            }
-        ];
+  // ------- SERVICES DATA -------
+  const servicesData = [
+    // Instagram Followers
+    {
+      serviceId: "IF001",
+      serviceName: "Instagram Followers – Used by Influencers – Same Day Delivery",
+      category: "Instagram Followers",
+      pricePer1000: 169.43,
+      minQuantity: 100,
+      maxQuantity: 1000000,
+      description: "High quality followers with same day delivery",
+      cancel: "No",
+      drop: "Low",
+      quality: "High"
+    },
+    {
+      serviceId: "IF002",
+      serviceName: "Instagram Followers – Used by Influencers – Same Day Delivery 2",
+      category: "Instagram Followers",
+      pricePer1000: 172.47,
+      minQuantity: 100,
+      maxQuantity: 1000000,
+      description: "Premium followers with guaranteed delivery",
+      cancel: "No",
+      drop: "Low",
+      quality: "High"
+    },
+    {
+      serviceId: "IF003",
+      serviceName: "Instagram Followers – Used by Celebrities – Same Day Delivery",
+      category: "Instagram Followers",
+      pricePer1000: 159.44,
+      minQuantity: 100,
+      maxQuantity: 1000000,
+      description: "Celebrity-grade followers",
+      cancel: "No",
+      drop: "Very Low",
+      quality: "Premium"
+    },
 
-        // DOM Elements
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-        const searchService = document.getElementById('searchService');
-        const categorySelect = document.getElementById('categorySelect');
-        const serviceSelect = document.getElementById('serviceSelect');
-        const serviceDetails = document.getElementById('serviceDetails');
-        const serviceDescription = document.getElementById('serviceDescription');
-        const serviceCancel = document.getElementById('serviceCancel');
-        const serviceDrop = document.getElementById('serviceDrop');
-        const serviceQuality = document.getElementById('serviceQuality');
-        const linkInput = document.getElementById('linkInput');
-        const quantityInput = document.getElementById('quantityInput');
-        const minMaxText = document.getElementById('minMaxText');
-        const quantityError = document.getElementById('quantityError');
-        const totalPrice = document.getElementById('totalPrice');
-        const placeOrderBtn = document.getElementById('placeOrderBtn');
-        const orderForm = document.getElementById('orderForm');
-        const successModal = document.getElementById('successModal');
-        const viewOrdersBtn = document.getElementById('viewOrdersBtn');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const recentOrdersContainer = document.getElementById('recentOrdersContainer');
+    // Instagram Reel Views
+    {
+      serviceId: "IRV001",
+      serviceName: "Instagram Reel Views – Used by Influencers – Real Views",
+      category: "Instagram Reel Views",
+      pricePer1000: 0.36,
+      minQuantity: 100,
+      maxQuantity: 2147483647,
+      description: "Genuine views from real accounts",
+      cancel: "Yes",
+      drop: "No",
+      quality: "Real"
+    },
+    {
+      serviceId: "IRV002",
+      serviceName: "Instagram Reel Views – Used by Influencers – Real Views 2",
+      category: "Instagram Reel Views",
+      pricePer1000: 0.54,
+      minQuantity: 100,
+      maxQuantity: 2147483647,
+      description: "Fast real views delivery",
+      cancel: "Yes",
+      drop: "No",
+      quality: "Real"
+    },
+    {
+      serviceId: "IRV003",
+      serviceName: "Instagram Reel Views – Used by Celebrities – From Explore Page",
+      category: "Instagram Reel Views",
+      pricePer1000: 0.72,
+      minQuantity: 100,
+      maxQuantity: 2147483647,
+      description: "Views from explore page",
+      cancel: "Yes",
+      drop: "No",
+      quality: "Premium"
+    },
+    {
+      serviceId: "IRV004",
+      serviceName: "Instagram Reel Views – Used by Influencers – Indian Real Views",
+      category: "Instagram Reel Views",
+      pricePer1000: 1.08,
+      minQuantity: 100,
+      maxQuantity: 2147483647,
+      description: "Indian real views from Indian accounts",
+      cancel: "Yes",
+      drop: "No",
+      quality: "Indian Real"
+    },
 
-        let selectedService = null;
-        let currentSearchTerm = '';
+    // Instagram Likes
+    {
+      serviceId: "IL001",
+      serviceName: "Instagram Likes – Used by Influencers",
+      category: "Instagram Likes",
+      pricePer1000: 27.68,
+      minQuantity: 10,
+      maxQuantity: 1000000,
+      description: "Quality likes from real accounts",
+      cancel: "No",
+      drop: "Low",
+      quality: "High"
+    },
+    {
+      serviceId: "IL002",
+      serviceName: "Instagram Likes – Used by Celebrities",
+      category: "Instagram Likes",
+      pricePer1000: 37.38,
+      minQuantity: 10,
+      maxQuantity: 1000000,
+      description: "Premium likes for celebrity accounts",
+      cancel: "No",
+      drop: "Very Low",
+      quality: "Premium"
+    },
 
-        // Mobile Menu Toggle
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
+    // Instagram Indian Likes
+    {
+      serviceId: "IIL001",
+      serviceName: "Instagram Indian Likes – Used by Influencers",
+      category: "Instagram Indian Likes",
+      pricePer1000: 44.27,
+      minQuantity: 10,
+      maxQuantity: 1000000,
+      description: "Indian likes from real Indian accounts",
+      cancel: "No",
+      drop: "Low",
+      quality: "Indian High"
+    },
+    {
+      serviceId: "IIL002",
+      serviceName: "Instagram Indian Likes – Used by Celebrities",
+      category: "Instagram Indian Likes",
+      pricePer1000: 53.01,
+      minQuantity: 10,
+      maxQuantity: 1000000,
+      description: "Premium Indian likes for celebrities",
+      cancel: "No",
+      drop: "Very Low",
+      quality: "Indian Premium"
+    }
+  ];
 
-        // Update Service Select based on Category
-        function updateServiceSelect() {
-            const selectedCategory = categorySelect.value;
-            serviceSelect.innerHTML = '<option value="">Select a service</option>';
-            
-            if (!selectedCategory) {
-                serviceDetails.classList.add('hidden');
-                selectedService = null;
-                validateForm();
-                return;
-            }
-            const filteredServices = servicesData.filter(service => {
-                const matchesCategory = service.category === selectedCategory;
-                const matchesSearch = currentSearchTerm === '' || 
-                    service.serviceName.toLowerCase().includes(currentSearchTerm.toLowerCase());
-                return matchesCategory && matchesSearch;
-            });
+  // ------- DOM ELEMENTS -------
+  const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+  const mobileMenu    = document.getElementById("mobile-menu");
 
-            filteredServices.forEach(service => {
-                const option = document.createElement('option');
-                option.value = service.serviceId;
-                option.textContent = `${service.serviceName} – ₹${service.pricePer1000.toFixed(2)} per 1000`;
-                serviceSelect.appendChild(option);
-            });
+  const searchService   = document.getElementById("searchService");
+  const categorySelect  = document.getElementById("categorySelect");
+  const serviceSelect   = document.getElementById("serviceSelect");
 
-            serviceDetails.classList.add('hidden');
-            selectedService = null;
-            validateForm();
-        }
+  const serviceDetails      = document.getElementById("serviceDetails");
+  const serviceDescription  = document.getElementById("serviceDescription");
+  const serviceCancel       = document.getElementById("serviceCancel");
+  const serviceDrop         = document.getElementById("serviceDrop");
+  const serviceQuality      = document.getElementById("serviceQuality");
 
-        // Search Functionality
-        searchService.addEventListener('input', (e) => {
-            currentSearchTerm = e.target.value;
-            updateServiceSelect();
-        });
+  const linkInput     = document.getElementById("linkInput");
+  const quantityInput = document.getElementById("quantityInput");
+  const minMaxText    = document.getElementById("minMaxText") || document.getElementById("quantity-range");
+  const quantityError = document.getElementById("quantityError");
 
-        // Category Change
-        categorySelect.addEventListener('change', updateServiceSelect);
+  const totalPrice    = document.getElementById("totalPrice");
+  const placeOrderBtn = document.getElementById("placeOrderBtn");
+  const orderForm     = document.getElementById("orderForm");
 
-        // Service Change
-        serviceSelect.addEventListener('change', (e) => {
-            const serviceId = e.target.value;
-            
-            if (!serviceId) {
-                serviceDetails.classList.add('hidden');
-                selectedService = null;
-                minMaxText.textContent = 'Min: 0 – Max: 0';
-                validateForm();
-                return;
-            }
+  const successModal        = document.getElementById("successModal");
+  const viewOrdersBtn       = document.getElementById("viewOrdersBtn");
+  const closeModalBtn       = document.getElementById("closeModalBtn");
+  const recentOrdersContainer = document.getElementById("recentOrdersContainer");
 
-            selectedService = servicesData.find(s => s.serviceId === serviceId);
-            
-            if (selectedService) {
-                serviceDetails.classList.remove('hidden');
-                serviceDescription.textContent = selectedService.description;
-                serviceCancel.textContent = selectedService.cancel;
-                serviceDrop.textContent = selectedService.drop;
-                serviceQuality.textContent = selectedService.quality;
-                minMaxText.textContent = `Min: ${selectedService.minQuantity.toLocaleString('en-IN')} – Max: ${selectedService.maxQuantity.toLocaleString('en-IN')}`;
-                calculateTotal();
-            }
-            
-            validateForm();
-        });
+  let selectedService = null;
+  let currentSearchTerm = "";
 
-        // Calculate Total
-        function calculateTotal() {
-            if (!selectedService || !quantityInput.value) {
-                totalPrice.textContent = '₹0.00';
-                return;
-            }
+  // ------- MOBILE MENU -------
+  mobileMenuBtn.addEventListener("click", () => {
+    mobileMenu.classList.toggle("hidden");
+  });
 
-            const quantity = parseInt(quantityInput.value);
-            if (isNaN(quantity) || quantity < selectedService.minQuantity || quantity > selectedService.maxQuantity) {
-                totalPrice.textContent = '₹0.00';
-                return;
-            }
+  // ------- SERVICE DROPDOWN UPDATE -------
+  function updateServiceSelect() {
+    const selectedCategory = categorySelect.value;
+    serviceSelect.innerHTML = '<option value="">Select a service</option>';
 
-            const total = (selectedService.pricePer1000 / 1000) * quantity;
-            totalPrice.textContent = `₹${total.toFixed(2)}`;
-        }
+    if (!selectedCategory) {
+      serviceDetails.classList.add("hidden");
+      selectedService = null;
+      validateForm();
+      return;
+    }
 
-        // Quantity Input
-        quantityInput.addEventListener('input', () => {
-            const quantity = parseInt(quantityInput.value);
-            
-            if (selectedService && quantityInput.value) {
-                if (isNaN(quantity) || quantity < selectedService.minQuantity || quantity > selectedService.maxQuantity) {
-                    quantityError.classList.remove('hidden');
-                } else {
-                    quantityError.classList.add('hidden');
-                }
-            } else {
-                quantityError.classList.add('hidden');
-            }
-            
-            calculateTotal();
-            validateForm();
-        });
+    const filtered = servicesData.filter(service => {
+      const matchesCategory = service.category === selectedCategory;
+      const matchesSearch =
+        currentSearchTerm === "" ||
+        service.serviceName.toLowerCase().includes(currentSearchTerm.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
 
-        // Link Input
-        linkInput.addEventListener('input', validateForm);
+    filtered.forEach(service => {
+      const option = document.createElement("option");
+      option.value = service.serviceId;
+      option.textContent = `${service.serviceName} – ₹${service.pricePer1000.toFixed(2)} per 1000`;
+      serviceSelect.appendChild(option);
+    });
 
-        // Validate Form
-        function validateForm() {
-            const quantity = parseInt(quantityInput.value);
-            const isQuantityValid = selectedService && 
-                !isNaN(quantity) && 
-                quantity >= selectedService.minQuantity && 
-                quantity <= selectedService.maxQuantity;
-            
-            const isLinkValid = linkInput.value.trim() !== '';
-            const isServiceValid = selectedService !== null;
+    serviceDetails.classList.add("hidden");
+    selectedService = null;
+    validateForm();
+  }
 
-            if (isQuantityValid && isLinkValid && isServiceValid) {
-                placeOrderBtn.disabled = false;
-            } else {
-                placeOrderBtn.disabled = true;
-            }
-        }
+  // Search bar
+  searchService.addEventListener("input", e => {
+    currentSearchTerm = e.target.value;
+    updateServiceSelect();
+  });
 
-        // Form Submit
-        orderForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            if (!selectedService) return;
+  // Category change
+  categorySelect.addEventListener("change", updateServiceSelect);
 
-            const quantity = parseInt(quantityInput.value);
-            const link = linkInput.value.trim();
-            const total = (selectedService.pricePer1000 / 1000) * quantity;
+  // Service change
+  serviceSelect.addEventListener("change", e => {
+    const serviceId = e.target.value;
+    if (!serviceId) {
+      serviceDetails.classList.add("hidden");
+      selectedService = null;
+      if (minMaxText) minMaxText.textContent = "Min: 0 – Max: 0";
+      validateForm();
+      return;
+    }
 
-            // Get existing orders
-            let orders = [];
-            const existingOrders = localStorage.getItem('getxh_orders');
-            if (existingOrders) {
-                orders = JSON.parse(existingOrders);
-            }
+    selectedService = servicesData.find(s => s.serviceId === serviceId);
 
-            // Create new order
-            const newOrder = {
-                id: Date.now(),
-                category: selectedService.category,
-                serviceName: selectedService.serviceName,
-                link: link,
-                quantity: quantity,
-                price: total.toFixed(2),
-                createdAt: new Date().toLocaleString('en-IN', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true
-                }),
-                status: 'Processing'
-            };
+    if (selectedService) {
+      serviceDetails.classList.remove("hidden");
+      serviceDescription.textContent = selectedService.description;
+      serviceCancel.textContent = selectedService.cancel;
+      serviceDrop.textContent = selectedService.drop;
+      serviceQuality.textContent = selectedService.quality;
 
-            // Save to localStorage
-            orders.push(newOrder);
-            localStorage.setItem('getxh_orders', JSON.stringify(orders));
+      if (minMaxText) {
+        minMaxText.textContent = `Min: ${selectedService.minQuantity.toLocaleString("en-IN")} – Max: ${selectedService.maxQuantity.toLocaleString("en-IN")}`;
+      }
+      calculateTotal();
+    }
 
-            // Show success modal
-            successModal.classList.remove('hidden');
+    validateForm();
+  });
 
-            // Reset form
-            orderForm.reset();
-            serviceDetails.classList.add('hidden');
-            selectedService = null;
-            totalPrice.textContent = '₹0.00';
-            minMaxText.textContent = 'Min: 0 – Max: 0';
-            
-            // Reload recent orders
-            loadRecentOrders();
-        });
+  // ------- TOTAL CALCULATION -------
+  function calculateTotal() {
+    if (!selectedService || !quantityInput.value) {
+      totalPrice.textContent = "₹0.00";
+      return;
+    }
 
-        // Modal Buttons
-        viewOrdersBtn.addEventListener('click', () => {
-            window.location.href = 'Totalorder.html';
-        });
-        closeModalBtn.addEventListener('click', () => {
-            successModal.classList.add('hidden');
-        });
+    const quantity = parseInt(quantityInput.value, 10);
+    if (
+      isNaN(quantity) ||
+      quantity < selectedService.minQuantity ||
+      quantity > selectedService.maxQuantity
+    ) {
+      totalPrice.textContent = "₹0.00";
+      return;
+    }
 
-        // Load Recent Orders
-        function loadRecentOrders() {
-            const existingOrders = localStorage.getItem('getxh_orders');
-            
-            if (!existingOrders || JSON.parse(existingOrders).length === 0) {
-                recentOrdersContainer.innerHTML = `
-                    <div class="text-center py-8 text-gray-500">
-                        <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        <p class="text-lg">No orders yet</p>
-                        <p class="text-sm">Your recent orders will appear here</p>
-                    </div>
-                `;
-                return;
-            }
+    const total = (selectedService.pricePer1000 / 1000) * quantity;
+    totalPrice.textContent = `₹${total.toFixed(2)}`;
+  }
 
-            const orders = JSON.parse(existingOrders);
-            const recentOrders = orders.slice(-5).reverse();
+  // Quantity input
+  quantityInput.addEventListener("input", () => {
+    if (!selectedService) {
+      quantityError.classList.add("hidden");
+      calculateTotal();
+      validateForm();
+      return;
+    }
 
-            const tableHTML = `
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">ID</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Category</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Service</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Quantity</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Price</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        ${recentOrders.map(order => `
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-4 py-3 text-sm text-gray-900">${order.id}</td>
-                                <td class="px-4 py-3 text-sm text-gray-600">${order.category}</td>
-                                <td class="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">${order.serviceName}</td>
-                                <td class="px-4 py-3 text-sm text-gray-900">${order.quantity.toLocaleString('en-IN')}</td>
-                                <td class="px-4 py-3 text-sm text-gray-900">₹${order.price}</td>
-                                <td class="px-4 py-3 text-sm">
-                                    <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                        ${order.status}
-                                    </span>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-            recentOrdersContainer.innerHTML = tableHTML;
-        }
+    const quantity = parseInt(quantityInput.value, 10);
+    const isInvalid =
+      isNaN(quantity) ||
+      quantity < selectedService.minQuantity ||
+      quantity > selectedService.maxQuantity;
 
-        // Initialize
-        loadRecentOrders();
-    </script>
+    if (isInvalid) {
+      quantityError.classList.remove("hidden");
+    } else {
+      quantityError.classList.add("hidden");
+    }
+
+    calculateTotal();
+    validateForm();
+  });
+
+  // Link input
+  linkInput.addEventListener("input", validateForm);
+
+  // ------- FORM VALIDATION -------
+  function validateForm() {
+    const quantity = parseInt(quantityInput.value, 10);
+    const isQuantityValid =
+      selectedService &&
+      !isNaN(quantity) &&
+      quantity >= selectedService.minQuantity &&
+      quantity <= selectedService.maxQuantity;
+
+    const isLinkValid = linkInput.value.trim() !== "";
+    const isServiceValid = selectedService !== null;
+
+    if (isQuantityValid && isLinkValid && isServiceValid) {
+      placeOrderBtn.disabled = false;
+    } else {
+      placeOrderBtn.disabled = true;
+    }
+  }
+
+  // ------- FORM SUBMIT -------
+  orderForm.addEventListener("submit", e => {
+    e.preventDefault();
+    if (!selectedService) return;
+
+    const quantity = parseInt(quantityInput.value, 10);
+    const link = linkInput.value.trim();
+    const total = (selectedService.pricePer1000 / 1000) * quantity;
+
+    // Get existing orders from localStorage
+    let orders = [];
+    const existing = localStorage.getItem("getxh_orders");
+    if (existing) {
+      orders = JSON.parse(existing);
+    }
+
+    const newOrder = {
+      id: Date.now(),
+      category: selectedService.category,
+      serviceName: selectedService.serviceName,
+      link,
+      quantity,
+      price: total.toFixed(2),
+      createdAt: new Date().toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+      }),
+      status: "Processing"
+    };
+
+    orders.push(newOrder);
+    localStorage.setItem("getxh_orders", JSON.stringify(orders));
+
+    // Show success modal
+    successModal.classList.remove("hidden");
+
+    // Reset form
+    orderForm.reset();
+    serviceDetails.classList.add("hidden");
+    selectedService = null;
+    totalPrice.textContent = "₹0.00";
+    if (minMaxText) minMaxText.textContent = "Min: 0 – Max: 0";
+
+    loadRecentOrders();
+    validateForm();
+  });
+
+  // Modal buttons
+  viewOrdersBtn.addEventListener("click", () => {
+    window.location.href = "Totalorder.html";
+  });
+
+  closeModalBtn.addEventListener("click", () => {
+    successModal.classList.add("hidden");
+  });
+
+  // ------- RECENT ORDERS TABLE -------
+  function loadRecentOrders() {
+    const existing = localStorage.getItem("getxh_orders");
+    if (!existing || JSON.parse(existing).length === 0) {
+      recentOrdersContainer.innerHTML = `
+        <div class="text-center py-8 text-gray-500">
+          <p class="text-lg">No orders yet</p>
+          <p class="text-sm">Your recent orders will appear here</p>
+        </div>
+      `;
+      return;
+    }
+
+    const orders = JSON.parse(existing);
+    const recent = orders.slice(-5).reverse(); // last 5
+
+    let tableHTML = `
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-2 text-left font-semibold text-gray-700">ID</th>
+            <th class="px-4 py-2 text-left font-semibold text-gray-700">Category</th>
+            <th class="px-4 py-2 text-left font-semibold text-gray-700">Service</th>
+            <th class="px-4 py-2 text-left font-semibold text-gray-700">Quantity</th>
+            <th class="px-4 py-2 text-left font-semibold text-gray-700">Price</th>
+            <th class="px-4 py-2 text-left font-semibold text-gray-700">Status</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          ${recent
+            .map(
+              order => `
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-2">${order.id}</td>
+                  <td class="px-4 py-2">${order.category}</td>
+                  <td class="px-4 py-2 truncate max-w-xs">${order.serviceName}</td>
+                  <td class="px-4 py-2">${order.quantity.toLocaleString("en-IN")}</td>
+                  <td class="px-4 py-2">₹${order.price}</td>
+                  <td class="px-4 py-2">
+                    <span class="inline-flex px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                      ${order.status}
+                    </span>
+                  </td>
+                </tr>
+              `
+            )
+            .join("")}
+        </tbody>
+      </table>
+    `;
+
+    recentOrdersContainer.innerHTML = tableHTML;
+  }
+
+  // Init
+  loadRecentOrders();
+  validateForm();
+        </script                              
 </body>
 </html>
