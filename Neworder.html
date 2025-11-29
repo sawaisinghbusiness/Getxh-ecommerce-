@@ -405,32 +405,25 @@
     serviceSelect.innerHTML = '<option value="">Select a service</option>';
 
     if (!selectedCategory) {
-      serviceDetails.classList.add("hidden");
-      selectedService = null;
-      validateForm();
-      return;
+        selectedService = null;
+        serviceDetails.classList.add('hidden');
+        return;
     }
 
-    const filtered = servicesData.filter(service => {
-      const matchesCategory = service.category === selectedCategory;
-      const matchesSearch =
-        currentSearchTerm === "" ||
-        service.serviceName.toLowerCase().includes(currentSearchTerm.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
+    const filtered = servicesData.filter(service => 
+        service.category === selectedCategory &&
+        service.serviceName.toLowerCase().includes(searchService.value.toLowerCase())
+    );
 
     filtered.forEach(service => {
-      const option = document.createElement("option");
-      option.value = service.serviceId;
-      option.textContent = `${service.serviceName} – ₹${service.pricePer1000.toFixed(2)} per 1000`;
-      serviceSelect.appendChild(option);
+        const option = document.createElement("option");
+        option.value = service.serviceId;
+        option.textContent = `${service.serviceName} – ₹${service.pricePer1000.toFixed(2)} per 1000`;
+        serviceSelect.appendChild(option);
     });
 
-    serviceDetails.classList.add("hidden");
-    selectedService = null;
-    validateForm();
+    serviceSelect.disabled = filtered.length === 0;
   }
-
   // Search bar
   searchService.addEventListener("input", e => {
     currentSearchTerm = e.target.value;
