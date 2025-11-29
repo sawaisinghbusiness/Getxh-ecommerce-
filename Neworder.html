@@ -417,3 +417,110 @@
                 
                 // Update quantity range
                 quantityRange.textContent = `Min: ${selectedServic
+<script>
+    // Mobile menu
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    let selectedService = null;
+
+    function populateServices(category, search = '') {
+        serviceSelect.innerHTML = '<option value="">Select a service</option>';
+
+        const services = servicesData.filter(s =>
+            s.category === category &&
+            s.serviceName.toLowerCase().includes(search.toLowerCase())
+        );
+
+        services.forEach(s => {
+            const opt = document.createElement("option");
+            opt.value = s.serviceId;
+            opt.textContent = `${s.serviceName} – ₹${s.pricePer1000} / 1000`;
+            serviceSelect.appendChild(opt);
+        });
+
+        serviceSelect.disabled = services.length === 0;
+    }
+
+    categorySelect.addEventListener("change", () => {
+        const category = categorySelect.value;
+        populateServices(category);
+        resetSelection();
+    });
+
+    searchInput.addEventListener("input", () => {
+        const category = categorySelect.value;
+        if (category) populateServices(category, searchInput.value);
+    });
+
+    function resetSelection() {
+        selectedService = null;
+        serviceDetails.classList.add("hidden");
+        quantityRange.textContent = "Min: 0 – Max: 0";
+        totalPrice.textContent = "₹0.00";
+        placeOrderBtn.disabled = true;
+    }
+
+    // When service is selected
+    serviceSelect.addEventListener("change", () => {
+        const id = parseInt(serviceSelect.value);
+        selectedService = servicesData.find(s => s.serviceId === id);
+
+        if (!selectedService) return;
+
+        // Show details
+        serviceDetails.classList.remove("hidden");
+        serviceDescription.textContent = selectedService.description;
+        serviceCancel.textContent = selectedService.cancel;
+        serviceDrop.textContent = selectedService.drop;
+        serviceQuality.textContent = selectedService.quality;
+
+        // Min Max update
+        quantityRange.textContent = `Min: ${selectedService.minQuantity} – Max: ${selectedService.maxQuantity}`;
+
+        calculateTotal();
+    });
+
+    // Price Calculation
+    quantityInput.addEventListener("input", calculateTotal);
+
+    function calculateTotal() {
+        if (!selectedService) return;
+
+        const qty = parseInt(quantityInput.value);
+
+        if (isNaN(qty)) {
+            totalPrice.textContent = "₹0.00";
+            return;
+        }
+
+        if (qty < selectedService.minQuantity || qty > selectedService.maxQuantity) {
+            quantityError.classList.remove("hidden");
+            placeOrderBtn.disabled = true;
+            return;
+        }
+
+        quantityError.classList.add("hidden");
+
+        const price = (qty / 1000) * selectedService.pricePer1000;
+        totalPrice.textContent = `₹${price.toFixed(2)}`;
+
+        placeOrderBtn.disabled = false;
+    }
+
+    // Place Order
+    placeOrderBtn.addEventListener("click", () => {
+        if (!selectedService) return;
+
+        successModal.classList.remove("hidden");
+    });
+
+    closeModalBtn.addEventListener("click", () => {
+        successModal.classList.add("hidden");
+    });
+
+    viewOrdersBtn.addEventListener("click", () => {
+        window.location.href = "Totalorder.html";
+    });
+</script>
