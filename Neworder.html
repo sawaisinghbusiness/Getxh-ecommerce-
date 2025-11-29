@@ -1,265 +1,144 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>New Order - GETXH</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-        }
-    </style>
-</head>
+<script>
+    // Services Data
+    const servicesData = [
+        { serviceId: 1, serviceName: "Instagram Followers – Used by Influencers – Same Day Delivery", category: "Instagram Followers", pricePer1000: 169.43, minQuantity: 100, maxQuantity: 1000000, description: "High quality followers with same day delivery", cancel: "No", drop: "Low", quality: "High" },
+        { serviceId: 2, serviceName: "Instagram Followers – Used by Influencers – Same Day Delivery 2", category: "Instagram Followers", pricePer1000: 172.47, minQuantity: 100, maxQuantity: 1000000, description: "Premium followers with guaranteed delivery", cancel: "No", drop: "Low", quality: "High" },
+        { serviceId: 3, serviceName: "Instagram Followers – Used by Celebrities – Same Day Delivery", category: "Instagram Followers", pricePer1000: 159.44, minQuantity: 100, maxQuantity: 1000000, description: "Celebrity grade followers", cancel: "No", drop: "Very Low", quality: "Premium" },
 
-<body class="bg-[#f5f6fa]">
+        { serviceId: 4, serviceName: "Instagram Reel Views – Real Views", category: "Instagram Reel Views", pricePer1000: 0.36, minQuantity: 100, maxQuantity: 2147483647, description: "100% real views", cancel: "Yes", drop: "No", quality: "Real" },
+        { serviceId: 5, serviceName: "Instagram Reel Views – Real Views 2", category: "Instagram Reel Views", pricePer1000: 0.54, minQuantity: 100, maxQuantity: 2147483647, description: "Organic reel views", cancel: "Yes", drop: "No", quality: "Real" },
+        { serviceId: 6, serviceName: "Instagram Reel Views – Explore Page Views", category: "Instagram Reel Views", pricePer1000: 0.72, minQuantity: 100, maxQuantity: 2147483647, description: "Explore page views", cancel: "Yes", drop: "No", quality: "Real" },
+        { serviceId: 7, serviceName: "Instagram Reel Views – Indian Views", category: "Instagram Reel Views", pricePer1000: 1.08, minQuantity: 100, maxQuantity: 2147483647, description: "Indian audience views", cancel: "Yes", drop: "No", quality: "Indian" },
 
-    <!-- NAVBAR -->
-    <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
+        { serviceId: 8, serviceName: "Instagram Likes – Influencers", category: "Instagram Likes", pricePer1000: 27.68, minQuantity: 10, maxQuantity: 1000000, description: "High quality likes", cancel: "No", drop: "Low", quality: "High" },
+        { serviceId: 9, serviceName: "Instagram Likes – Celebrities", category: "Instagram Likes", pricePer1000: 37.38, minQuantity: 10, maxQuantity: 1000000, description: "Premium likes", cancel: "No", drop: "Very Low", quality: "Premium" },
 
-                <h1 class="text-2xl font-bold text-blue-600">GETXH</h1>
+        { serviceId: 10, serviceName: "Instagram Indian Likes – Influencers", category: "Instagram Indian Likes", pricePer1000: 44.27, minQuantity: 10, maxQuantity: 1000000, description: "Indian likes", cancel: "No", drop: "Low", quality: "Indian" },
+        { serviceId: 11, serviceName: "Instagram Indian Likes – Celebrities", category: "Instagram Indian Likes", pricePer1000: 53.01, minQuantity: 10, maxQuantity: 1000000, description: "Premium Indian likes", cancel: "No", drop: "Very Low", quality: "Indian" }
+    ];
 
-                <div class="hidden md:flex space-x-8">
-                    <a href="Dashboard.html" class="text-gray-700 hover:text-blue-600 transition">Dashboard</a>
-                    <a href="Neworder.html" class="text-blue-600 font-semibold hover:text-blue-700 transition">New Order</a>
-                    <a href="Servicepage.html" class="text-gray-700 hover:text-blue-600 transition">Services</a>
-                    <a href="Totalorder.html" class="text-gray-700 hover:text-blue-600 transition">Orders</a>
-                    <a href="Support.html" class="text-gray-700 hover:text-blue-600 transition">Support</a>
-                </div>
+    // Elements
+    const categorySelect = document.getElementById("category-select");
+    const serviceSelect = document.getElementById("service-select");
+    const searchInput = document.getElementById("search-input");
+    const serviceDetails = document.getElementById("service-details");
+    const serviceDescription = document.getElementById("service-description");
+    const serviceCancel = document.getElementById("service-cancel");
+    const serviceDrop = document.getElementById("service-drop");
+    const serviceQuality = document.getElementById("service-quality");
 
-                <div class="hidden md:flex items-center space-x-4">
-                    <div class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
-                        <span class="material-symbols-outlined text-blue-600">person</span>
-                    </div>
-                    <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">Logout</button>
-                </div>
+    const quantityRange = document.getElementById("quantity-range");
+    const quantityInput = document.getElementById("quantity-input");
+    const quantityError = document.getElementById("quantity-error");
 
-                <button id="mobile-menu-btn" class="md:hidden text-gray-700">
-                    <span class="material-symbols-outlined text-3xl">menu</span>
-                </button>
-            </div>
-        </div>
+    const totalPrice = document.getElementById("total-price");
+    const placeOrderBtn = document.getElementById("place-order-btn");
 
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
-            <div class="px-4 pt-2 pb-4 space-y-2">
-                <a href="Dashboard.html" class="block px-3 py-2">Dashboard</a>
-                <a href="Neworder.html" class="block px-3 py-2 bg-blue-50 text-blue-700 font-semibold rounded-lg">New Order</a>
-                <a href="Servicepage.html" class="block px-3 py-2">Services</a>
-                <a href="Totalorder.html" class="block px-3 py-2">Orders</a>
-                <a href="Support.html" class="block px-3 py-2">Support</a>
-            </div>
-        </div>
-    </nav>
+    const successModal = document.getElementById("success-modal");
+    const viewOrdersBtn = document.getElementById("view-orders-btn");
+    const closeModalBtn = document.getElementById("close-modal-btn");
 
-    <!-- MAIN CONTENT -->
-    <main class="max-w-7xl mx-auto px-4 py-8">
+    const recentOrdersContainer = document.getElementById("recent-orders-container");
 
-        <h2 class="text-3xl font-bold text-gray-800 mb-2">Place New Order</h2>
-        <p class="text-gray-600 mb-8">Select a category and service to continue.</p>
+    let selectedService = null;
 
-        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm p-6 mb-8">
+    // SEARCH + CATEGORY FILTER
+    function populateServices() {
+        const category = categorySelect.value;
+        const searchTerm = searchInput.value.toLowerCase();
 
-            <!-- SEARCH -->
-            <input id="search-input"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg mb-6"
-                placeholder="Search for a service..." />
+        serviceSelect.innerHTML = '<option value="">Select a service</option>';
 
-            <!-- CATEGORY -->
-            <label class="block text-sm font-semibold mb-2">Category</label>
-            <select id="category-select"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg mb-6">
-                <option value="">Select a category</option>
-                <option value="Instagram Followers">Instagram Followers</option>
-                <option value="Instagram Reel Views">Instagram Reel Views</option>
-                <option value="Instagram Likes">Instagram Likes</option>
-                <option value="Instagram Indian Likes">Instagram Indian Likes</option>
-            </select>
+        const filtered = servicesData.filter(s =>
+            s.category === category &&
+            s.serviceName.toLowerCase().includes(searchTerm)
+        );
 
-            <!-- SERVICE -->
-            <label class="block text-sm font-semibold mb-2">Service</label>
-            <select id="service-select"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg mb-6" disabled>
-                <option value="">Select a service</option>
-            </select>
-
-            <!-- DETAILS -->
-            <div id="service-details" class="hidden p-4 bg-gray-50 border rounded-lg mb-6">
-                <p id="service-description" class="text-gray-700 mb-3"></p>
-                <div class="text-sm flex gap-4">
-                    <div><b>Cancel:</b> <span id="service-cancel"></span></div>
-                    <div><b>Drop:</b> <span id="service-drop"></span></div>
-                    <div><b>Quality:</b> <span id="service-quality"></span></div>
-                </div>
-            </div>
-
-            <!-- LINK -->
-            <label class="block text-sm font-semibold mb-2">Link</label>
-            <input id="link-input"
-                placeholder="Paste your link here"
-                class="w-full px-4 py-3 border rounded-lg mb-6" />
-
-            <!-- QUANTITY -->
-            <label class="block text-sm font-semibold mb-2">Quantity</label>
-            <p id="quantity-range" class="text-sm text-gray-500 mb-1">Min: 0 – Max: 0</p>
-            <input id="quantity-input"
-                type="number"
-                placeholder="Enter quantity"
-                class="w-full px-4 py-3 border rounded-lg" />
-            <p id="quantity-error" class="hidden text-sm text-red-600 mt-2">Invalid quantity</p>
-
-            <!-- TOTAL PRICE -->
-            <div class="mt-6 p-4 bg-gray-50 rounded-lg flex justify-between items-center">
-                <span class="font-semibold text-gray-800">Total Price</span>
-                <span id="total-price" class="text-2xl font-bold text-blue-600">₹0.00</span>
-            </div>
-
-            <button id="place-order-btn" disabled
-                class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-lg disabled:bg-gray-300">
-                Place Order
-            </button>
-        </div>
-
-    </main>
-
-    <!-- MODAL -->
-    <div id="success-modal"
-        class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl max-w-md w-full p-6 text-center">
-            <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                <span class="material-symbols-outlined text-green-600 text-4xl">check_circle</span>
-            </div>
-            <h3 class="text-2xl font-bold mt-4">Order placed successfully</h3>
-            <p class="text-gray-600 mt-1">Your order has been processed.</p>
-
-            <button id="close-modal-btn"
-                class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg">
-                Close
-            </button>
-        </div>
-    </div>
-
-    <script>
-        const servicesData = [
-            { serviceId: 1, serviceName: "Instagram Followers – Used by Influencers", category: "Instagram Followers", pricePer1000: 169.43, minQuantity: 100, maxQuantity: 1000000, description: "High quality followers with same day delivery", cancel: "No", drop: "Low", quality: "High" },
-            { serviceId: 2, serviceName: "Instagram Followers – Celebrities", category: "Instagram Followers", pricePer1000: 159.44, minQuantity: 100, maxQuantity: 1000000, description: "Celebrity grade followers for instant growth", cancel: "No", drop: "Low", quality: "Premium" },
-            { serviceId: 4, serviceName: "Reel Views – Real Views", category: "Instagram Reel Views", pricePer1000: 0.72, minQuantity: 100, maxQuantity: 2147483647, description: "Real reel views", cancel: "Yes", drop: "No", quality: "Real" },
-            { serviceId: 8, serviceName: "Instagram Likes – High Quality", category: "Instagram Likes", pricePer1000: 27.68, minQuantity: 10, maxQuantity: 1000000, description: "High quality likes", cancel: "No", drop: "Low", quality: "High" },
-            { serviceId: 10, serviceName: "Indian Likes – Influencers", category: "Instagram Indian Likes", pricePer1000: 44.27, minQuantity: 10, maxQuantity: 1000000, description: "100% Indian likes", cancel: "No", drop: "Low", quality: "Indian" }
-        ];
-
-        const mobileMenuBtn = document.getElementById("mobile-menu-btn");
-        const mobileMenu = document.getElementById("mobile-menu");
-
-        const categorySelect = document.getElementById("category-select");
-        const serviceSelect = document.getElementById("service-select");
-
-        const serviceDetails = document.getElementById("service-details");
-        const serviceDescription = document.getElementById("service-description");
-        const serviceCancel = document.getElementById("service-cancel");
-        const serviceDrop = document.getElementById("service-drop");
-        const serviceQuality = document.getElementById("service-quality");
-
-        const searchInput = document.getElementById("search-input");
-        const quantityInput = document.getElementById("quantity-input");
-        const quantityRange = document.getElementById("quantity-range");
-        const quantityError = document.getElementById("quantity-error");
-        const totalPrice = document.getElementById("total-price");
-        const placeOrderBtn = document.getElementById("place-order-btn");
-
-        const modal = document.getElementById("success-modal");
-        const closeModalBtn = document.getElementById("close-modal-btn");
-
-        let selectedService = null;
-
-        mobileMenuBtn.addEventListener("click", () => {
-            mobileMenu.classList.toggle("hidden");
+        filtered.forEach(s => {
+            const opt = document.createElement("option");
+            opt.value = s.serviceId;
+            opt.textContent = `${s.serviceName} – ₹${s.pricePer1000}/1000`;
+            serviceSelect.appendChild(opt);
         });
 
-        function populateServices(category, search = "") {
-            serviceSelect.innerHTML = `<option value="">Select a service</option>`;
+        serviceSelect.disabled = filtered.length === 0;
+    }
 
-            const services = servicesData.filter(
-                (s) =>
-                    s.category === category &&
-                    s.serviceName.toLowerCase().includes(search.toLowerCase())
-            );
+    categorySelect.addEventListener("change", () => {
+        populateServices();
+        resetServiceUI();
+    });
 
-            services.forEach((s) => {
-                const opt = document.createElement("option");
-                opt.value = s.serviceId;
-                opt.textContent = `${s.serviceName} – ₹${s.pricePer1000}/1000`;
-                serviceSelect.appendChild(opt);
-            });
+    searchInput.addEventListener("input", populateServices);
 
-            serviceSelect.disabled = services.length === 0;
-        }
+    // SERVICE SELECT
+    serviceSelect.addEventListener("change", () => {
+        const id = parseInt(serviceSelect.value);
+        selectedService = servicesData.find(s => s.serviceId === id);
 
-        categorySelect.addEventListener("change", () => {
-            populateServices(categorySelect.value, searchInput.value);
-            resetFields();
-        });
+        if (!selectedService) return;
 
-        searchInput.addEventListener("input", () => {
-            populateServices(categorySelect.value, searchInput.value);
-        });
+        serviceDetails.classList.remove("hidden");
+        serviceDescription.textContent = selectedService.description;
+        serviceCancel.textContent = selectedService.cancel;
+        serviceDrop.textContent = selectedService.drop;
+        serviceQuality.textContent = selectedService.quality;
 
-        serviceSelect.addEventListener("change", () => {
-            selectedService = servicesData.find(
-                (s) => s.serviceId == serviceSelect.value
-            );
+        quantityRange.textContent =
+            `Min: ${selectedService.minQuantity} – Max: ${selectedService.maxQuantity}`;
+    });
 
-            if (!selectedService) return;
+    // QUANTITY CHANGE → TOTAL PRICE
+    quantityInput.addEventListener("input", () => {
+        if (!selectedService) return;
 
-            serviceDetails.classList.remove("hidden");
-            serviceDescription.textContent = selectedService.description;
-            serviceCancel.textContent = selectedService.cancel;
-            serviceDrop.textContent = selectedService.drop;
-            serviceQuality.textContent = selectedService.quality;
+        const qty = parseInt(quantityInput.value) || 0;
 
-            quantityRange.textContent = `Min: ${selectedService.minQuantity} – Max: ${selectedService.maxQuantity}`;
-            updatePrice();
-        });
-
-        quantityInput.addEventListener("input", updatePrice);
-
-        function updatePrice() {
-            if (!selectedService) return;
-
-            const qty = Number(quantityInput.value);
-
-            if (qty < selectedService.minQuantity || qty > selectedService.maxQuantity) {
-                quantityError.classList.remove("hidden");
-                totalPrice.textContent = "₹0.00";
-                placeOrderBtn.disabled = true;
-                return;
-            }
-
-            quantityError.classList.add("hidden");
-            const total = (selectedService.pricePer1000 / 1000) * qty;
-            totalPrice.textContent = `₹${total.toFixed(2)}`;
-            placeOrderBtn.disabled = false;
-        }
-
-        placeOrderBtn.addEventListener("click", () => {
-            modal.classList.remove("hidden");
-        });
-
-        closeModalBtn.addEventListener("click", () => {
-            modal.classList.add("hidden");
-        });
-
-        function resetFields() {
-            serviceSelect.value = "";
-            selectedService = null;
-            serviceDetails.classList.add("hidden");
-            quantityInput.value = "";
-            totalPrice.textContent = "₹0.00";
+        if (qty < selectedService.minQuantity || qty > selectedService.maxQuantity) {
+            quantityError.classList.remove("hidden");
             placeOrderBtn.disabled = true;
+            totalPrice.textContent = "₹0.00";
+            return;
         }
-    </script>
-</body>
-</html>
+
+        quantityError.classList.add("hidden");
+
+        const price = (qty / 1000) * selectedService.pricePer1000;
+        totalPrice.textContent = `₹${price.toFixed(2)}`;
+
+        placeOrderBtn.disabled = false;
+    });
+
+    // RESET UI
+    function resetServiceUI() {
+        serviceSelect.value = "";
+        serviceDetails.classList.add("hidden");
+        quantityError.classList.add("hidden");
+        quantityInput.value = "";
+        totalPrice.textContent = "₹0.00";
+        placeOrderBtn.disabled = true;
+    }
+
+    // PLACE ORDER
+    placeOrderBtn.addEventListener("click", () => {
+        successModal.classList.remove("hidden");
+
+        const orderHtml = `
+            <div class="border rounded-lg p-3 mb-2">
+                <p><strong>Service:</strong> ${selectedService.serviceName}</p>
+                <p><strong>Quantity:</strong> ${quantityInput.value}</p>
+                <p><strong>Total:</strong> ${totalPrice.textContent}</p>
+            </div>
+        `;
+        recentOrdersContainer.innerHTML = orderHtml + recentOrdersContainer.innerHTML;
+    });
+
+    // MODAL BUTTONS
+    closeModalBtn.addEventListener("click", () => {
+        successModal.classList.add("hidden");
+    });
+
+    viewOrdersBtn.addEventListener("click", () => {
+        window.location.href = "Totalorder.html";
+    });
+</script>
