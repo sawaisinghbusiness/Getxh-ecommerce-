@@ -194,10 +194,15 @@
     </div>
 </div>
 
-<!-- FIREBASE ADDED HERE (ONLY CHANGE) -->
+<!-- ⭐ FULL LOGIC + FIREBASE (MODULE SCRIPT) -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { 
+    getFirestore, collection, addDoc, getDocs, query, orderBy, limit 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
   authDomain: "getxh-42588.firebaseapp.com",
@@ -208,11 +213,28 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-</script>
+const auth = getAuth(app);
+const db   = getFirestore(app);
 
-<!-- ORIGINAL JS START (UNCHANGED) -->
-<script>
-// ------- SERVICES DATA -------
+// ---------- LOGIN GUARD (via Firebase) ----------
+let currentUid = null;
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        // fallback: localStorage check same jaisa Dashboard me hai
+        if (localStorage.getItem("getxh_user_logged_in") !== "yes") {
+            window.location.href = "index.html";
+            return;
+        }
+    } else {
+        currentUid = user.uid;
+    }
+
+    // UID set ho chuka hoga, ab recent orders load karo
+    loadRecentOrders();
+});
+
+// ---------- SERVICES DATA ----------
 const servicesData = [
     {
         serviceId: "IF001",
@@ -351,7 +373,6 @@ const servicesData = [
     }
 ];
 
-
 // DOM selection ----------
 const mobileMenuBtn      = document.getElementById("mobile-menu-btn");
 const mobileMenu         = document.getElementById("mobile-menu");
@@ -380,13 +401,10 @@ const viewOrdersBtn      = document.getElementById("viewOrdersBtn");
 
 let selectedService = null;
 
-
-
 // ---------- Mobile Menu Toggle ----------
 mobileMenuBtn.addEventListener("click", () => {
     mobileMenu.classList.toggle("hidden");
 });
-
 
 // ---------- Update Service Dropdown ----------
 function updateServiceSelect() {
@@ -415,17 +433,14 @@ function updateServiceSelect() {
     serviceSelect.disabled = filtered.length === 0;
 }
 
-
 // Search listener
 searchService.addEventListener("input", updateServiceSelect);
-
 
 // Category change listener
 categorySelect.addEventListener("change", () => {
     updateServiceSelect();
     resetServiceSelection();
 });
-
 
 // ---------- When a service is selected ----------
 serviceSelect.addEventListener("change", () => {
@@ -445,7 +460,6 @@ serviceSelect.addEventListener("change", () => {
     quantityInput.value = "";
     totalPrice.textContent = "₹0.00";
 });
-
 
 // ---------- Quantity Calculation ----------
 quantityInput.addEventListener("input", () => {
@@ -468,7 +482,6 @@ quantityInput.addEventListener("input", () => {
     placeOrderBtn.disabled = false;
 });
 
-
 // ---------- Reset service details ----------
 function resetServiceSelection() {
     selectedService = null;
@@ -479,28 +492,34 @@ function resetServiceSelection() {
     placeOrderBtn.disabled = true;
 }
 
+// ---------- Save Order to FIRESTORE ----------
+async function saveOrderToFirestore(service, qty, link, price) {
+    if (!currentUid) {
+        alert("User not logged in. Please login again.");
+        return;
+    }
 
-// ---------- Save Order to Localstorage ----------
-function saveOrder(service, qty, link, price) {
-    const allOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+    const ordersCol = collection(db, "orders", currentUid, "user_orders");
 
-    const newOrder = {
-        id: Date.now(),
+    const now = new Date();
+
+    const data = {
+        serviceId: service.serviceId,
         serviceName: service.serviceName,
         category: service.category,
         quantity: qty,
         link: link,
-        price: price,
-        date: new Date().toLocaleString()
+        price: parseFloat(price),
+        status: "Processing",
+        createdAt: now.toISOString(),
+        createdAtReadable: now.toLocaleString()
     };
 
-    allOrders.unshift(newOrder);
-    localStorage.setItem("orders", JSON.stringify(allOrders));
+    await addDoc(ordersCol, data);
 }
 
-
 // ---------- Place Order ----------
-placeOrderBtn.addEventListener("click", (e) => {
+placeOrderBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     if (!selectedService) return;
 
@@ -510,51 +529,74 @@ placeOrderBtn.addEventListener("click", (e) => {
 
     if (!qty || !link) return;
 
-    saveOrder(selectedService, qty, link, price);
+    await saveOrderToFirestore(selectedService, qty, link, price);
 
+    // Form clear
+    linkInput.value = "";
+    quantityInput.value = "";
+    resetServiceSelection();
+    totalPrice.textContent = "₹0.00";
+
+    // Modal show
     successModal.classList.remove("hidden");
-});
 
+    // Recent orders reload
+    loadRecentOrders();
+});
 
 // Close modal
 closeModalBtn.addEventListener("click", () => {
     successModal.classList.add("hidden");
 });
 
-
 // View Orders
 viewOrdersBtn.addEventListener("click", () => {
     window.location.href = "Totalorder.html";
 });
 
-// Load Recent Orders
-function loadRecentOrders() {
-    const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+// ---------- Load Recent Orders from Firestore ----------
+async function loadRecentOrders() {
+    if (!currentUid) {
+        // auth state not yet ready
+        recentOrdersContainer.innerHTML =
+            `<p class="text-gray-500 text-sm">Loading orders...</p>`;
+        return;
+    }
 
-    recentOrdersContainer.innerHTML = "";
+    const ordersCol = collection(db, "orders", currentUid, "user_orders");
 
-    if (orders.length === 0) {
+    const q = query(
+        ordersCol,
+        orderBy("createdAt", "desc"),
+        limit(3)
+    );
+
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
         recentOrdersContainer.innerHTML =
             `<p class="text-gray-500 text-sm">No recent orders found.</p>`;
         return;
     }
 
-    orders.slice(0, 3).forEach(order => {
+    recentOrdersContainer.innerHTML = "";
+
+    snap.forEach((doc) => {
+        const order = doc.data();
+
         const box = document.createElement("div");
         box.className = "p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3";
 
         box.innerHTML = `
-            <div class="font-semibold text-gray-800 text-sm">${order.serviceName}</div>
-            <div class="text-xs text-gray-600">Qty: ${order.quantity}</div>
-            <div class="text-xs text-gray-600">₹${order.price}</div>
-            <div class="text-xs text-gray-500">${order.date}</div>
+            <div class="font-semibold text-gray-800 text-sm">${order.serviceName || "-"}</div>
+            <div class="text-xs text-gray-600">Qty: ${order.quantity || 0}</div>
+            <div class="text-xs text-gray-600">₹${(order.price || 0).toFixed ? order.price.toFixed(2) : order.price}</div>
+            <div class="text-xs text-gray-500">${order.createdAtReadable || ""}</div>
         `;
 
         recentOrdersContainer.appendChild(box);
     });
 }
-
-loadRecentOrders();
 </script>
 
 </body>
