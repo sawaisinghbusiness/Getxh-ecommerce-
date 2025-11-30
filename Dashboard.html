@@ -17,14 +17,14 @@
 
 <body class="bg-[#f5f6fa]">
 
+<!-- PAGE PROTECTION -->
 <script>
-// PROTECT PAGE
 if (localStorage.getItem("getxh_user_logged_in") !== "yes") {
     window.location.href = "index.html";
 }
 </script>
 
-<!-- Navbar -->
+<!-- NAVBAR -->
 <nav class="bg-white shadow-md sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
@@ -44,21 +44,22 @@ if (localStorage.getItem("getxh_user_logged_in") !== "yes") {
                     <span class="material-symbols-outlined text-blue-600">person</span>
                 </div>
 
-                <a href="#" id="logoutBtn"
-                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">Logout</a>
+                <a id="logoutBtn"
+                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition cursor-pointer">
+                    Logout
+                </a>
             </div>
 
-            <!-- Mobile Menu Btn -->
+            <!-- Mobile menu button -->
             <div class="md:hidden">
                 <button id="mobile-menu-btn">
                     <span class="material-symbols-outlined text-3xl">menu</span>
                 </button>
             </div>
-
         </div>
     </div>
 
-    <!-- Mobile Menu -->
+    <!-- Mobile dropdown -->
     <div id="mobile-menu" class="hidden bg-white border-t">
         <div class="px-4 py-3 space-y-2">
             <a href="Dashboard.html" class="block px-3 py-2 text-blue-600 bg-blue-50 rounded-lg">Dashboard</a>
@@ -73,17 +74,58 @@ if (localStorage.getItem("getxh_user_logged_in") !== "yes") {
                     </div>
                     <span>User</span>
                 </div>
-                <a href="#" id="logoutBtnMobile"
-                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-lg text-sm">Logout</a>
+                <a id="logoutBtnMobile"
+                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-lg text-sm cursor-pointer">
+                    Logout
+                </a>
             </div>
         </div>
     </div>
 </nav>
 
+
+<!-- MAIN CONTENT -->
 <main class="max-w-7xl mx-auto px-4 py-8">
-    <h2 class="text-3xl font-bold">Welcome back!</h2>
+
+    <h2 class="text-3xl font-bold mb-6">Welcome back!</h2>
+
+    <!-- STATS BOXES -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+
+        <div class="bg-white shadow-sm rounded-xl p-6 text-center">
+            <p class="text-gray-500">Total Orders</p>
+            <p id="totalOrders" class="text-3xl font-bold text-blue-600">0</p>
+        </div>
+
+        <div class="bg-white shadow-sm rounded-xl p-6 text-center">
+            <p class="text-gray-500">Completed</p>
+            <p id="completedOrders" class="text-3xl font-bold text-green-600">0</p>
+        </div>
+
+        <div class="bg-white shadow-sm rounded-xl p-6 text-center">
+            <p class="text-gray-500">Processing</p>
+            <p id="processingOrders" class="text-3xl font-bold text-yellow-600">0</p>
+        </div>
+
+        <div class="bg-white shadow-sm rounded-xl p-6 text-center">
+            <p class="text-gray-500">Canceled</p>
+            <p id="canceledOrders" class="text-3xl font-bold text-red-600">0</p>
+        </div>
+    </div>
+
+    <!-- RECENT ORDERS -->
+    <div class="bg-white shadow-sm rounded-xl p-6">
+        <h3 class="text-xl font-semibold mb-4">Recent Orders</h3>
+
+        <div id="recentOrdersBox" class="text-gray-500 text-center py-6">
+            No recent orders found.
+        </div>
+    </div>
+
 </main>
 
+
+<!-- SCRIPTS -->
 <script>
 const mobileMenuBtn = document.getElementById("mobile-menu-btn");
 const mobileMenu = document.getElementById("mobile-menu");
@@ -92,7 +134,7 @@ mobileMenuBtn.onclick = () => {
     mobileMenu.classList.toggle("hidden");
 };
 
-// LOGOUT BOTH BUTTONS
+// LOGOUT HANDLER
 function logoutNow() {
     localStorage.removeItem("getxh_user_logged_in");
     window.location.href = "index.html";
@@ -100,8 +142,51 @@ function logoutNow() {
 
 document.getElementById("logoutBtn").onclick = logoutNow;
 document.getElementById("logoutBtnMobile").onclick = logoutNow;
+
+
+// LOAD ORDERS DATA
+let orders = [];
+
+try {
+    const v1 = JSON.parse(localStorage.getItem("getxh_orders") || "[]");
+    const v2 = JSON.parse(localStorage.getItem("orders") || "[]");
+    orders = [...v1, ...v2];
+} catch { orders = []; }
+
+
+// UPDATE STATS
+document.getElementById("totalOrders").textContent = orders.length;
+document.getElementById("completedOrders").textContent =
+    orders.filter(o => o.status === "Completed").length;
+
+document.getElementById("processingOrders").textContent =
+    orders.filter(o => o.status === "Processing" || !o.status).length;
+
+document.getElementById("canceledOrders").textContent =
+    orders.filter(o => o.status === "Canceled").length;
+
+
+// RECENT ORDERS BOX
+const recentBox = document.getElementById("recentOrdersBox");
+
+if (orders.length === 0) {
+    recentBox.innerHTML = "No recent orders found.";
+} else {
+    let html = "";
+    let recent = [...orders].slice(-5).reverse();
+
+    recent.forEach(o => {
+        html += `
+        <div class="border-b py-3 flex justify-between">
+            <span>#${o.id}</span>
+            <span class="text-gray-600">${o.serviceName || "-"}</span>
+            <span class="text-blue-600">${o.status || "Processing"}</span>
+        </div>`;
+    });
+
+    recentBox.innerHTML = html;
+}
 </script>
 
 </body>
-
 </html>
