@@ -98,6 +98,22 @@ Already have an account? <span class="text-[#0052FF] font-semibold">Login</span>
 </div>
 </div>
 
+<!-- ⭐ Firebase SDK + Config -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app = initializeApp(firebaseConfig);
+</script>
+
 <script>
 // Show / Hide Password
 function togglePass(id, el){
@@ -114,7 +130,6 @@ document.getElementById("registerBtn").onclick = function () {
     let cpass = document.getElementById("confirmPassword").value.trim();
     let errorBox = document.getElementById("errorBox");
 
-    // Validation
     if(name === ""){
         showError("Name cannot be empty"); return;
     }
@@ -131,22 +146,18 @@ document.getElementById("registerBtn").onclick = function () {
         showError("Passwords do not match"); return;
     }
 
-    // Fetch existing users
     let users = JSON.parse(localStorage.getItem("getxh_users") || "[]");
 
-    // Duplicate email check
     let exists = users.some(u => u.email === email);
     if(exists){
         showError("This email is already registered");
         return;
     }
 
-    // Save new user
     users.push({ name:name, email:email, password:pass });
 
     localStorage.setItem("getxh_users", JSON.stringify(users));
 
-    // Redirect to login
     window.location.href = "index.html";
 };
 
