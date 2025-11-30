@@ -26,13 +26,12 @@
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex space-x-8">
-                    <a href="dashboard.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
+                    <a href="Dashboard.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
                     <a href="Neworder.html" class="text-gray-700 hover:text-blue-600 transition">New Order</a>
                     <a href="Servicepage.html" class="text-gray-700 hover:text-blue-600 transition">Services</a>
                     <a href="Totalorder.html" class="text-blue-600 font-semibold hover:text-blue-700 transition">Orders</a>
                     <a href="Support.html" class="text-gray-700 hover:text-blue-600 transition">Support</a>
                 </div>
-
                 <!-- User Profile & Logout -->
                 <div class="hidden md:flex items-center space-x-4">
                     <div class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
@@ -55,7 +54,7 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
             <div class="px-4 pt-2 pb-4 space-y-2">
-                <a href="dashboard.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
+                <a href="Dashboard.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
                 <a href="Neworder.html" class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">New Order</a>
                 <a href="Servicepage.html" class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">Services</a>
                 <a href="Totalorder.html" class="block px-3 py-2 rounded-md text-blue-600 font-semibold bg-blue-50">Orders</a>
@@ -74,7 +73,6 @@
             </div>
         </div>
     </nav>
-
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
@@ -95,8 +93,8 @@
                 Create New Order
             </a>
         </div>
-
-        <!-- Orders Container -->
+        
+<!-- Orders Container -->
         <div id="orders-container" class="hidden">
             
             <!-- Filters -->
@@ -137,16 +135,14 @@
                                 <th class="px-4 py-3 text-left font-semibold text-gray-700">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="orders-table-body">
-                            
-                        </tbody>
+                        <tbody id="orders-table-body"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Bottom Buttons -->
+        <!-- Bottom Buttons -->
             <div class="flex flex-col sm:flex-row gap-3 justify-end">
-                <a href="index.html" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-6 py-3 rounded-lg transition text-center">
+                <a href="Dashboard.html" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-6 py-3 rounded-lg transition text-center">
                     Back to Dashboard
                 </a>
                 <a href="Neworder.html" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center">
@@ -156,6 +152,7 @@
         </div>
 
     </main>
+
     <!-- Order Details Modal -->
     <div id="details-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
@@ -166,9 +163,7 @@
                 </button>
             </div>
             
-            <div id="modal-content" class="space-y-4">
-                
-            </div>
+            <div id="modal-content" class="space-y-4"></div>
         </div>
     </div>
 
