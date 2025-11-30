@@ -100,7 +100,8 @@
             </div>
             <div>
                 <p class="text-gray-500 text-sm font-medium">Total Orders</p>
-                <p id="userOrders" class="text-2xl font-bold">0</p>
+                <!-- yahan class add ki hai -->
+                <p id="userOrders" class="text-2xl font-bold totalOrders">0</p>
             </div>
         </div>
 
@@ -154,15 +155,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ⭐ Get user UID
 let uid = localStorage.getItem("getxh_current_user_uid");
 
-// Agar UID missing ho to login page bhejo
 if (!uid) {
     window.location.href = "index.html";
 }
 
-// ⭐ Fetch data from Firestore
 async function loadUserData() {
     const ref = doc(db, "Users", uid);
     const snap = await getDoc(ref);
@@ -170,50 +168,16 @@ async function loadUserData() {
     if (snap.exists()) {
         let data = snap.data();
 
-        document.getElementById("userName").textContent = data.Name || "User";
+        document.getElementById("userName").textContent   = data.Name || "User";
         document.getElementById("userBalance").textContent = "₹" + data.Balance;
-        document.getElementById("userOrders").textContent = data["Total Orders"];
-        document.getElementById("userSpent").textContent = "₹" + data["Total spent"];
+        document.getElementById("userOrders").textContent  = data["Total Orders"];
+        document.getElementById("userSpent").textContent   = "₹" + data["Total spent"];
     }
 }
 
 loadUserData();
 </script>
-<script type="module">
-import { getFirestore, collection, query, where, getDocs } 
-from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-import { getAuth, onAuthStateChanged } 
-from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
-  authDomain: "getxh-42588.firebaseapp.com",
-  projectId: "getxh-42588",
-  storageBucket: "getxh-42588.firebasestorage.app",
-  messagingSenderId: "170770122888",
-  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-const totalOrdersBox = document.querySelector(".totalOrders");
-
-onAuthStateChanged(auth, async (user) => {
-    if (!user) return;
-
-    const q = query(collection(db, "orders"), where("userId", "==", user.uid));
-    const snap = await getDocs(q);
-
-    const count = snap.size;
-    totalOrdersBox.textContent = count;
-});
-</script>
-    
 <script>
     document.getElementById("mobile-menu-btn").onclick = () => {
         document.getElementById("mobile-menu").classList.toggle("hidden");
