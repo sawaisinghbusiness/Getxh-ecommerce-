@@ -58,7 +58,13 @@
         }
 
         signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
+        .then((userCredential) => {
+
+            const user = userCredential.user;
+
+            // ⭐ Save logged-in user name
+            localStorage.setItem("getxh_user_name", user.displayName || "");
+
             localStorage.setItem("getxh_user_logged_in", "yes");
             localStorage.setItem("getxh_current_user", email);
 
