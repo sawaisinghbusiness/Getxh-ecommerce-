@@ -51,6 +51,7 @@
     <h2 class="text-3xl font-bold text-gray-800 mb-2">Your Orders</h2>
     <p class="text-gray-600 mb-8">Track all your orders here.</p>
 
+    <!-- EMPTY STATE -->
     <div id="empty-state" class="hidden max-w-md mx-auto bg-white rounded-xl shadow-sm p-12 text-center">
         <div class="mx-auto flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
             <span class="material-symbols-outlined text-gray-400 text-5xl">inbox</span>
@@ -59,11 +60,18 @@
         <a href="Neworder.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg inline-block mt-4">Create New Order</a>
     </div>
 
-    <div id="orders-container" class="hidden">
-        <div class="bg-white p-4 rounded-xl shadow-sm mb-4">
-            <div class="flex flex-col md:flex-row gap-3">
-                <input id="search-input" placeholder="Search..." class="border px-4 py-2 rounded-lg w-full">
-                <select id="status-filter" class="border px-4 py-2 rounded-lg md:w-48">
+    <!-- FILTER BAR (OLD UI) -->
+    <div id="filter-bar" class="hidden bg-white p-4 rounded-xl shadow-sm mb-4">
+        <div class="flex flex-col md:flex-row gap-4">
+            
+            <div class="flex-1">
+                <input type="text" id="search-input" placeholder="Search by Service name or ID..." 
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="md:w-48">
+                <select id="status-filter" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="All">All Status</option>
                     <option value="Processing">Processing</option>
                     <option value="Completed">Completed</option>
@@ -71,20 +79,23 @@
                 </select>
             </div>
         </div>
+    </div>
 
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <!-- TABLE (OLD UI RESTORED) -->
+    <div id="orders-container" class="hidden bg-white rounded-xl shadow-sm overflow-hidden mb-4">
+        <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="bg-gray-50 border-b">
                     <tr>
-                        <th class="px-4 py-3">ID</th>
-                        <th class="px-4 py-3">Category</th>
-                        <th class="px-4 py-3">Service</th>
-                        <th class="px-4 py-3">Link</th>
-                        <th class="px-4 py-3">Qty</th>
-                        <th class="px-4 py-3">Price</th>
-                        <th class="px-4 py-3">Status</th>
-                        <th class="px-4 py-3">Date</th>
-                        <th class="px-4 py-3">Action</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-700">ID</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Category</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Service</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Link</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Quantity</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Price</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Date</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Action</th>
                     </tr>
                 </thead>
                 <tbody id="orders-table-body"></tbody>
@@ -92,9 +103,19 @@
         </div>
     </div>
 
+    <!-- BOTTOM BUTTONS (OLD UI RESTORED) -->
+    <div id="bottom-buttons" class="hidden flex flex-col sm:flex-row gap-3 justify-end">
+        <a href="Dashboard.html" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-6 py-3 rounded-lg transition text-center">
+            Back to Dashboard
+        </a>
+        <a href="Neworder.html" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center">
+            Create New Order
+        </a>
+    </div>
+
 </main>
 
-<!-- DETAILS MODAL -->
+<!-- MODAL -->
 <div id="details-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
     <div class="bg-white p-6 rounded-xl shadow-xl max-w-lg w-full">
         <button id="close-modal-btn" class="float-right text-gray-600 text-2xl">×</button>
@@ -103,18 +124,23 @@
     </div>
 </div>
 
-<!-- JS: FIRESTORE LOGIC -->
+<!-- JS -->
 <script type="module">
+
 import { getFirestore, collection, query, where, getDocs, updateDoc, doc }
     from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const db = getFirestore(firebaseApp);
 
 const emptyState = document.getElementById("empty-state");
+const filterBar = document.getElementById("filter-bar");
 const ordersContainer = document.getElementById("orders-container");
+const bottomButtons = document.getElementById("bottom-buttons");
+
 const ordersTableBody = document.getElementById("orders-table-body");
 const searchInput = document.getElementById("search-input");
 const statusFilter = document.getElementById("status-filter");
+
 const modal = document.getElementById("details-modal");
 const modalContent = document.getElementById("modal-content");
 const closeModalBtn = document.getElementById("close-modal-btn");
@@ -123,6 +149,7 @@ let allOrders = [];
 let filtered = [];
 
 async function loadOrders() {
+
     const userId = localStorage.getItem("getxh_current_user_id");
     if (!userId) return;
 
@@ -132,16 +159,20 @@ async function loadOrders() {
     allOrders = [];
     snap.forEach(d => allOrders.push({ docId: d.id, ...d.data() }));
 
-    allOrders.sort((a, b) => b.timestamp - a.timestamp);
-
     if (!allOrders.length) {
         emptyState.classList.remove("hidden");
+        filterBar.classList.add("hidden");
         ordersContainer.classList.add("hidden");
-    } else {
-        emptyState.classList.add("hidden");
-        ordersContainer.classList.remove("hidden");
-        applyFilters();
+        bottomButtons.classList.add("hidden");
+        return;
     }
+
+    emptyState.classList.add("hidden");
+    filterBar.classList.remove("hidden");
+    ordersContainer.classList.remove("hidden");
+    bottomButtons.classList.remove("hidden");
+
+    applyFilters();
 }
 
 function applyFilters() {
@@ -157,46 +188,49 @@ function applyFilters() {
 }
 
 function renderTable() {
+
     ordersTableBody.innerHTML = "";
 
     filtered.forEach(o => {
+
         const color =
             o.status === "Completed" ? "bg-green-100 text-green-800" :
             o.status === "Canceled" ? "bg-red-100 text-red-800" :
             "bg-yellow-100 text-yellow-800";
 
-        const tr = document.createElement("tr");
-        tr.classList = "border-b";
+        const row = document.createElement("tr");
+        row.className = "border-b hover:bg-gray-50 cursor-pointer";
+        row.onclick = () => openModal(o);
 
-        tr.innerHTML = `
-            <td class="px-4 py-3 font-mono">#${o.docId}</td>
+        row.innerHTML = `
+            <td class="px-4 py-3 font-mono text-xs">#${o.docId}</td>
             <td class="px-4 py-3">${o.category}</td>
             <td class="px-4 py-3">${o.serviceName}</td>
-            <td class="px-4 py-3"><a target="_blank" href="${o.link}" class="text-blue-600 underline">Open</a></td>
-            <td class="px-4 py-3">${o.quantity}</td>
-            <td class="px-4 py-3">₹${o.price}</td>
             <td class="px-4 py-3">
-                <span class="px-2 py-1 rounded-full text-xs ${color}">${o.status}</span>
+                <a href="${o.link}" target="_blank" onclick="event.stopPropagation()" class="text-blue-600 underline">
+                    ${o.link.slice(0,30)}...
+                </a>
             </td>
+            <td class="px-4 py-3">${o.quantity}</td>
+            <td class="px-4 py-3 font-semibold">₹${o.price}</td>
+            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs ${color}">${o.status}</span></td>
             <td class="px-4 py-3">${o.date}</td>
             <td class="px-4 py-3">
-                ${o.status === "Processing" ?
-                `<button onclick="cancelOrder('${o.docId}')" class="bg-red-100 text-red-600 px-3 py-1 rounded-full">Cancel</button>` : ""}
+                ${o.status==="Processing"?
+                `<button onclick="cancelOrder('${o.docId}')" class="bg-red-50 text-red-600 px-3 py-1 rounded-full">Cancel</button>`:""}
             </td>
         `;
-
-        tr.onclick = () => openModal(o);
-        ordersTableBody.appendChild(tr);
+        ordersTableBody.appendChild(row);
     });
 }
 
-window.cancelOrder = async function (id) {
+window.cancelOrder = async function(id){
     await updateDoc(doc(db, "orders", id), { status: "Canceled" });
     loadOrders();
     modal.classList.add("hidden");
 };
 
-function openModal(o) {
+function openModal(o){
     modalContent.innerHTML = `
         <p><b>Service:</b> ${o.serviceName}</p>
         <p><b>Category:</b> ${o.category}</p>
@@ -210,8 +244,6 @@ function openModal(o) {
 }
 
 closeModalBtn.onclick = () => modal.classList.add("hidden");
-searchInput.oninput = applyFilters;
-statusFilter.onchange = applyFilters;
 
 loadOrders();
 </script>
