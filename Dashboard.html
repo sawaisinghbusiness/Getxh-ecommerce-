@@ -179,7 +179,41 @@ async function loadUserData() {
 
 loadUserData();
 </script>
+<script type="module">
+import { getFirestore, collection, query, where, getDocs } 
+from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+import { getAuth, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+const totalOrdersBox = document.querySelector(".totalOrders");
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
+
+    const q = query(collection(db, "orders"), where("userId", "==", user.uid));
+    const snap = await getDocs(q);
+
+    const count = snap.size;
+    totalOrdersBox.textContent = count;
+});
+</script>
+    
 <script>
     document.getElementById("mobile-menu-btn").onclick = () => {
         document.getElementById("mobile-menu").classList.toggle("hidden");
