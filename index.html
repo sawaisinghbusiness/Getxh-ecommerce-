@@ -1,180 +1,140 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
-
+<html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>GETXH - Login</title>
-
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GETXH Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-.material-symbols-outlined { 
-    font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20; 
-    font-size: 20px; 
-}
-.form-input-container { position: relative; }
-.form-input-container .material-symbols-outlined { 
-    position: absolute; left: 1rem; top: 50%; 
-    transform: translateY(-50%); color: #D1D5DB; pointer-events: none; 
-}
-.form-input-container .form-input { padding-left: 3rem; }
-.toggle-password { 
-    position: absolute; right: 1rem; top: 50%; 
-    transform: translateY(-50%); color: #D1D5DB; cursor: pointer; 
-}
-.toggle-password:hover { color: #111827; }
+body { background-color:#f5f6fa; }
 </style>
-</head>
-
-<body class="font-display">
 
 <script>
-// If already logged in → redirect to dashboard
-if (localStorage.getItem("getxh_user_logged_in") === "yes") {
-    window.location.href = "Dashboard.html";
-}
+// ----------- FIXED LOGIN CHECK -----------
+document.addEventListener("DOMContentLoaded", () => {
+    const logged = localStorage.getItem("getxh_user_logged_in");
+    if (logged !== "yes") {
+        window.location.href = "index.html";
+    }
+});
 </script>
 
-<div class="relative flex min-h-screen w-full flex-col items-center justify-center bg-white overflow-x-hidden">
+</head>
+<body class="min-h-screen">
 
-<div class="px-4 flex flex-1 justify-center items-center py-10">
-<div class="w-full max-w-md flex-col items-center">
+<!-- NAVBAR -->
+<nav class="bg-white shadow-md sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+          <h1 class="text-2xl font-bold text-blue-600">GETXH</h1>
 
-<div class="flex flex-col items-center mb-8">
-<h2 class="text-3xl font-bold tracking-tighter text-[#111827]">GETXH</h2>
-<div class="mt-1 h-0.5 w-12 bg-[#0052FF]"></div>
-</div>
+          <!-- Desktop menu -->
+          <div class="hidden md:flex space-x-8">
+              <a href="Dashboard.html" class="text-blue-600 font-semibold">Dashboard</a>
+              <a href="Neworder.html" class="hover:text-blue-600">New Order</a>
+              <a href="Totalorder.html" class="hover:text-blue-600">Orders</a>
+              <a href="Support.html" class="hover:text-blue-600">Support</a>
+          </div>
 
-<div class="w-full rounded-lg bg-white p-8 shadow-[0_4px_24px_rgba(209,213,219,0.3)]">
+          <!-- Logout -->
+          <div class="hidden md:flex">
+              <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded-lg">
+                  Logout
+              </button>
+          </div>
 
-<h1 class="text-[#111827] text-3xl font-bold text-center pb-8">Welcome Back</h1>
+          <!-- Mobile menu button -->
+          <div class="md:hidden">
+              <button id="mobile-menu-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+              </button>
+          </div>
+      </div>
+  </div>
 
-<div id="errorBox" class="hidden mb-4 text-red-600 font-medium text-center"></div>
+  <!-- Mobile Dropdown -->
+  <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+      <div class="px-4 py-2 space-y-2">
+          <a href="Dashboard.html" class="block px-3 py-2 bg-blue-50 text-blue-600 font-semibold">Dashboard</a>
+          <a href="Neworder.html" class="block px-3 py-2 hover:bg-gray-100">New Order</a>
+          <a href="Totalorder.html" class="block px-3 py-2 hover:bg-gray-100">Orders</a>
+          <a href="Support.html" class="block px-3 py-2 hover:bg-gray-100">Support</a>
+          <button id="logoutBtn2"
+                  class="w-full text-left px-3 py-2 bg-red-500 text-white rounded-lg">
+              Logout
+          </button>
+      </div>
+  </div>
+</nav>
 
-<div class="flex flex-col gap-4">
+<!-- MAIN CONTENT -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <h1 class="text-3xl font-bold mb-6">Welcome back!</h1>
 
-<!-- Email -->
-<div class="flex flex-col">
-<label class="text-[#111827] text-sm font-medium mb-2">Email</label>
-<div class="form-input-container">
-<input class="form-input w-full rounded-lg border border-[#D1D5DB] h-12 px-4" 
-       id="email" type="email" placeholder="you@example.com"/>
-<span class="material-symbols-outlined">mail</span>
-</div>
-</div>
+  <!-- CARDS -->
+  <div id="statsContainer" class="space-y-6">
 
-<!-- Password -->
-<div class="flex flex-col">
-<label class="text-[#111827] text-sm font-medium mb-2">Password</label>
-<div class="form-input-container">
-<input class="form-input w-full rounded-lg border border-[#D1D5DB] h-12 px-4" 
-       id="password" type="password" placeholder="Enter your password"/>
-<span class="material-symbols-outlined">lock</span>
-<div class="toggle-password">
-<span class="material-symbols-outlined">visibility</span>
-</div>
-</div>
-</div>
+      <div class="bg-white p-6 rounded-xl shadow">
+          <p class="text-center text-gray-600">Total Orders</p>
+          <p id="totalOrders" class="text-center text-4xl font-bold text-blue-600">0</p>
+      </div>
 
-</div>
+      <div class="bg-white p-6 rounded-xl shadow">
+          <p class="text-center text-gray-600">Completed</p>
+          <p id="completedOrders" class="text-center text-4xl font-bold text-green-600">0</p>
+      </div>
 
-<!-- SIGN-IN BUTTON -->
-<div class="mt-6 flex flex-col gap-4">
-<button id="loginBtn" 
-        class="w-full h-12 bg-[#0052FF] text-white rounded-lg font-semibold hover:bg-[#0045d6]">
-    Sign In
-</button>
+      <div class="bg-white p-6 rounded-xl shadow">
+          <p class="text-center text-gray-600">Processing</p>
+          <p id="processingOrders" class="text-center text-4xl font-bold text-yellow-600">0</p>
+      </div>
 
-<!-- GOOGLE LOGIN (HIDDEN NOW) -->
-<div style="display:none;">
-<button class="w-full h-12 bg-white border border-[#D1D5DB] rounded-lg flex items-center justify-center font-semibold">
-    <img class="w-5 h-5 mr-3" 
-         src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA"/>
-    Sign in with Google
-</button>
-</div>
-</div>
+      <div class="bg-white p-6 rounded-xl shadow">
+          <p class="text-center text-gray-600">Canceled</p>
+          <p id="canceledOrders" class="text-center text-4xl font-bold text-red-600">0</p>
+      </div>
 
-<!-- FOOTER LINKS -->
-<div class="flex justify-between items-center mt-6">
-<a class="text-sm font-medium text-[#0052FF]" href="#">Forgot Password?</a>
-<a class="text-sm font-medium text-[#111827]" href="Registerpage.html">
-Don't have an account? <span class="text-[#0052FF] font-semibold">Register</span>
-</a>
-</div>
-
-</div>
-</div>
-</div>
+  </div>
 
 </div>
 
 <script>
-/* ----------------------------------
-   PASSWORD SHOW/HIDE
----------------------------------- */
-document.querySelector(".toggle-password").onclick = function () {
-    let pass = document.getElementById("password");
-    pass.type = pass.type === "password" ? "text" : "password";
+// -------- Mobile Menu Toggle --------
+document.getElementById("mobile-menu-btn").onclick = () => {
+    document.getElementById("mobile-menu").classList.toggle("hidden");
 };
 
-/* ----------------------------------
-   LOGIN LOGIC (FULLY FIXED)
----------------------------------- */
-document.getElementById("loginBtn").onclick = function () {
+// -------- Logout Functionality --------
+function doLogout() {
+    localStorage.removeItem("getxh_user_logged_in");
+    localStorage.removeItem("getxh_logged_user_email");
+    window.location.href = "index.html";
+}
 
-    let email = document.getElementById("email").value.trim();
-    let password = document.getElementById("password").value.trim();
-    let errorBox = document.getElementById("errorBox");
+document.getElementById("logoutBtn").onclick = doLogout;
+document.getElementById("logoutBtn2").onclick = doLogout;
 
-    errorBox.classList.add("hidden");
-    errorBox.textContent = "";
+// -------- Load Stats --------
+function loadStats() {
+    const orders = JSON.parse(localStorage.getItem("orders") || "[]");
 
-    // Empty checks
-    if (email === "") {
-        errorBox.textContent = "Email cannot be empty";
-        errorBox.classList.remove("hidden");
-        return;
-    }
+    document.getElementById("totalOrders").textContent = orders.length;
 
-    if (password === "") {
-        errorBox.textContent = "Password cannot be empty";
-        errorBox.classList.remove("hidden");
-        return;
-    }
+    document.getElementById("completedOrders").textContent =
+        orders.filter(o => o.status === "Completed").length;
 
-    // Load registered users
-    let users = JSON.parse(localStorage.getItem("getxh_users") || "[]");
+    document.getElementById("processingOrders").textContent =
+        orders.filter(o => o.status === "Processing" || !o.status).length;
 
-    // Check if user exists
-    let user = users.find(u => u.email === email);
+    document.getElementById("canceledOrders").textContent =
+        orders.filter(o => o.status === "Canceled").length;
+}
 
-    if (!user) {
-        errorBox.textContent = "This email is not registered";
-        errorBox.classList.remove("hidden");
-        return;
-    }
-
-    // Check password
-    if (user.password !== password) {
-        errorBox.textContent = "Incorrect password";
-        errorBox.classList.remove("hidden");
-        return;
-    }
-
-    // Save login status
-    localStorage.setItem("getxh_user_logged_in", "yes");
-    localStorage.setItem("getxh_logged_user_email", email);
-
-    // Redirect to Dashboard
-    window.location.href = "Dashboard.html";
-};
+loadStats();
 </script>
 
 </body>
