@@ -62,9 +62,13 @@
 
             const user = userCredential.user;
 
-            // ⭐ Save logged-in user name
+            // ⭐ Save logged-in user name (from Firebase profile)
             localStorage.setItem("getxh_user_name", user.displayName || "");
 
+            // ⭐ Save UID (this connects user → Firestore)
+            localStorage.setItem("getxh_current_user_uid", user.uid);
+
+            // ⭐ Save login status and email
             localStorage.setItem("getxh_user_logged_in", "yes");
             localStorage.setItem("getxh_current_user", email);
 
