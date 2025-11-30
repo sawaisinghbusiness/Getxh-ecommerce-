@@ -98,11 +98,12 @@ Already have an account? <span class="text-[#0052FF] font-semibold">Login</span>
 </div>
 </div>
 
-<!-- ⭐ Firebase SDK + Auth -->
+<!-- ⭐ Firebase SDK + Auth + Firestore -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -115,6 +116,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 document.getElementById("registerBtn").onclick = async function () {
 
@@ -133,9 +135,14 @@ document.getElementById("registerBtn").onclick = async function () {
     try {
         let userCred = await createUserWithEmailAndPassword(auth, email, pass);
 
-        // ⭐ Save full name in Firebase profile
-        await updateProfile(userCred.user, {
-            displayName: name
+        await updateProfile(userCred.user, { displayName: name });
+
+        await setDoc(doc(db, "Users", userCred.user.uid), {
+            Name: name,
+            Email: email,
+            TotalOrders: 0,
+            Balance: 0,
+            TotalSpent: 0
         });
 
         window.location.href = "index.html";
