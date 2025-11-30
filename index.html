@@ -24,12 +24,8 @@
 
 <body class="font-display">
 
-<script>
-// If already logged in, go to dashboard
-if(localStorage.getItem("getxh_user_logged_in") === "yes"){
-    window.location.href = "Dashboard.html";
-}
-</script>
+<!-- NO REDIRECT HERE -->
+<!-- Login page must NEVER auto redirect -->
 
 <div class="relative flex min-h-screen w-full flex-col items-center justify-center bg-white overflow-x-hidden">
 
@@ -72,12 +68,13 @@ if(localStorage.getItem("getxh_user_logged_in") === "yes"){
 
 </div>
 
+<!-- SIGN IN BUTTON -->
 <div class="mt-6 flex flex-col gap-4">
 <button id="loginBtn" class="w-full h-12 bg-[#0052FF] text-white rounded-lg font-semibold hover:bg-[#0045d6]">
     Sign In
 </button>
 
-<!-- Google login hidden -->
+<!-- GOOGLE LOGIN HIDDEN -->
 <div style="display:none;">
 <button class="w-full h-12 bg-white border border-[#D1D5DB] rounded-lg flex items-center justify-center font-semibold">
     <img class="w-5 h-5 mr-3" src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA"/>
@@ -86,6 +83,7 @@ if(localStorage.getItem("getxh_user_logged_in") === "yes"){
 </div>
 </div>
 
+<!-- FOOTER LINKS -->
 <div class="flex justify-between items-center mt-6">
 <a class="text-sm font-medium text-[#0052FF]" href="#">Forgot Password?</a>
 <a class="text-sm font-medium text-[#111827]" href="Registerpage.html">
@@ -100,7 +98,7 @@ Don't have an account? <span class="text-[#0052FF] font-semibold">Register</span
 </div>
 
 <script>
-// Show/Hide Password
+// PASSWORD SHOW/HIDE
 document.querySelector(".toggle-password").onclick = function () {
     let pass = document.getElementById("password");
     pass.type = pass.type === "password" ? "text" : "password";
@@ -112,23 +110,24 @@ document.getElementById("loginBtn").onclick = function () {
     let password = document.getElementById("password").value.trim();
     let errorBox = document.getElementById("errorBox");
 
+    // Validation
     if(email === ""){
         errorBox.textContent = "Email cannot be empty";
         errorBox.classList.remove("hidden");
         return;
     }
-
     if(password === ""){
         errorBox.textContent = "Password cannot be empty";
         errorBox.classList.remove("hidden");
         return;
     }
 
+    // Registered users list
     let users = JSON.parse(localStorage.getItem("getxh_users") || "[]");
 
-    let user = users.find(u => u.email === email && u.password === password);
+    let found = users.find(u => u.email === email && u.password === password);
 
-    if(!user){
+    if(!found){
         errorBox.textContent = "Invalid email or password";
         errorBox.classList.remove("hidden");
         return;
@@ -136,8 +135,9 @@ document.getElementById("loginBtn").onclick = function () {
 
     // Save login session
     localStorage.setItem("getxh_user_logged_in", "yes");
+    localStorage.setItem("getxh_current_user", email);
 
-    // Redirect
+    // Redirect to dashboard
     window.location.href = "Dashboard.html";
 };
 </script>
