@@ -90,7 +90,7 @@
             </div>
             <div>
                 <p class="text-gray-500 text-sm font-medium">Your Balance</p>
-                <p class="text-2xl font-bold">₹0.00</p>
+                <p id="userBalance" class="text-2xl font-bold">₹0.00</p>
             </div>
         </div>
 
@@ -100,7 +100,7 @@
             </div>
             <div>
                 <p class="text-gray-500 text-sm font-medium">Total Orders</p>
-                <p class="text-2xl font-bold">0</p>
+                <p id="userOrders" class="text-2xl font-bold">0</p>
             </div>
         </div>
 
@@ -110,7 +110,7 @@
             </div>
             <div>
                 <p class="text-gray-500 text-sm font-medium">Total Spent</p>
-                <p class="text-2xl font-bold">₹0.00</p>
+                <p id="userSpent" class="text-2xl font-bold">₹0.00</p>
             </div>
         </div>
 
@@ -137,9 +137,10 @@
 
 </main>
 
-<!-- Firebase -->
+<!-- Firebase Firestore -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -150,7 +151,33 @@ const firebaseConfig = {
   appId: "1:170770122888:web:7adcf91077d5695b06b73d"
 };
 
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ⭐ Get user UID
+let uid = localStorage.getItem("getxh_current_user_uid");
+
+// Agar UID missing ho to login page bhejo
+if (!uid) {
+    window.location.href = "index.html";
+}
+
+// ⭐ Fetch data from Firestore
+async function loadUserData() {
+    const ref = doc(db, "Users", uid);
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+        let data = snap.data();
+
+        document.getElementById("userName").textContent = data.Name || "User";
+        document.getElementById("userBalance").textContent = "₹" + data.Balance;
+        document.getElementById("userOrders").textContent = data["Total Orders"];
+        document.getElementById("userSpent").textContent = "₹" + data["Total spent"];
+    }
+}
+
+loadUserData();
 </script>
 
 <script>
@@ -158,14 +185,8 @@ initializeApp(firebaseConfig);
         document.getElementById("mobile-menu").classList.toggle("hidden");
     };
 
-    // ⭐ SET USER NAME
-    let userName = localStorage.getItem("getxh_user_name") || "User";
-    document.getElementById("userName").textContent = userName;
-
     function logoutNow() {
-        localStorage.removeItem("getxh_user_logged_in");
-        localStorage.removeItem("getxh_current_user");
-        localStorage.removeItem("getxh_user_name");
+        localStorage.clear();
         window.location.href = "index.html";
     }
 
