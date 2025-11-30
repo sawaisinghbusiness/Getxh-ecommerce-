@@ -14,9 +14,6 @@
 </head>
 <body class="bg-[#f5f6fa]">
 
-    
-}
-    
     <!-- Header / Navbar -->
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,8 +37,9 @@
                     <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                         <span class="material-symbols-outlined text-blue-600">person</span>
                     </div>
-                    <a href="Login.html" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
-    Logout
+                    <!-- DESKTOP LOGOUT -->
+                    <a href="#" id="logoutBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
+                        Logout
                     </a>
                 </div>
 
@@ -70,8 +68,9 @@
                         </div>
                         <span class="text-gray-700 text-sm">User</span>
                     </div>
-                    <a href="Login.html" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
-    Logout
+                    <!-- MOBILE LOGOUT -->
+                    <a href="#" id="logoutBtnMobile" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
+                        Logout
                     </a>
                 </div>
             </div>
@@ -147,7 +146,7 @@
 
     </main>
 
-    <!-- Mobile Menu Toggle Script -->
+    <!-- Mobile Menu Toggle Script + Logout Logic -->
     <script>
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -155,10 +154,23 @@
         mobileMenuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
-        document.getElementById("logoutBtn").addEventListener("click", () => {
-    localStorage.removeItem("user_logged_in");
-    window.location.href = "login.html";
-});
+
+        const logoutBtn = document.getElementById('logoutBtn');
+        const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+
+        function handleLogout(e) {
+            e.preventDefault();
+            localStorage.removeItem('user_logged_in');
+            window.location.href = 'Login.html';
+        }
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', handleLogout);
+        }
+
+        if (logoutBtnMobile) {
+            logoutBtnMobile.addEventListener('click', handleLogout);
+        }
     </script>
 
 </body>
