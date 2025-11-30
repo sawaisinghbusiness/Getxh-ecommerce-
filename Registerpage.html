@@ -23,14 +23,15 @@
 </style>
 </head>
 
-<body class="font-display">
+<body class="font-display bg-white">
 
-<div class="min-h-screen flex items-center justify-center bg-white px-4">
+<div class="min-h-screen flex items-center justify-center px-4">
 
 <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-xl">
 
 <h2 class="text-center text-3xl font-bold text-[#111827] mb-8">Create Account</h2>
 
+<!-- ERROR BOX -->
 <div id="errorBox" class="hidden mb-4 text-red-600 text-center font-medium"></div>
 
 <!-- FULL NAME -->
@@ -83,7 +84,7 @@ Create Account
 </div>
 
 <script>
-// Validate email format
+// Email validation
 function isValidEmail(email) {
     return /\S+@\S+\.\S+/.test(email);
 }
@@ -96,44 +97,48 @@ document.getElementById("registerBtn").onclick = function () {
     let cpass = document.getElementById("reg_cpass").value.trim();
     let errorBox = document.getElementById("errorBox");
 
-    // Validation
+    // VALIDATION
     if (name === "") {
         errorBox.textContent = "Full name is required";
         errorBox.classList.remove("hidden");
         return;
     }
+
     if (email === "") {
         errorBox.textContent = "Email is required";
         errorBox.classList.remove("hidden");
         return;
     }
+
     if (!isValidEmail(email)) {
         errorBox.textContent = "Enter a valid email";
         errorBox.classList.remove("hidden");
         return;
     }
+
     if (pass.length < 6) {
         errorBox.textContent = "Password must be at least 6 characters";
         errorBox.classList.remove("hidden");
         return;
     }
+
     if (pass !== cpass) {
         errorBox.textContent = "Passwords do not match";
         errorBox.classList.remove("hidden");
         return;
     }
 
-    // Check duplicate email
+    // CHECK DUPLICATE EMAIL
     let savedUsers = JSON.parse(localStorage.getItem("getxh_users") || "[]");
-    let exists = savedUsers.some(u => u.email === email);
 
+    let exists = savedUsers.some(u => u.email === email);
     if (exists) {
         errorBox.textContent = "Email already registered";
         errorBox.classList.remove("hidden");
         return;
     }
 
-    // Save user
+    // SAVE USER
     let newUser = {
         name: name,
         email: email,
@@ -143,7 +148,7 @@ document.getElementById("registerBtn").onclick = function () {
     savedUsers.push(newUser);
     localStorage.setItem("getxh_users", JSON.stringify(savedUsers));
 
-    // Redirect
+    // REDIRECT
     window.location.href = "index.html";
 };
 </script>
