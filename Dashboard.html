@@ -1,148 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GETXH Dashboard</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GETXH - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f6fa;
-        }
+        body { background: #f5f6fa; }
     </style>
 </head>
 
-<body>
+<body class="min-h-screen">
 
-<script>
-    // ------- FIX: Infinite Redirect Loop -------
-    const fromLogin = sessionStorage.getItem("fromLogin");
-
-    if(localStorage.getItem("getxh_user_logged_in") !== "yes"){
-        if(fromLogin !== "yes"){
-            window.location.href = "index.html";
-        }
-    }
-
-    sessionStorage.removeItem("fromLogin");
-</script>
-
-
-<!-- NAVBAR -->
-<nav class="bg-white shadow-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-
+    <!-- NAVBAR -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center h-16 px-4">
             <h1 class="text-2xl font-bold text-blue-600">GETXH</h1>
+
+            <!-- Mobile Menu Btn -->
+            <button id="menuBtn" class="md:hidden text-gray-700 text-3xl">☰</button>
 
             <!-- Desktop Menu -->
             <div class="hidden md:flex space-x-8">
-                <a href="Dashboard.html" class="text-blue-600 font-medium border-b-2 border-blue-600 px-3 py-2">
-                    Dashboard
-                </a>
-                <a href="Neworder.html" class="text-gray-600 hover:text-blue-600 px-3 py-2">New Order</a>
-                <a href="Totalorder.html" class="text-gray-600 hover:text-blue-600 px-3 py-2">Orders</a>
-                <a href="Support.html" class="text-gray-600 hover:text-blue-600 px-3 py-2">Support</a>
+                <a href="dashboard.html" class="font-semibold text-blue-600">Dashboard</a>
+                <a href="Neworder.html" class="text-gray-700 hover:text-blue-600">New Order</a>
+                <a href="Totalorder.html" class="text-gray-700 hover:text-blue-600">Orders</a>
+                <a href="Support.html" class="text-gray-700 hover:text-blue-600">Support</a>
             </div>
 
-            <!-- Logout -->
             <button id="logoutBtn" class="hidden md:block bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
                 Logout
             </button>
+        </div>
 
-            <!-- Mobile button -->
-            <button id="mobile-menu-btn" class="md:hidden text-gray-700">
-                <span class="material-icons text-3xl">menu</span>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden bg-white border-t md:hidden">
+            <a href="dashboard.html" class="block px-4 py-2 text-blue-600 font-semibold">Dashboard</a>
+            <a href="Neworder.html" class="block px-4 py-2 text-gray-700">New Order</a>
+            <a href="Totalorder.html" class="block px-4 py-2 text-gray-700">Orders</a>
+            <a href="Support.html" class="block px-4 py-2 text-gray-700">Support</a>
+
+            <button id="logoutBtnMobile" class="w-full bg-red-500 text-white py-2 mt-2">
+                Logout
             </button>
         </div>
-    </div>
+    </nav>
 
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
-        <a href="Dashboard.html" class="block px-4 py-3 text-blue-600 bg-blue-50">Dashboard</a>
-        <a href="Neworder.html" class="block px-4 py-3">New Order</a>
-        <a href="Totalorder.html" class="block px-4 py-3">Orders</a>
-        <a href="Support.html" class="block px-4 py-3">Support</a>
+    <!-- MAIN CONTENT -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
 
-        <button id="logoutBtnMobile" class="w-full text-left px-4 py-3 bg-red-500 text-white">
-            Logout
-        </button>
-    </div>
-</nav>
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Welcome back!</h2>
 
+        <!-- CARDS -->
+        <div class="space-y-6">
 
+            <div class="bg-white rounded-xl shadow p-6 text-center">
+                <p class="text-gray-700 text-lg">Total Orders</p>
+                <p id="totalOrders" class="text-4xl font-bold text-blue-600">0</p>
+            </div>
 
-<!-- MAIN CONTENT -->
-<main class="max-w-7xl mx-auto px-4 py-8">
+            <div class="bg-white rounded-xl shadow p-6 text-center">
+                <p class="text-gray-700 text-lg">Completed</p>
+                <p id="completedOrders" class="text-4xl font-bold text-green-600">0</p>
+            </div>
 
-    <h2 class="text-3xl font-bold mb-8">Welcome back!</h2>
+            <div class="bg-white rounded-xl shadow p-6 text-center">
+                <p class="text-gray-700 text-lg">Processing</p>
+                <p id="processingOrders" class="text-4xl font-bold text-yellow-600">0</p>
+            </div>
 
-    <!-- STATS -->
-    <div class="grid gap-6">
+            <div class="bg-white rounded-xl shadow p-6 text-center">
+                <p class="text-gray-700 text-lg">Canceled</p>
+                <p id="canceledOrders" class="text-4xl font-bold text-red-600">0</p>
+            </div>
 
-        <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-center text-gray-600 text-lg">Total Orders</p>
-            <p id="totalOrders" class="text-center text-4xl font-bold text-blue-600">0</p>
         </div>
+    </main>
 
-        <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-center text-gray-600 text-lg">Completed</p>
-            <p id="completedOrders" class="text-center text-4xl font-bold text-green-600">0</p>
-        </div>
+    <!-- SCRIPT -->
+    <script>
 
-        <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-center text-gray-600 text-lg">Processing</p>
-            <p id="processingOrders" class="text-center text-4xl font-bold text-yellow-600">0</p>
-        </div>
+        /* ------------------------
+           1. SECURE PAGE CHECK
+           ------------------------*/
+        document.addEventListener("DOMContentLoaded", () => {
+            const logged = localStorage.getItem("getxh_user_logged_in");
 
-        <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-center text-gray-600 text-lg">Canceled</p>
-            <p id="canceledOrders" class="text-center text-4xl font-bold text-red-600">0</p>
-        </div>
+            if (logged !== "yes") {
+                window.location.href = "index.html";
+            }
 
-    </div>
+            loadDashboardData();
+        });
 
-</main>
+        /* ------------------------
+           2. LOGOUT BUTTONS
+           ------------------------*/
+        document.getElementById("logoutBtn").onclick = logout;
+        document.getElementById("logoutBtnMobile").onclick = logout;
 
+        function logout() {
+            localStorage.removeItem("getxh_user_logged_in");
+            window.location.href = "index.html";
+        }
 
-<script>
-    // MOBILE MENU
-    document.getElementById("mobile-menu-btn").onclick = () => {
-        document.getElementById("mobile-menu").classList.toggle("hidden");
-    };
+        /* ------------------------
+           3. MOBILE MENU
+           ------------------------*/
+        const btn = document.getElementById("menuBtn");
+        const menu = document.getElementById("mobileMenu");
+        btn.onclick = () => menu.classList.toggle("hidden");
 
-    // LOGOUT BUTTONS
-    function logoutUser(){
-        localStorage.removeItem("getxh_user_logged_in");
-        sessionStorage.removeItem("fromLogin"); // extra safe
-        window.location.href = "index.html";
-    }
+        /* ------------------------
+           4. LOAD ORDER COUNTS
+           ------------------------*/
+        function loadDashboardData() {
+            let orders = JSON.parse(localStorage.getItem("getxh_orders") || "[]");
 
-    document.getElementById("logoutBtn").onclick = logoutUser;
-    document.getElementById("logoutBtnMobile").onclick = logoutUser;
+            document.getElementById("totalOrders").textContent = orders.length;
+            document.getElementById("completedOrders").textContent =
+                orders.filter(o => o.status === "Completed").length;
 
+            document.getElementById("processingOrders").textContent =
+                orders.filter(o => o.status === "Processing" || !o.status).length;
 
-    // LOAD ORDER STATS
-    function loadStats(){
-        let orders = JSON.parse(localStorage.getItem("getxh_orders") || "[]");
+            document.getElementById("canceledOrders").textContent =
+                orders.filter(o => o.status === "Canceled").length;
+        }
 
-        document.getElementById("totalOrders").textContent = orders.length;
-
-        document.getElementById("completedOrders").textContent =
-            orders.filter(o => o.status === "Completed").length;
-
-        document.getElementById("processingOrders").textContent =
-            orders.filter(o => o.status === "Processing" || !o.status).length;
-
-        document.getElementById("canceledOrders").textContent =
-            orders.filter(o => o.status === "Canceled").length;
-    }
-
-    loadStats();
-</script>
+    </script>
 
 </body>
 </html>
