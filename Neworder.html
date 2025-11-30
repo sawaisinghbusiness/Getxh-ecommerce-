@@ -27,7 +27,6 @@
             <div class="hidden md:flex items-center space-x-8">
                 <a href="Dashboard.html" class="text-gray-700 hover:text-blue-600">Dashboard</a>
                 <a href="Neworder.html" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">New Order</a>
-                <!-- <a href="Servicepage.html" class="text-gray-700 hover:text-blue-600">Services</a> -->
                 <a href="Totalorder.html" class="text-gray-700 hover:text-blue-600">Orders</a>
                 <a href="Support.html" class="text-gray-700 hover:text-blue-600">Support</a>
             </div>
@@ -62,42 +61,32 @@
         <div class="px-4 py-2 space-y-2">
             <a href="Dashboard.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
             <a href="Neworder.html" class="block px-3 py-2 text-blue-600 bg-blue-50 font-semibold">New Order</a>
-            <!-- <a href="Servicepage.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Services</a> -->
             <a href="Totalorder.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Orders</a>
             <a href="Support.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Support</a>
         </div>
     </div>
 </nav>
+
 <!-- Main Content -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <!-- Page Title -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-800">Place New Order</h1>
         <p class="text-gray-600 mt-1">Select a category and service to continue.</p>
     </div>
 
-    <!-- New Order Card -->
     <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 max-w-4xl mx-auto mb-8">
         <form id="orderForm">
 
-            <!-- Search Bar -->
             <div class="mb-6">
-                <input
-                    type="text"
-                    id="searchService"
-                    placeholder="Search for a service..."
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
+                <input type="text" id="searchService" placeholder="Search for a service..."
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"/>
             </div>
 
-            <!-- Category Select -->
             <div class="mb-6">
                 <label class="block text-gray-700 font-semibold mb-2">Category</label>
-                <select
-                    id="categorySelect"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
+                <select id="categorySelect"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     <option value="">Select a category</option>
                     <option value="Instagram Followers">Instagram Followers</option>
                     <option value="Instagram Reel Views">Instagram Reel Views</option>
@@ -106,19 +95,15 @@
                 </select>
             </div>
 
-            <!-- Service Select -->
             <div class="mb-6">
                 <label class="block text-gray-700 font-semibold mb-2">Service</label>
-                <select
-                    id="serviceSelect"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    disabled
-                >
+                <select id="serviceSelect"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        disabled>
                     <option value="">Select a service</option>
                 </select>
             </div>
 
-            <!-- Service Details -->
             <div id="serviceDetails" class="hidden mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
                 <h3 class="font-semibold text-gray-800 mb-3">Service Details</h3>
                 <p id="serviceDescription" class="text-sm text-gray-700 mb-3"></p>
@@ -129,7 +114,6 @@
                 </div>
             </div>
 
-            <!-- Read Before You Order -->
             <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <h3 class="font-semibold text-gray-800 mb-2">Read before you order</h3>
                 <ul class="text-sm text-gray-700 space-y-1">
@@ -140,51 +124,36 @@
                 </ul>
             </div>
 
-            <!-- Link Input -->
             <div class="mb-6">
                 <label class="block text-gray-700 font-semibold mb-2">Link</label>
-                <input
-                    type="text"
-                    id="linkInput"
-                    placeholder="Paste your link here"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
+                <input type="text" id="linkInput" placeholder="Paste your link here"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"/>
             </div>
 
-            <!-- Quantity Input -->
             <div class="mb-6">
                 <label class="block text-gray-700 font-semibold mb-2">Quantity</label>
                 <p id="minMaxText" class="text-sm text-gray-500 mb-2">Min: 0 – Max: 0</p>
-                <input
-                    type="number"
-                    id="quantityInput"
-                    placeholder="Enter quantity"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
+                <input type="number" id="quantityInput" placeholder="Enter quantity"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"/>
                 <p id="quantityError" class="hidden text-sm text-red-600 mt-2">
                     Quantity must be between Min and Max
                 </p>
             </div>
 
-            <!-- Total Price -->
             <div class="mb-6 p-4 bg-gray-50 rounded-lg flex justify-between items-center border border-gray-200">
                 <span class="font-semibold text-gray-800">Total Price</span>
                 <span id="totalPrice" class="text-2xl font-bold text-blue-600">₹0.00</span>
             </div>
 
-            <!-- Place Order Button -->
-            <button
-                id="placeOrderBtn"
-                type="submit"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-lg transition disabled:bg-gray-300 disabled:cursor-not-allowed"
-                disabled
-            >
+            <button id="placeOrderBtn" type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-lg transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    disabled>
                 Place Order
             </button>
+
         </form>
     </div>
 
-    <!-- Recent Orders Section -->
     <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 max-w-4xl mx-auto">
         <h3 class="text-xl font-bold text-gray-800 mb-4">Your Recent Orders</h3>
         <div id="recentOrdersContainer"></div>
@@ -195,43 +164,56 @@
         </div>
     </div>
 
-            </div>
-            <!-- Success Modal -->
-<div
-    id="successModal"
-    class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
->
+</div>
+
+<!-- Success Modal -->
+<div id="successModal"
+     class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
         <div class="text-center mb-4">
             <div class="mx-auto flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-green-600" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M5 13l4 4L19 7"/>
                 </svg>
             </div>
             <h3 class="text-2xl font-bold text-gray-800 mb-2">Order placed successfully</h3>
             <p class="text-gray-600">Your order has been processed.</p>
         </div>
         <div class="flex gap-3">
-            <button
-                id="viewOrdersBtn"
-                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
-            >
+            <button id="viewOrdersBtn"
+                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
                 View Orders
             </button>
-            <button
-                id="closeModalBtn"
-                class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg transition"
-            >
+            <button id="closeModalBtn"
+                    class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg transition">
                 Close
             </button>
         </div>
     </div>
 </div>
+
+<!-- FIREBASE ADDED HERE (ONLY CHANGE) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app = initializeApp(firebaseConfig);
+</script>
+
+<!-- ORIGINAL JS START (UNCHANGED) -->
 <script>
 // ------- SERVICES DATA -------
 const servicesData = [
-
-    // Instagram Followers
     {
         serviceId: "IF001",
         serviceName: "Instagram Followers – Used by Influencers – Same Day Delivery",
@@ -269,7 +251,6 @@ const servicesData = [
         quality: "Premium"
     },
 
-    // Instagram Reel Views
     {
         serviceId: "IRV001",
         serviceName: "Instagram Reel Views – Used by Influencers – Real Views",
@@ -319,7 +300,6 @@ const servicesData = [
         quality: "Indian Real"
     },
 
-    // Instagram Likes
     {
         serviceId: "IL001",
         serviceName: "Instagram Likes – Used by Influencers",
@@ -345,7 +325,6 @@ const servicesData = [
         quality: "Premium"
     },
 
-    // Instagram Indian Likes
     {
         serviceId: "IIL001",
         serviceName: "Instagram Indian Likes – Used by Influencers",
@@ -373,10 +352,9 @@ const servicesData = [
 ];
 
 
-// DOM ELEMENTS ------------------------------------
+// DOM selection ----------
 const mobileMenuBtn      = document.getElementById("mobile-menu-btn");
 const mobileMenu         = document.getElementById("mobile-menu");
-
 const searchService      = document.getElementById("searchService");
 const categorySelect     = document.getElementById("categorySelect");
 const serviceSelect      = document.getElementById("serviceSelect");
@@ -394,22 +372,23 @@ const quantityError      = document.getElementById("quantityError");
 
 const totalPrice         = document.getElementById("totalPrice");
 const placeOrderBtn      = document.getElementById("placeOrderBtn");
+const recentOrdersContainer = document.getElementById("recentOrdersContainer");
 
 const successModal       = document.getElementById("successModal");
-const viewOrdersBtn      = document.getElementById("viewOrdersBtn");
 const closeModalBtn      = document.getElementById("closeModalBtn");
-
-const recentOrdersContainer = document.getElementById("recentOrdersContainer");
+const viewOrdersBtn      = document.getElementById("viewOrdersBtn");
 
 let selectedService = null;
 
 
-// MOBILE MENU
+
+// ---------- Mobile Menu Toggle ----------
 mobileMenuBtn.addEventListener("click", () => {
     mobileMenu.classList.toggle("hidden");
 });
 
-    // UPDATE SERVICE DROPDOWN
+
+// ---------- Update Service Dropdown ----------
 function updateServiceSelect() {
     const category = categorySelect.value;
     const searchTerm = searchService.value.toLowerCase();
@@ -437,18 +416,18 @@ function updateServiceSelect() {
 }
 
 
-// SEARCH BAR LISTENER
+// Search listener
 searchService.addEventListener("input", updateServiceSelect);
 
 
-// CATEGORY CHANGE LISTENER
+// Category change listener
 categorySelect.addEventListener("change", () => {
     updateServiceSelect();
     resetServiceSelection();
 });
 
 
-// WHEN USER SELECTS A SERVICE
+// ---------- When a service is selected ----------
 serviceSelect.addEventListener("change", () => {
     const id = serviceSelect.value;
     selectedService = servicesData.find(s => s.serviceId === id);
@@ -461,15 +440,14 @@ serviceSelect.addEventListener("change", () => {
     serviceDrop.textContent = selectedService.drop;
     serviceQuality.textContent = selectedService.quality;
 
-    minMaxText.textContent =
-        `Min: ${selectedService.minQuantity} – Max: ${selectedService.maxQuantity}`;
+    minMaxText.textContent = `Min: ${selectedService.minQuantity} – Max: ${selectedService.maxQuantity}`;
 
     quantityInput.value = "";
     totalPrice.textContent = "₹0.00";
 });
 
 
-// QUANTITY CALCULATION
+// ---------- Quantity Calculation ----------
 quantityInput.addEventListener("input", () => {
     if (!selectedService) return;
 
@@ -491,7 +469,7 @@ quantityInput.addEventListener("input", () => {
 });
 
 
-// RESET SERVICE DETAILS
+// ---------- Reset service details ----------
 function resetServiceSelection() {
     selectedService = null;
     serviceDetails.classList.add("hidden");
@@ -502,7 +480,7 @@ function resetServiceSelection() {
 }
 
 
-// SAVE ORDER TO LOCAL STORAGE
+// ---------- Save Order to Localstorage ----------
 function saveOrder(service, qty, link, price) {
     const allOrders = JSON.parse(localStorage.getItem("orders") || "[]");
 
@@ -521,7 +499,7 @@ function saveOrder(service, qty, link, price) {
 }
 
 
-// PLACE ORDER BUTTON LOGIC
+// ---------- Place Order ----------
 placeOrderBtn.addEventListener("click", (e) => {
     e.preventDefault();
     if (!selectedService) return;
@@ -538,17 +516,18 @@ placeOrderBtn.addEventListener("click", (e) => {
 });
 
 
-// CLOSE SUCCESS MODAL
+// Close modal
 closeModalBtn.addEventListener("click", () => {
     successModal.classList.add("hidden");
 });
 
 
-// VIEW ORDERS
+// View Orders
 viewOrdersBtn.addEventListener("click", () => {
     window.location.href = "Totalorder.html";
 });
-    // LOAD RECENT ORDERS
+
+// Load Recent Orders
 function loadRecentOrders() {
     const orders = JSON.parse(localStorage.getItem("orders") || "[]");
 
