@@ -102,7 +102,7 @@ Already have an account? <span class="text-[#0052FF] font-semibold">Login</span>
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -131,7 +131,13 @@ document.getElementById("registerBtn").onclick = async function () {
     if(pass !== cpass) return show("Passwords do not match");
 
     try {
-        await createUserWithEmailAndPassword(auth, email, pass);
+        let userCred = await createUserWithEmailAndPassword(auth, email, pass);
+
+        // ⭐ Save full name in Firebase profile
+        await updateProfile(userCred.user, {
+            displayName: name
+        });
+
         window.location.href = "index.html";
     } 
     catch(err){
