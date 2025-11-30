@@ -15,11 +15,67 @@
 <style>
 .material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20; font-size: 20px; }
 .form-input-container { position: relative; }
-.form-input-container .material-symbols-outlined { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #D1D5DB; pointer-events: none; }
+.form-input-container .material-symbols-outlined { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #D1D5DB; pointer-events:none; }
 .form-input-container .form-input { padding-left: 3rem; }
-.toggle-password { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: #D1D5DB; cursor: pointer; }
-.toggle-password:hover { color: #111827; }
+.toggle-password { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color:#D1D5DB; cursor:pointer; }
+.toggle-password:hover { color:#111827; }
 </style>
+
+<!-- ⭐ Firebase SDK -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } 
+    from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+      authDomain: "getxh-42588.firebaseapp.com",
+      projectId: "getxh-42588",
+      storageBucket: "getxh-42588.firebasestorage.app",
+      messagingSenderId: "170770122888",
+      appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+
+    // Login button handler
+    window.loginNow = function () {
+        let email = document.getElementById("email").value.trim();
+        let password = document.getElementById("password").value.trim();
+        let errorBox = document.getElementById("errorBox");
+
+        if (!email) {
+            errorBox.textContent = "Email cannot be empty";
+            errorBox.classList.remove("hidden");
+            return;
+        }
+
+        if (!password) {
+            errorBox.textContent = "Password cannot be empty";
+            errorBox.classList.remove("hidden");
+            return;
+        }
+
+        signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+            localStorage.setItem("getxh_user_logged_in", "yes");
+            localStorage.setItem("getxh_current_user", email);
+
+            window.location.href = "Dashboard.html";
+        })
+        .catch((error) => {
+            let msg = "Invalid email or password";
+            if (error.code === "auth/user-not-found") msg = "No account exists with this email";
+            if (error.code === "auth/wrong-password") msg = "Incorrect password";
+            if (error.code === "auth/invalid-email") msg = "Enter a valid email";
+
+            errorBox.textContent = msg;
+            errorBox.classList.remove("hidden");
+        });
+    };
+</script>
+
 </head>
 
 <body class="font-display">
@@ -45,7 +101,7 @@
 <div class="flex flex-col">
 <label class="text-[#111827] text-sm font-medium mb-2">Email</label>
 <div class="form-input-container">
-<input class="form-input w-full rounded-lg border border-[#D1D5DB] h-12 px-4" id="email" type="email" placeholder="you@example.com"/>
+<input id="email" type="email" class="form-input w-full rounded-lg border border-[#D1D5DB] h-12 px-4" placeholder="you@example.com"/>
 <span class="material-symbols-outlined">mail</span>
 </div>
 </div>
@@ -53,9 +109,9 @@
 <div class="flex flex-col">
 <label class="text-[#111827] text-sm font-medium mb-2">Password</label>
 <div class="form-input-container">
-<input class="form-input w-full rounded-lg border border-[#D1D5DB] h-12 px-4" id="password" type="password" placeholder="Enter your password"/>
+<input id="password" type="password" class="form-input w-full rounded-lg border border-[#D1D5DB] h-12 px-4" placeholder="Enter your password"/>
 <span class="material-symbols-outlined">lock</span>
-<div class="toggle-password">
+<div class="toggle-password" onclick="togglePassword()">
 <span class="material-symbols-outlined">visibility</span>
 </div>
 </div>
@@ -64,16 +120,9 @@
 </div>
 
 <div class="mt-6 flex flex-col gap-4">
-<button id="loginBtn" class="w-full h-12 bg-[#0052FF] text-white rounded-lg font-semibold hover:bg-[#0045d6]">
+<button onclick="loginNow()" class="w-full h-12 bg-[#0052FF] text-white rounded-lg font-semibold hover:bg-[#0045d6]">
     Sign In
 </button>
-
-<div style="display:none;">
-<button class="w-full h-12 bg-white border border-[#D1D5DB] rounded-lg flex items-center justify-center font-semibold">
-    <img class="w-5 h-5 mr-3" src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA"/>
-    Sign in with Google
-</button>
-</div>
 </div>
 
 <div class="flex justify-between items-center mt-6">
@@ -90,60 +139,12 @@ Don't have an account? <span class="text-[#0052FF] font-semibold">Register</span
 
 </div>
 
-<!-- ⭐ Firebase SDK + Config + Initialize -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
-        authDomain: "getxh-42588.firebaseapp.com",
-        projectId: "getxh-42588",
-        storageBucket: "getxh-42588.firebasestorage.app",
-        messagingSenderId: "170770122888",
-        appId: "1:170770122888:web:7adcf91077d5695b06b73d"
-    };
-
-    const app = initializeApp(firebaseConfig);
-</script>
-
 <script>
-document.querySelector(".toggle-password").onclick = function () {
-    let pass = document.getElementById("password");
-    pass.type = pass.type === "password" ? "text" : "password";
-};
-
-document.getElementById("loginBtn").onclick = function () {
-    let email = document.getElementById("email").value.trim();
-    let password = document.getElementById("password").value.trim();
-    let errorBox = document.getElementById("errorBox");
-
-    if(email === ""){
-        errorBox.textContent = "Email cannot be empty";
-        errorBox.classList.remove("hidden");
-        return;
-    }
-    if(password === ""){
-        errorBox.textContent = "Password cannot be empty";
-        errorBox.classList.remove("hidden");
-        return;
-    }
-
-    let users = JSON.parse(localStorage.getItem("getxh_users") || "[]");
-
-    let found = users.find(u => u.email === email && u.password === password);
-
-    if(!found){
-        errorBox.textContent = "Invalid email or password";
-        errorBox.classList.remove("hidden");
-        return;
-    }
-
-    localStorage.setItem("getxh_user_logged_in", "yes");
-    localStorage.setItem("getxh_current_user", email);
-
-    window.location.href = "Dashboard.html";
-};
+function togglePassword() {
+    let p = document.getElementById("password");
+    p.type = p.type === "password" ? "text" : "password";
+}
 </script>
 
 </body>
-                                                                              </html>
+</html>
