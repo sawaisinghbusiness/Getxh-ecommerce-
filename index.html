@@ -12,61 +12,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
-<script>
-    tailwind.config = {
-        darkMode: "class",
-        theme: {
-            extend: {
-                colors: {
-                    "primary": "#3856ff",
-                    "background-light": "#f5f6f8",
-                    "background-dark": "#0f1223",
-                },
-                fontFamily: {
-                    "display": ["Inter", "sans-serif"]
-                },
-                borderRadius: {
-                    "DEFAULT": "0.5rem",
-                    "lg": "0.75rem",
-                    "xl": "1.5rem",
-                    "full": "9999px"
-                },
-            },
-        },
-    }
-</script>
-
 <style>
-.material-symbols-outlined {
-    font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20;
-    font-size: 20px;
-}
+.material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20; font-size: 20px; }
 .form-input-container { position: relative; }
-.form-input-container .material-symbols-outlined {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #D1D5DB;
-    pointer-events: none;
-}
+.form-input-container .material-symbols-outlined { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #D1D5DB; pointer-events: none; }
 .form-input-container .form-input { padding-left: 3rem; }
-.form-input-container .form-input:focus ~ .material-symbols-outlined {
-    color: #0052FF;
-}
-.toggle-password {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #D1D5DB;
-    cursor: pointer;
-}
+.toggle-password { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: #D1D5DB; cursor: pointer; }
 .toggle-password:hover { color: #111827; }
 </style>
 </head>
 
 <body class="font-display">
+
+<script>
+// Redirect if already logged in
+if(localStorage.getItem("getxh_user_logged_in") === "yes"){
+    window.location.href = "Dashboard.html";
+}
+</script>
 
 <div class="relative flex min-h-screen w-full flex-col items-center justify-center bg-white overflow-x-hidden">
 
@@ -81,6 +44,8 @@
 <div class="w-full rounded-lg bg-white p-8 shadow-[0_4px_24px_rgba(209,213,219,0.3)]">
 
 <h1 class="text-[#111827] text-3xl font-bold text-center pb-8">Welcome Back</h1>
+
+<div id="errorBox" class="hidden mb-4 text-red-600 font-medium text-center"></div>
 
 <div class="flex flex-col gap-4">
 
@@ -109,7 +74,7 @@
 
 <!-- SIGN IN BUTTON -->
 <div class="mt-6 flex flex-col gap-4">
-<button onclick="window.location.href='Dashboard.html'" class="w-full h-12 bg-[#0052FF] text-white rounded-lg font-semibold hover:bg-[#0045d6]">
+<button id="loginBtn" class="w-full h-12 bg-[#0052FF] text-white rounded-lg font-semibold hover:bg-[#0045d6]">
     Sign In
 </button>
 
@@ -135,6 +100,49 @@ Don't have an account? <span class="text-[#0052FF] font-semibold">Register</span
 </div>
 
 </div>
+
+<script>
+// PASSWORD SHOW/HIDE
+document.querySelector(".toggle-password").onclick = function () {
+    let pass = document.getElementById("password");
+    pass.type = pass.type === "password" ? "text" : "password";
+};
+
+// LOGIN LOGIC
+document.getElementById("loginBtn").onclick = function () {
+    let email = document.getElementById("email").value.trim();
+    let password = document.getElementById("password").value.trim();
+    let errorBox = document.getElementById("errorBox");
+
+    if(email === ""){
+        errorBox.textContent = "Email cannot be empty";
+        errorBox.classList.remove("hidden");
+        return;
+    }
+
+    if(password === ""){
+        errorBox.textContent = "Password cannot be empty";
+        errorBox.classList.remove("hidden");
+        return;
+    }
+
+    // Default test account
+    let validEmail = "test@getxh.com";
+    let validPass = "123456";
+
+    if(email !== validEmail || password !== validPass){
+        errorBox.textContent = "Invalid email or password";
+        errorBox.classList.remove("hidden");
+        return;
+    }
+
+    // Save login status
+    localStorage.setItem("getxh_user_logged_in", "yes");
+
+    // Redirect
+    window.location.href = "Dashboard.html";
+};
+</script>
 
 </body>
 </html>
