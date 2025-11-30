@@ -98,9 +98,11 @@ Already have an account? <span class="text-[#0052FF] font-semibold">Login</span>
 </div>
 </div>
 
-<!-- ⭐ Firebase SDK + Config -->
+<!-- ⭐ Firebase SDK + Auth -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -112,17 +114,9 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-</script>
+const auth = getAuth(app);
 
-<script>
-// Show / Hide Password
-function togglePass(id, el){
-    let input = document.getElementById(id);
-    input.type = input.type === "password" ? "text" : "password";
-}
-
-// REGISTER BUTTON LOGIC
-document.getElementById("registerBtn").onclick = function () {
+document.getElementById("registerBtn").onclick = async function () {
 
     let name = document.getElementById("name").value.trim();
     let email = document.getElementById("email").value.trim();
@@ -130,41 +124,33 @@ document.getElementById("registerBtn").onclick = function () {
     let cpass = document.getElementById("confirmPassword").value.trim();
     let errorBox = document.getElementById("errorBox");
 
-    if(name === ""){
-        showError("Name cannot be empty"); return;
-    }
-    if(email === ""){
-        showError("Email cannot be empty"); return;
-    }
-    if(!email.includes("@") || !email.includes(".")){
-        showError("Enter a valid email"); return;
-    }
-    if(pass.length < 6){
-        showError("Password must be at least 6 characters"); return;
-    }
-    if(pass !== cpass){
-        showError("Passwords do not match"); return;
-    }
+    if(name === "") return show("Name cannot be empty");
+    if(email === "") return show("Email cannot be empty");
+    if(!email.includes("@")) return show("Enter a valid email");
+    if(pass.length < 6) return show("Password must be at least 6 characters");
+    if(pass !== cpass) return show("Passwords do not match");
 
-    let users = JSON.parse(localStorage.getItem("getxh_users") || "[]");
-
-    let exists = users.some(u => u.email === email);
-    if(exists){
-        showError("This email is already registered");
-        return;
+    try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+        window.location.href = "index.html";
+    } 
+    catch(err){
+        show(err.message);
     }
-
-    users.push({ name:name, email:email, password:pass });
-
-    localStorage.setItem("getxh_users", JSON.stringify(users));
-
-    window.location.href = "index.html";
 };
 
-function showError(msg){
+function show(msg){
     let box = document.getElementById("errorBox");
     box.textContent = msg;
     box.classList.remove("hidden");
+}
+
+</script>
+
+<script>
+function togglePass(id){
+    let i = document.getElementById(id);
+    i.type = i.type === "password" ? "text" : "password";
 }
 </script>
 
