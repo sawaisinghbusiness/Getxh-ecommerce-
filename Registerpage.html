@@ -12,54 +12,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
-<script>
-tailwind.config = {
-    darkMode: "class",
-    theme: {
-        extend: {
-            colors: {
-                "primary": "#3856ff",
-                "background-light": "#f5f6f8",
-                "background-dark": "#0f1223",
-            },
-            fontFamily: {
-                "display": ["Inter", "sans-serif"]
-            },
-            borderRadius: {
-                "DEFAULT": "0.5rem",
-                "lg": "0.75rem",
-                "xl": "1.5rem",
-                "full": "9999px"
-            },
-        },
-    },
-}
-</script>
-
 <style>
 .material-symbols-outlined {
     font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20;
     font-size: 20px;
 }
-.form-input-container {
-    position: relative;
-}
+.form-input-container { position: relative; }
 .form-input-container .material-symbols-outlined {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #D1D5DB;
-    pointer-events: none;
+    position: absolute; left: 1rem; top: 50%;
+    transform: translateY(-50%); color: #D1D5DB;
 }
-.form-input-container .form-input {
-    padding-left: 3rem;
-}
-.form-input-container .form-input:focus ~ .material-symbols-outlined {
-    color: #0052FF;
-}
+.form-input-container .form-input { padding-left: 3rem; }
 </style>
-
 </head>
 
 <body class="font-display">
@@ -69,6 +33,7 @@ tailwind.config = {
 <div class="px-4 flex flex-1 justify-center items-center py-10">
 <div class="w-full max-w-md">
 
+<!-- LOGO -->
 <div class="flex flex-col items-center mb-8">
 <h2 class="text-3xl font-bold tracking-tighter text-[#111827]">GETXH</h2>
 <div class="mt-1 h-0.5 w-12 bg-[#0052FF]"></div>
@@ -76,7 +41,9 @@ tailwind.config = {
 
 <div class="w-full rounded-lg bg-white p-8 shadow-[0_4px_24px_rgba(209,213,219,0.3)]">
 
-<h1 class="text-[#111827] text-3xl font-bold leading-tight text-center pb-8">Create Account</h1>
+<h1 class="text-[#111827] text-3xl font-bold leading-tight text-center pb-6">Create Account</h1>
+
+<div id="errorBox" class="hidden mb-4 text-red-600 font-medium text-center"></div>
 
 <div class="flex flex-col gap-4">
 
@@ -84,7 +51,7 @@ tailwind.config = {
 <div>
 <label class="text-sm font-medium text-[#111827] mb-2">Full Name</label>
 <div class="form-input-container">
-<input class="form-input w-full h-12 rounded-lg border border-[#D1D5DB] px-4" type="text" placeholder="Your Name"/>
+<input id="reg_name" class="form-input w-full h-12 rounded-lg border border-[#D1D5DB] px-4" type="text" placeholder="Your Name"/>
 <span class="material-symbols-outlined">person</span>
 </div>
 </div>
@@ -93,7 +60,7 @@ tailwind.config = {
 <div>
 <label class="text-sm font-medium text-[#111827] mb-2">Email</label>
 <div class="form-input-container">
-<input class="form-input w-full h-12 rounded-lg border border-[#D1D5DB] px-4" type="email" placeholder="you@example.com"/>
+<input id="reg_email" class="form-input w-full h-12 rounded-lg border border-[#D1D5DB] px-4" type="email" placeholder="you@example.com"/>
 <span class="material-symbols-outlined">mail</span>
 </div>
 </div>
@@ -102,7 +69,7 @@ tailwind.config = {
 <div>
 <label class="text-sm font-medium text-[#111827] mb-2">Password</label>
 <div class="form-input-container">
-<input class="form-input w-full h-12 rounded-lg border border-[#D1D5DB] px-4" type="password" placeholder="Enter password"/>
+<input id="reg_pass" class="form-input w-full h-12 rounded-lg border border-[#D1D5DB] px-4" type="password" placeholder="Enter password"/>
 <span class="material-symbols-outlined">lock</span>
 </div>
 </div>
@@ -111,7 +78,7 @@ tailwind.config = {
 <div>
 <label class="text-sm font-medium text-[#111827] mb-2">Confirm Password</label>
 <div class="form-input-container">
-<input class="form-input w-full h-12 rounded-lg border border-[#D1D5DB] px-4" type="password" placeholder="Confirm password"/>
+<input id="reg_cpass" class="form-input w-full h-12 rounded-lg border border-[#D1D5DB] px-4" type="password" placeholder="Confirm password"/>
 <span class="material-symbols-outlined">lock</span>
 </div>
 </div>
@@ -120,24 +87,70 @@ tailwind.config = {
 
 <!-- REGISTER BUTTON -->
 <div class="mt-6 flex flex-col gap-4">
-<button onclick="window.location.href='Dashboard.html'" class="w-full h-12 bg-[#0052FF] text-white rounded-lg font-semibold hover:bg-[#0045d6]">
+<button id="registerBtn" class="w-full h-12 bg-[#0052FF] text-white rounded-lg font-semibold hover:bg-[#0045d6]">
     Create Account
 </button>
 </div>
 
 <!-- FOOTER -->
 <div class="flex justify-center items-center mt-6">
-<a class="text-sm font-medium text-[#111827]" href="Login.html">
+<a class="text-sm font-medium text-[#111827]" href="index.html">
 Already have an account? <span class="text-[#0052FF] font-semibold">Sign In</span>
 </a>
 </div>
 
 </div>
-
 </div>
 </div>
 
-</div>
+<script>
+// REGISTER LOGIC
+document.getElementById("registerBtn").onclick = function () {
+    let name = document.getElementById("reg_name").value.trim();
+    let email = document.getElementById("reg_email").value.trim();
+    let pass = document.getElementById("reg_pass").value.trim();
+    let cpass = document.getElementById("reg_cpass").value.trim();
+    let errorBox = document.getElementById("errorBox");
+
+    if(name === ""){
+        errorBox.textContent = "Full name cannot be empty";
+        errorBox.classList.remove("hidden");
+        return;
+    }
+    if(email === ""){
+        errorBox.textContent = "Email cannot be empty";
+        errorBox.classList.remove("hidden");
+        return;
+    }
+    if(pass === ""){
+        errorBox.textContent = "Password cannot be empty";
+        errorBox.classList.remove("hidden");
+        return;
+    }
+    if(pass.length < 6){
+        errorBox.textContent = "Password must be at least 6 characters";
+        errorBox.classList.remove("hidden");
+        return;
+    }
+    if(cpass !== pass){
+        errorBox.textContent = "Passwords do not match";
+        errorBox.classList.remove("hidden");
+        return;
+    }
+
+    // SAVE USER
+    let userData = {
+        name: name,
+        email: email,
+        password: pass
+    };
+
+    localStorage.setItem("getxh_user", JSON.stringify(userData));
+
+    // Redirect to login page
+    window.location.href = "index.html";
+};
+</script>
 
 </body>
-        </html>
+</html>
