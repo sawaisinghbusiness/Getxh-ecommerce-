@@ -31,7 +31,7 @@
 
 <h2 class="text-center text-3xl font-bold text-[#111827] mb-8">Create Account</h2>
 
-<!-- ERROR BOX -->
+<!-- ERROR -->
 <div id="errorBox" class="hidden mb-4 text-red-600 text-center font-medium"></div>
 
 <!-- FULL NAME -->
@@ -98,59 +98,38 @@ document.getElementById("registerBtn").onclick = function () {
     let errorBox = document.getElementById("errorBox");
 
     // VALIDATION
-    if (name === "") {
-        errorBox.textContent = "Full name is required";
-        errorBox.classList.remove("hidden");
-        return;
-    }
+    if (name === "") return showError("Full name is required");
+    if (email === "") return showError("Email is required");
+    if (!isValidEmail(email)) return showError("Enter a valid email");
+    if (pass.length < 6) return showError("Password must be at least 6 characters");
+    if (pass !== cpass) return showError("Passwords do not match");
 
-    if (email === "") {
-        errorBox.textContent = "Email is required";
-        errorBox.classList.remove("hidden");
-        return;
-    }
-
-    if (!isValidEmail(email)) {
-        errorBox.textContent = "Enter a valid email";
-        errorBox.classList.remove("hidden");
-        return;
-    }
-
-    if (pass.length < 6) {
-        errorBox.textContent = "Password must be at least 6 characters";
-        errorBox.classList.remove("hidden");
-        return;
-    }
-
-    if (pass !== cpass) {
-        errorBox.textContent = "Passwords do not match";
-        errorBox.classList.remove("hidden");
-        return;
-    }
-
-    // CHECK DUPLICATE EMAIL
     let savedUsers = JSON.parse(localStorage.getItem("getxh_users") || "[]");
 
-    let exists = savedUsers.some(u => u.email === email);
-    if (exists) {
-        errorBox.textContent = "Email already registered";
-        errorBox.classList.remove("hidden");
-        return;
+    // Duplicate check
+    if (savedUsers.some(u => u.email === email)) {
+        return showError("Email already registered");
     }
 
-    // SAVE USER
-    let newUser = {
+    // Save user
+    savedUsers.push({
         name: name,
         email: email,
         password: pass
-    };
+    });
 
-    savedUsers.push(newUser);
     localStorage.setItem("getxh_users", JSON.stringify(savedUsers));
 
-    // REDIRECT
+    // Redirect to login
     window.location.href = "index.html";
 };
+
+// Error function
+function showError(msg) {
+    let errorBox = document.getElementById("errorBox");
+    errorBox.textContent = msg;
+    errorBox.classList.remove("hidden");
+}
 </script>
 
 </body>
