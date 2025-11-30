@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>GETXH - Register</title>
+<title>GETXH - Login</title>
 
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
@@ -13,123 +13,141 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
 <style>
-.material-symbols-outlined { font-size: 20px; }
+.material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20; font-size: 20px; }
 .form-input-container { position: relative; }
-.form-input-container .material-symbols-outlined {
-    position: absolute; left: 1rem; top: 50%;
-    transform: translateY(-50%); color: #D1D5DB;
-}
+.form-input-container .material-symbols-outlined { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #D1D5DB; pointer-events: none; }
 .form-input-container .form-input { padding-left: 3rem; }
+.toggle-password { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: #D1D5DB; cursor: pointer; }
+.toggle-password:hover { color: #111827; }
 </style>
 </head>
 
-<body class="font-display bg-white">
+<body class="font-display">
 
-<div class="min-h-screen flex items-center justify-center px-4">
+<script>
+// Already logged in?
+if (localStorage.getItem("getxh_user_logged_in") === "yes") {
+    window.location.href = "Dashboard.html";
+}
+</script>
 
-<div class="w-full max-w-md bg-white p-8 rounded-lg shadow-xl">
+<div class="relative flex min-h-screen w-full flex-col items-center justify-center bg-white overflow-x-hidden">
 
-<h2 class="text-center text-3xl font-bold text-[#111827] mb-8">Create Account</h2>
+<div class="px-4 flex flex-1 justify-center items-center py-10">
+<div class="w-full max-w-md flex-col items-center">
 
-<!-- ERROR -->
-<div id="errorBox" class="hidden mb-4 text-red-600 text-center font-medium"></div>
-
-<!-- FULL NAME -->
-<div class="mb-4">
-<label class="text-sm font-medium text-gray-700 mb-1">Full Name</label>
-<div class="form-input-container">
-<input id="reg_name" class="form-input w-full h-12 border rounded-lg px-4" type="text" placeholder="Your Name"/>
-<span class="material-symbols-outlined">person</span>
+<div class="flex flex-col items-center mb-8">
+<h2 class="text-3xl font-bold tracking-tighter text-[#111827]">GETXH</h2>
+<div class="mt-1 h-0.5 w-12 bg-[#0052FF]"></div>
 </div>
-</div>
 
-<!-- EMAIL -->
-<div class="mb-4">
-<label class="text-sm font-medium text-gray-700 mb-1">Email</label>
+<div class="w-full rounded-lg bg-white p-8 shadow-[0_4px_24px_rgba(209,213,219,0.3)]">
+
+<h1 class="text-[#111827] text-3xl font-bold text-center pb-8">Welcome Back</h1>
+
+<div id="errorBox" class="hidden mb-4 text-red-600 font-medium text-center"></div>
+
+<div class="flex flex-col gap-4">
+
+<!-- Email -->
+<div class="flex flex-col">
+<label class="text-[#111827] text-sm font-medium mb-2">Email</label>
 <div class="form-input-container">
-<input id="reg_email" class="form-input w-full h-12 border rounded-lg px-4" type="email" placeholder="you@example.com"/>
+<input class="form-input w-full rounded-lg border border-[#D1D5DB] h-12 px-4" id="email" type="email" placeholder="you@example.com"/>
 <span class="material-symbols-outlined">mail</span>
 </div>
 </div>
 
-<!-- PASSWORD -->
-<div class="mb-4">
-<label class="text-sm font-medium text-gray-700 mb-1">Password</label>
+<!-- Password -->
+<div class="flex flex-col">
+<label class="text-[#111827] text-sm font-medium mb-2">Password</label>
 <div class="form-input-container">
-<input id="reg_pass" class="form-input w-full h-12 border rounded-lg px-4" type="password" placeholder="Enter password"/>
+<input class="form-input w-full rounded-lg border border-[#D1D5DB] h-12 px-4" id="password" type="password" placeholder="Enter your password"/>
 <span class="material-symbols-outlined">lock</span>
+<div class="toggle-password">
+<span class="material-symbols-outlined">visibility</span>
+</div>
 </div>
 </div>
 
-<!-- CONFIRM PASSWORD -->
-<div class="mb-6">
-<label class="text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-<div class="form-input-container">
-<input id="reg_cpass" class="form-input w-full h-12 border rounded-lg px-4" type="password" placeholder="Confirm password"/>
-<span class="material-symbols-outlined">lock</span>
-</div>
 </div>
 
-<!-- BUTTON -->
-<button id="registerBtn" class="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold">
-Create Account
+<!-- SIGN IN BUTTON -->
+<div class="mt-6 flex flex-col gap-4">
+<button id="loginBtn" class="w-full h-12 bg-[#0052FF] text-white rounded-lg font-semibold hover:bg-[#0045d6]">
+    Sign In
 </button>
 
-<div class="text-center mt-6">
-<a href="index.html" class="text-sm font-medium text-[#111827]">Already have an account?
-<span class="text-blue-600 font-semibold">Sign In</span></a>
+<!-- GOOGLE LOGIN HIDDEN -->
+<div style="display:none;">
+<button class="w-full h-12 bg-white border border-[#D1D5DB] rounded-lg flex items-center justify-center font-semibold">
+    <img class="w-5 h-5 mr-3" 
+src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA"/>
+    Sign in with Google
+</button>
+</div>
+</div>
+
+<!-- FOOTER LINKS -->
+<div class="flex justify-between items-center mt-6">
+<a class="text-sm font-medium text-[#0052FF]" href="#">Forgot Password?</a>
+<a class="text-sm font-medium text-[#111827]" href="Registerpage.html">
+Don't have an account? <span class="text-[#0052FF] font-semibold">Register</span>
+</a>
 </div>
 
 </div>
 </div>
+</div>
 
+</div>
+
+<!-- FINAL LOGIN SCRIPT -->
 <script>
-// Email validation
-function isValidEmail(email) {
-    return /\S+@\S+\.\S+/.test(email);
-}
-
-document.getElementById("registerBtn").onclick = function () {
-
-    let name = document.getElementById("reg_name").value.trim();
-    let email = document.getElementById("reg_email").value.trim();
-    let pass = document.getElementById("reg_pass").value.trim();
-    let cpass = document.getElementById("reg_cpass").value.trim();
-    let errorBox = document.getElementById("errorBox");
-
-    // VALIDATION
-    if (name === "") return showError("Full name is required");
-    if (email === "") return showError("Email is required");
-    if (!isValidEmail(email)) return showError("Enter a valid email");
-    if (pass.length < 6) return showError("Password must be at least 6 characters");
-    if (pass !== cpass) return showError("Passwords do not match");
-
-    let savedUsers = JSON.parse(localStorage.getItem("getxh_users") || "[]");
-
-    // Duplicate check
-    if (savedUsers.some(u => u.email === email)) {
-        return showError("Email already registered");
-    }
-
-    // Save user
-    savedUsers.push({
-        name: name,
-        email: email,
-        password: pass
-    });
-
-    localStorage.setItem("getxh_users", JSON.stringify(savedUsers));
-
-    // Redirect to login
-    window.location.href = "index.html";
+// Show/Hide password
+document.querySelector(".toggle-password").onclick = function () {
+    let pass = document.getElementById("password");
+    pass.type = pass.type === "password" ? "text" : "password";
 };
 
-// Error function
-function showError(msg) {
+// LOGIN SYSTEM (FIXED)
+document.getElementById("loginBtn").onclick = function () {
+
+    let email = document.getElementById("email").value.trim();
+    let password = document.getElementById("password").value.trim();
     let errorBox = document.getElementById("errorBox");
-    errorBox.textContent = msg;
-    errorBox.classList.remove("hidden");
-}
+
+    if (email === "") {
+        errorBox.textContent = "Email cannot be empty";
+        errorBox.classList.remove("hidden");
+        return;
+    }
+
+    if (password === "") {
+        errorBox.textContent = "Password cannot be empty";
+        errorBox.classList.remove("hidden");
+        return;
+    }
+
+    // Read registered users
+    let users = JSON.parse(localStorage.getItem("getxh_users") || "[]");
+
+    // Find login match
+    let matchedUser = users.find(u => u.email === email && u.password === password);
+
+    if (!matchedUser) {
+        errorBox.textContent = "Invalid email or password";
+        errorBox.classList.remove("hidden");
+        return;
+    }
+
+    // Save session
+    localStorage.setItem("getxh_user_logged_in", "yes");
+    localStorage.setItem("getxh_current_user", JSON.stringify(matchedUser));
+
+    // Redirect to Dashboard
+    window.location.href = "Dashboard.html";
+};
 </script>
 
 </body>
