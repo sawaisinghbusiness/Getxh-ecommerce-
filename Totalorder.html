@@ -1,352 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Orders - GETXH</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Order - GETXH</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
+        body { background-color: #f5f6fa; }
     </style>
 </head>
-<body class="bg-[#f5f6fa]">
-    
-    <!-- Navbar -->
-    <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <h1 class="text-2xl font-bold text-blue-600">GETXH</h1>
-                </div>
 
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex space-x-8">
-                    <a href="Dashboard.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
-                    <a href="Neworder.html" class="text-gray-700 hover:text-blue-600 transition">New Order</a>
-                    <!-- <a href="Servicepage.html" class="text-gray-700 hover:text-blue-600">Services</a> -->
-                    <a href="Totalorder.html" class="text-blue-600 font-semibold hover:text-blue-700 transition">Orders</a>
-                    <a href="Support.html" class="text-gray-700 hover:text-blue-600 transition">Support</a>
-                </div>
-                <!-- User Profile & Logout -->
-                <div class="hidden md:flex items-center space-x-4">
-                    <div class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
-                        <span class="material-symbols-outlined text-blue-600">person</span>
-                    </div>
-                    <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
-                        Logout
-                    </button>
-                </div>
+<body class="min-h-screen">
 
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden">
-                    <button id="mobile-menu-btn" class="text-gray-700 focus:outline-none">
-                        <span class="material-symbols-outlined text-3xl">menu</span>
-                    </button>
-                </div>
+<!-- Navbar -->
+<nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <a href="Dashboard.html" class="text-2xl font-bold text-blue-600">GETXH</a>
+
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="Dashboard.html">Dashboard</a>
+                <a href="Neworder.html" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">New Order</a>
+                <a href="Totalorder.html">Orders</a>
+                <a href="Support.html">Support</a>
             </div>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
-            <div class="px-4 pt-2 pb-4 space-y-2">
-                <a href="Dashboard.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
-                <a href="Neworder.html" class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">New Order</a>
-                <!-- <a href="Servicepage.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Services</a> -->
-                <a href="Totalorder.html" class="block px-3 py-2 rounded-md text-blue-600 font-semibold bg-blue-50">Orders</a>
-                <a href="Support.html" class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">Support</a>
-                <div class="flex items-center justify-between pt-3 border-t">
-                    <div class="flex items-center space-x-2">
-                        <div class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
-                            <span class="material-symbols-outlined text-blue-600">person</span>
-                        </div>
-                        <span class="text-gray-700 font-medium">User</span>
-                    </div>
-                    <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition text-sm">
-                        Logout
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        <!-- Page Title -->
-        <div class="mb-8">
-            <h2 class="text-3xl font-bold text-gray-800 mb-2">Your Orders</h2>
-            <p class="text-gray-600">View all your orders in one place.</p>
-        </div>
-
-        <!-- Empty State -->
-        <div id="empty-state" class="hidden max-w-md mx-auto bg-white rounded-xl shadow-sm p-12 text-center">
-            <div class="mx-auto flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
-                <span class="material-symbols-outlined text-gray-400 text-5xl">inbox</span>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">No orders yet.</h3>
-            <p class="text-gray-600 mb-6">Start by creating your first order.</p>
-            <a href="Neworder.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition">
-                Create New Order
-            </a>
-        </div>
-        
-<!-- Orders Container -->
-        <div id="orders-container" class="hidden">
-            
-            <!-- Filters -->
-            <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
-                <div class="flex flex-col md:flex-row gap-4">
-                    
-                    <div class="flex-1">
-                        <input type="text" id="search-input" placeholder="Search by Service name or ID..." 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-
-                    <div class="md:w-48">
-                        <select id="status-filter" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="All">All Status</option>
-                            <option value="Processing">Processing</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Canceled">Canceled</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Orders Table -->
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-4">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead class="bg-gray-50 border-b">
-                            <tr>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700">ID</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Category</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Service</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Link</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Quantity</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Price</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Date</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="orders-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-
-        <!-- Bottom Buttons -->
-            <div class="flex flex-col sm:flex-row gap-3 justify-end">
-                <a href="Dashboard.html" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-6 py-3 rounded-lg transition text-center">
-                    Back to Dashboard
-                </a>
-                <a href="Neworder.html" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center">
-                    Create New Order
-                </a>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Order Details Modal -->
-    <div id="details-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-start mb-6">
-                <h3 class="text-2xl font-bold text-gray-800">Order Details</h3>
-                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
-                    <span class="material-symbols-outlined text-3xl">close</span>
-                </button>
-            </div>
-            
-            <div id="modal-content" class="space-y-4"></div>
         </div>
     </div>
+</nav>
 
-    <script>
+<!-- Main Content -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const emptyState = document.getElementById('empty-state');
-        const ordersContainer = document.getElementById('orders-container');
-        const ordersTableBody = document.getElementById('orders-table-body');
-        const searchInput = document.getElementById('search-input');
-        const statusFilter = document.getElementById('status-filter');
-        const detailsModal = document.getElementById('details-modal');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const modalContent = document.getElementById('modal-content');
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Place New Order</h1>
 
-        let allOrders = [];
-        let filteredOrders = [];
+    <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 max-w-4xl mx-auto mb-8">
+        <form id="orderForm">
 
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
+            <input type="text" id="searchService" placeholder="Search for a service..."
+                class="w-full px-4 py-3 border mb-6 rounded-lg">
 
-        function loadOrders() {
-            const v1 = localStorage.getItem('getxh_orders');
-            const v2 = localStorage.getItem('orders');
+            <label class="font-semibold">Category</label>
+            <select id="categorySelect"
+                class="w-full px-4 py-3 border rounded-lg mb-6">
+                <option value="">Select a category</option>
+                <option value="Instagram Followers">Instagram Followers</option>
+                <option value="Instagram Reel Views">Instagram Reel Views</option>
+                <option value="Instagram Likes">Instagram Likes</option>
+                <option value="Instagram Indian Likes">Instagram Indian Likes</option>
+            </select>
 
-            let list = [];
-            if (v1) try { list = list.concat(JSON.parse(v1)); } catch {};
-            if (v2) try { list = list.concat(JSON.parse(v2)); } catch {};
+            <label class="font-semibold">Service</label>
+            <select id="serviceSelect"
+                class="w-full px-4 py-3 border rounded-lg mb-6" disabled>
+                <option value="">Select a service</option>
+            </select>
 
-            allOrders = Array.isArray(list) ? list : [];
+            <div id="serviceDetails" class="hidden p-4 border bg-gray-50 rounded-lg mb-6">
+                <h3 class="font-semibold mb-2">Service Details</h3>
+                <p id="serviceDescription" class="text-sm mb-2"></p>
+                <p class="text-xs">Cancel: <span id="serviceCancel"></span></p>
+                <p class="text-xs">Drop: <span id="serviceDrop"></span></p>
+                <p class="text-xs">Quality: <span id="serviceQuality"></span></p>
+            </div>
 
-            allOrders.sort((a,b)=>{
-                const aId = parseInt(a.id || 0);
-                const bId = parseInt(b.id || 0);
-                return bId-aId;
-            });
+            <label class="font-semibold">Link</label>
+            <input type="text" id="linkInput" class="w-full px-4 py-3 border rounded-lg mb-6">
 
-            if(allOrders.length===0){
-                emptyState.classList.remove('hidden');
-                ordersContainer.classList.add('hidden');
-            } else {
-                emptyState.classList.add('hidden');
-                ordersContainer.classList.remove('hidden');
-                applyFilters();
-            }
-        }
+            <label class="font-semibold">Quantity</label>
+            <p id="minMaxText" class="text-sm text-gray-500 mb-2">Min: 0 – Max: 0</p>
+            <input type="number" id="quantityInput"
+                class="w-full px-4 py-3 border rounded-lg mb-1">
+            <p id="quantityError" class="text-sm text-red-600 hidden mb-4">Invalid quantity</p>
 
-        function persistOrders(){
-            localStorage.setItem('getxh_orders', JSON.stringify(allOrders));
-        }
+            <div class="p-4 bg-gray-50 rounded-lg border mb-6 flex justify-between">
+                <span class="font-semibold">Total Price</span>
+                <span id="totalPrice" class="text-xl font-bold text-blue-600">₹0.00</span>
+            </div>
 
-        function applyFilters(){
-            const term = searchInput.value.toLowerCase();
-            const status = statusFilter.value;
+            <button id="placeOrderBtn" class="w-full bg-blue-600 text-white py-4 rounded-lg disabled:bg-gray-300"
+                disabled>Place Order</button>
 
-            filteredOrders = allOrders.filter(o=>{
-                const st = o.status || 'Processing';
-                const matchStatus = status==='All' || st===status;
-                const matchSearch = 
-                    o.id.toString().includes(term) ||
-                    (o.serviceName||'').toLowerCase().includes(term);
-                return matchStatus && matchSearch;
-            });
+        </form>
+    </div>
 
-            renderOrders();
-        }
+    <!-- Recent Orders -->
+    <div class="bg-white rounded-xl shadow-md p-6 max-w-4xl mx-auto">
+        <h3 class="text-xl font-bold mb-4">Your Recent Orders</h3>
+        <div id="recentOrdersContainer"></div>
+        <a href="Totalorder.html" class="text-blue-600 block text-right mt-4">View all orders →</a>
+    </div>
 
-        function renderOrders(){
-            if(filteredOrders.length===0){
-                ordersTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="9" class="px-4 py-12 text-center text-gray-500">
-                            No orders found matching your filters.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
+</div>
 
-            ordersTableBody.innerHTML = "";
+<!-- Success Modal -->
+<div id="successModal"
+     class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+        <div class="text-center mb-4">
+            <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor">
+                    <path stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold">Order placed</h3>
+        </div>
 
-            filteredOrders.forEach(order=>{
-                const status = order.status || 'Processing';
-                let statusColor = 'bg-yellow-100 text-yellow-800';
-                if(status==='Completed') statusColor='bg-green-100 text-green-800';
-                if(status==='Canceled') statusColor='bg-red-100 text-red-800';
+        <div class="flex gap-3">
+            <button onclick="location.href='Totalorder.html'"
+                class="flex-1 bg-blue-600 text-white py-3 rounded-lg">
+                View Orders
+            </button>
+            <button id="closeModalBtn"
+                class="flex-1 bg-gray-200 py-3 rounded-lg">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
 
-                const fullLink = order.link || '';
-                const displayLink = fullLink.length>30 ? fullLink.slice(0,30)+"..." : fullLink;
+<!-- FIREBASE + LOGIC -->
+<script type="module">
 
-                const row = document.createElement('tr');
-                row.className = "border-b hover:bg-gray-50 cursor-pointer";
-                row.onclick=()=>showOrderDetails(order);
+// FIREBASE IMPORT
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { 
+    getFirestore, collection, addDoc, getDocs, query, orderBy, limit 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-                row.innerHTML = `
-                    <td class="px-4 py-3 text-gray-600 font-mono text-xs">#${order.id}</td>
-                    <td class="px-4 py-3 text-gray-800">${order.category||'-'}</td>
-                    <td class="px-4 py-3 text-gray-800 truncate">${order.serviceName||'-'}</td>
-                    <td class="px-4 py-3">
-                        ${ fullLink ?
-                            `<a href="${fullLink}" target="_blank" onclick="event.stopPropagation()" class="text-blue-600 hover:underline">${displayLink}</a>`
-                            : `<span class="text-gray-400 text-xs">No link</span>`
-                        }
-                    </td>
-                    <td class="px-4 py-3">${(order.quantity||0).toLocaleString()}</td>
-                    <td class="px-4 py-3 font-semibold">₹${parseFloat(order.price||0).toFixed(2)}</td>
-                    <td class="px-4 py-3">
-                        <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusColor}">
-                            ${status}
-                        </span>
-                    </td>
-                    <td class="px-4 py-3 text-xs">${order.date||order.createdAt||'-'}</td>
-                    <td class="px-4 py-3">
-                        ${ status==='Processing' ? 
-                            `<button onclick="event.stopPropagation(); cancelOrder('${order.id}')" 
-                             class="px-3 py-1 text-xs bg-red-50 text-red-600 border border-red-300 rounded-full hover:bg-red-100">
-                                Cancel
-                             </button>` : ''
-                        }
-                    </td>
-                `;
+// FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
 
-                ordersTableBody.appendChild(row);
-            });
-        }
+// INIT
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-        function cancelOrder(id){
-            const index = allOrders.findIndex(o=>o.id==id);
-            if(index===-1) return;
+// CURRENT USER UID
+let currentUid = null;
 
-            if(!confirm('Cancel this order?')) return;
-            allOrders[index].status="Canceled";
-            persistOrders();
-            applyFilters();
-            detailsModal.classList.add('hidden');
-        }
+onAuthStateChanged(auth, user => {
+    if (!user) {
+        location.href = "index.html";
+    } else {
+        currentUid = user.uid;
+        loadRecentOrders();
+    }
+});
 
-        function showOrderDetails(order){
-            const status = order.status || 'Processing';
-            const statusColor = 
-                status==="Completed" ? "text-green-600" : 
-                status==="Canceled" ? "text-red-600" : 
-                "text-yellow-600";
 
-            modalContent.innerHTML = `
-                <p class="text-lg font-bold">Order #${order.id}</p>
-                <p class="${statusColor} font-semibold">Status: ${status}</p>
-                <p><b>Service:</b> ${order.serviceName}</p>
-                <p><b>Category:</b> ${order.category}</p>
-                <p><b>Link:</b> <a href="${order.link}" target="_blank" class="text-blue-600 underline break-all">${order.link}</a></p>
-                <p><b>Quantity:</b> ${order.quantity}</p>
-                <p><b>Price:</b> ₹${order.price}</p>
-                <p><b>Date:</b> ${order.date||order.createdAt}</p>
+// ---------------- SERVICES DATA ----------------
+const servicesData = [
+    { serviceId:"IF001", serviceName:"Followers Normal", category:"Instagram Followers", pricePer1000:169, minQuantity:100, maxQuantity:1000000, description:"High quality", cancel:"No", drop:"Low", quality:"High" },
+    { serviceId:"IRV001", serviceName:"Reel Views Real", category:"Instagram Reel Views", pricePer1000:0.36, minQuantity:100, maxQuantity:2000000, description:"Real views", cancel:"Yes", drop:"No", quality:"Real" },
+    { serviceId:"IL001", serviceName:"Likes Normal", category:"Instagram Likes", pricePer1000:27, minQuantity:10, maxQuantity:100000, description:"Real likes", cancel:"No", drop:"Low", quality:"High" }
+];
 
-                ${status==='Processing' ? 
-                    `<button onclick="cancelOrder('${order.id}')" 
-                    class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg">
-                        Cancel Order
-                    </button>` : ''
-                }
-            `;
+// DOM ELEMENTS
+const searchService = document.getElementById("searchService");
+const categorySelect = document.getElementById("categorySelect");
+const serviceSelect = document.getElementById("serviceSelect");
+const serviceDetails = document.getElementById("serviceDetails");
+const serviceDescription = document.getElementById("serviceDescription");
+const serviceCancel = document.getElementById("serviceCancel");
+const serviceDrop = document.getElementById("serviceDrop");
+const serviceQuality = document.getElementById("serviceQuality");
+const linkInput = document.getElementById("linkInput");
+const quantityInput = document.getElementById("quantityInput");
+const minMaxText = document.getElementById("minMaxText");
+const quantityError = document.getElementById("quantityError");
+const totalPrice = document.getElementById("totalPrice");
+const placeOrderBtn = document.getElementById("placeOrderBtn");
+const recentOrdersContainer = document.getElementById("recentOrdersContainer");
+const successModal = document.getElementById("successModal");
+document.getElementById("closeModalBtn").onclick = () => successModal.classList.add("hidden");
 
-            detailsModal.classList.remove('hidden');
-        }
 
-        closeModalBtn.onclick=()=>{
-            detailsModal.classList.add('hidden');
-        };
+let selectedService = null;
 
-        detailsModal.onclick=(e)=>{
-            if(e.target===detailsModal){
-                detailsModal.classList.add('hidden');
-            }
-        };
 
-        searchInput.oninput=applyFilters;
-        statusFilter.onchange=applyFilters;
+// ---------------- SERVICE SELECT UPDATE ----------------
+function updateServiceSelect() {
+    const category = categorySelect.value;
+    const term = searchService.value.toLowerCase();
 
-        loadOrders();
+    serviceSelect.innerHTML = `<option value="">Select a service</option>`;
 
-    </script>
+    if (!category) { serviceSelect.disabled = true; return; }
+
+    const filtered = servicesData.filter(s =>
+        s.category === category &&
+        s.serviceName.toLowerCase().includes(term)
+    );
+
+    filtered.forEach(s => {
+        const op = document.createElement("option");
+        op.value = s.serviceId;
+        op.textContent = `${s.serviceName} – ₹${s.pricePer1000} per 1000`;
+        serviceSelect.appendChild(op);
+    });
+
+    serviceSelect.disabled = filtered.length === 0;
+}
+
+searchService.oninput = updateServiceSelect;
+categorySelect.onchange = () => { updateServiceSelect(); resetService(); };
+
+
+// ---------------- SERVICE DETAILS ----------------
+serviceSelect.onchange = () => {
+    selectedService = servicesData.find(s => s.serviceId === serviceSelect.value);
+
+    if (!selectedService) return;
+
+    serviceDetails.classList.remove("hidden");
+    serviceDescription.textContent = selectedService.description;
+    serviceCancel.textContent = selectedService.cancel;
+    serviceDrop.textContent = selectedService.drop;
+    serviceQuality.textContent = selectedService.quality;
+
+    minMaxText.textContent =
+        `Min: ${selectedService.minQuantity} – Max: ${selectedService.maxQuantity}`;
+
+    quantityInput.value = "";
+    totalPrice.textContent = "₹0.00";
+};
+
+
+// ---------------- PRICE CALCULATION ----------------
+quantityInput.oninput = () => {
+    if (!selectedService) return;
+
+    let qty = parseInt(quantityInput.value);
+
+    if (!qty ||
+        qty < selectedService.minQuantity ||
+        qty > selectedService.maxQuantity
+    ) {
+        quantityError.classList.remove("hidden");
+        placeOrderBtn.disabled = true;
+        totalPrice.textContent = "₹0.00";
+        return;
+    }
+
+    quantityError.classList.add("hidden");
+
+    let price = (qty / 1000) * selectedService.pricePer1000;
+    totalPrice.textContent = `₹${price.toFixed(2)}`;
+
+    placeOrderBtn.disabled = false;
+};
+
+
+// ---------------- SAVE ORDER TO FIREBASE ----------------
+async function saveOrder(service, qty, link, price) {
+    const col = collection(db, "orders", currentUid, "user_orders");
+
+    const now = new Date();
+
+    await addDoc(col, {
+        serviceId: service.serviceId,
+        serviceName: service.serviceName,
+        category: service.category,
+        quantity: qty,
+        link: link,
+        price: parseFloat(price),
+        status: "Processing",
+        createdAt: now.toISOString(),
+        createdAtReadable: now.toLocaleString()
+    });
+}
+
+
+// ---------------- PLACE ORDER ----------------
+placeOrderBtn.onclick = async (e) => {
+    e.preventDefault();
+    if (!selectedService) return;
+
+    let qty = parseInt(quantityInput.value);
+    let link = linkInput.value.trim();
+    let price = totalPrice.textContent.replace("₹","");
+
+    if (!qty || !link) return;
+
+    await saveOrder(selectedService, qty, link, price);
+
+    linkInput.value = "";
+    quantityInput.value = "";
+    resetService();
+
+    successModal.classList.remove("hidden");
+
+    loadRecentOrders();
+};
+
+
+// ---------------- RESET SERVICE ----------------
+function resetService() {
+    selectedService = null;
+    serviceDetails.classList.add("hidden");
+    quantityInput.value = "";
+    totalPrice.textContent = "₹0.00";
+    placeOrderBtn.disabled = true;
+}
+
+
+// ---------------- LOAD RECENT ORDERS ----------------
+async function loadRecentOrders() {
+    if (!currentUid) return;
+
+    const col = collection(db, "orders", currentUid, "user_orders");
+    const q = query(col, orderBy("createdAt", "desc"), limit(3));
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+        recentOrdersContainer.innerHTML =
+            "<p class='text-gray-500 text-sm'>No recent orders.</p>";
+        return;
+    }
+
+    recentOrdersContainer.innerHTML = "";
+
+    snap.forEach(doc => {
+        const o = doc.data();
+
+        const div = document.createElement("div");
+        div.className = "p-4 bg-gray-50 border rounded-lg mb-3";
+
+        div.innerHTML = `
+            <p class="font-semibold">${o.serviceName}</p>
+            <p class="text-xs text-gray-600">Qty: ${o.quantity}</p>
+            <p class="text-xs text-gray-600">₹${o.price}</p>
+            <p class="text-xs text-gray-500">${o.createdAtReadable}</p>
+        `;
+
+        recentOrdersContainer.appendChild(div);
+    });
+}
+
+</script>
 
 </body>
 </html>
