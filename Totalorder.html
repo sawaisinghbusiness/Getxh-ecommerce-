@@ -5,17 +5,178 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Orders - GETXH</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <style>
         .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'opsz' 24;
         }
     </style>
+</head>
+<body class="bg-[#f5f6fa]">
+    
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-blue-600">GETXH</h1>
+                </div>
 
-    <!-- FIREBASE CONFIG -->
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="Dashboard.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
+                    <a href="Neworder.html" class="text-gray-700 hover:text-blue-600 transition">New Order</a>
+                    <!-- <a href="Servicepage.html" class="text-gray-700 hover:text-blue-600">Services</a> -->
+                    <a href="Totalorder.html" class="text-blue-600 font-semibold hover:text-blue-700 transition">Orders</a>
+                    <a href="Support.html" class="text-gray-700 hover:text-blue-600 transition">Support</a>
+                </div>
+                <!-- User Profile & Logout -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <div class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
+                        <span class="material-symbols-outlined text-blue-600">person</span>
+                    </div>
+                    <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
+                        Logout
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-700 focus:outline-none">
+                        <span class="material-symbols-outlined text-3xl">menu</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 pt-2 pb-4 space-y-2">
+                <a href="Dashboard.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
+                <a href="Neworder.html" class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">New Order</a>
+                <!-- <a href="Servicepage.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Services</a> -->
+                <a href="Totalorder.html" class="block px-3 py-2 rounded-md text-blue-600 font-semibold bg-blue-50">Orders</a>
+                <a href="Support.html" class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">Support</a>
+                <div class="flex items-center justify-between pt-3 border-t">
+                    <div class="flex items-center space-x-2">
+                        <div class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
+                            <span class="material-symbols-outlined text-blue-600">person</span>
+                        </div>
+                        <span class="text-gray-700 font-medium">User</span>
+                    </div>
+                    <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition text-sm">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Page Title -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Your Orders</h2>
+            <p class="text-gray-600">View all your orders in one place.</p>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden max-w-md mx-auto bg-white rounded-xl shadow-sm p-12 text-center">
+            <div class="mx-auto flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
+                <span class="material-symbols-outlined text-gray-400 text-5xl">inbox</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">No orders yet.</h3>
+            <p class="text-gray-600 mb-6">Start by creating your first order.</p>
+            <a href="Neworder.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition">
+                Create New Order
+            </a>
+        </div>
+        
+        <!-- Orders Container -->
+        <div id="orders-container" class="hidden">
+            
+            <!-- Filters -->
+            <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
+                <div class="flex flex-col md:flex-row gap-4">
+                    
+                    <div class="flex-1">
+                        <input type="text" id="search-input" placeholder="Search by Service name or ID..." 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="md:w-48">
+                        <select id="status-filter" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="All">All Status</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Canceled">Canceled</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-4">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50 border-b">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-700">ID</th>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Category</th>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Service</th>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Link</th>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Quantity</th>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Price</th>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Date</th>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Bottom Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3 justify-end">
+                <a href="Dashboard.html" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-6 py-3 rounded-lg transition text-center">
+                    Back to Dashboard
+                </a>
+                <a href="Neworder.html" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center">
+                    Create New Order
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Order Details Modal -->
+    <div id="details-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-start mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Order Details</h3>
+                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
+                    <span class="material-symbols-outlined text-3xl">close</span>
+                </button>
+            </div>
+            
+            <div id="modal-content" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <!-- NEW SCRIPT: Firestore + Realtime + 4-digit ID -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { 
+            getFirestore, collection, query, orderBy, onSnapshot, updateDoc, doc 
+        } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+        // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
             authDomain: "getxh-42588.firebaseapp.com",
@@ -25,209 +186,230 @@
             appId: "1:170770122888:web:7adcf91077d5695b06b73d"
         };
 
-        window.firebaseApp = initializeApp(firebaseConfig);
-    </script>
-</head>
+        const app  = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db   = getFirestore(app);
 
-<body class="bg-[#f5f6fa]">
+        // DOM elements
+        const mobileMenuBtn   = document.getElementById('mobile-menu-btn');
+        const mobileMenu      = document.getElementById('mobile-menu');
+        const emptyState      = document.getElementById('empty-state');
+        const ordersContainer = document.getElementById('orders-container');
+        const ordersTableBody = document.getElementById('orders-table-body');
+        const searchInput     = document.getElementById('search-input');
+        const statusFilter    = document.getElementById('status-filter');
+        const detailsModal    = document.getElementById('details-modal');
+        const closeModalBtn   = document.getElementById('close-modal-btn');
+        const modalContent    = document.getElementById('modal-content');
 
-<!-- NAVBAR (unchanged UI) -->
-<nav class="bg-white shadow-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-blue-600">GETXH</h1>
+        let allOrders = [];
+        let filteredOrders = [];
+        let currentUid = null;
+        let unsubscribe = null;
 
-        <div class="hidden md:flex space-x-8">
-            <a href="Dashboard.html">Dashboard</a>
-            <a href="Neworder.html">New Order</a>
-            <a href="Totalorder.html" class="text-blue-600 font-semibold border-b-2 border-blue-600">Orders</a>
-            <a href="Support.html">Support</a>
-        </div>
-    </div>
-</nav>
+        // Mobile menu
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
 
-<!-- MAIN CONTENT -->
-<main class="max-w-7xl mx-auto px-4 py-8">
+        // Auth guard + start listener
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                // Agar firebase se logged-out hai to index par bhejo
+                if (localStorage.getItem("getxh_user_logged_in") !== "yes") {
+                    window.location.href = "index.html";
+                } else {
+                    window.location.href = "index.html";
+                }
+                return;
+            }
 
-    <h2 class="text-3xl font-bold text-gray-800 mb-2">Your Orders</h2>
-    <p class="text-gray-600 mb-8">Track all your orders here.</p>
+            currentUid = user.uid;
+            startOrdersListener();
+        });
 
-    <!-- EMPTY STATE -->
-    <div id="empty-state" class="hidden max-w-md mx-auto bg-white rounded-xl shadow-sm p-12 text-center">
-        <div class="mx-auto flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
-            <span class="material-symbols-outlined text-gray-400 text-5xl">inbox</span>
-        </div>
-        <h3 class="text-xl font-bold text-gray-800 mb-2">No orders found.</h3>
-        <a href="Neworder.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg inline-block mt-4">Create New Order</a>
-    </div>
+        function startOrdersListener() {
+            if (!currentUid) return;
 
-    <!-- ORDERS TABLE -->
-    <div id="orders-container" class="hidden">
-        <div class="bg-white p-4 rounded-xl shadow-sm mb-4">
-            <div class="flex flex-col md:flex-row gap-3">
-                <input id="search-input" placeholder="Search..." class="border px-4 py-2 rounded-lg w-full">
-                <select id="status-filter" class="border px-4 py-2 rounded-lg md:w-48">
-                    <option value="All">All Status</option>
-                    <option value="Processing">Processing</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Canceled">Canceled</option>
-                </select>
-            </div>
-        </div>
+            const ordersCol = collection(db, "orders", currentUid, "user_orders");
+            const q = query(ordersCol, orderBy("createdAt", "desc"));
 
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-            <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b">
+            if (unsubscribe) unsubscribe();
+
+            unsubscribe = onSnapshot(q, (snap) => {
+                allOrders = [];
+
+                snap.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    allOrders.push({
+                        docId: docSnap.id,
+                        ...data
+                    });
+                });
+
+                if (allOrders.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    ordersContainer.classList.add('hidden');
+                } else {
+                    emptyState.classList.add('hidden');
+                    ordersContainer.classList.remove('hidden');
+                    applyFilters();
+                }
+            }, (err) => {
+                console.error("Orders listener error:", err);
+            });
+        }
+
+        function applyFilters() {
+            const term   = (searchInput.value || "").toLowerCase();
+            const status = statusFilter.value;
+
+            filteredOrders = allOrders.filter(o => {
+                const st = o.status || 'Processing';
+                const matchStatus = status === 'All' || st === status;
+
+                const service = (o.serviceName || "").toLowerCase();
+                const idStr   = (o.docId || "").toLowerCase();
+
+                const matchSearch = service.includes(term) || idStr.includes(term);
+                return matchStatus && matchSearch;
+            });
+
+            renderOrders();
+        }
+
+        function renderOrders() {
+            if (filteredOrders.length === 0) {
+                ordersTableBody.innerHTML = `
                     <tr>
-                        <th class="px-4 py-3">ID</th>
-                        <th class="px-4 py-3">Category</th>
-                        <th class="px-4 py-3">Service</th>
-                        <th class="px-4 py-3">Link</th>
-                        <th class="px-4 py-3">Qty</th>
-                        <th class="px-4 py-3">Price</th>
-                        <th class="px-4 py-3">Status</th>
-                        <th class="px-4 py-3">Date</th>
-                        <th class="px-4 py-3">Action</th>
+                        <td colspan="9" class="px-4 py-12 text-center text-gray-500">
+                            No orders found matching your filters.
+                        </td>
                     </tr>
-                </thead>
-                <tbody id="orders-table-body"></tbody>
-            </table>
-        </div>
-    </div>
+                `;
+                return;
+            }
 
-</main>
+            ordersTableBody.innerHTML = "";
+            const total = allOrders.length;
 
-<!-- MODAL -->
-<div id="details-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-xl shadow-xl max-w-lg w-full">
-        <button id="close-modal-btn" class="float-right text-gray-600 text-2xl">×</button>
-        <h3 class="text-2xl font-bold mb-4">Order Details</h3>
-        <div id="modal-content"></div>
-    </div>
-</div>
+            filteredOrders.forEach(order => {
+                const status = order.status || 'Processing';
+                let statusColor = 'bg-yellow-100 text-yellow-800';
+                if (status === 'Completed') statusColor = 'bg-green-100 text-green-800';
+                if (status === 'Canceled')  statusColor = 'bg-red-100 text-red-800';
 
-<!-- FIRESTORE LOGIC -->
-<script type="module">
-import {
-    getFirestore, collection, getDocs, doc, updateDoc
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+                const fullLink    = order.link || '';
+                const displayLink = fullLink.length > 30 ? fullLink.slice(0, 30) + "..." : fullLink;
 
-const db = getFirestore(firebaseApp);
+                // 4-digit ID logic
+                const globalIndex   = allOrders.findIndex(o => o.docId === order.docId);
+                const displayNumber = total - globalIndex; // oldest = 1, newest = total
+                const displayId     = String(displayNumber).padStart(4, "0"); // e.g. 0007
 
-const emptyState = document.getElementById("empty-state");
-const ordersContainer = document.getElementById("orders-container");
-const ordersTableBody = document.getElementById("orders-table-body");
-const searchInput = document.getElementById("search-input");
-const statusFilter = document.getElementById("status-filter");
-const modal = document.getElementById("details-modal");
-const modalContent = document.getElementById("modal-content");
-const closeModalBtn = document.getElementById("close-modal-btn");
+                const row = document.createElement('tr');
+                row.className = "border-b hover:bg-gray-50 cursor-pointer";
+                row.onclick = () => showOrderDetails(order, displayId);
 
-let allOrders = [];
-let filtered = [];
+                row.innerHTML = `
+                    <td class="px-4 py-3 text-gray-600 font-mono text-xs">#${displayId}</td>
+                    <td class="px-4 py-3 text-gray-800">${order.category || '-'}</td>
+                    <td class="px-4 py-3 text-gray-800 truncate">${order.serviceName || '-'}</td>
+                    <td class="px-4 py-3">
+                        ${
+                            fullLink
+                                ? `<a href="${fullLink}" target="_blank" onclick="event.stopPropagation()" class="text-blue-600 hover:underline">${displayLink}</a>`
+                                : `<span class="text-gray-400 text-xs">No link</span>`
+                        }
+                    </td>
+                    <td class="px-4 py-3">${(order.quantity || 0).toLocaleString()}</td>
+                    <td class="px-4 py-3 font-semibold">₹${parseFloat(order.price || 0).toFixed(2)}</td>
+                    <td class="px-4 py-3">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusColor}">
+                            ${status}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-xs">${order.createdAtReadable || order.createdAt || '-'}</td>
+                    <td class="px-4 py-3">
+                        ${
+                            status === 'Processing'
+                                ? `<button onclick="event.stopPropagation(); window.cancelOrder('${order.docId}')" 
+                                     class="px-3 py-1 text-xs bg-red-50 text-red-600 border border-red-300 rounded-full hover:bg-red-100">
+                                        Cancel
+                                   </button>`
+                                : ''
+                        }
+                    </td>
+                `;
 
-const uid = localStorage.getItem("getxh_current_user_uid");
+                ordersTableBody.appendChild(row);
+            });
+        }
 
-// Redirect if missing UID
-if (!uid) window.location.href = "index.html";
+        async function cancelOrder(docId) {
+            if (!currentUid || !docId) return;
+            const ok = confirm('Cancel this order?');
+            if (!ok) return;
 
-// Load orders from Firestore
-async function loadOrders() {
-    const colRef = collection(db, "orders", uid, "user_orders");
-    const snap = await getDocs(colRef);
+            try {
+                const ref = doc(db, "orders", currentUid, "user_orders", docId);
+                await updateDoc(ref, { status: "Canceled" });
+            } catch (err) {
+                console.error("Cancel error:", err);
+                alert("Failed to cancel order. Try again.");
+            }
+        }
 
-    allOrders = [];
-    snap.forEach(d => allOrders.push({ docId: d.id, ...d.data() }));
+        function showOrderDetails(order, displayId) {
+            const status = order.status || 'Processing';
+            const statusColor =
+                status === "Completed" ? "text-green-600" :
+                status === "Canceled"  ? "text-red-600"   :
+                                         "text-yellow-600";
 
-    allOrders.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+            modalContent.innerHTML = `
+                <p class="text-lg font-bold">Order #${displayId}</p>
+                <p class="${statusColor} font-semibold">Status: ${status}</p>
+                <p><b>Service:</b> ${order.serviceName || '-'}</p>
+                <p><b>Category:</b> ${order.category || '-'}</p>
+                <p><b>Link:</b> ${
+                    order.link
+                        ? `<a href="${order.link}" target="_blank" class="text-blue-600 underline break-all">${order.link}</a>`
+                        : `<span class="text-gray-400 text-xs">No link</span>`
+                }</p>
+                <p><b>Quantity:</b> ${order.quantity || 0}</p>
+                <p><b>Price:</b> ₹${parseFloat(order.price || 0).toFixed(2)}</p>
+                <p><b>Date:</b> ${order.createdAtReadable || order.createdAt || '-'}</p>
 
-    if (allOrders.length === 0) {
-        emptyState.classList.remove("hidden");
-        ordersContainer.classList.add("hidden");
-        return;
-    }
+                ${
+                    status === 'Processing'
+                        ? `<button onclick="window.cancelOrder('${order.docId}')"
+                                   class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg">
+                               Cancel Order
+                           </button>`
+                        : ''
+                }
+            `;
 
-    emptyState.classList.add("hidden");
-    ordersContainer.classList.remove("hidden");
-    applyFilters();
-}
+            detailsModal.classList.remove('hidden');
+        }
 
-// Filters
-function applyFilters() {
-    const txt = searchInput.value.toLowerCase();
-    const st = statusFilter.value;
+        // Expose cancelOrder for inline onclick
+        window.cancelOrder = cancelOrder;
 
-    filtered = allOrders.filter(o =>
-        (st === "All" || o.status === st) &&
-        (o.serviceName.toLowerCase().includes(txt) || o.docId.includes(txt))
-    );
+        closeModalBtn.onclick = () => {
+            detailsModal.classList.add('hidden');
+        };
 
-    renderTable();
-}
+        detailsModal.onclick = (e) => {
+            if (e.target === detailsModal) {
+                detailsModal.classList.add('hidden');
+            }
+        };
 
-// Render table
-function renderTable() {
-    ordersTableBody.innerHTML = "";
+        searchInput.oninput = applyFilters;
+        statusFilter.onchange = applyFilters;
+    </script>
 
-    filtered.forEach(o => {
-        const color =
-            o.status === "Completed" ? "bg-green-100 text-green-700" :
-            o.status === "Canceled" ? "bg-red-100 text-red-700" :
-            "bg-yellow-100 text-yellow-700";
-
-        const tr = document.createElement("tr");
-        tr.className = "border-b cursor-pointer";
-
-        tr.innerHTML = `
-            <td class="px-4 py-3 font-mono">#${o.docId}</td>
-            <td class="px-4 py-3">${o.category}</td>
-            <td class="px-4 py-3">${o.serviceName}</td>
-            <td class="px-4 py-3"><a href="${o.link}" target="_blank" class="text-blue-600 underline">Open</a></td>
-            <td class="px-4 py-3">${o.quantity}</td>
-            <td class="px-4 py-3">₹${o.price}</td>
-            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs ${color}">${o.status}</span></td>
-            <td class="px-4 py-3">${o.createdAtReadable}</td>
-            <td class="px-4 py-3">
-                ${o.status === "Processing" ?
-                `<button onclick="cancelOrder('${o.docId}')" class="bg-red-100 text-red-600 px-3 py-1 rounded-full">Cancel</button>`
-                : ""}
-            </td>
-        `;
-
-        tr.onclick = () => openModal(o);
-        ordersTableBody.appendChild(tr);
-    });
-}
-
-// Cancel
-window.cancelOrder = async function (id) {
-    await updateDoc(doc(db, "orders", uid, "user_orders", id), {
-        status: "Canceled"
-    });
-    loadOrders();
-};
-
-// Modal
-function openModal(o) {
-    modalContent.innerHTML = `
-        <p><b>Service:</b> ${o.serviceName}</p>
-        <p><b>Category:</b> ${o.category}</p>
-        <p><b>Quantity:</b> ${o.quantity}</p>
-        <p><b>Price:</b> ₹${o.price}</p>
-        <p><b>Status:</b> ${o.status}</p>
-        <p><b>Link:</b> <a href="${o.link}" class="text-blue-600 underline">${o.link}</a></p>
-        <p><b>Date:</b> ${o.createdAtReadable}</p>
-    `;
-    modal.classList.remove("hidden");
-}
-
-closeModalBtn.onclick = () => modal.classList.add("hidden");
-
-// Search & Filter events
-searchInput.oninput = applyFilters;
-statusFilter.onchange = applyFilters;
-
-// Load on start
-loadOrders();
-</script>
 </body>
-</html>
+                                    </html>
