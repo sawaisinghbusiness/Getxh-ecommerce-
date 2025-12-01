@@ -83,17 +83,27 @@
             <p class="text-gray-600">View all your orders in one place.</p>
         </div>
 
-        <!-- Empty State -->
-        <div id="empty-state" class="hidden max-w-md mx-auto bg-white rounded-xl shadow-sm p-12 text-center">
-            <div class="mx-auto flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
-                <span class="material-symbols-outlined text-gray-400 text-5xl">inbox</span>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">No orders yet.</h3>
-            <p class="text-gray-600 mb-6">Start by creating your first order.</p>
-            <a href="Neworder.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition">
-                Create New Order
-            </a>
+<!-- Empty State -->
+<div id="empty-state" class="hidden w-full flex justify-center mt-6">
+    <div class="bg-white rounded-xl shadow-sm p-10 max-w-md w-full text-center border border-gray-100">
+
+        <div class="mx-auto flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
+            <span class="material-symbols-outlined text-gray-400 text-5xl">inbox</span>
         </div>
+
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">No orders yet.</h3>
+
+        <p class="text-gray-500 mb-6 text-sm">
+            Start by creating your first order.
+        </p>
+
+        <a href="Neworder.html" 
+           class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition">
+            Create New Order
+        </a>
+
+    </div>
+</div>
         
         <!-- Orders Container -->
         <div id="orders-container" class="hidden">
