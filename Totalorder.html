@@ -168,248 +168,238 @@
         </div>
     </div>
 
-    <!-- NEW SCRIPT: Firestore + Realtime + 4-digit ID -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { 
-            getFirestore, collection, query, orderBy, onSnapshot, updateDoc, doc 
-        } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+<!-- FIREBASE + REALTIME + OLD UI COMPATIBLE -->
+<script type="module">
 
-        // Firebase config
-        const firebaseConfig = {
-            apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
-            authDomain: "getxh-42588.firebaseapp.com",
-            projectId: "getxh-42588",
-            storageBucket: "getxh-42588.firebasestorage.app",
-            messagingSenderId: "170770122888",
-            appId: "1:170770122888:web:7adcf91077d5695b06b73d"
-        };
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { 
+        getFirestore, collection, query, orderBy, onSnapshot, updateDoc, doc 
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-        const app  = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db   = getFirestore(app);
+    // Firebase config
+    const firebaseConfig = {
+        apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+        authDomain: "getxh-42588.firebaseapp.com",
+        projectId: "getxh-42588",
+        storageBucket: "getxh-42588.firebasestorage.app",
+        messagingSenderId: "170770122888",
+        appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+    };
 
-        // DOM elements
-        const mobileMenuBtn   = document.getElementById('mobile-menu-btn');
-        const mobileMenu      = document.getElementById('mobile-menu');
-        const emptyState      = document.getElementById('empty-state');
-        const ordersContainer = document.getElementById('orders-container');
-        const ordersTableBody = document.getElementById('orders-table-body');
-        const searchInput     = document.getElementById('search-input');
-        const statusFilter    = document.getElementById('status-filter');
-        const detailsModal    = document.getElementById('details-modal');
-        const closeModalBtn   = document.getElementById('close-modal-btn');
-        const modalContent    = document.getElementById('modal-content');
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
 
-        let allOrders = [];
-        let filteredOrders = [];
-        let currentUid = null;
-        let unsubscribe = null;
+    // DOM elements (OLD UI)
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const emptyState = document.getElementById('empty-state');
+    const ordersContainer = document.getElementById('orders-container');
+    const ordersTableBody = document.getElementById('orders-table-body');
+    const searchInput = document.getElementById('search-input');
+    const statusFilter = document.getElementById('status-filter');
+    const detailsModal = document.getElementById('details-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const modalContent = document.getElementById('modal-content');
 
-        // Mobile menu
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
+    let allOrders = [];
+    let filteredOrders = [];
+    let currentUid = null;
+    let unsubscribe = null;
 
-        // Auth guard + start listener
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                // Agar firebase se logged-out hai to index par bhejo
-                if (localStorage.getItem("getxh_user_logged_in") !== "yes") {
-                    window.location.href = "index.html";
-                } else {
-                    window.location.href = "index.html";
-                }
-                return;
-            }
+    // Mobile menu
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
 
-            currentUid = user.uid;
-            startOrdersListener();
-        });
+    // AUTH
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            window.location.href = "index.html";
+            return;
+        }
 
-        function startOrdersListener() {
-            if (!currentUid) return;
+        currentUid = user.uid;
+        startOrdersListener();
+    });
 
-            const ordersCol = collection(db, "orders", currentUid, "user_orders");
-            const q = query(ordersCol, orderBy("createdAt", "desc"));
+    function startOrdersListener() {
+        if (!currentUid) return;
 
-            if (unsubscribe) unsubscribe();
+        const ordersCol = collection(db, "orders", currentUid, "user_orders");
+        const q = query(ordersCol, orderBy("createdAt", "desc"));
 
-            unsubscribe = onSnapshot(q, (snap) => {
-                allOrders = [];
+        if (unsubscribe) unsubscribe();
 
-                snap.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    allOrders.push({
-                        docId: docSnap.id,
-                        ...data
-                    });
+        unsubscribe = onSnapshot(q, (snap) => {
+
+            allOrders = [];
+            snap.forEach((d) => {
+                allOrders.push({
+                    docId: d.id,
+                    ...d.data()
                 });
-
-                if (allOrders.length === 0) {
-                    emptyState.classList.remove('hidden');
-                    ordersContainer.classList.add('hidden');
-                } else {
-                    emptyState.classList.add('hidden');
-                    ordersContainer.classList.remove('hidden');
-                    applyFilters();
-                }
-            }, (err) => {
-                console.error("Orders listener error:", err);
-            });
-        }
-
-        function applyFilters() {
-            const term   = (searchInput.value || "").toLowerCase();
-            const status = statusFilter.value;
-
-            filteredOrders = allOrders.filter(o => {
-                const st = o.status || 'Processing';
-                const matchStatus = status === 'All' || st === status;
-
-                const service = (o.serviceName || "").toLowerCase();
-                const idStr   = (o.docId || "").toLowerCase();
-
-                const matchSearch = service.includes(term) || idStr.includes(term);
-                return matchStatus && matchSearch;
             });
 
-            renderOrders();
-        }
-
-        function renderOrders() {
-            if (filteredOrders.length === 0) {
-                ordersTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="9" class="px-4 py-12 text-center text-gray-500">
-                            No orders found matching your filters.
-                        </td>
-                    </tr>
-                `;
-                return;
+            if (allOrders.length === 0) {
+                emptyState.classList.remove('hidden');
+                ordersContainer.classList.add('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                ordersContainer.classList.remove('hidden');
+                applyFilters();
             }
 
-            ordersTableBody.innerHTML = "";
-            const total = allOrders.length;
+        });
+    }
 
-            filteredOrders.forEach(order => {
-                const status = order.status || 'Processing';
-                let statusColor = 'bg-yellow-100 text-yellow-800';
-                if (status === 'Completed') statusColor = 'bg-green-100 text-green-800';
-                if (status === 'Canceled')  statusColor = 'bg-red-100 text-red-800';
+    function applyFilters() {
+        const term = searchInput.value.toLowerCase();
+        const status = statusFilter.value;
 
-                const fullLink    = order.link || '';
-                const displayLink = fullLink.length > 30 ? fullLink.slice(0, 30) + "..." : fullLink;
+        filteredOrders = allOrders.filter(o => {
+            const st = o.status || "Processing";
+            const matchStatus = status === "All" || st === status;
 
-                // 4-digit ID logic
-                const globalIndex   = allOrders.findIndex(o => o.docId === order.docId);
-                const displayNumber = total - globalIndex; // oldest = 1, newest = total
-                const displayId     = String(displayNumber).padStart(4, "0"); // e.g. 0007
+            const matchSearch =
+                o.serviceName?.toLowerCase().includes(term) ||
+                o.docId.toLowerCase().includes(term);
 
-                const row = document.createElement('tr');
-                row.className = "border-b hover:bg-gray-50 cursor-pointer";
-                row.onclick = () => showOrderDetails(order, displayId);
+            return matchStatus && matchSearch;
+        });
 
-                row.innerHTML = `
-                    <td class="px-4 py-3 text-gray-600 font-mono text-xs">#${displayId}</td>
-                    <td class="px-4 py-3 text-gray-800">${order.category || '-'}</td>
-                    <td class="px-4 py-3 text-gray-800 truncate">${order.serviceName || '-'}</td>
-                    <td class="px-4 py-3">
-                        ${
-                            fullLink
-                                ? `<a href="${fullLink}" target="_blank" onclick="event.stopPropagation()" class="text-blue-600 hover:underline">${displayLink}</a>`
-                                : `<span class="text-gray-400 text-xs">No link</span>`
-                        }
+        renderOrders();
+    }
+
+    function renderOrders() {
+
+        if (filteredOrders.length === 0) {
+            ordersTableBody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="px-4 py-12 text-center text-gray-500">
+                        No orders found matching your filters.
                     </td>
-                    <td class="px-4 py-3">${(order.quantity || 0).toLocaleString()}</td>
-                    <td class="px-4 py-3 font-semibold">₹${parseFloat(order.price || 0).toFixed(2)}</td>
-                    <td class="px-4 py-3">
-                        <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusColor}">
-                            ${status}
-                        </span>
-                    </td>
-                    <td class="px-4 py-3 text-xs">${order.createdAtReadable || order.createdAt || '-'}</td>
-                    <td class="px-4 py-3">
-                        ${
-                            status === 'Processing'
-                                ? `<button onclick="event.stopPropagation(); window.cancelOrder('${order.docId}')" 
-                                     class="px-3 py-1 text-xs bg-red-50 text-red-600 border border-red-300 rounded-full hover:bg-red-100">
-                                        Cancel
-                                   </button>`
-                                : ''
-                        }
-                    </td>
-                `;
-
-                ordersTableBody.appendChild(row);
-            });
+                </tr>
+            `;
+            return;
         }
 
-        async function cancelOrder(docId) {
-            if (!currentUid || !docId) return;
-            const ok = confirm('Cancel this order?');
-            if (!ok) return;
+        ordersTableBody.innerHTML = "";
+        const total = allOrders.length;
 
-            try {
-                const ref = doc(db, "orders", currentUid, "user_orders", docId);
-                await updateDoc(ref, { status: "Canceled" });
-            } catch (err) {
-                console.error("Cancel error:", err);
-                alert("Failed to cancel order. Try again.");
-            }
-        }
+        filteredOrders.forEach(order => {
 
-        function showOrderDetails(order, displayId) {
-            const status = order.status || 'Processing';
-            const statusColor =
-                status === "Completed" ? "text-green-600" :
-                status === "Canceled"  ? "text-red-600"   :
-                                         "text-yellow-600";
+            const index = allOrders.findIndex(o => o.docId === order.docId);
+            const displayId = String(total - index).padStart(4, "0");
 
-            modalContent.innerHTML = `
-                <p class="text-lg font-bold">Order #${displayId}</p>
-                <p class="${statusColor} font-semibold">Status: ${status}</p>
-                <p><b>Service:</b> ${order.serviceName || '-'}</p>
-                <p><b>Category:</b> ${order.category || '-'}</p>
-                <p><b>Link:</b> ${
-                    order.link
-                        ? `<a href="${order.link}" target="_blank" class="text-blue-600 underline break-all">${order.link}</a>`
-                        : `<span class="text-gray-400 text-xs">No link</span>`
-                }</p>
-                <p><b>Quantity:</b> ${order.quantity || 0}</p>
-                <p><b>Price:</b> ₹${parseFloat(order.price || 0).toFixed(2)}</p>
-                <p><b>Date:</b> ${order.createdAtReadable || order.createdAt || '-'}</p>
+            const status = order.status || "Processing";
+            let statusColor = "bg-yellow-100 text-yellow-800";
+            if (status === "Completed") statusColor = "bg-green-100 text-green-800";
+            if (status === "Canceled") statusColor = "bg-red-100 text-red-800";
 
-                ${
-                    status === 'Processing'
-                        ? `<button onclick="window.cancelOrder('${order.docId}')"
-                                   class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg">
-                               Cancel Order
-                           </button>`
-                        : ''
-                }
+            const fullLink = order.link || "";
+            const displayLink = fullLink.length > 30
+                ? fullLink.slice(0, 30) + "..."
+                : fullLink;
+
+            const row = document.createElement("tr");
+            row.className = "border-b hover:bg-gray-50 cursor-pointer";
+            row.onclick = () => showDetails(order, displayId);
+
+            row.innerHTML = `
+                <td class="px-4 py-3 text-gray-600 font-mono text-xs">#${displayId}</td>
+                <td class="px-4 py-3 text-gray-800">${order.category || '-'}</td>
+                <td class="px-4 py-3 text-gray-800 truncate">${order.serviceName || '-'}</td>
+                <td class="px-4 py-3">
+                    ${
+                        fullLink
+                            ? `<a href="${fullLink}" target="_blank" onclick="event.stopPropagation()" class="text-blue-600 hover:underline">${displayLink}</a>`
+                            : `<span class="text-gray-400 text-xs">No link</span>`
+                    }
+                </td>
+                <td class="px-4 py-3">${(order.quantity || 0).toLocaleString()}</td>
+                <td class="px-4 py-3 font-semibold">₹${parseFloat(order.price || 0).toFixed(2)}</td>
+                <td class="px-4 py-3">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusColor}">
+                        ${status}
+                    </span>
+                </td>
+                <td class="px-4 py-3 text-xs">${order.createdAtReadable || order.createdAt || '-'}</td>
+                <td class="px-4 py-3">
+                    ${
+                        status === "Processing"
+                            ? `<button onclick="event.stopPropagation(); cancelOrder('${order.docId}')"
+                               class="px-3 py-1 text-xs bg-red-50 text-red-600 border border-red-300 rounded-full hover:bg-red-100">
+                                Cancel
+                               </button>`
+                            : ""
+                    }
+                </td>
             `;
 
-            detailsModal.classList.remove('hidden');
+            ordersTableBody.appendChild(row);
+        });
+    }
+
+    async function cancelOrder(docId) {
+        if (!currentUid) return;
+
+        if (!confirm("Cancel this order?")) return;
+
+        try {
+            await updateDoc(doc(db, "orders", currentUid, "user_orders", docId), {
+                status: "Canceled"
+            });
+        } catch (err) {
+            alert("Failed to cancel order.");
         }
+    }
 
-        // Expose cancelOrder for inline onclick
-        window.cancelOrder = cancelOrder;
+    function showDetails(order, displayId) {
 
-        closeModalBtn.onclick = () => {
-            detailsModal.classList.add('hidden');
-        };
+        const st = order.status || "Processing";
+        const color =
+            st === "Completed" ? "text-green-600" :
+            st === "Canceled" ? "text-red-600" :
+            "text-yellow-600";
 
-        detailsModal.onclick = (e) => {
-            if (e.target === detailsModal) {
-                detailsModal.classList.add('hidden');
+        modalContent.innerHTML = `
+            <p class="text-lg font-bold">Order #${displayId}</p>
+            <p class="${color} font-semibold">Status: ${st}</p>
+            <p><b>Service:</b> ${order.serviceName}</p>
+            <p><b>Category:</b> ${order.category}</p>
+            <p><b>Link:</b> ${
+                order.link
+                    ? `<a href="${order.link}" target="_blank" class="text-blue-600 underline break-all">${order.link}</a>`
+                    : `<span class="text-gray-400 text-xs">No link</span>`
+            }</p>
+            <p><b>Quantity:</b> ${order.quantity}</p>
+            <p><b>Price:</b> ₹${order.price}</p>
+            <p><b>Date:</b> ${order.createdAtReadable || order.createdAt}</p>
+            
+            ${
+                st === "Processing"
+                    ? `<button onclick="cancelOrder('${order.docId}')"
+                       class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg">
+                        Cancel Order
+                      </button>`
+                    : ""
             }
-        };
+        `;
 
-        searchInput.oninput = applyFilters;
-        statusFilter.onchange = applyFilters;
-    </script>
+        detailsModal.classList.remove("hidden");
+    }
+
+    closeModalBtn.onclick = () => detailsModal.classList.add("hidden");
+    detailsModal.onclick = e => {
+        if (e.target === detailsModal) detailsModal.classList.add("hidden");
+    };
+
+    searchInput.oninput = applyFilters;
+    statusFilter.onchange = applyFilters;
+
+</script>
 
 </body>
                                     </html>
