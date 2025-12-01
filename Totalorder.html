@@ -19,20 +19,17 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 
-                <!-- Logo -->
                 <div class="flex items-center">
                     <h1 class="text-2xl font-bold text-blue-600">GETXH</h1>
                 </div>
 
-                <!-- Desktop Navigation -->
                 <div class="hidden md:flex space-x-8">
                     <a href="Dashboard.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
                     <a href="Neworder.html" class="text-gray-700 hover:text-blue-600 transition">New Order</a>
-                    <!-- <a href="Servicepage.html" class="text-gray-700 hover:text-blue-600">Services</a> -->
                     <a href="Totalorder.html" class="text-blue-600 font-semibold hover:text-blue-700 transition">Orders</a>
                     <a href="Support.html" class="text-gray-700 hover:text-blue-600 transition">Support</a>
                 </div>
-                <!-- User Profile & Logout -->
+
                 <div class="hidden md:flex items-center space-x-4">
                     <div class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
                         <span class="material-symbols-outlined text-blue-600">person</span>
@@ -42,7 +39,6 @@
                     </button>
                 </div>
 
-                <!-- Mobile Menu Button -->
                 <div class="md:hidden">
                     <button id="mobile-menu-btn" class="text-gray-700 focus:outline-none">
                         <span class="material-symbols-outlined text-3xl">menu</span>
@@ -51,12 +47,10 @@
             </div>
         </div>
 
-        <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
             <div class="px-4 pt-2 pb-4 space-y-2">
                 <a href="Dashboard.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
                 <a href="Neworder.html" class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">New Order</a>
-                <!-- <a href="Servicepage.html" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Services</a> -->
                 <a href="Totalorder.html" class="block px-3 py-2 rounded-md text-blue-600 font-semibold bg-blue-50">Orders</a>
                 <a href="Support.html" class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100">Support</a>
                 <div class="flex items-center justify-between pt-3 border-t">
@@ -74,16 +68,14 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        <!-- Page Title -->
         <div class="mb-8">
             <h2 class="text-3xl font-bold text-gray-800 mb-2">Your Orders</h2>
             <p class="text-gray-600">View all your orders in one place.</p>
         </div>
         
-<!-- Empty State -->
+        <!-- Empty State -->
 <div id="empty-state" class="hidden w-full flex justify-center items-center py-10">
     <div class="bg-white rounded-xl shadow-sm p-10 max-w-md w-full text-center border border-gray-200">
 
@@ -104,12 +96,10 @@
 
     </div>
 </div>
-        
 
         <!-- Orders Container -->
         <div id="orders-container" class="hidden">
             
-            <!-- Filters -->
             <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
                 <div class="flex flex-col md:flex-row gap-4">
                     
@@ -130,7 +120,6 @@
                 </div>
             </div>
 
-            <!-- Orders Table -->
             <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-4">
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
@@ -152,34 +141,35 @@
                 </div>
             </div>
 
-
-    <!-- Order Details Modal -->
-    <div id="details-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-start mb-6">
-                <h3 class="text-2xl font-bold text-gray-800">Order Details</h3>
-                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
-                    <span class="material-symbols-outlined text-3xl">close</span>
-                </button>
-            </div>
-            
-            <div id="modal-content" class="space-y-4"></div>
         </div>
-    </div>
-</div> <!-- orders-container ends here -->
-    
-<!-- Bottom Buttons ALWAYS visible if page loaded -->
-<div id="bottom-buttons" class="flex flex-col sm:flex-row gap-3 justify-end mt-6 hidden">
-    <a href="Dashboard.html" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-6 py-3 rounded-lg transition text-center">
-        Back to Dashboard
-    </a>
-    <a href="Neworder.html" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center">
-        Create New Order
-    </a>
-</div>
+
+        <!-- Bottom Buttons -->
+        <div id="bottom-buttons" class="flex flex-col sm:flex-row gap-3 justify-end mt-6 hidden">
+            <a href="Dashboard.html" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-6 py-3 rounded-lg transition text-center">
+                Back to Dashboard
+            </a>
+            <a href="Neworder.html" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center">
+                Create New Order
+            </a>
+        </div>
+
     </main>
+
     
-<!-- FIREBASE + REALTIME + OLD UI COMPATIBLE -->
+<div id="details-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-start mb-6">
+            <h3 class="text-2xl font-bold text-gray-800">Order Details</h3>
+            <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
+                <span class="material-symbols-outlined text-3xl">close</span>
+            </button>
+        </div>
+        
+        <div id="modal-content" class="space-y-4"></div>
+    </div>
+</div>
+
+    
 <script type="module">
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
@@ -188,7 +178,6 @@
         getFirestore, collection, query, orderBy, onSnapshot, updateDoc, doc 
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    // Firebase config
     const firebaseConfig = {
         apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
         authDomain: "getxh-42588.firebaseapp.com",
@@ -202,7 +191,6 @@
     const auth = getAuth(app);
     const db   = getFirestore(app);
 
-    // DOM elements (OLD UI)
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     const emptyState = document.getElementById('empty-state');
@@ -213,18 +201,17 @@
     const detailsModal = document.getElementById('details-modal');
     const closeModalBtn = document.getElementById('close-modal-btn');
     const modalContent = document.getElementById('modal-content');
+    const bottomButtons = document.getElementById('bottom-buttons');  /* ← REQUIRED FIX */
 
     let allOrders = [];
     let filteredOrders = [];
     let currentUid = null;
     let unsubscribe = null;
 
-    // Mobile menu
     mobileMenuBtn.addEventListener('click', () => {
         mobileMenu.classList.toggle('hidden');
     });
 
-    // AUTH
     onAuthStateChanged(auth, (user) => {
         if (!user) {
             window.location.href = "index.html";
@@ -244,26 +231,26 @@
         if (unsubscribe) unsubscribe();
 
         unsubscribe = onSnapshot(q, (snap) => {
-    allOrders = [];
+            allOrders = [];
 
-    snap.forEach((docSnap) => {
-        const data = docSnap.data();
-        allOrders.push({
-            docId: docSnap.id,
-            ...data
-        });
-    });
-if (allOrders.length === 0) {
-    emptyState.classList.remove("hidden");
-    ordersContainer.classList.add("hidden");
-    bottomButtons.classList.remove("hidden");
-} else {
-    emptyState.classList.add("hidden");
-    ordersContainer.classList.remove("hidden");
-    bottomButtons.classList.remove("hidden");
-    applyFilters();
-}
+            snap.forEach((docSnap) => {
+                const data = docSnap.data();
+                allOrders.push({
+                    docId: docSnap.id,
+                    ...data
+                });
+            });
 
+            if (allOrders.length === 0) {
+                emptyState.classList.remove("hidden");
+                ordersContainer.classList.add("hidden");
+                bottomButtons.classList.remove("hidden");
+            } else {
+                emptyState.classList.add("hidden");
+                ordersContainer.classList.remove("hidden");
+                bottomButtons.classList.remove("hidden");
+                applyFilters();
+            }
         });
     }
 
@@ -415,4 +402,4 @@ if (allOrders.length === 0) {
 </script>
 
 </body>
-                                    </html>
+</html>
