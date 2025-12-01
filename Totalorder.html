@@ -5,16 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Orders - GETXH</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400;
         }
     </style>
+
+    <!-- FIREBASE CONFIG -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+            authDomain: "getxh-42588.firebaseapp.com",
+            projectId: "getxh-42588",
+            storageBucket: "getxh-42588.firebasestorage.app",
+            messagingSenderId: "170770122888",
+            appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+        };
+
+        window.firebaseApp = initializeApp(firebaseConfig);
+    </script>
 </head>
+
 <body class="bg-[#f5f6fa]">
 
-<!-- NAVBAR (unchanged) -->
+<!-- NAVBAR (unchanged UI) -->
 <nav class="bg-white shadow-md sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
         <h1 class="text-2xl font-bold text-blue-600">GETXH</h1>
@@ -34,6 +51,7 @@
     <h2 class="text-3xl font-bold text-gray-800 mb-2">Your Orders</h2>
     <p class="text-gray-600 mb-8">Track all your orders here.</p>
 
+    <!-- EMPTY STATE -->
     <div id="empty-state" class="hidden max-w-md mx-auto bg-white rounded-xl shadow-sm p-12 text-center">
         <div class="mx-auto flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
             <span class="material-symbols-outlined text-gray-400 text-5xl">inbox</span>
@@ -42,9 +60,8 @@
         <a href="Neworder.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg inline-block mt-4">Create New Order</a>
     </div>
 
-    <!-- Orders Container -->
+    <!-- ORDERS TABLE -->
     <div id="orders-container" class="hidden">
-
         <div class="bg-white p-4 rounded-xl shadow-sm mb-4">
             <div class="flex flex-col md:flex-row gap-3">
                 <input id="search-input" placeholder="Search..." class="border px-4 py-2 rounded-lg w-full">
@@ -88,79 +105,56 @@
     </div>
 </div>
 
-<!-- FIREBASE REALTIME LOGIC -->
+<!-- FIRESTORE LOGIC -->
 <script type="module">
-
-/* ---------------- FIREBASE INIT ---------------- */
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { 
-    getFirestore, collection, onSnapshot, updateDoc, doc 
+import {
+    getFirestore, collection, getDocs, doc, updateDoc
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
-    authDomain: "getxh-42588.firebaseapp.com",
-    projectId: "getxh-42588",
-    storageBucket: "getxh-42588.firebasestorage.app",
-    messagingSenderId: "170770122888",
-    appId: "1:170770122888:web:7adcf91077d5695b06b73d"
-};
+const db = getFirestore(firebaseApp);
 
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-
-/* ---------------- DOM REF ---------------- */
-
-const emptyState      = document.getElementById("empty-state");
+const emptyState = document.getElementById("empty-state");
 const ordersContainer = document.getElementById("orders-container");
 const ordersTableBody = document.getElementById("orders-table-body");
-const searchInput     = document.getElementById("search-input");
-const statusFilter    = document.getElementById("status-filter");
-const modal           = document.getElementById("details-modal");
-const closeModalBtn   = document.getElementById("close-modal-btn");
-const modalContent    = document.getElementById("modal-content");
+const searchInput = document.getElementById("search-input");
+const statusFilter = document.getElementById("status-filter");
+const modal = document.getElementById("details-modal");
+const modalContent = document.getElementById("modal-content");
+const closeModalBtn = document.getElementById("close-modal-btn");
 
 let allOrders = [];
-let filtered  = [];
+let filtered = [];
 
-/* ---------------- REALTIME LISTENER ---------------- */
+const uid = localStorage.getItem("getxh_current_user_uid");
 
-function startRealtimeOrders() {
+// Redirect if missing UID
+if (!uid) window.location.href = "index.html";
 
-    const uid = localStorage.getItem("getxh_current_user_uid");
-    if (!uid) return;
-
+// Load orders from Firestore
+async function loadOrders() {
     const colRef = collection(db, "orders", uid, "user_orders");
+    const snap = await getDocs(colRef);
 
-    onSnapshot(colRef, (snap) => {
+    allOrders = [];
+    snap.forEach(d => allOrders.push({ docId: d.id, ...d.data() }));
 
-        allOrders = [];
+    allOrders.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
 
-        snap.forEach(d => {
-            allOrders.push({ docId: d.id, ...d.data() });
-        });
+    if (allOrders.length === 0) {
+        emptyState.classList.remove("hidden");
+        ordersContainer.classList.add("hidden");
+        return;
+    }
 
-        allOrders.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-        if (!allOrders.length) {
-            emptyState.classList.remove("hidden");
-            ordersContainer.classList.add("hidden");
-            return;
-        }
-
-        emptyState.classList.add("hidden");
-        ordersContainer.classList.remove("hidden");
-
-        applyFilters();
-    });
+    emptyState.classList.add("hidden");
+    ordersContainer.classList.remove("hidden");
+    applyFilters();
 }
 
-/* ---------------- FILTERS ---------------- */
-
+// Filters
 function applyFilters() {
     const txt = searchInput.value.toLowerCase();
-    const st  = statusFilter.value;
+    const st = statusFilter.value;
 
     filtered = allOrders.filter(o =>
         (st === "All" || o.status === st) &&
@@ -170,21 +164,18 @@ function applyFilters() {
     renderTable();
 }
 
-/* ---------------- RENDER TABLE ---------------- */
-
+// Render table
 function renderTable() {
-
     ordersTableBody.innerHTML = "";
 
     filtered.forEach(o => {
-
         const color =
-            o.status === "Completed" ? "bg-green-100 text-green-800" :
-            o.status === "Canceled"  ? "bg-red-100 text-red-800" :
-                                       "bg-yellow-100 text-yellow-800";
+            o.status === "Completed" ? "bg-green-100 text-green-700" :
+            o.status === "Canceled" ? "bg-red-100 text-red-700" :
+            "bg-yellow-100 text-yellow-700";
 
         const tr = document.createElement("tr");
-        tr.className = "border-b";
+        tr.className = "border-b cursor-pointer";
 
         tr.innerHTML = `
             <td class="px-4 py-3 font-mono">#${o.docId}</td>
@@ -193,11 +184,11 @@ function renderTable() {
             <td class="px-4 py-3"><a href="${o.link}" target="_blank" class="text-blue-600 underline">Open</a></td>
             <td class="px-4 py-3">${o.quantity}</td>
             <td class="px-4 py-3">₹${o.price}</td>
-            <td class="px-4 py-3"><span class="px-2 py-1 text-xs rounded-full ${color}">${o.status}</span></td>
+            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs ${color}">${o.status}</span></td>
             <td class="px-4 py-3">${o.createdAtReadable}</td>
             <td class="px-4 py-3">
-                ${o.status === "Processing" ? 
-                    `<button onclick="cancelOrder('${o.docId}')" class="bg-red-100 text-red-600 px-3 py-1 rounded-full">Cancel</button>`
+                ${o.status === "Processing" ?
+                `<button onclick="cancelOrder('${o.docId}')" class="bg-red-100 text-red-600 px-3 py-1 rounded-full">Cancel</button>`
                 : ""}
             </td>
         `;
@@ -207,46 +198,36 @@ function renderTable() {
     });
 }
 
-/* ---------------- CANCEL ORDER ---------------- */
-
-window.cancelOrder = async function(id) {
-    const uid = localStorage.getItem("getxh_current_user_uid");
-    if (!uid) return;
-
-    if (!confirm("Cancel this order?")) return;
-
+// Cancel
+window.cancelOrder = async function (id) {
     await updateDoc(doc(db, "orders", uid, "user_orders", id), {
         status: "Canceled"
     });
+    loadOrders();
 };
 
-/* ---------------- MODAL ---------------- */
-
+// Modal
 function openModal(o) {
     modalContent.innerHTML = `
         <p><b>Service:</b> ${o.serviceName}</p>
         <p><b>Category:</b> ${o.category}</p>
         <p><b>Quantity:</b> ${o.quantity}</p>
         <p><b>Price:</b> ₹${o.price}</p>
-        <p><b>Link:</b> <a href="${o.link}" target="_blank" class="text-blue-600 underline">${o.link}</a></p>
-        <p><b>Date:</b> ${o.createdAtReadable}</p>
         <p><b>Status:</b> ${o.status}</p>
+        <p><b>Link:</b> <a href="${o.link}" class="text-blue-600 underline">${o.link}</a></p>
+        <p><b>Date:</b> ${o.createdAtReadable}</p>
     `;
     modal.classList.remove("hidden");
 }
 
 closeModalBtn.onclick = () => modal.classList.add("hidden");
 
-/* ---------------- EVENTS ---------------- */
-
+// Search & Filter events
 searchInput.oninput = applyFilters;
 statusFilter.onchange = applyFilters;
 
-/* ---------------- START REALTIME ---------------- */
-
-startRealtimeOrders();
-
+// Load on start
+loadOrders();
 </script>
-
 </body>
 </html>
