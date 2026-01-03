@@ -8,9 +8,15 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 <script>
-if (localStorage.getItem("getxh_user_logged_in") !== "yes") {
-    window.location.href = "index.html";
-}
+document.addEventListener("DOMContentLoaded", () => {
+  const isLoggedIn = localStorage.getItem("getxh_user_logged_in");
+  const email = localStorage.getItem("getxh_current_user");
+
+  if (isLoggedIn !== "yes" || !email) {
+    window.location.replace("index.html");
+    return;
+  }
+});
 </script>
   
 <!-- Firebase (v10 modular) -->
