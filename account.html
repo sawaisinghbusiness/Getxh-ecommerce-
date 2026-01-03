@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,8 +9,8 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
+<!-- 🔐 SESSION CHECK -->
 <script>
-/* 🔐 LOGIN CHECK */
 document.addEventListener("DOMContentLoaded", () => {
   const loggedIn = localStorage.getItem("getxh_user_logged_in");
   const email = localStorage.getItem("getxh_current_user");
@@ -27,18 +28,82 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("detailUsername").innerText = name;
   document.getElementById("detailEmail").innerText = email;
 });
+</script>
 
-/* SHOW DETAILS */
-function openDetails() {
-  document.getElementById("accountDetails").classList.remove("hidden");
-  document.getElementById("overviewBtn").classList.add("hidden");
+<!-- 🔥 Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import {
+  getAuth,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+/* 🔁 RESET PASSWORD */
+window.changePassword = async function () {
+  const user = auth.currentUser;
+
+  const oldPass = document.getElementById("currentPassword").value.trim();
+  const newPass = document.getElementById("newPassword").value.trim();
+  const confirmPass = document.getElementById("confirmPassword").value.trim();
+  const msg = document.getElementById("passwordMsg");
+
+  if (!oldPass || !newPass || !confirmPass) {
+    showError("All fields required");
+    return;
+  }
+
+  if (newPass.length < 6) {
+    showError("Password must be at least 6 characters");
+    return;
+  }
+
+  if (newPass !== confirmPass) {
+    showError("Passwords do not match");
+    return;
+  }
+
+  try {
+    const credential = EmailAuthProvider.credential(user.email, oldPass);
+    await reauthenticateWithCredential(user, credential);
+    await updatePassword(user, newPass);
+
+    showSuccess();
+  } catch (err) {
+    showError("Current password is incorrect");
+  }
+};
+
+function showError(text) {
+  const msg = document.getElementById("passwordMsg");
+  msg.innerText = text;
+  msg.className = "text-red-400 text-sm mt-2";
+}
+
+function showSuccess() {
+  document.getElementById("successPopup").classList.remove("hidden");
+  document.getElementById("successSound").play();
+
+  setTimeout(() => {
+    document.getElementById("successPopup").classList.add("hidden");
+  }, 2500);
 }
 
 /* LOGOUT */
-function logout() {
+window.logout = function () {
   localStorage.clear();
   window.location.replace("index.html");
-}
+};
 </script>
 
 <style>
@@ -52,85 +117,79 @@ body {
 
 <main class="px-4 py-6 pb-28">
 
-  <!-- ACCOUNT OVERVIEW -->
+  <!-- ACCOUNT CARD -->
   <div class="bg-[#121c33] rounded-xl p-4 mb-4">
-    <p class="text-sm text-gray-400 mb-1">Account</p>
+    <p class="text-sm text-gray-400">Account</p>
     <p id="username" class="text-lg font-semibold">-</p>
     <p id="email" class="text-sm text-gray-400">-</p>
-
-    <button id="overviewBtn"
-      onclick="openDetails()"
-      class="w-full mt-4 bg-blue-500 py-2 rounded-lg font-medium">
-      My Account
-    </button>
   </div>
 
-  <!-- ACCOUNT DETAILS -->
-  <div id="accountDetails" class="hidden">
-
-    <div class="bg-[#121c33] rounded-xl p-4 mb-6 space-y-4">
-
-      <div class="flex items-center gap-4">
-        <span class="material-symbols-outlined text-blue-400">person</span>
-        <div>
-          <p class="text-xs text-gray-400">Username</p>
-          <p id="detailUsername">-</p>
-        </div>
+  <!-- DETAILS -->
+  <div class="bg-[#121c33] rounded-xl p-4 mb-6 space-y-4">
+    <div class="flex items-center gap-4">
+      <span class="material-symbols-outlined text-blue-400">person</span>
+      <div>
+        <p class="text-xs text-gray-400">Username</p>
+        <p id="detailUsername">-</p>
       </div>
-
-      <div class="flex items-center gap-4">
-        <span class="material-symbols-outlined text-cyan-400">mail</span>
-        <div>
-          <p class="text-xs text-gray-400">Email</p>
-          <p id="detailEmail">-</p>
-        </div>
-      </div>
-
     </div>
 
+    <div class="flex items-center gap-4">
+      <span class="material-symbols-outlined text-cyan-400">mail</span>
+      <div>
+        <p class="text-xs text-gray-400">Email</p>
+        <p id="detailEmail">-</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔑 RESET PASSWORD -->
+  <div class="bg-[#121c33] rounded-xl p-4 mb-6">
+    <p class="font-medium mb-3">Reset Password</p>
+
+    <input id="currentPassword" type="password"
+      placeholder="Current password"
+      class="w-full mb-2 px-3 py-2 rounded bg-[#0e1629] outline-none">
+
+    <input id="newPassword" type="password"
+      placeholder="New password"
+      class="w-full mb-2 px-3 py-2 rounded bg-[#0e1629] outline-none">
+
+    <input id="confirmPassword" type="password"
+      placeholder="Confirm new password"
+      class="w-full mb-3 px-3 py-2 rounded bg-[#0e1629] outline-none">
+
+    <button onclick="changePassword()"
+      class="w-full bg-blue-500 py-2 rounded-lg font-medium">
+      Change Password
+    </button>
+
+    <p id="passwordMsg" class="text-sm mt-2"></p>
   </div>
 
   <!-- LOGOUT -->
   <button onclick="logout()"
-    class="w-full flex items-center justify-center gap-2
-           py-3 rounded-xl bg-red-500/10 text-red-400">
+    class="w-full py-3 rounded-xl bg-red-500/10 text-red-400 flex justify-center gap-2">
     <span class="material-symbols-outlined">logout</span>
     Logout
   </button>
 
 </main>
 
-<!-- BOTTOM NAV -->
-<div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-50">
-  <div class="flex justify-around items-center py-2 text-xs">
-
-    <a href="Dashboard.html" class="flex flex-col items-center text-gray-400">
-      <span class="material-symbols-outlined">menu</span>
-      <span>Menu</span>
-    </a>
-
-    <a href="Totalorder.html" class="flex flex-col items-center text-gray-400">
-      <span class="material-symbols-outlined">list_alt</span>
-      <span>Orders</span>
-    </a>
-
-    <a href="Neworder.html"
-       class="bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full -mt-6">
-      <span class="material-symbols-outlined">add</span>
-    </a>
-
-    <a href="Support.html" class="flex flex-col items-center text-gray-400">
-      <span class="material-symbols-outlined">support_agent</span>
-      <span>Support</span>
-    </a>
-
-    <a href="account.html" class="flex flex-col items-center text-blue-400">
-      <span class="material-symbols-outlined">person</span>
-      <span>Account</span>
-    </a>
-
+<!-- ✅ SUCCESS POPUP -->
+<div id="successPopup"
+  class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+  <div class="bg-[#121c33] px-6 py-4 rounded-xl text-center animate-pulse">
+    <p class="text-green-400 font-semibold">
+      Password reset successfully
+    </p>
   </div>
 </div>
+
+<!-- 🔊 SUCCESS SOUND -->
+<audio id="successSound">
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" type="audio/mpeg">
+</audio>
 
 </body>
 </html>
