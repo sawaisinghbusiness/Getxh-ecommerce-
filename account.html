@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +8,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
-<!-- 🔐 SESSION CHECK -->
+<!-- 🔐 SESSION CHECK + USER DATA -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const loggedIn = localStorage.getItem("getxh_user_logged_in");
@@ -37,7 +36,9 @@ import {
   getAuth,
   EmailAuthProvider,
   reauthenticateWithCredential,
-  updatePassword
+  updatePassword,
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 const firebaseConfig = {
@@ -49,14 +50,21 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+let currentUser = null;
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.replace("index.html");
+    return;
+  }
+  currentUser = user;
+});
+
 /* 🔁 RESET PASSWORD */
 window.changePassword = async function () {
-  const user = auth.currentUser;
-
   const oldPass = document.getElementById("currentPassword").value.trim();
   const newPass = document.getElementById("newPassword").value.trim();
   const confirmPass = document.getElementById("confirmPassword").value.trim();
-  const msg = document.getElementById("passwordMsg");
 
   if (!oldPass || !newPass || !confirmPass) {
     showError("All fields required");
@@ -74,11 +82,22 @@ window.changePassword = async function () {
   }
 
   try {
-    const credential = EmailAuthProvider.credential(user.email, oldPass);
-    await reauthenticateWithCredential(user, credential);
-    await updatePassword(user, newPass);
+    const credential = EmailAuthProvider.credential(
+      currentUser.email,
+      oldPass
+    );
+
+    await reauthenticateWithCredential(currentUser, credential);
+    await updatePassword(currentUser, newPass);
 
     showSuccess();
+
+    setTimeout(async () => {
+      await signOut(auth);
+      localStorage.clear();
+      window.location.replace("index.html");
+    }, 2500);
+
   } catch (err) {
     showError("Current password is incorrect");
   }
@@ -93,14 +112,11 @@ function showError(text) {
 function showSuccess() {
   document.getElementById("successPopup").classList.remove("hidden");
   document.getElementById("successSound").play();
-
-  setTimeout(() => {
-    document.getElementById("successPopup").classList.add("hidden");
-  }, 2500);
 }
 
 /* LOGOUT */
-window.logout = function () {
+window.logout = async function () {
+  await signOut(auth);
   localStorage.clear();
   window.location.replace("index.html");
 };
@@ -115,7 +131,7 @@ body {
 
 <body class="bg-[#0b1220] text-white">
 
-<main class="px-4 py-6 pb-28">
+<main class="px-4 py-6 pb-32">
 
   <!-- ACCOUNT CARD -->
   <div class="bg-[#121c33] rounded-xl p-4 mb-4">
@@ -176,6 +192,9 @@ body {
 
 </main>
 
+<!-- ⬇️ SPACE FOR BOTTOM NAV -->
+<div style="height:90px"></div>
+
 <!-- ✅ SUCCESS POPUP -->
 <div id="successPopup"
   class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
@@ -190,6 +209,38 @@ body {
 <audio id="successSound">
   <source src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" type="audio/mpeg">
 </audio>
+
+<!-- 🔽 BOTTOM NAV -->
+<div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-50">
+  <div class="flex justify-around items-center py-2 text-xs">
+
+    <a href="Dashboard.html" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">menu</span>
+      <span>Menu</span>
+    </a>
+
+    <a href="Totalorder.html" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">list_alt</span>
+      <span>Orders</span>
+    </a>
+
+    <a href="Neworder.html"
+       class="bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full -mt-6">
+      <span class="material-symbols-outlined">add</span>
+    </a>
+
+    <a href="Support.html" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">support_agent</span>
+      <span>Support</span>
+    </a>
+
+    <a href="account.html" class="flex flex-col items-center text-blue-400">
+      <span class="material-symbols-outlined">person</span>
+      <span>Account</span>
+    </a>
+
+  </div>
+</div>
 
 </body>
 </html>
