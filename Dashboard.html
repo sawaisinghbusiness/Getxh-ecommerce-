@@ -20,7 +20,9 @@ body {
 
 <!-- LOGIN CHECK -->
 <script>
-if (localStorage.getItem("getxh_user_logged_in") !== "yes") {
+localStorage.setItem("getxh_user_logged_in", "yes");
+localStorage.setItem("getxh_username", user.email.split("@")[0]);
+localStorage.setItem("getxh_email", user.email);
     window.location.href = "index.html";
 }
 </script>
