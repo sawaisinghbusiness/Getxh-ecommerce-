@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account | GETXH</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
+}
+</style>
+</head>
+
+<body class="bg-[#0b1220] text-white">
+
+<main class="px-4 py-6 pb-28">
+
+  <!-- ACCOUNT OVERVIEW -->
+  <div class="bg-[#121c33] rounded-xl p-4 mb-4">
+    <p class="text-sm text-gray-400 mb-1">Account</p>
+    <p id="username" class="text-lg font-semibold">Loading...</p>
+    <p id="email" class="text-sm text-gray-400">Loading...</p>
+  </div>
+
+  <!-- ACCOUNT DETAILS -->
+  <div class="bg-[#121c33] rounded-xl p-4 mb-6 space-y-4">
+
+    <div class="flex items-center gap-4">
+      <span class="material-symbols-outlined text-blue-400">person</span>
+      <div>
+        <p class="text-xs text-gray-400">Username</p>
+        <p id="detailUsername">-</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <span class="material-symbols-outlined text-cyan-400">mail</span>
+      <div>
+        <p class="text-xs text-gray-400">Email</p>
+        <p id="detailEmail">-</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PASSWORD RESET -->
+  <div class="bg-[#121c33] rounded-xl p-4 mb-6">
+    <p class="font-medium mb-3">Reset Password</p>
+
+    <input id="currentPassword" type="password"
+      placeholder="Current password"
+      class="w-full mb-2 px-3 py-2 rounded bg-[#0e1629] outline-none">
+
+    <input id="newPassword" type="password"
+      placeholder="New password"
+      class="w-full mb-2 px-3 py-2 rounded bg-[#0e1629] outline-none">
+
+    <input id="confirmPassword" type="password"
+      placeholder="Confirm new password"
+      class="w-full mb-3 px-3 py-2 rounded bg-[#0e1629] outline-none">
+
+    <button onclick="changePassword()"
+      class="w-full bg-blue-500 py-2 rounded-lg font-medium">
+      Change Password
+    </button>
+
+    <p id="passwordMsg" class="text-sm mt-2"></p>
+  </div>
+
+  <!-- LOGOUT -->
+  <button onclick="logout()"
+    class="w-full flex items-center justify-center gap-2
+           py-3 rounded-xl bg-red-500/10 text-red-400">
+    <span class="material-symbols-outlined">logout</span>
+    Logout
+  </button>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-50">
+  <div class="flex justify-around items-center py-2 text-xs">
+
+    <a href="Dashboard.html" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">menu</span>
+      <span>Menu</span>
+    </a>
+
+    <a href="Totalorder.html" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">list_alt</span>
+      <span>Orders</span>
+    </a>
+
+    <a href="Neworder.html"
+       class="bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full -mt-6">
+      <span class="material-symbols-outlined">add</span>
+    </a>
+
+    <a href="Support.html" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">support_agent</span>
+      <span>Support</span>
+    </a>
+
+    <a href="account.html" class="flex flex-col items-center text-blue-400">
+      <span class="material-symbols-outlined">person</span>
+      <span>Account</span>
+    </a>
+
+  </div>
+</div>
+
+<script>
+/* FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+/* LOAD USER DATA */
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  const username = user.email.split("@")[0];
+
+  document.getElementById("username").innerText = username;
+  document.getElementById("email").innerText = user.email;
+
+  document.getElementById("detailUsername").innerText = username;
+  document.getElementById("detailEmail").innerText = user.email;
+});
+
+/* CHANGE PASSWORD */
+function changePassword() {
+  const user = auth.currentUser;
+  const currentPassword = document.getElementById("currentPassword").value;
+  const newPassword = document.getElementById("newPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  const msg = document.getElementById("passwordMsg");
+
+  if (newPassword !== confirmPassword) {
+    msg.innerText = "Passwords do not match";
+    msg.className = "text-red-400 text-sm mt-2";
+    return;
+  }
+
+  const credential = firebase.auth.EmailAuthProvider.credential(
+    user.email,
+    currentPassword
+  );
+
+  user.reauthenticateWithCredential(credential)
+    .then(() => {
+      return user.updatePassword(newPassword);
+    })
+    .then(() => {
+      msg.innerText = "Password changed successfully";
+      msg.className = "text-green-400 text-sm mt-2";
+    })
+    .catch(error => {
+      msg.innerText = error.message;
+      msg.className = "text-red-400 text-sm mt-2";
+    });
+}
+
+/* LOGOUT */
+function logout() {
+  auth.signOut().then(() => {
+    window.location.href = "index.html";
+  });
+}
+</script>
+
+</body>
+      </html>
