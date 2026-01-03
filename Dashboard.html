@@ -13,7 +13,6 @@
     </style>
 </head>
 
-<!-- BODY COLOR CHANGE -->
 <body class="bg-[#0b1220] text-white">
 
 <!-- LOGIN CHECK -->
@@ -23,54 +22,43 @@
     }
 </script>
 
-<!-- NEW TOP WALLET HEADER -->
-<div class="flex justify-between items-center px-4 py-3 bg-[#0b1220] sticky top-0 z-50">
-    <span class="material-symbols-outlined text-2xl">menu</span>
+<!-- MOBILE TOP HEADER -->
+<div class="flex justify-between items-center px-4 py-3 bg-[#0b1220] sticky top-0 z-50 lg:hidden">
+    <button onclick="toggleMenu()">
+        <span class="material-symbols-outlined text-2xl">menu</span>
+    </button>
+
     <h1 class="font-semibold text-lg">GETXH</h1>
+
     <a href="wallet.html" class="flex items-center gap-1 bg-[#1e2a4a] px-3 py-1 rounded-full text-sm">
         <span class="material-symbols-outlined text-base">account_balance_wallet</span>
         <span id="walletBalanceTop">₹0</span>
     </a>
 </div>
 
-<!-- OLD NAVBAR (UNCHANGED) -->
-<nav class="bg-white shadow-md sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- DESKTOP NAVBAR -->
+<nav class="bg-white shadow-md sticky top-0 z-40 hidden lg:block">
+    <div class="max-w-7xl mx-auto px-4">
         <div class="flex justify-between items-center h-16">
 
-            <div class="flex-shrink-0">
-                <h1 class="text-2xl font-bold text-blue-600">GETXH</h1>
-            </div>
+            <h1 class="text-2xl font-bold text-blue-600">GETXH</h1>
 
-            <div class="hidden md:flex space-x-8">
+            <div class="flex space-x-8">
                 <a href="Dashboard.html" class="text-blue-600 font-medium border-b-2 border-blue-600 px-3 py-2">Dashboard</a>
                 <a href="Neworder.html" class="text-gray-600 hover:text-blue-600 px-3 py-2">New Order</a>
                 <a href="Totalorder.html" class="text-gray-600 hover:text-blue-600 px-3 py-2">Orders</a>
                 <a href="Support.html" class="text-gray-600 hover:text-blue-600 px-3 py-2">Support</a>
             </div>
 
-            <div class="hidden md:flex items-center space-x-4">
-                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span class="material-symbols-outlined text-blue-600">person</span>
-                </div>
-
-                <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
-                    Logout
-                </button>
-            </div>
-
-            <div class="md:hidden">
-                <button id="mobile-menu-btn" class="text-gray-600 hover:text-blue-600">
-                    <span class="material-symbols-outlined text-3xl">menu</span>
-                </button>
-            </div>
-
+            <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
+                Logout
+            </button>
         </div>
     </div>
 </nav>
 
-<!-- MAIN CONTENT (pb-24 ADDED) -->
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
+<!-- MAIN CONTENT -->
+<main class="max-w-7xl mx-auto px-4 py-8 pb-24">
 
     <div class="mb-8">
         <h2 class="text-2xl font-bold mb-1">Welcome,
@@ -106,8 +94,8 @@
 
 </main>
 
-<!-- BOTTOM NAVIGATION -->
-<div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-50">
+<!-- BOTTOM NAV (MOBILE ONLY) -->
+<div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-50 lg:hidden">
     <div class="flex justify-around items-center py-2 text-xs">
 
         <a href="Dashboard.html" class="flex flex-col items-center text-blue-400">
@@ -130,13 +118,32 @@
             <span>Support</span>
         </a>
 
-        <a href="account.html" class="flex flex-col items-center text-gray-400">
+        <button onclick="toggleMenu()" class="flex flex-col items-center text-gray-400">
             <span class="material-symbols-outlined">person</span>
             <span>Account</span>
-        </a>
+        </button>
 
     </div>
 </div>
+
+<!-- SIDE MENU -->
+<div id="sideMenu" class="fixed inset-0 bg-black/60 hidden z-50">
+    <div class="w-64 bg-[#0e1629] h-full p-4">
+        <a href="Dashboard.html" class="block py-2">Dashboard</a>
+        <a href="wallet.html" class="block py-2">Wallet</a>
+        <a href="Neworder.html" class="block py-2">New Order</a>
+        <a href="Totalorder.html" class="block py-2">Orders</a>
+        <a href="Support.html" class="block py-2">Support</a>
+        <a href="account.html" class="block py-2">Account</a>
+        <button onclick="toggleMenu()" class="mt-4 text-red-400">Close</button>
+    </div>
+</div>
+
+<script>
+function toggleMenu() {
+    document.getElementById("sideMenu").classList.toggle("hidden");
+}
+</script>
 
 </body>
 </html>
