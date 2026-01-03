@@ -35,7 +35,6 @@
 <body class="font-display bg-white">
 
 <div class="min-h-screen flex items-center justify-center px-4">
-
 <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-[0_4px_24px_rgba(209,213,219,0.3)]">
 
 <h2 class="text-3xl font-bold text-center mb-6 text-[#111827]">Create Account</h2>
@@ -120,17 +119,22 @@ const db = getFirestore(app);
 
 document.getElementById("registerBtn").onclick = async function () {
 
+    const btn = document.getElementById("registerBtn");
+    const errorBox = document.getElementById("errorBox");
+
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const pass = document.getElementById("password").value.trim();
     const cpass = document.getElementById("confirmPassword").value.trim();
-    const errorBox = document.getElementById("errorBox");
 
     if (!name) return show("Name cannot be empty");
     if (!email) return show("Email cannot be empty");
     if (!email.includes("@")) return show("Enter a valid email");
     if (pass.length < 6) return show("Password must be at least 6 characters");
     if (pass !== cpass) return show("Passwords do not match");
+
+    btn.disabled = true;
+    btn.innerText = "Creating account...";
 
     try {
         const userCred = await createUserWithEmailAndPassword(auth, email, pass);
@@ -145,15 +149,15 @@ document.getElementById("registerBtn").onclick = async function () {
             TotalSpent: 0
         });
 
-        // ✅ SESSION SAVE
         localStorage.setItem("getxh_user_logged_in", "yes");
         localStorage.setItem("getxh_current_user", email);
         localStorage.setItem("getxh_user_name", name);
 
-        // ✅ DIRECT DASHBOARD
         window.location.href = "Dashboard.html";
-    }
-    catch (error) {
+        return;
+
+    } catch (error) {
+
         let msg = "Something went wrong. Try again.";
 
         if (error.code === "auth/email-already-in-use") {
@@ -166,6 +170,9 @@ document.getElementById("registerBtn").onclick = async function () {
 
         errorBox.textContent = msg;
         errorBox.classList.remove("hidden");
+
+        btn.disabled = false;
+        btn.innerText = "Register";
     }
 };
 
