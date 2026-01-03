@@ -11,8 +11,23 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wg
 
 <style>
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
-                 Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+               Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.35s ease-out;
 }
 </style>
 </head>
@@ -207,21 +222,7 @@ transform -translate-x-full transition-transform duration-300">
 </div>
 
 <script>
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
-.animate-slideUp {
-  animation: slideUp 0.35s ease-out;
-}
-    
 function openMenu() {
   document.getElementById("sideMenu").classList.remove("-translate-x-full");
   document.getElementById("menuOverlay").classList.remove("hidden");
@@ -241,10 +242,14 @@ document.getElementById("accountPopup").addEventListener("click", function(e){
 });
 
 /* 🔥 READ EXACT KEYS SAVED BY LOGIN PAGE */
-const username =
-  localStorage.getItem("getxh_user_name") ||
-  localStorage.getItem("getxh_current_user");
+let username = localStorage.getItem("getxh_user_name");
 
+if (!username) {
+  const emailTemp = localStorage.getItem("getxh_current_user");
+  if (emailTemp) {
+    username = emailTemp.split("@")[0];
+  }
+}
 const email = localStorage.getItem("getxh_current_user");
 
 if (username) {
