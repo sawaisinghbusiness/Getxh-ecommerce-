@@ -35,21 +35,27 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 /* LOAD USER DATA */
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "index.html";
-    return;
-  }
+<script>
+const email = localStorage.getItem("getxh_current_user");
+let username = localStorage.getItem("getxh_user_name");
 
-  const username = user.email.split("@")[0];
+if (!email) {
+  window.location.href = "index.html";
+}
 
+if (!username && email) {
+  username = email.split("@")[0];
+}
+
+document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("username").innerText = username;
-  document.getElementById("email").innerText = user.email;
+  document.getElementById("email").innerText = email;
 
   document.getElementById("detailUsername").innerText = username;
-  document.getElementById("detailEmail").innerText = user.email;
+  document.getElementById("detailEmail").innerText = email;
 });
-
+</script>
+    
 /* SHOW DETAILS */
 window.openDetails = function () {
   document.getElementById("accountDetails").classList.remove("hidden");
