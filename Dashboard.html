@@ -165,13 +165,14 @@ async function loadUserData() {
     const ref = doc(db, "Users", uid);
     const snap = await getDoc(ref);
 
-    if (snap.exists()) {
-        let data = snap.data();
+if (snap.exists()) {
+    let data = snap.data();
 
-        document.getElementById("userName").textContent   = data.Name || "User";
-        document.getElementById("userBalance").textContent = "₹" + data.Balance;
-        document.getElementById("userOrders").textContent  = data["Total Orders"];
-        document.getElementById("userSpent").textContent   = "₹" + data["Total spent"];
+    document.getElementById("userName").textContent   = data.Name || "User";
+    document.getElementById("userBalance").textContent = "₹" + data.Balance;
+    document.getElementById("userOrders").textContent  = data["Total Orders"];
+    document.getElementById("userSpent").textContent   = "₹" + data["Total spent"];
+}
     }
 }
 
