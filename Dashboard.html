@@ -13,7 +13,8 @@
     </style>
 </head>
 
-<body class="bg-[#f5f6fa]">
+<!-- BODY COLOR CHANGE -->
+<body class="bg-[#0b1220] text-white">
 
 <!-- LOGIN CHECK -->
 <script>
@@ -22,8 +23,18 @@
     }
 </script>
 
-<!-- Header / Navbar -->
-<nav class="bg-white shadow-md sticky top-0 z-50">
+<!-- NEW TOP WALLET HEADER -->
+<div class="flex justify-between items-center px-4 py-3 bg-[#0b1220] sticky top-0 z-50">
+    <span class="material-symbols-outlined text-2xl">menu</span>
+    <h1 class="font-semibold text-lg">GETXH</h1>
+    <a href="wallet.html" class="flex items-center gap-1 bg-[#1e2a4a] px-3 py-1 rounded-full text-sm">
+        <span class="material-symbols-outlined text-base">account_balance_wallet</span>
+        <span id="walletBalanceTop">₹0</span>
+    </a>
+</div>
+
+<!-- OLD NAVBAR (UNCHANGED) -->
+<nav class="bg-white shadow-md sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
 
@@ -56,142 +67,76 @@
 
         </div>
     </div>
-
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
-        <div class="px-4 py-3 space-y-2">
-
-            <a href="Dashboard.html" class="block px-3 py-2 text-blue-600 bg-blue-50 rounded-lg">Dashboard</a>
-            <a href="Neworder.html" class="block px-3 py-2 hover:bg-gray-50 rounded-lg">New Order</a>
-            <a href="Totalorder.html" class="block px-3 py-2 hover:bg-gray-50 rounded-lg">Orders</a>
-            <a href="Support.html" class="block px-3 py-2 hover:bg-gray-50 rounded-lg">Support</a>
-
-            <button id="logoutBtnMobile" class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
-                Logout
-            </button>
-        </div>
-    </div>
 </nav>
 
-<!-- Main Dashboard Content -->
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- MAIN CONTENT (pb-24 ADDED) -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
 
     <div class="mb-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-2">Welcome back, 
-            <span id="userName">User</span>!
+        <h2 class="text-2xl font-bold mb-1">Welcome,
+            <span id="userName">User</span>
         </h2>
-        <p class="text-gray-600">Here's a summary of your account activity.</p>
+        <p class="text-gray-400 text-sm">Account overview</p>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
 
-        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4">
-            <div class="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center">
-                <span class="material-symbols-outlined text-blue-600 text-3xl">account_balance_wallet</span>
-            </div>
+        <div class="bg-[#121c33] rounded-xl p-5 flex items-center gap-4">
+            <span class="material-symbols-outlined text-blue-400 text-3xl">account_balance_wallet</span>
             <div>
-                <p class="text-gray-500 text-sm font-medium">Your Balance</p>
-                <p id="userBalance" class="text-2xl font-bold">₹0.00</p>
+                <p class="text-gray-400 text-sm">Balance</p>
+                <p id="userBalance" class="text-xl font-semibold">₹0</p>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4">
-            <div class="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center">
-                <span class="material-symbols-outlined text-green-600 text-3xl">shopping_cart</span>
-            </div>
+        <div class="bg-[#121c33] rounded-xl p-5 flex items-center gap-4">
+            <span class="material-symbols-outlined text-green-400 text-3xl">shopping_cart</span>
             <div>
-                <p class="text-gray-500 text-sm font-medium">Total Orders</p>
-                <!-- yahan class add ki hai -->
-                <p id="userOrders" class="text-2xl font-bold totalOrders">0</p>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4">
-            <div class="w-14 h-14 bg-purple-100 rounded-lg flex items-center justify-center">
-                <span class="material-symbols-outlined text-purple-600 text-3xl">payments</span>
-            </div>
-            <div>
-                <p class="text-gray-500 text-sm font-medium">Total Spent</p>
-                <p id="userSpent" class="text-2xl font-bold">₹0.00</p>
+                <p class="text-gray-400 text-sm">Orders</p>
+                <p id="userOrders" class="text-xl font-semibold">0</p>
             </div>
         </div>
 
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm p-6">
-
-        <h3 class="text-xl font-bold text-gray-800 mb-4">Quick Actions</h3>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-            <a href="Neworder.html" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-lg font-medium flex items-center justify-center space-x-2">
-                <span class="material-symbols-outlined">add_circle</span>
-                <span>Create New Order</span>
-            </a>
-
-            <a href="Totalorder.html" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-4 rounded-lg font-medium flex items-center justify-center space-x-2">
-                <span class="material-symbols-outlined">list_alt</span>
-                <span>View Orders</span>
-            </a>
-
-        </div>
-    </div>
+    <a href="Neworder.html"
+       class="block text-center bg-gradient-to-r from-blue-500 to-cyan-400 py-3 rounded-xl font-semibold">
+        New Order
+    </a>
 
 </main>
 
-<!-- Firebase Firestore -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<!-- BOTTOM NAVIGATION -->
+<div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-50">
+    <div class="flex justify-around items-center py-2 text-xs">
 
-const firebaseConfig = {
-  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
-  authDomain: "getxh-42588.firebaseapp.com",
-  projectId: "getxh-42588",
-  storageBucket: "getxh-42588.firebasestorage.app",
-  messagingSenderId: "170770122888",
-  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
-};
+        <a href="Dashboard.html" class="flex flex-col items-center text-blue-400">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>Menu</span>
+        </a>
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+        <a href="Totalorder.html" class="flex flex-col items-center text-gray-400">
+            <span class="material-symbols-outlined">list_alt</span>
+            <span>Orders</span>
+        </a>
 
-let uid = localStorage.getItem("getxh_current_user_uid");
+        <a href="Neworder.html"
+           class="bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full -mt-6">
+            <span class="material-symbols-outlined">add</span>
+        </a>
 
-if (!uid) {
-    window.location.href = "index.html";
-}
+        <a href="Support.html" class="flex flex-col items-center text-gray-400">
+            <span class="material-symbols-outlined">support_agent</span>
+            <span>Support</span>
+        </a>
 
-async function loadUserData() {
-    const ref = doc(db, "Users", uid);
-    const snap = await getDoc(ref);
+        <a href="account.html" class="flex flex-col items-center text-gray-400">
+            <span class="material-symbols-outlined">person</span>
+            <span>Account</span>
+        </a>
 
-if (snap.exists()) {
-    let data = snap.data();
-
-    document.getElementById("userName").textContent   = data.Name || "User";
-    document.getElementById("userBalance").textContent = "₹" + data.Balance;
-    document.getElementById("userOrders").textContent  = data["Total Orders"];
-    document.getElementById("userSpent").textContent   = "₹" + data["Total spent"];
-}
-    }
-}
-
-loadUserData();
-</script>
-
-<script>
-    document.getElementById("mobile-menu-btn").onclick = () => {
-        document.getElementById("mobile-menu").classList.toggle("hidden");
-    };
-
-    function logoutNow() {
-        localStorage.clear();
-        window.location.href = "index.html";
-    }
-
-    document.getElementById("logoutBtn").onclick = logoutNow;
-    document.getElementById("logoutBtnMobile").onclick = logoutNow;
-</script>
+    </div>
+</div>
 
 </body>
 </html>
