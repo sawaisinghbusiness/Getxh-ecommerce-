@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wallet | GETXH</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#f5f6fa]">
+
+<!-- Header -->
+<div class="bg-white shadow px-4 py-3 flex items-center gap-3">
+  <button onclick="history.back()" class="text-lg">←</button>
+  <h1 class="text-lg font-semibold">Wallet</h1>
+</div>
+
+<!-- Balance Card -->
+<div class="p-4">
+  <div class="bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl p-5">
+    <p class="text-sm opacity-90">Available Balance</p>
+    <h2 class="text-3xl font-bold mt-2">₹ <span id="walletBalance">0</span></h2>
+
+    <button class="mt-4 w-full bg-white text-black py-2 rounded-lg font-medium">
+      Add Balance
+    </button>
+  </div>
+</div>
+
+<!-- Transactions -->
+<div class="px-4">
+  <h3 class="text-sm font-semibold mb-3">Transactions</h3>
+
+  <div class="bg-white rounded-lg divide-y">
+
+    <!-- Credit -->
+    <div class="flex justify-between items-center p-3">
+      <div>
+        <p class="text-sm font-medium text-green-600">Balance Added</p>
+        <p class="text-xs text-gray-400">02 Jan 2026</p>
+      </div>
+      <p class="text-green-600 font-semibold">+ ₹500</p>
+    </div>
+
+    <!-- Debit -->
+    <div class="flex justify-between items-center p-3">
+      <div>
+        <p class="text-sm font-medium text-red-600">Order Payment</p>
+        <p class="text-xs text-gray-400">Order #1023</p>
+      </div>
+      <p class="text-red-600 font-semibold">- ₹120</p>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
