@@ -136,29 +136,15 @@ document.getElementById("registerBtn").onclick = async function () {
     btn.disabled = true;
     btn.innerText = "Creating account...";
 
+    let userCred;
+
+    // ✅ AUTH CREATE
     try {
-        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-
+        userCred = await createUserWithEmailAndPassword(auth, email, pass);
         await updateProfile(userCred.user, { displayName: name });
-
-        await setDoc(doc(db, "Users", userCred.user.uid), {
-            Name: name,
-            Email: email,
-            TotalOrders: 0,
-            Balance: 0,
-            TotalSpent: 0
-        });
-
-        localStorage.setItem("getxh_user_logged_in", "yes");
-        localStorage.setItem("getxh_current_user", email);
-        localStorage.setItem("getxh_user_name", name);
-
-        window.location.href = "Dashboard.html";
-        return;
-
     } catch (error) {
 
-        let msg = "Something went wrong. Try again.";
+        let msg = "Registration failed.";
 
         if (error.code === "auth/email-already-in-use") {
             msg = "Email already registered. Please login.";
@@ -173,7 +159,29 @@ document.getElementById("registerBtn").onclick = async function () {
 
         btn.disabled = false;
         btn.innerText = "Register";
+        return;
     }
+
+    // ✅ FIRESTORE OPTIONAL (FAIL SAFE)
+    try {
+        await setDoc(doc(db, "Users", userCred.user.uid), {
+            Name: name,
+            Email: email,
+            TotalOrders: 0,
+            Balance: 0,
+            TotalSpent: 0
+        });
+    } catch (e) {
+        console.warn("Firestore write failed, continuing");
+    }
+
+    // ✅ SESSION
+    localStorage.setItem("getxh_user_logged_in", "yes");
+    localStorage.setItem("getxh_current_user", email);
+    localStorage.setItem("getxh_user_name", name);
+
+    // ✅ FINAL REDIRECT
+    window.location.href = "Dashboard.html";
 };
 
 function show(msg){
