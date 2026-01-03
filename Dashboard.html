@@ -24,7 +24,7 @@
 
 <!-- MOBILE TOP HEADER -->
 <div class="flex justify-between items-center px-4 py-3 bg-[#0b1220] sticky top-0 z-50 lg:hidden">
-    <button onclick="toggleMenu()">
+    <button onclick="openMenu()">
         <span class="material-symbols-outlined text-2xl">menu</span>
     </button>
 
@@ -127,21 +127,30 @@
 </div>
 
 <!-- SIDE MENU -->
-<div id="sideMenu" class="fixed inset-0 bg-black/60 hidden z-50">
-    <div class="w-64 bg-[#0e1629] h-full p-4">
+<div id="menuOverlay" class="fixed inset-0 bg-black/60 hidden z-40" onclick="closeMenu()"></div>
+
+<div id="sideMenu"
+class="fixed top-0 left-0 h-full w-64 bg-[#0e1629] z-50
+transform -translate-x-full transition-transform duration-300">
         <a href="Dashboard.html" class="block py-2">Dashboard</a>
         <a href="wallet.html" class="block py-2">Wallet</a>
         <a href="Neworder.html" class="block py-2">New Order</a>
         <a href="Totalorder.html" class="block py-2">Orders</a>
         <a href="Support.html" class="block py-2">Support</a>
         <a href="account.html" class="block py-2">Account</a>
-        <button onclick="toggleMenu()" class="mt-4 text-red-400">Close</button>
+       
     </div>
 </div>
 
 <script>
-function toggleMenu() {
-    document.getElementById("sideMenu").classList.toggle("hidden");
+function openMenu() {
+    document.getElementById("sideMenu").classList.remove("-translate-x-full");
+    document.getElementById("menuOverlay").classList.remove("hidden");
+}
+
+function closeMenu() {
+    document.getElementById("sideMenu").classList.add("-translate-x-full");
+    document.getElementById("menuOverlay").classList.add("hidden");
 }
 </script>
 
