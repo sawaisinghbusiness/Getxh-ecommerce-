@@ -130,18 +130,56 @@
 <div id="menuOverlay" class="fixed inset-0 bg-black/60 hidden z-40" onclick="closeMenu()"></div>
 
 <div id="sideMenu"
-class="fixed top-0 left-0 h-full w-64 bg-[#0e1629] z-50
+class="fixed top-0 left-0 h-full w-72 bg-[#0e1629] z-50
 transform -translate-x-full transition-transform duration-300">
-        <a href="Dashboard.html" class="block py-2">Dashboard</a>
-        <a href="wallet.html" class="block py-2">Wallet</a>
-        <a href="Neworder.html" class="block py-2">New Order</a>
-        <a href="Totalorder.html" class="block py-2">Orders</a>
-        <a href="Support.html" class="block py-2">Support</a>
-        <a href="account.html" class="block py-2">Account</a>
-       
-    </div>
-</div>
 
+  <div class="p-4 space-y-1">
+
+    <a href="Dashboard.html"
+       class="flex items-center gap-4 px-4 py-3 rounded-lg
+              transition hover:bg-white/5 active:bg-white/10">
+      <span class="material-symbols-outlined text-blue-400 text-xl">dashboard</span>
+      <span class="text-sm font-medium">Dashboard</span>
+    </a>
+
+    <a href="wallet.html"
+       class="flex items-center gap-4 px-4 py-3 rounded-lg
+              transition hover:bg-white/5 active:bg-white/10">
+      <span class="material-symbols-outlined text-cyan-400 text-xl">account_balance_wallet</span>
+      <span class="text-sm font-medium">Wallet</span>
+    </a>
+
+    <a href="Neworder.html"
+       class="flex items-center gap-4 px-4 py-3 rounded-lg
+              transition hover:bg-white/5 active:bg-white/10">
+      <span class="material-symbols-outlined text-green-400 text-xl">add_shopping_cart</span>
+      <span class="text-sm font-medium">New Order</span>
+    </a>
+
+    <a href="Totalorder.html"
+       class="flex items-center gap-4 px-4 py-3 rounded-lg
+              transition hover:bg-white/5 active:bg-white/10">
+      <span class="material-symbols-outlined text-yellow-400 text-xl">list_alt</span>
+      <span class="text-sm font-medium">Orders</span>
+    </a>
+
+    <a href="Support.html"
+       class="flex items-center gap-4 px-4 py-3 rounded-lg
+              transition hover:bg-white/5 active:bg-white/10">
+      <span class="material-symbols-outlined text-purple-400 text-xl">support_agent</span>
+      <span class="text-sm font-medium">Support</span>
+    </a>
+
+    <a href="account.html"
+       class="flex items-center gap-4 px-4 py-3 rounded-lg
+              transition hover:bg-white/5 active:bg-white/10">
+      <span class="material-symbols-outlined text-gray-400 text-xl">person</span>
+      <span class="text-sm font-medium">Account</span>
+    </a>
+
+  </div>
+</div>
+    
 <script>
 function openMenu() {
     document.getElementById("sideMenu").classList.remove("-translate-x-full");
