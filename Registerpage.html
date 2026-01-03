@@ -28,7 +28,7 @@
     color:#D1D5DB; cursor:pointer;
 }
 .toggle-password:hover { color:#111827; }
-    .toggle-password .material-symbols-outlined { pointer-events: auto; }
+.toggle-password .material-symbols-outlined { pointer-events:auto; }
 </style>
 </head>
 
@@ -66,7 +66,7 @@
 <div class="form-input-container">
 <input id="password" type="password" class="form-input w-full rounded-lg border border-[#D1D5DB] h-12 px-4" placeholder="Create password"/>
 <span class="material-symbols-outlined">lock</span>
-<div class="toggle-password" onclick="togglePass('password', this)">
+<div class="toggle-password" onclick="togglePass('password')">
 <span class="material-symbols-outlined">visibility</span>
 </div>
 </div>
@@ -78,7 +78,7 @@
 <div class="form-input-container">
 <input id="confirmPassword" type="password" class="form-input w-full rounded-lg border border-[#D1D5DB] h-12 px-4" placeholder="Re-enter password"/>
 <span class="material-symbols-outlined">lock</span>
-<div class="toggle-password" onclick="togglePass('confirmPassword', this)">
+<div class="toggle-password" onclick="togglePass('confirmPassword')">
 <span class="material-symbols-outlined">visibility</span>
 </div>
 </div>
@@ -99,9 +99,8 @@ Already have an account? <span class="text-[#0052FF] font-semibold">Login</span>
 </div>
 </div>
 
-<!-- ⭐ Firebase SDK + Auth + Firestore -->
+<!-- ⭐ Firebase -->
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -121,20 +120,20 @@ const db = getFirestore(app);
 
 document.getElementById("registerBtn").onclick = async function () {
 
-    let name = document.getElementById("name").value.trim();
-    let email = document.getElementById("email").value.trim();
-    let pass = document.getElementById("password").value.trim();
-    let cpass = document.getElementById("confirmPassword").value.trim();
-    let errorBox = document.getElementById("errorBox");
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const pass = document.getElementById("password").value.trim();
+    const cpass = document.getElementById("confirmPassword").value.trim();
+    const errorBox = document.getElementById("errorBox");
 
-    if(name === "") return show("Name cannot be empty");
-    if(email === "") return show("Email cannot be empty");
-    if(!email.includes("@")) return show("Enter a valid email");
-    if(pass.length < 6) return show("Password must be at least 6 characters");
-    if(pass !== cpass) return show("Passwords do not match");
+    if (!name) return show("Name cannot be empty");
+    if (!email) return show("Email cannot be empty");
+    if (!email.includes("@")) return show("Enter a valid email");
+    if (pass.length < 6) return show("Password must be at least 6 characters");
+    if (pass !== cpass) return show("Passwords do not match");
 
     try {
-        let userCred = await createUserWithEmailAndPassword(auth, email, pass);
+        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
 
         await updateProfile(userCred.user, { displayName: name });
 
@@ -146,36 +145,40 @@ document.getElementById("registerBtn").onclick = async function () {
             TotalSpent: 0
         });
 
-        window.location.href = "index.html";
-    } 
-    .catch((error) => {
-  let msg = "Something went wrong. Try again.";
+        // ✅ SESSION SAVE
+        localStorage.setItem("getxh_user_logged_in", "yes");
+        localStorage.setItem("getxh_current_user", email);
+        localStorage.setItem("getxh_user_name", name);
 
-  if (error.code === "auth/email-already-in-use") {
-    msg = "Email already registered. Please login.";
-  }
-  else if (error.code === "auth/weak-password") {
-    msg = "Password must be at least 6 characters.";
-  }
-  else if (error.code === "auth/invalid-email") {
-    msg = "Enter a valid email address.";
-  }
+        // ✅ DIRECT DASHBOARD
+        window.location.href = "Dashboard.html";
+    }
+    catch (error) {
+        let msg = "Something went wrong. Try again.";
 
-  errorBox.innerText = msg;
-  errorBox.classList.remove("hidden");
-});
+        if (error.code === "auth/email-already-in-use") {
+            msg = "Email already registered. Please login.";
+        } else if (error.code === "auth/weak-password") {
+            msg = "Password must be at least 6 characters.";
+        } else if (error.code === "auth/invalid-email") {
+            msg = "Enter a valid email address.";
+        }
+
+        errorBox.textContent = msg;
+        errorBox.classList.remove("hidden");
+    }
+};
 
 function show(msg){
-    let box = document.getElementById("errorBox");
+    const box = document.getElementById("errorBox");
     box.textContent = msg;
     box.classList.remove("hidden");
 }
-
 </script>
 
 <script>
 function togglePass(id){
-    let i = document.getElementById(id);
+    const i = document.getElementById(id);
     i.type = i.type === "password" ? "text" : "password";
 }
 </script>
