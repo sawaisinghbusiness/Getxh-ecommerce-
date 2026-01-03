@@ -7,7 +7,12 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-
+<script>
+if (localStorage.getItem("getxh_user_logged_in") !== "yes") {
+    window.location.href = "index.html";
+}
+</script>
+  
 <!-- Firebase (v10 modular) -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
