@@ -8,9 +8,83 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<!-- Firebase (v10 modular) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+/* LOAD USER DATA */
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  const username = user.email.split("@")[0];
+
+  document.getElementById("username").innerText = username;
+  document.getElementById("email").innerText = user.email;
+
+  document.getElementById("detailUsername").innerText = username;
+  document.getElementById("detailEmail").innerText = user.email;
+});
+
+/* SHOW DETAILS */
+window.openDetails = function () {
+  document.getElementById("accountDetails").classList.remove("hidden");
+  document.getElementById("overviewBtn").classList.add("hidden");
+};
+
+/* CHANGE PASSWORD */
+window.changePassword = async function () {
+  const user = auth.currentUser;
+  const oldPass = document.getElementById("currentPassword").value;
+  const newPass = document.getElementById("newPassword").value;
+  const confirmPass = document.getElementById("confirmPassword").value;
+  const msg = document.getElementById("passwordMsg");
+
+  if (newPass !== confirmPass) {
+    msg.innerText = "Passwords do not match";
+    msg.className = "text-red-400 text-sm mt-2";
+    return;
+  }
+
+  try {
+    const credential = EmailAuthProvider.credential(user.email, oldPass);
+    await reauthenticateWithCredential(user, credential);
+    await updatePassword(user, newPass);
+
+    msg.innerText = "Password changed successfully";
+    msg.className = "text-green-400 text-sm mt-2";
+  } catch (err) {
+    msg.innerText = err.message;
+    msg.className = "text-red-400 text-sm mt-2";
+  }
+};
+
+/* LOGOUT */
+window.logout = function () {
+  signOut(auth).then(() => {
+    window.location.href = "index.html";
+  });
+};
+</script>
 
 <style>
 body {
@@ -28,51 +102,61 @@ body {
     <p class="text-sm text-gray-400 mb-1">Account</p>
     <p id="username" class="text-lg font-semibold">Loading...</p>
     <p id="email" class="text-sm text-gray-400">Loading...</p>
-  </div>
 
-  <!-- ACCOUNT DETAILS -->
-  <div class="bg-[#121c33] rounded-xl p-4 mb-6 space-y-4">
-
-    <div class="flex items-center gap-4">
-      <span class="material-symbols-outlined text-blue-400">person</span>
-      <div>
-        <p class="text-xs text-gray-400">Username</p>
-        <p id="detailUsername">-</p>
-      </div>
-    </div>
-
-    <div class="flex items-center gap-4">
-      <span class="material-symbols-outlined text-cyan-400">mail</span>
-      <div>
-        <p class="text-xs text-gray-400">Email</p>
-        <p id="detailEmail">-</p>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- PASSWORD RESET -->
-  <div class="bg-[#121c33] rounded-xl p-4 mb-6">
-    <p class="font-medium mb-3">Reset Password</p>
-
-    <input id="currentPassword" type="password"
-      placeholder="Current password"
-      class="w-full mb-2 px-3 py-2 rounded bg-[#0e1629] outline-none">
-
-    <input id="newPassword" type="password"
-      placeholder="New password"
-      class="w-full mb-2 px-3 py-2 rounded bg-[#0e1629] outline-none">
-
-    <input id="confirmPassword" type="password"
-      placeholder="Confirm new password"
-      class="w-full mb-3 px-3 py-2 rounded bg-[#0e1629] outline-none">
-
-    <button onclick="changePassword()"
-      class="w-full bg-blue-500 py-2 rounded-lg font-medium">
-      Change Password
+    <button id="overviewBtn"
+      onclick="openDetails()"
+      class="w-full mt-4 bg-blue-500 py-2 rounded-lg font-medium">
+      My Account
     </button>
+  </div>
 
-    <p id="passwordMsg" class="text-sm mt-2"></p>
+  <!-- ACCOUNT DETAILS (HIDDEN BY DEFAULT) -->
+  <div id="accountDetails" class="hidden">
+
+    <div class="bg-[#121c33] rounded-xl p-4 mb-6 space-y-4">
+
+      <div class="flex items-center gap-4">
+        <span class="material-symbols-outlined text-blue-400">person</span>
+        <div>
+          <p class="text-xs text-gray-400">Username</p>
+          <p id="detailUsername">-</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <span class="material-symbols-outlined text-cyan-400">mail</span>
+        <div>
+          <p class="text-xs text-gray-400">Email</p>
+          <p id="detailEmail">-</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PASSWORD RESET -->
+    <div class="bg-[#121c33] rounded-xl p-4 mb-6">
+      <p class="font-medium mb-3">Reset Password</p>
+
+      <input id="currentPassword" type="password"
+        placeholder="Current password"
+        class="w-full mb-2 px-3 py-2 rounded bg-[#0e1629] outline-none">
+
+      <input id="newPassword" type="password"
+        placeholder="New password"
+        class="w-full mb-2 px-3 py-2 rounded bg-[#0e1629] outline-none">
+
+      <input id="confirmPassword" type="password"
+        placeholder="Confirm new password"
+        class="w-full mb-3 px-3 py-2 rounded bg-[#0e1629] outline-none">
+
+      <button onclick="changePassword()"
+        class="w-full bg-blue-500 py-2 rounded-lg font-medium">
+        Change Password
+      </button>
+
+      <p id="passwordMsg" class="text-sm mt-2"></p>
+    </div>
+
   </div>
 
   <!-- LOGOUT -->
@@ -85,7 +169,7 @@ body {
 
 </main>
 
-<!-- BOTTOM NAV -->
+<!-- BOTTOM NAV (UNCHANGED) -->
 <div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-50">
   <div class="flex justify-around items-center py-2 text-xs">
 
@@ -117,73 +201,5 @@ body {
   </div>
 </div>
 
-<script>
-/* FIREBASE CONFIG */
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-
-/* LOAD USER DATA */
-auth.onAuthStateChanged(user => {
-  if (!user) {
-    window.location.href = "index.html";
-    return;
-  }
-
-  const username = user.email.split("@")[0];
-
-  document.getElementById("username").innerText = username;
-  document.getElementById("email").innerText = user.email;
-
-  document.getElementById("detailUsername").innerText = username;
-  document.getElementById("detailEmail").innerText = user.email;
-});
-
-/* CHANGE PASSWORD */
-function changePassword() {
-  const user = auth.currentUser;
-  const currentPassword = document.getElementById("currentPassword").value;
-  const newPassword = document.getElementById("newPassword").value;
-  const confirmPassword = document.getElementById("confirmPassword").value;
-  const msg = document.getElementById("passwordMsg");
-
-  if (newPassword !== confirmPassword) {
-    msg.innerText = "Passwords do not match";
-    msg.className = "text-red-400 text-sm mt-2";
-    return;
-  }
-
-  const credential = firebase.auth.EmailAuthProvider.credential(
-    user.email,
-    currentPassword
-  );
-
-  user.reauthenticateWithCredential(credential)
-    .then(() => {
-      return user.updatePassword(newPassword);
-    })
-    .then(() => {
-      msg.innerText = "Password changed successfully";
-      msg.className = "text-green-400 text-sm mt-2";
-    })
-    .catch(error => {
-      msg.innerText = error.message;
-      msg.className = "text-red-400 text-sm mt-2";
-    });
-}
-
-/* LOGOUT */
-function logout() {
-  auth.signOut().then(() => {
-    window.location.href = "index.html";
-  });
-}
-</script>
-
 </body>
-      </html>
+</html>
