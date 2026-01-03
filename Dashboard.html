@@ -149,23 +149,79 @@ transform -translate-x-full transition-transform duration-300">
 </div>
 
 <!-- ACCOUNT POPUP -->
-<div id="accountPopup" class="fixed inset-0 bg-black/60 hidden z-50">
-  <div class="absolute bottom-0 left-0 right-0 bg-[#121c33] rounded-t-2xl p-4">
-    <p id="popupUsername" class="text-lg font-semibold">User</p>
-    <p id="popupEmail" class="text-sm text-gray-400 mb-4"></p>
+<div id="accountPopup"
+     class="fixed inset-0 bg-black/60 hidden z-50 flex items-end justify-center">
 
-    <a href="account.html"
-       class="block w-full text-center bg-blue-500 py-2 rounded-lg mb-3">
-      My Account
-    </a>
+  <div
+    class="w-full max-w-md mx-auto
+           bg-[#0f1a30]
+           rounded-t-3xl
+           px-5 pt-5 pb-6
+           animate-slideUp">
 
-    <button onclick="logout()" class="w-full py-2 text-red-400">
-      Logout
-    </button>
+    <!-- USER CARD -->
+    <div class="bg-[#121c33] rounded-2xl p-4 mb-4 shadow-inner">
+
+      <p id="popupUsername"
+         class="text-lg font-semibold text-white">
+        User
+      </p>
+
+      <p id="popupEmail"
+         class="text-xs text-gray-400 mt-1">
+        email@example.com
+      </p>
+
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="space-y-3">
+
+      <!-- My Account -->
+      <a href="account.html"
+         class="block text-center
+                bg-gradient-to-r from-blue-500 to-cyan-400
+                py-3 rounded-xl
+                font-semibold text-white
+                shadow-md
+                active:scale-[0.98]
+                transition">
+        My Account
+      </a>
+
+      <!-- Logout -->
+      <button onclick="logout()"
+        class="w-full flex items-center justify-center gap-2
+               py-3 rounded-xl
+               bg-red-500/10 text-red-400
+               font-medium
+               active:scale-[0.98]
+               transition">
+        <span class="material-symbols-outlined">logout</span>
+        Logout
+      </button>
+
+    </div>
+
   </div>
 </div>
 
 <script>
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.35s ease-out;
+}
+    
 function openMenu() {
   document.getElementById("sideMenu").classList.remove("-translate-x-full");
   document.getElementById("menuOverlay").classList.remove("hidden");
