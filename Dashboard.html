@@ -1,25 +1,28 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GETXH Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-    </style>
-</head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GETXH Dashboard</title>
 
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+<style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                 Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+</style>
+</head>
 <body class="bg-[#0b1220] text-white">
 
 <!-- LOGIN CHECK -->
 <script>
-    if (localStorage.getItem("getxh_user_logged_in") !== "yes") {
-        window.location.href = "index.html";
-    }
+if (localStorage.getItem("getxh_user_logged_in") !== "yes") {
+    window.location.href = "index.html";
+}
 </script>
 
 <!-- MOBILE TOP HEADER -->
@@ -27,35 +30,12 @@
     <button onclick="openMenu()">
         <span class="material-symbols-outlined text-2xl">menu</span>
     </button>
-
     <h1 class="font-semibold text-lg">GETXH</h1>
-
     <a href="wallet.html" class="flex items-center gap-1 bg-[#1e2a4a] px-3 py-1 rounded-full text-sm">
         <span class="material-symbols-outlined text-base">account_balance_wallet</span>
         <span id="walletBalanceTop">₹0</span>
     </a>
 </div>
-
-<!-- DESKTOP NAVBAR -->
-<nav class="bg-white shadow-md sticky top-0 z-40 hidden lg:block">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="flex justify-between items-center h-16">
-
-            <h1 class="text-2xl font-bold text-blue-600">GETXH</h1>
-
-            <div class="flex space-x-8">
-                <a href="Dashboard.html" class="text-blue-600 font-medium border-b-2 border-blue-600 px-3 py-2">Dashboard</a>
-                <a href="Neworder.html" class="text-gray-600 hover:text-blue-600 px-3 py-2">New Order</a>
-                <a href="Totalorder.html" class="text-gray-600 hover:text-blue-600 px-3 py-2">Orders</a>
-                <a href="Support.html" class="text-gray-600 hover:text-blue-600 px-3 py-2">Support</a>
-            </div>
-
-            <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
-                Logout
-            </button>
-        </div>
-    </div>
-</nav>
 
 <!-- MAIN CONTENT -->
 <main class="max-w-7xl mx-auto px-4 py-8 pb-24">
@@ -68,7 +48,6 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-
         <div class="bg-[#121c33] rounded-xl p-5 flex items-center gap-4">
             <span class="material-symbols-outlined text-blue-400 text-3xl">account_balance_wallet</span>
             <div>
@@ -84,7 +63,6 @@
                 <p id="userOrders" class="text-xl font-semibold">0</p>
             </div>
         </div>
-
     </div>
 
     <a href="Neworder.html"
@@ -94,36 +72,37 @@
 
 </main>
 
-<!-- BOTTOM NAV (MOBILE ONLY) -->
+<!-- BOTTOM NAV -->
 <div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-50 lg:hidden">
-    <div class="flex justify-around items-center py-2 text-xs">
+  <div class="flex justify-around items-center py-2 text-xs">
 
-        <a href="Dashboard.html" class="flex flex-col items-center text-blue-400">
-            <span class="material-symbols-outlined">dashboard</span>
-            <span>Menu</span>
-        </a>
+    <a href="Dashboard.html" class="flex flex-col items-center text-blue-400">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span>Menu</span>
+    </a>
 
-        <a href="Totalorder.html" class="flex flex-col items-center text-gray-400">
-            <span class="material-symbols-outlined">list_alt</span>
-            <span>Orders</span>
-        </a>
+    <a href="Totalorder.html" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">list_alt</span>
+      <span>Orders</span>
+    </a>
 
-        <a href="Neworder.html"
-           class="bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full -mt-6">
-            <span class="material-symbols-outlined">add</span>
-        </a>
+    <a href="Neworder.html"
+       class="bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full -mt-6">
+      <span class="material-symbols-outlined">add</span>
+    </a>
 
-        <a href="Support.html" class="flex flex-col items-center text-gray-400">
-            <span class="material-symbols-outlined">support_agent</span>
-            <span>Support</span>
-        </a>
+    <a href="Support.html" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">support_agent</span>
+      <span>Support</span>
+    </a>
 
-        <a href="account.html" class="flex flex-col items-center text-gray-400">
-    <span class="material-symbols-outlined">person</span>
-    <span>Account</span>
-        </a>
-        
-    </div>
+    <!-- ACCOUNT → POPUP -->
+    <button onclick="openAccountPopup()" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">person</span>
+      <span>Account</span>
+    </button>
+
+  </div>
 </div>
 
 <!-- SIDE MENU -->
@@ -135,62 +114,88 @@ transform -translate-x-full transition-transform duration-300">
 
   <div class="p-4 space-y-1">
 
-    <a href="Dashboard.html"
-       class="flex items-center gap-4 px-4 py-3 rounded-lg
-              transition hover:bg-white/5 active:bg-white/10">
-      <span class="material-symbols-outlined text-blue-400 text-xl">dashboard</span>
-      <span class="text-sm font-medium">Dashboard</span>
+    <a href="Dashboard.html" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
+      <span class="material-symbols-outlined text-blue-400">dashboard</span>
+      Dashboard
     </a>
 
-    <a href="wallet.html"
-       class="flex items-center gap-4 px-4 py-3 rounded-lg
-              transition hover:bg-white/5 active:bg-white/10">
-      <span class="material-symbols-outlined text-cyan-400 text-xl">account_balance_wallet</span>
-      <span class="text-sm font-medium">Wallet</span>
+    <a href="wallet.html" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
+      <span class="material-symbols-outlined text-cyan-400">account_balance_wallet</span>
+      Wallet
     </a>
 
-    <a href="Neworder.html"
-       class="flex items-center gap-4 px-4 py-3 rounded-lg
-              transition hover:bg-white/5 active:bg-white/10">
-      <span class="material-symbols-outlined text-green-400 text-xl">add_shopping_cart</span>
-      <span class="text-sm font-medium">New Order</span>
+    <a href="Neworder.html" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
+      <span class="material-symbols-outlined text-green-400">add_shopping_cart</span>
+      New Order
     </a>
 
-    <a href="Totalorder.html"
-       class="flex items-center gap-4 px-4 py-3 rounded-lg
-              transition hover:bg-white/5 active:bg-white/10">
-      <span class="material-symbols-outlined text-yellow-400 text-xl">list_alt</span>
-      <span class="text-sm font-medium">Orders</span>
+    <a href="Totalorder.html" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
+      <span class="material-symbols-outlined text-yellow-400">list_alt</span>
+      Orders
     </a>
 
-    <a href="Support.html"
-       class="flex items-center gap-4 px-4 py-3 rounded-lg
-              transition hover:bg-white/5 active:bg-white/10">
-      <span class="material-symbols-outlined text-purple-400 text-xl">support_agent</span>
-      <span class="text-sm font-medium">Support</span>
+    <a href="Support.html" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
+      <span class="material-symbols-outlined text-purple-400">support_agent</span>
+      Support
     </a>
 
-    <a href="account.html"
-       class="flex items-center gap-4 px-4 py-3 rounded-lg
-              transition hover:bg-white/5 active:bg-white/10">
-      <span class="material-symbols-outlined text-gray-400 text-xl">person</span>
-      <span class="text-sm font-medium">Account</span>
-    </a>
+    <!-- ACCOUNT → POPUP -->
+    <button onclick="openAccountPopup()"
+      class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5 w-full text-left">
+      <span class="material-symbols-outlined text-gray-400">person</span>
+      Account
+    </button>
 
   </div>
 </div>
-    
+<!-- ACCOUNT POPUP -->
+<div id="accountPopup" class="fixed inset-0 bg-black/60 hidden z-50">
+
+  <div class="absolute bottom-0 left-0 right-0 bg-[#121c33] rounded-t-2xl p-4">
+    <p id="popupUsername" class="text-lg font-semibold">User</p>
+    <p id="popupEmail" class="text-sm text-gray-400 mb-4">email@example.com</p>
+
+    <a href="account.html"
+       class="block w-full text-center bg-blue-500 py-2 rounded-lg mb-3">
+      My Account
+    </a>
+
+    <button onclick="logout()"
+      class="w-full py-2 text-red-400">
+      Logout
+    </button>
+  </div>
+
+</div>
+
 <script>
 function openMenu() {
-    document.getElementById("sideMenu").classList.remove("-translate-x-full");
-    document.getElementById("menuOverlay").classList.remove("hidden");
+  document.getElementById("sideMenu").classList.remove("-translate-x-full");
+  document.getElementById("menuOverlay").classList.remove("hidden");
 }
 
 function closeMenu() {
-    document.getElementById("sideMenu").classList.add("-translate-x-full");
-    document.getElementById("menuOverlay").classList.add("hidden");
+  document.getElementById("sideMenu").classList.add("-translate-x-full");
+  document.getElementById("menuOverlay").classList.add("hidden");
 }
+
+function openAccountPopup() {
+  document.getElementById("accountPopup").classList.remove("hidden");
+}
+
+/* close popup on outside tap */
+document.getElementById("accountPopup").addEventListener("click", function(e){
+  if (e.target === this) this.classList.add("hidden");
+});
+
+/* TEMP DATA (replace with Firebase later) */
+document.getElementById("popupUsername").innerText =
+  localStorage.getItem("getxh_username") || "User";
+
+document.getElementById("popupEmail").innerText =
+  localStorage.getItem("getxh_email") || "";
 </script>
 
 </body>
 </html>
+    
