@@ -148,10 +148,22 @@ document.getElementById("registerBtn").onclick = async function () {
 
         window.location.href = "index.html";
     } 
-    catch(err){
-        show(err.message);
-    }
-};
+    .catch((error) => {
+  let msg = "Something went wrong. Try again.";
+
+  if (error.code === "auth/email-already-in-use") {
+    msg = "Email already registered. Please login.";
+  }
+  else if (error.code === "auth/weak-password") {
+    msg = "Password must be at least 6 characters.";
+  }
+  else if (error.code === "auth/invalid-email") {
+    msg = "Enter a valid email address.";
+  }
+
+  errorBox.innerText = msg;
+  errorBox.classList.remove("hidden");
+});
 
 function show(msg){
     let box = document.getElementById("errorBox");
