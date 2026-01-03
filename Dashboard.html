@@ -11,6 +11,42 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wg
 
 <style>
 body {
+  .brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(120deg, #0e1a33, #121c33, #0e1a33);
+  box-shadow: 0 0 12px rgba(0, 170, 255, 0.25);
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+.brand-icon {
+  font-size: 18px;
+  color: #38bdf8;
+}
+
+.brand-text {
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.brand-text .dot {
+  color: #38bdf8;
+}
+
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 8px rgba(56,189,248,0.2);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(56,189,248,0.6);
+  }
+  100% {
+    box-shadow: 0 0 8px rgba(56,189,248,0.2);
+  }
+}
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
                Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
@@ -39,7 +75,14 @@ body {
     <button onclick="openMenu()">
         <span class="material-symbols-outlined text-2xl">menu</span>
     </button>
-    <h1 class="font-semibold text-lg">GETXH</h1>
+<div class="brand-badge">
+  <span class="material-symbols-outlined brand-icon">
+    verified_user
+  </span>
+  <span class="brand-text">
+    GETXH<span class="dot">.IN</span>
+  </span>
+</div>
     <a href="wallet.html" class="flex items-center gap-1 bg-[#1e2a4a] px-3 py-1 rounded-full text-sm">
         <span class="material-symbols-outlined text-base">account_balance_wallet</span>
         <span id="walletBalanceTop">₹0</span>
