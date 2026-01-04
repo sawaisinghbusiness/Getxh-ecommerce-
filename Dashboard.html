@@ -415,6 +415,409 @@ function logout() {
   window.location.href = "index.html";
 }
 </script>
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { 
+    getFirestore, collection, addDoc, getDocs, query, orderBy, limit 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ---------- LOGIN GUARD (via Firebase) ----------
+let currentUid = null;
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        // fallback: localStorage check same jaisa Dashboard me hai
+        if (localStorage.getItem("getxh_user_logged_in") !== "yes") {
+            window.location.href = "index.html";
+            return;
+        }
+    } else {
+        currentUid = user.uid;
+    }
+
+    // UID set ho chuka hoga, ab recent orders load karo
+    loadRecentOrders();
+});
+
+// ---------- SERVICES DATA ----------
+const servicesData = [
+    {
+        serviceId: "IF001",
+        serviceName: "Instagram Followers – Used by Influencers – Same Day Delivery",
+        category: "Instagram Followers",
+        pricePer1000: 169.43,
+        minQuantity: 100,
+        maxQuantity: 1000000,
+        description: "High quality followers with same day delivery",
+        cancel: "No",
+        drop: "Low",
+        quality: "High"
+    },
+    {
+        serviceId: "IF002",
+        serviceName: "Instagram Followers – Used by Influencers – Same Day Delivery 2",
+        category: "Instagram Followers",
+        pricePer1000: 172.47,
+        minQuantity: 100,
+        maxQuantity: 1000000,
+        description: "Premium followers with guaranteed delivery",
+        cancel: "No",
+        drop: "Low",
+        quality: "High"
+    },
+    {
+        serviceId: "IF003",
+        serviceName: "Instagram Followers – Used by Celebrities – Same Day Delivery",
+        category: "Instagram Followers",
+        pricePer1000: 159.44,
+        minQuantity: 100,
+        maxQuantity: 1000000,
+        description: "Celebrity-grade followers",
+        cancel: "No",
+        drop: "Very Low",
+        quality: "Premium"
+    },
+
+    {
+        serviceId: "IRV001",
+        serviceName: "Instagram Reel Views – Used by Influencers – Real Views",
+        category: "Instagram Reel Views",
+        pricePer1000: 0.36,
+        minQuantity: 100,
+        maxQuantity: 2147483647,
+        description: "Genuine views from real accounts",
+        cancel: "Yes",
+        drop: "No",
+        quality: "Real"
+    },
+    {
+        serviceId: "IRV002",
+        serviceName: "Instagram Reel Views – Used by Influencers – Real Views 2",
+        category: "Instagram Reel Views",
+        pricePer1000: 0.54,
+        minQuantity: 100,
+        maxQuantity: 2147483647,
+        description: "Fast real views delivery",
+        cancel: "Yes",
+        drop: "No",
+        quality: "Real"
+    },
+    {
+        serviceId: "IRV003",
+        serviceName: "Instagram Reel Views – Used by Celebrities – From Explore Page",
+        category: "Instagram Reel Views",
+        pricePer1000: 0.72,
+        minQuantity: 100,
+        maxQuantity: 2147483647,
+        description: "Views from explore page",
+        cancel: "Yes",
+        drop: "No",
+        quality: "Premium"
+    },
+    {
+        serviceId: "IRV004",
+        serviceName: "Instagram Reel Views – Used by Influencers – Indian Real Views",
+        category: "Instagram Reel Views",
+        pricePer1000: 1.08,
+        minQuantity: 100,
+        maxQuantity: 2147483647,
+        description: "Indian real views",
+        cancel: "No",
+        drop: "None",
+        quality: "Indian Real"
+    },
+
+    {
+        serviceId: "IL001",
+        serviceName: "Instagram Likes – Used by Influencers",
+        category: "Instagram Likes",
+        pricePer1000: 27.68,
+        minQuantity: 10,
+        maxQuantity: 1000000,
+        description: "Quality likes from real accounts",
+        cancel: "No",
+        drop: "Low",
+        quality: "High"
+    },
+    {
+        serviceId: "IL002",
+        serviceName: "Instagram Likes – Used by Celebrities",
+        category: "Instagram Likes",
+        pricePer1000: 37.38,
+        minQuantity: 10,
+        maxQuantity: 1000000,
+        description: "Premium likes for celebrity accounts",
+        cancel: "Yes",
+        drop: "Very Low",
+        quality: "Premium"
+    },
+
+    {
+        serviceId: "IIL001",
+        serviceName: "Instagram Indian Likes – Used by Influencers",
+        category: "Instagram Indian Likes",
+        pricePer1000: 44.27,
+        minQuantity: 10,
+        maxQuantity: 1000000,
+        description: "Indian likes from real Indian accounts",
+        cancel: "No",
+        drop: "Low",
+        quality: "Indian High"
+    },
+    {
+        serviceId: "IIL002",
+        serviceName: "Instagram Indian Likes – Used by Celebrities",
+        category: "Instagram Indian Likes",
+        pricePer1000: 53.01,
+        minQuantity: 10,
+        maxQuantity: 1000000,
+        description: "Premium Indian likes for celebrities",
+        cancel: "No",
+        drop: "Very Low",
+        quality: "Indian Premium"
+    }
+];
+
+// DOM selection ----------
+const mobileMenuBtn      = document.getElementById("mobile-menu-btn");
+const mobileMenu         = document.getElementById("mobile-menu");
+const searchService      = document.getElementById("searchService");
+const categorySelect     = document.getElementById("categorySelect");
+const serviceSelect      = document.getElementById("serviceSelect");
+
+const serviceDetails     = document.getElementById("serviceDetails");
+const serviceDescription = document.getElementById("serviceDescription");
+const serviceCancel      = document.getElementById("serviceCancel");
+const serviceDrop        = document.getElementById("serviceDrop");
+const serviceQuality     = document.getElementById("serviceQuality");
+
+const linkInput          = document.getElementById("linkInput");
+const quantityInput      = document.getElementById("quantityInput");
+const minMaxText         = document.getElementById("minMaxText");
+const quantityError      = document.getElementById("quantityError");
+
+const totalPrice         = document.getElementById("totalPrice");
+const placeOrderBtn      = document.getElementById("placeOrderBtn");
+const recentOrdersContainer = document.getElementById("recentOrdersContainer");
+
+const successModal       = document.getElementById("successModal");
+const closeModalBtn      = document.getElementById("closeModalBtn");
+const viewOrdersBtn      = document.getElementById("viewOrdersBtn");
+
+let selectedService = null;
+
+// ---------- Mobile Menu Toggle ----------
+mobileMenuBtn.addEventListener("click", () => {
+    mobileMenu.classList.toggle("hidden");
+});
+
+// ---------- Update Service Dropdown ----------
+function updateServiceSelect() {
+    const category = categorySelect.value;
+    const searchTerm = searchService.value.toLowerCase();
+
+    serviceSelect.innerHTML = `<option value="">Select a service</option>`;
+
+    if (!category) {
+        serviceSelect.disabled = true;
+        return;
+    }
+
+    const filtered = servicesData.filter(s =>
+        s.category === category &&
+        s.serviceName.toLowerCase().includes(searchTerm)
+    );
+
+    filtered.forEach(service => {
+        const option = document.createElement("option");
+        option.value = service.serviceId;
+        option.textContent = `${service.serviceName} – ₹${service.pricePer1000.toFixed(2)} per 1000`;
+        serviceSelect.appendChild(option);
+    });
+
+    serviceSelect.disabled = filtered.length === 0;
+}
+
+// Search listener
+searchService.addEventListener("input", updateServiceSelect);
+
+// Category change listener
+categorySelect.addEventListener("change", () => {
+    updateServiceSelect();
+    resetServiceSelection();
+});
+
+// ---------- When a service is selected ----------
+serviceSelect.addEventListener("change", () => {
+    const id = serviceSelect.value;
+    selectedService = servicesData.find(s => s.serviceId === id);
+
+    if (!selectedService) return;
+
+    serviceDetails.classList.remove("hidden");
+    serviceDescription.textContent = selectedService.description;
+    serviceCancel.textContent = selectedService.cancel;
+    serviceDrop.textContent = selectedService.drop;
+    serviceQuality.textContent = selectedService.quality;
+
+    minMaxText.textContent = `Min: ${selectedService.minQuantity} – Max: ${selectedService.maxQuantity}`;
+
+    quantityInput.value = "";
+    totalPrice.textContent = "₹0.00";
+});
+
+// ---------- Quantity Calculation ----------
+quantityInput.addEventListener("input", () => {
+    if (!selectedService) return;
+
+    let qty = parseInt(quantityInput.value);
+
+    if (!qty || qty < selectedService.minQuantity || qty > selectedService.maxQuantity) {
+        quantityError.classList.remove("hidden");
+        totalPrice.textContent = "₹0.00";
+        placeOrderBtn.disabled = true;
+        return;
+    }
+
+    quantityError.classList.add("hidden");
+
+    const final = (qty / 1000) * selectedService.pricePer1000;
+    totalPrice.textContent = `₹${final.toFixed(2)}`;
+
+    placeOrderBtn.disabled = false;
+});
+
+// ---------- Reset service details ----------
+function resetServiceSelection() {
+    selectedService = null;
+    serviceDetails.classList.add("hidden");
+    quantityInput.value = "";
+    minMaxText.textContent = "Min: 0 – Max: 0";
+    totalPrice.textContent = "₹0.00";
+    placeOrderBtn.disabled = true;
+}
+
+// ---------- Save Order to FIRESTORE ----------
+async function saveOrderToFirestore(service, qty, link, price) {
+    if (!currentUid) {
+        alert("User not logged in. Please login again.");
+        return;
+    }
+
+    const ordersCol = collection(db, "orders", currentUid, "user_orders");
+
+    const now = new Date();
+
+    const data = {
+        serviceId: service.serviceId,
+        serviceName: service.serviceName,
+        category: service.category,
+        quantity: qty,
+        link: link,
+        price: parseFloat(price),
+        status: "Processing",
+        createdAt: now.toISOString(),
+        createdAtReadable: now.toLocaleString()
+    };
+
+    await addDoc(ordersCol, data);
+}
+
+// ---------- Place Order ----------
+placeOrderBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    if (!selectedService) return;
+
+    const qty = parseInt(quantityInput.value);
+    const link = linkInput.value.trim();
+    const price = totalPrice.textContent.replace("₹", "");
+
+    if (!qty || !link) return;
+
+    await saveOrderToFirestore(selectedService, qty, link, price);
+
+    // Form clear
+    linkInput.value = "";
+    quantityInput.value = "";
+    resetServiceSelection();
+    totalPrice.textContent = "₹0.00";
+
+    // Modal show
+    successModal.classList.remove("hidden");
+
+    // Recent orders reload
+    loadRecentOrders();
+});
+
+// Close modal
+closeModalBtn.addEventListener("click", () => {
+    successModal.classList.add("hidden");
+});
+
+// View Orders
+viewOrdersBtn.addEventListener("click", () => {
+    window.location.href = "Totalorder.html";
+});
+
+// ---------- Load Recent Orders from Firestore ----------
+async function loadRecentOrders() {
+    if (!currentUid) {
+        // auth state not yet ready
+        recentOrdersContainer.innerHTML =
+            `<p class="text-gray-500 text-sm">Loading orders...</p>`;
+        return;
+    }
+
+    const ordersCol = collection(db, "orders", currentUid, "user_orders");
+
+    const q = query(
+        ordersCol,
+        orderBy("createdAt", "desc"),
+        limit(3)
+    );
+
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+        recentOrdersContainer.innerHTML =
+            `<p class="text-gray-500 text-sm">No recent orders found.</p>`;
+        return;
+    }
+
+    recentOrdersContainer.innerHTML = "";
+
+    snap.forEach((doc) => {
+        const order = doc.data();
+
+        const box = document.createElement("div");
+        box.className = "p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3";
+
+        box.innerHTML = `
+            <div class="font-semibold text-gray-800 text-sm">${order.serviceName || "-"}</div>
+            <div class="text-xs text-gray-600">Qty: ${order.quantity || 0}</div>
+            <div class="text-xs text-gray-600">₹${(order.price || 0).toFixed ? order.price.toFixed(2) : order.price}</div>
+            <div class="text-xs text-gray-500">${order.createdAtReadable || ""}</div>
+        `;
+
+        recentOrdersContainer.appendChild(box);
+    });
+}
+  </script>
 
 </body>
 </html>
