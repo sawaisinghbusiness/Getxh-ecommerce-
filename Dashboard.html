@@ -594,8 +594,7 @@ const servicesData = [
 ];
 
 // DOM selection ----------
-const mobileMenuBtn      = document.getElementById("mobile-menu-btn");
-const mobileMenu         = document.getElementById("mobile-menu");
+
 const searchService      = document.getElementById("searchService");
 const categorySelect     = document.getElementById("categorySelect");
 const serviceSelect      = document.getElementById("serviceSelect");
@@ -622,9 +621,7 @@ const viewOrdersBtn      = document.getElementById("viewOrdersBtn");
 let selectedService = null;
 
 // ---------- Mobile Menu Toggle ----------
-mobileMenuBtn.addEventListener("click", () => {
-    mobileMenu.classList.toggle("hidden");
-});
+
 
 // ---------- Update Service Dropdown ----------
 function updateServiceSelect() {
