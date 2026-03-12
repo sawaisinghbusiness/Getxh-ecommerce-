@@ -133,165 +133,449 @@ body {
 
 
   <!-- ================= NEW ORDER SECTION ================= -->
-<div class="h-px bg-white/10 my-10"></div>
-  <div id="newOrderSection"
-     class="w-full px-4 sm:px-6 lg:px-10 py-8 pb-24">
+                <!-- ===================== NEW ORDER SECTION ===================== -->
+<div class="h-px bg-white/10 my-6"></div>
 
-  <div class="mb-8">
-    <h1 class="text-2xl font-bold text-white">
-      Place New Order
-    </h1>
-    <p class="text-gray-400 text-sm mt-1">
-      Select a category and service to continue.
-    </p>
+<div id="newOrderSection" class="w-full">
+
+  <!-- New Order / Subscription Tabs -->
+  <div class="flex rounded-xl overflow-hidden border border-white/10 mb-5">
+    <button id="tabNewOrder"
+      onclick="switchOrderTab('new')"
+      class="flex-1 py-3 text-sm font-bold bg-[#2196f3] text-white transition-all">
+      New Order
+    </button>
+    <button id="tabSubscription"
+      onclick="switchOrderTab('sub')"
+      class="flex-1 py-3 text-sm font-bold bg-[#0e1629] text-gray-400 transition-all">
+      Subscription
+    </button>
   </div>
 
-  <!-- 👇 YAHAN FORM AAYEGA -->
-<div class="rounded-2xl p-6 sm:p-8
-     bg-gradient-to-br from-[#121c33] to-[#0e1629]
-     border border-white/10
-     shadow-xl shadow-black/20
-     w-full mb-10">
-  <form id="orderForm">
-
-            <div class="mb-6">
-  <input
-    type="text"
-   id="searchService"
-    placeholder="Search for a service..."
-    class="w-full px-4 py-4 bg-[#0e1629] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-  />
-            </div>
-
-            <div class="mb-6">
-                <label class="block text-gray-700 font-semibold mb-2">Category</label>
-                <select id="categorySelect"
- class="w-full px-4 py-4 bg-[#0e1629] border border-white/10 rounded-xl text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                    <option value="">Select a category</option>
-                    <option value="Instagram Followers">Instagram Followers</option>
-                    <option value="Instagram Reel Views">Instagram Reel Views</option>
-                    <option value="Instagram Likes">Instagram Likes</option>
-                    <option value="Instagram Indian Likes">Instagram Indian Likes</option>
-                </select>
-            </div>
-
-            <div class="mb-6">
-                <label class="block text-gray-700 font-semibold mb-2">Service</label>
-                <select id="serviceSelect"
-                        class="w-full px-4 py-3 bg-[#0b1220]
-text-white
-placeholder-gray-400
-border border-white/10
-rounded-xl
-focus:outline-none
-focus:border-blue-400
-focus:bg-[#0e1629]
-transition
-                focus:ring-2 focus:ring-blue-500"
-                        disabled>
-                    <option value="">Select a service</option>
-                </select>
-            </div>
-<div id="serviceDetails" class="hidden mb-6 p-4 bg-gray-50 bg-[#0b1220] border border-white/10 rounded-xl transition">
-text-white
-placeholder-gray-400
-border border-white/10
-rounded-xl
-focus:outline-none
-focus:border-blue-400
-focus:bg-[#0e1629]
-transition">
-                <h3 class="font-semibold text-gray-800 mb-3">Service Details</h3>
-                <p id="serviceDescription" class="text-sm text-gray-700 mb-3"></p>
-                <div class="flex flex-wrap gap-4 text-sm">
-                    <div class="grid grid-cols-3 gap-4 text-center">
-  <div class="bg-[#0e1629] rounded-xl p-3 border border-white/10">
-    <p class="text-xs text-gray-400">Cancel</p>
-    <p class="font-semibold">YES</p>
+  <!-- Platform Filter Pills -->
+  <div class="flex gap-2 overflow-x-auto pb-2 mb-5 scrollbar-hide" style="scrollbar-width:none">
+    <button onclick="filterPlatform(this,'all')"
+      class="platform-pill active-pill flex items-center gap-2 px-4 py-2 rounded-full
+             text-xs font-bold whitespace-nowrap border border-white/10
+             bg-[#2196f3] text-white transition-all">
+      <span style="font-size:16px">✔</span> All
+    </button>
+    <button onclick="filterPlatform(this,'instagram')"
+      class="platform-pill flex items-center gap-2 px-4 py-2 rounded-full
+             text-xs font-bold whitespace-nowrap border border-white/10
+             bg-[#0e1629] text-gray-300 transition-all">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
+           class="w-4 h-4 rounded" alt="ig"/> Instagram Services
+    </button>
+    <button onclick="filterPlatform(this,'youtube')"
+      class="platform-pill flex items-center gap-2 px-4 py-2 rounded-full
+             text-xs font-bold whitespace-nowrap border border-white/10
+             bg-[#0e1629] text-gray-300 transition-all">
+      <span style="font-size:15px">▶</span> YouTube
+    </button>
+    <button onclick="filterPlatform(this,'telegram')"
+      class="platform-pill flex items-center gap-2 px-4 py-2 rounded-full
+             text-xs font-bold whitespace-nowrap border border-white/10
+             bg-[#0e1629] text-gray-300 transition-all">
+      <span style="font-size:15px">✈</span> Telegram
+    </button>
   </div>
-  <div class="bg-[#0e1629] rounded-xl p-3 border border-white/10">
-    <p class="text-xs text-gray-400">Drop</p>
-    <p class="font-semibold">NON-DROP</p>
+
+  <!-- Search -->
+  <div class="relative mb-5">
+    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#2196f3]"
+          style="font-size:18px">🔍</span>
+    <input type="text" id="searchService" placeholder="Search"
+      class="w-full pl-10 pr-4 py-3 bg-[#0e1629] border border-white/10 rounded-xl
+             text-white placeholder-gray-500 text-sm
+             focus:outline-none focus:border-[#2196f3] transition-all"/>
   </div>
-  <div class="bg-[#0e1629] rounded-xl p-3 border border-white/10">
-    <p class="text-xs text-gray-400">Quality</p>
-    <p class="font-semibold">REAL</p>
+
+  <!-- FORM CARD -->
+  <div class="rounded-2xl bg-[#0e1629] border border-white/10 shadow-xl overflow-visible mb-6">
+    <form id="orderForm" class="p-4">
+
+      <!-- CATEGORY -->
+      <div class="mb-5">
+        <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Category</p>
+        <div class="relative" id="categoryWrapper">
+          <button type="button" id="categoryBtn"
+            onclick="toggleCategoryDropdown()"
+            class="w-full flex items-center justify-between
+                   bg-[#121c33] border border-white/10 rounded-xl
+                   px-4 py-3 text-left transition-all
+                   hover:border-[#2196f3]/50">
+            <div class="flex items-center gap-3">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
+                   id="catIcon" class="w-5 h-5 rounded hidden" alt=""/>
+              <span id="catLabel" class="text-gray-400 text-sm font-semibold">
+                — Select a category —
+              </span>
+            </div>
+            <span id="catArrow" class="text-gray-500 transition-transform duration-300"
+                  style="font-size:18px">▼</span>
+          </button>
+
+          <!-- Category Dropdown List -->
+          <div id="categoryDropdown"
+            class="hidden absolute left-0 right-0 top-full mt-1
+                   bg-[#121c33] border border-white/10 rounded-xl
+                   overflow-hidden z-50 shadow-2xl
+                   animate-slideDown">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICE -->
+      <div class="mb-5" id="serviceWrapper" style="display:none">
+        <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Service</p>
+        <div class="relative" id="serviceDropdownWrapper">
+          <button type="button" id="serviceBtn"
+            onclick="toggleServiceDropdown()"
+            class="w-full flex items-center justify-between
+                   bg-[#121c33] border border-white/10 rounded-xl
+                   px-4 py-3 text-left transition-all
+                   hover:border-[#2196f3]/50">
+            <div class="flex items-center gap-3">
+              <span id="svcNumBadge"
+                class="w-6 h-6 rounded-lg bg-[#2196f3] text-white text-xs
+                       font-black flex items-center justify-center flex-shrink-0 hidden">
+                1
+              </span>
+              <span id="svcLabel" class="text-gray-400 text-sm font-semibold truncate">
+                — Select a service —
+              </span>
+            </div>
+            <span id="svcArrow" class="text-gray-500 transition-transform duration-300 flex-shrink-0"
+                  style="font-size:18px">▼</span>
+          </button>
+
+          <!-- Service Dropdown List -->
+          <div id="serviceDropdown"
+            class="hidden absolute left-0 right-0 top-full mt-1
+                   bg-[#121c33] border border-white/10 rounded-xl
+                   overflow-hidden z-50 shadow-2xl max-h-64 overflow-y-auto
+                   animate-slideDown">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICE DETAILS -->
+      <div id="serviceDetails" class="hidden">
+
+        <!-- DESCRIPTION -->
+        <div class="mb-5 animate-fadeUp">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Description</p>
+          <div class="bg-[#121c33] border border-white/10 rounded-xl p-4">
+
+            <!-- 6 stat cards -->
+            <div class="grid grid-cols-3 gap-2 mb-4">
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10
+                            flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">schedule</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Start Time</p>
+                <p id="dStartTime" class="font-black text-xs text-white">INSTANT</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10
+                            flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">speed</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Speed</p>
+                <p id="dSpeed" class="font-black text-xs text-white">500K/HOUR</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10
+                            flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">autorenew</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Refill</p>
+                <p id="dRefill" class="font-black text-xs text-white">LIFETIME</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10
+                            flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">cancel</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Cancel</p>
+                <p id="dCancel" class="font-black text-xs text-white">YES</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10
+                            flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">water_drop</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Drop</p>
+                <p id="dDrop" class="font-black text-xs text-white">NON-DROP</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10
+                            flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">star</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Quality</p>
+                <p id="dQuality" class="font-black text-xs text-white">REAL</p>
+              </div>
+
+            </div>
+
+            <!-- Bullet details -->
+            <div class="border-t border-white/10 pt-3">
+              <p class="text-xs text-gray-400 font-bold mb-2 flex items-center gap-1">
+                <span class="material-symbols-outlined" style="font-size:13px">info</span>
+                DETAILS:
+              </p>
+              <ul id="dDetailsList" class="space-y-1.5 text-xs text-white font-semibold">
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- LINK -->
+        <div class="mb-4 animate-fadeUp">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Link</p>
+          <input type="text" id="linkInput" placeholder="Paste your link"
+            class="w-full px-4 py-3 bg-[#121c33] border border-white/10 rounded-xl
+                   text-white placeholder-gray-500 text-sm
+                   focus:outline-none focus:border-[#2196f3] transition-all"/>
+        </div>
+
+        <!-- QUANTITY -->
+        <div class="mb-4 animate-fadeUp">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Quantity</p>
+          <input type="number" id="quantityInput"
+            class="w-full px-4 py-3 bg-[#121c33] border border-white/10 rounded-xl
+                   text-white placeholder-gray-500 text-sm
+                   focus:outline-none focus:border-[#2196f3] transition-all"
+            placeholder="Min: 0 - Max: 0"/>
+          <p id="quantityError"
+            class="hidden text-xs text-red-400 mt-2 flex items-center gap-1 font-semibold">
+            <span class="material-symbols-outlined" style="font-size:13px">warning</span>
+            Quantity must be between Min and Max
+          </p>
+        </div>
+
+        <!-- DELIVERY TIME -->
+        <div class="mb-4 animate-fadeUp">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2 flex items-center gap-1">
+            Delivery Time
+            <span class="material-symbols-outlined text-gray-500" style="font-size:13px">info</span>
+          </p>
+          <div class="bg-[#121c33] border border-white/10 rounded-xl px-4 py-3">
+            <p id="dDeliveryTime" class="text-white font-bold text-sm">—</p>
+          </div>
+        </div>
+
+        <!-- TOTAL AMOUNT + ORDER BUTTON -->
+        <div class="animate-fadeUp">
+          <button id="placeOrderBtn" type="submit" disabled
+            onclick="handlePlaceOrder(event)"
+            class="w-full rounded-xl font-black text-base py-4
+                   bg-gradient-to-r from-[#2196f3] to-[#00bcd4]
+                   text-white relative overflow-hidden
+                   disabled:opacity-35 disabled:cursor-not-allowed
+                   transition-all active:scale-[0.98]
+                   order-btn-ripple">
+            <div class="flex items-center justify-between px-2">
+              <span class="text-xs font-bold uppercase tracking-widest opacity-80"
+                    id="totalAmountLabel">TOTAL AMOUNT</span>
+              <div class="flex items-center gap-2">
+                <span id="totalPrice" class="text-lg font-black"></span>
+                <span class="font-black text-base tracking-wide">ORDER</span>
+                <span class="material-symbols-outlined" style="font-size:18px">chevron_right</span>
+              </div>
+            </div>
+            <div id="rippleEl" class="absolute rounded-full bg-white/20 pointer-events-none
+                                      scale-0 transition-all duration-500"
+                 style="width:120px;height:120px;margin-left:-60px;margin-top:-60px"></div>
+          </button>
+        </div>
+
+      </div><!-- /serviceDetails -->
+
+    </form>
   </div>
-                    </div>
 
-            <div class="mb-6 p-4 bg-blue-50 bg-[#0b1220]
-text-white
-placeholder-gray-400
-border border-white/10
-rounded-xl
-focus:outline-none
-focus:border-blue-400
-focus:bg-[#0e1629]
-transition">
-                <h3 class="font-semibold text-gray-800 mb-2">Read before you order</h3>
-                <ul class="text-sm text-gray-700 space-y-1">
-                    <li>• Your account must be public.</li>
-                    <li>• Sometimes there is change in start time and speed.</li>
-                    <li>• Both post and reel links are accepted.</li>
-                    <li>• Make sure the link is correct before placing the order.</li>
-                </ul>
-            </div>
+</div><!-- /newOrderSection -->
 
-            <div class="mb-6">
-                <label class="block text-gray-700 font-semibold mb-2">Link</label>
-                <input type="text" id="linkInput" placeholder="Paste your link here"
-                       class="w-full px-4 py-3 bg-[#0b1220]
-text-white
-placeholder-gray-400
-border border-white/10
-rounded-xl
-focus:outline-none
-focus:border-blue-400
-focus:bg-[#0e1629]
-transition focus:ring-2 focus:ring-blue-500"/>
-            </div>
-
-            <div class="mb-6">
-                <label class="block text-gray-700 font-semibold mb-2">Quantity</label>
-                <p id="minMaxText" class="text-sm text-gray-500 mb-2">Min: 0 – Max: 0</p>
-                <input type="number" id="quantityInput" placeholder="Enter quantity"
-                       class="w-full px-4 py-3 bg-[#0b1220]
-text-white
-placeholder-gray-400
-border border-white/10
-rounded-xl
-focus:outline-none
-focus:border-blue-400
-focus:bg-[#0e1629]
-transition focus:ring-2 focus:ring-blue-500"/>
-                <p id="quantityError" class="hidden text-sm text-red-600 mt-2">
-                    Quantity must be between Min and Max
-                </p>
-            </div>
-
-            <div class="mb-6 p-4 bg-gray-50 rounded-lg flex justify-between items-center bg-[#0b1220]
-text-white
-placeholder-gray-400
-border border-white/10
-rounded-xl
-focus:outline-none
-focus:border-blue-400
-focus:bg-[#0e1629]
-transition">
-                <span class="font-semibold text-gray-800">Total Price</span>
-                <span id="totalPrice" class="text-blue-400 text-2xl font-semibold">₹0.00</span>
-            </div>
-
-            <button id="placeOrderBtn" type="submit"
-  class="w-full bg-gradient-to-r from-blue-500 to-cyan-400
-  text-white rounded-xl font-semibold py-3
-  transition disabled:opacity-40">
-                Place Order
-            </button>
-
-        </form>
+<!-- SUCCESS MODAL -->
+<div id="successModal"
+  class="fixed inset-0 bg-black/70 hidden z-50 flex items-center justify-center px-4">
+  <div id="successModalBox"
+    class="bg-[#0f1a30] border border-[#2196f3]/20 rounded-2xl p-6
+           w-full max-w-sm text-center shadow-2xl scale-75 opacity-0
+           transition-all duration-300">
+    <div class="w-16 h-16 bg-green-500/10 border border-green-500/30 rounded-full
+                flex items-center justify-center mx-auto mb-4">
+      <span class="material-symbols-outlined text-green-400" style="font-size:32px">check_circle</span>
     </div>
- 
+    <h3 class="text-xl font-black mb-2 text-white">Order Placed! 🎉</h3>
+    <p class="text-gray-400 text-sm mb-6">
+      Your order has been submitted and is now being processed.
+    </p>
+    <div class="flex gap-3">
+      <button id="closeModalBtn"
+        class="flex-1 py-3 rounded-xl bg-[#121c33] border border-white/10
+               text-gray-300 font-bold text-sm active:scale-[0.97] transition">
+        Close
+      </button>
+      <button id="viewOrdersBtn"
+        class="flex-1 py-3 rounded-xl font-black text-sm text-white
+               bg-gradient-to-r from-[#2196f3] to-[#00bcd4]
+               active:scale-[0.97] transition">
+        View Orders
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== END NEW ORDER ===================== -->
+
+<style>
+/* Animations */
+@keyframes slideDown {
+  from { opacity:0; transform:translateY(-8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.animate-slideDown { animation: slideDown 0.22s ease forwards; }
+.animate-fadeUp    { animation: fadeUp 0.3s ease forwards; }
+
+/* Platform pills */
+.platform-pill { transition: all 0.2s ease; }
+.active-pill   { background: #2196f3 !important; color: white !important; border-color: #2196f3 !important; }
+
+/* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* Category item hover */
+.cat-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px; cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.15s;
+  font-size: 0.875rem; font-weight: 700; color: #e2e8f0;
+}
+.cat-item:hover   { background: rgba(33,150,243,0.1); }
+.cat-item.selected{ background: rgba(33,150,243,0.2); color: #2196f3; }
+.cat-item:last-child { border-bottom: none; }
+
+/* Service item */
+.svc-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.15s;
+  font-size: 0.8rem; font-weight: 600; color: #cbd5e0;
+}
+.svc-item:hover    { background: rgba(33,150,243,0.1); }
+.svc-item.selected { background: rgba(33,150,243,0.15); color: white; }
+.svc-item:last-child { border-bottom: none; }
+.svc-num-badge {
+  min-width: 24px; height: 24px; border-radius: 6px;
+  background: #2196f3; color: white; font-size: 11px;
+  font-weight: 900; display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0;
+}
+</style>
+
+<script>
+// ══════════════════════════════════════════
+//  WEB AUDIO — Sound Effects
+// ══════════════════════════════════════════
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let _actx = null;
+function getACtx() {
+  if (!_actx) _actx = new AudioCtx();
+  return _actx;
+}
+
+function playTick() {
+  try {
+    const ctx = getACtx();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = 'sine'; o.frequency.setValueAtTime(880, ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.08);
+    g.gain.setValueAtTime(0.12, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+    o.start(); o.stop(ctx.currentTime + 0.13);
+  } catch(e){}
+}
+
+function playPop() {
+  try {
+    const ctx = getACtx();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = 'sine'; o.frequency.setValueAtTime(520, ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(780, ctx.currentTime + 0.06);
+    g.gain.setValueAtTime(0.10, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.10);
+    o.start(); o.stop(ctx.currentTime + 0.11);
+  } catch(e){}
+}
+
+function playSuccess() {
+  try {
+    const ctx = getACtx();
+    [523, 659, 784, 1047].forEach((freq, i) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sine'; o.frequency.value = freq;
+      const t = ctx.currentTime + i * 0.1;
+      g.gain.setValueAtTime(0.10, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+      o.start(t); o.stop(t + 0.26);
+    });
+  } catch(e){}
+}
+
+// ══════════════════════════════════════════
+//  SERVICES DATA
+// ══════════════════════════════════════════
+const CATEGORIES = [
+  { id:'reel-views',  label:'Instagram - Reel Views'  },
+  { id:'post-views',  label:'Instagram - Post Views'  },
+  { id:'followers',   label:'Instagram - Followers'   },
+  { id:'likes',       label:'Instagram - Likes'       },
+  { id:'comments',    label:'Instagram - Comments'    },
+  { id:'shares',      label:'Instagram - Shares'      },
+  { id:'saves',       label:'Instagram - Saves'       },
+  { id:'reposts',     label:'Instagram - Reposts'     },
+];
+
+const SERVICES = {
+  'reel-views': [
+    { id:1,  name:'Instagram Reel Views – Used By Influencers',   price:0.38,    min:100,  max:2147483647,
+      startTime:'INSTANT', speed:'500K/HOUR', refill:'LIFETIME', cancel:'YES', drop:'NON-DROP', quality:'REAL',
+      delivery:'7 minutes',
+      details:['Real Reel Views.','Use reels link.','Wrong links are non refundable.','Private accounts not accepted.','Start and speed can be slow sometimes.'] },
+    { id:2,  name:'Instagram Reel Views – Used By Celebrities',   price:0.55,    min:100,  max:2147483647,
+      startTime:'INSTANT', speed:'300K/HOUR', refill:'30 DAYS',  cancel:'YES', drop:'NON-DROP', quality:'REAL',
+      delivery:'10 minutes',
+      details:['Real Views from celebrity accounts.','Use reels link.','Private accounts not accepted.'] },
+    { id:3,  name:'Instagram Reel Views – From Explore Page',     price:0.74,    min:100,  max:2147483647,
+      startTime:'INSTANT', speed:'200K/HOUR', refill:'30 DAYS',  cancel:'YES', drop:'NON-DROP', quality:'PREMIUM',
+      delivery:'15 minutes',
+      details:['Views from explore page.','Use reels link only.','Private accounts not accepted.'] },
+    { id:4,  name:'Indian Reel 
 <!-- ================= END NEW ORDER ================= -->
 </main>
 
