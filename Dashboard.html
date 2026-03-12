@@ -130,60 +130,51 @@ body {
         </div>
 
     </div>
-
-
-                <!-- ===================== NEW ORDER SECTION ===================== -->
+<!-- ================= NEW ORDER SECTION ================= -->
 <div class="h-px bg-white/10 my-6"></div>
 
 <div id="newOrderSection" class="w-full">
 
-  <!-- New Order / Subscription Tabs -->
+  <!-- Tabs -->
   <div class="flex rounded-xl overflow-hidden border border-white/10 mb-5">
-    <button id="tabNewOrder"
-      onclick="switchOrderTab('new')"
+    <button id="tabNewOrder" onclick="switchOrderTab('new')"
       class="flex-1 py-3 text-sm font-bold bg-[#2196f3] text-white transition-all">
       New Order
     </button>
-    <button id="tabSubscription"
-      onclick="switchOrderTab('sub')"
+    <button id="tabSubscription" onclick="switchOrderTab('sub')"
       class="flex-1 py-3 text-sm font-bold bg-[#0e1629] text-gray-400 transition-all">
       Subscription
     </button>
   </div>
 
-  <!-- Platform Filter Pills -->
-  <div class="flex gap-2 overflow-x-auto pb-2 mb-5 scrollbar-hide" style="scrollbar-width:none">
-    <button onclick="filterPlatform(this,'all')"
+  <!-- Platform Pills -->
+  <div class="flex gap-2 overflow-x-auto pb-2 mb-5" style="scrollbar-width:none">
+    <button onclick="filterPlatform(this)"
       class="platform-pill active-pill flex items-center gap-2 px-4 py-2 rounded-full
-             text-xs font-bold whitespace-nowrap border border-white/10
-             bg-[#2196f3] text-white transition-all">
-      <span style="font-size:16px">✔</span> All
+             text-xs font-bold whitespace-nowrap border border-white/10 bg-[#2196f3] text-white">
+      ✔ All
     </button>
-    <button onclick="filterPlatform(this,'instagram')"
+    <button onclick="filterPlatform(this)"
       class="platform-pill flex items-center gap-2 px-4 py-2 rounded-full
-             text-xs font-bold whitespace-nowrap border border-white/10
-             bg-[#0e1629] text-gray-300 transition-all">
+             text-xs font-bold whitespace-nowrap border border-white/10 bg-[#0e1629] text-gray-300">
       <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
-           class="w-4 h-4 rounded" alt="ig"/> Instagram Services
+           class="w-4 h-4 rounded" alt=""/> Instagram Services
     </button>
-    <button onclick="filterPlatform(this,'youtube')"
+    <button onclick="filterPlatform(this)"
       class="platform-pill flex items-center gap-2 px-4 py-2 rounded-full
-             text-xs font-bold whitespace-nowrap border border-white/10
-             bg-[#0e1629] text-gray-300 transition-all">
-      <span style="font-size:15px">▶</span> YouTube
+             text-xs font-bold whitespace-nowrap border border-white/10 bg-[#0e1629] text-gray-300">
+      ▶ YouTube
     </button>
-    <button onclick="filterPlatform(this,'telegram')"
+    <button onclick="filterPlatform(this)"
       class="platform-pill flex items-center gap-2 px-4 py-2 rounded-full
-             text-xs font-bold whitespace-nowrap border border-white/10
-             bg-[#0e1629] text-gray-300 transition-all">
-      <span style="font-size:15px">✈</span> Telegram
+             text-xs font-bold whitespace-nowrap border border-white/10 bg-[#0e1629] text-gray-300">
+      ✈ Telegram
     </button>
   </div>
 
   <!-- Search -->
   <div class="relative mb-5">
-    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#2196f3]"
-          style="font-size:18px">🔍</span>
+    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#2196f3]">🔍</span>
     <input type="text" id="searchService" placeholder="Search"
       class="w-full pl-10 pr-4 py-3 bg-[#0e1629] border border-white/10 rounded-xl
              text-white placeholder-gray-500 text-sm
@@ -191,19 +182,17 @@ body {
   </div>
 
   <!-- FORM CARD -->
-  <div class="rounded-2xl bg-[#0e1629] border border-white/10 shadow-xl overflow-visible mb-6">
-    <form id="orderForm" class="p-4">
+  <div class="rounded-2xl bg-[#0e1629] border border-white/10 shadow-xl mb-6">
+    <div class="p-4">
 
       <!-- CATEGORY -->
       <div class="mb-5">
         <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Category</p>
         <div class="relative" id="categoryWrapper">
-          <button type="button" id="categoryBtn"
-            onclick="toggleCategoryDropdown()"
-            class="w-full flex items-center justify-between
-                   bg-[#121c33] border border-white/10 rounded-xl
-                   px-4 py-3 text-left transition-all
-                   hover:border-[#2196f3]/50">
+          <button type="button" onclick="toggleCategoryDropdown()"
+            class="w-full flex items-center justify-between bg-[#121c33]
+                   border border-white/10 rounded-xl px-4 py-3 text-left
+                   hover:border-[#2196f3]/50 transition-all">
             <div class="flex items-center gap-3">
               <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
                    id="catIcon" class="w-5 h-5 rounded hidden" alt=""/>
@@ -211,17 +200,11 @@ body {
                 — Select a category —
               </span>
             </div>
-            <span id="catArrow" class="text-gray-500 transition-transform duration-300"
-                  style="font-size:18px">▼</span>
+            <span id="catArrow" class="text-gray-500 transition-transform duration-300">▼</span>
           </button>
-
-          <!-- Category Dropdown List -->
           <div id="categoryDropdown"
-            class="hidden absolute left-0 right-0 top-full mt-1
-                   bg-[#121c33] border border-white/10 rounded-xl
-                   overflow-hidden z-50 shadow-2xl
-                   animate-slideDown">
-            <!-- filled by JS -->
+            class="hidden absolute left-0 right-0 top-full mt-1 bg-[#121c33]
+                   border border-white/10 rounded-xl overflow-hidden z-50 shadow-2xl">
           </div>
         </div>
       </div>
@@ -230,33 +213,24 @@ body {
       <div class="mb-5" id="serviceWrapper" style="display:none">
         <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Service</p>
         <div class="relative" id="serviceDropdownWrapper">
-          <button type="button" id="serviceBtn"
-            onclick="toggleServiceDropdown()"
-            class="w-full flex items-center justify-between
-                   bg-[#121c33] border border-white/10 rounded-xl
-                   px-4 py-3 text-left transition-all
-                   hover:border-[#2196f3]/50">
-            <div class="flex items-center gap-3">
+          <button type="button" onclick="toggleServiceDropdown()"
+            class="w-full flex items-center justify-between bg-[#121c33]
+                   border border-white/10 rounded-xl px-4 py-3 text-left
+                   hover:border-[#2196f3]/50 transition-all">
+            <div class="flex items-center gap-3 min-w-0">
               <span id="svcNumBadge"
                 class="w-6 h-6 rounded-lg bg-[#2196f3] text-white text-xs
-                       font-black flex items-center justify-center flex-shrink-0 hidden">
-                1
-              </span>
+                       font-black flex items-center justify-center flex-shrink-0 hidden">1</span>
               <span id="svcLabel" class="text-gray-400 text-sm font-semibold truncate">
                 — Select a service —
               </span>
             </div>
-            <span id="svcArrow" class="text-gray-500 transition-transform duration-300 flex-shrink-0"
-                  style="font-size:18px">▼</span>
+            <span id="svcArrow" class="text-gray-500 transition-transform duration-300 flex-shrink-0">▼</span>
           </button>
-
-          <!-- Service Dropdown List -->
           <div id="serviceDropdown"
-            class="hidden absolute left-0 right-0 top-full mt-1
-                   bg-[#121c33] border border-white/10 rounded-xl
-                   overflow-hidden z-50 shadow-2xl max-h-64 overflow-y-auto
-                   animate-slideDown">
-            <!-- filled by JS -->
+            class="hidden absolute left-0 right-0 top-full mt-1 bg-[#121c33]
+                   border border-white/10 rounded-xl overflow-hidden z-50 shadow-2xl
+                   max-h-64 overflow-y-auto">
           </div>
         </div>
       </div>
@@ -264,17 +238,14 @@ body {
       <!-- SERVICE DETAILS -->
       <div id="serviceDetails" class="hidden">
 
-        <!-- DESCRIPTION -->
-        <div class="mb-5 animate-fadeUp">
+        <!-- 6 STAT CARDS -->
+        <div class="mb-5">
           <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Description</p>
           <div class="bg-[#121c33] border border-white/10 rounded-xl p-4">
-
-            <!-- 6 stat cards -->
             <div class="grid grid-cols-3 gap-2 mb-4">
 
               <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
-                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10
-                            flex items-center justify-center mx-auto mb-1">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
                   <span class="material-symbols-outlined text-gray-300" style="font-size:14px">schedule</span>
                 </div>
                 <p class="text-xs text-gray-400 mb-0.5">Start Time</p>
@@ -282,66 +253,57 @@ body {
               </div>
 
               <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
-                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10
-                            flex items-center justify-center mx-auto mb-1">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
                   <span class="material-symbols-outlined text-gray-300" style="font-size:14px">speed</span>
                 </div>
                 <p class="text-xs text-gray-400 mb-0.5">Speed</p>
-                <p id="dSpeed" class="font-black text-xs text-white">500K/HOUR</p>
+                <p id="dSpeed" class="font-black text-xs text-white">—</p>
               </div>
 
               <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
-                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10
-                            flex items-center justify-center mx-auto mb-1">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
                   <span class="material-symbols-outlined text-gray-300" style="font-size:14px">autorenew</span>
                 </div>
                 <p class="text-xs text-gray-400 mb-0.5">Refill</p>
-                <p id="dRefill" class="font-black text-xs text-white">LIFETIME</p>
+                <p id="dRefill" class="font-black text-xs text-white">—</p>
               </div>
 
               <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
-                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10
-                            flex items-center justify-center mx-auto mb-1">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
                   <span class="material-symbols-outlined text-gray-300" style="font-size:14px">cancel</span>
                 </div>
                 <p class="text-xs text-gray-400 mb-0.5">Cancel</p>
-                <p id="dCancel" class="font-black text-xs text-white">YES</p>
+                <p id="dCancel" class="font-black text-xs text-white">—</p>
               </div>
 
               <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
-                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10
-                            flex items-center justify-center mx-auto mb-1">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
                   <span class="material-symbols-outlined text-gray-300" style="font-size:14px">water_drop</span>
                 </div>
                 <p class="text-xs text-gray-400 mb-0.5">Drop</p>
-                <p id="dDrop" class="font-black text-xs text-white">NON-DROP</p>
+                <p id="dDrop" class="font-black text-xs text-white">—</p>
               </div>
 
               <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
-                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10
-                            flex items-center justify-center mx-auto mb-1">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
                   <span class="material-symbols-outlined text-gray-300" style="font-size:14px">star</span>
                 </div>
                 <p class="text-xs text-gray-400 mb-0.5">Quality</p>
-                <p id="dQuality" class="font-black text-xs text-white">REAL</p>
+                <p id="dQuality" class="font-black text-xs text-white">—</p>
               </div>
 
             </div>
-
-            <!-- Bullet details -->
             <div class="border-t border-white/10 pt-3">
               <p class="text-xs text-gray-400 font-bold mb-2 flex items-center gap-1">
-                <span class="material-symbols-outlined" style="font-size:13px">info</span>
-                DETAILS:
+                <span class="material-symbols-outlined" style="font-size:13px">info</span> DETAILS:
               </p>
-              <ul id="dDetailsList" class="space-y-1.5 text-xs text-white font-semibold">
-              </ul>
+              <ul id="dDetailsList" class="space-y-1.5 text-xs text-white font-semibold"></ul>
             </div>
           </div>
         </div>
 
         <!-- LINK -->
-        <div class="mb-4 animate-fadeUp">
+        <div class="mb-4">
           <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Link</p>
           <input type="text" id="linkInput" placeholder="Paste your link"
             class="w-full px-4 py-3 bg-[#121c33] border border-white/10 rounded-xl
@@ -350,22 +312,19 @@ body {
         </div>
 
         <!-- QUANTITY -->
-        <div class="mb-4 animate-fadeUp">
+        <div class="mb-4">
           <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Quantity</p>
-          <input type="number" id="quantityInput"
+          <input type="number" id="quantityInput" placeholder="Min: 0 - Max: 0"
             class="w-full px-4 py-3 bg-[#121c33] border border-white/10 rounded-xl
                    text-white placeholder-gray-500 text-sm
-                   focus:outline-none focus:border-[#2196f3] transition-all"
-            placeholder="Min: 0 - Max: 0"/>
-          <p id="quantityError"
-            class="hidden text-xs text-red-400 mt-2 flex items-center gap-1 font-semibold">
-            <span class="material-symbols-outlined" style="font-size:13px">warning</span>
-            Quantity must be between Min and Max
+                   focus:outline-none focus:border-[#2196f3] transition-all"/>
+          <p id="quantityError" class="hidden text-xs text-red-400 mt-2 font-semibold">
+            ⚠ Quantity must be between Min and Max
           </p>
         </div>
 
         <!-- DELIVERY TIME -->
-        <div class="mb-4 animate-fadeUp">
+        <div class="mb-4">
           <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2 flex items-center gap-1">
             Delivery Time
             <span class="material-symbols-outlined text-gray-500" style="font-size:13px">info</span>
@@ -375,53 +334,43 @@ body {
           </div>
         </div>
 
-        <!-- TOTAL AMOUNT + ORDER BUTTON -->
-        <div class="animate-fadeUp">
-          <button id="placeOrderBtn" type="submit" disabled
-            onclick="handlePlaceOrder(event)"
-            class="w-full rounded-xl font-black text-base py-4
-                   bg-gradient-to-r from-[#2196f3] to-[#00bcd4]
-                   text-white relative overflow-hidden
-                   disabled:opacity-35 disabled:cursor-not-allowed
-                   transition-all active:scale-[0.98]
-                   order-btn-ripple">
-            <div class="flex items-center justify-between px-2">
-              <span class="text-xs font-bold uppercase tracking-widest opacity-80"
-                    id="totalAmountLabel">TOTAL AMOUNT</span>
-              <div class="flex items-center gap-2">
-                <span id="totalPrice" class="text-lg font-black"></span>
-                <span class="font-black text-base tracking-wide">ORDER</span>
-                <span class="material-symbols-outlined" style="font-size:18px">chevron_right</span>
-              </div>
+        <!-- ORDER BUTTON -->
+        <button id="placeOrderBtn" disabled
+          class="w-full rounded-xl font-black text-base py-4
+                 bg-gradient-to-r from-[#2196f3] to-[#00bcd4]
+                 text-white relative overflow-hidden
+                 disabled:opacity-35 disabled:cursor-not-allowed
+                 transition-all active:scale-[0.98]">
+          <div class="flex items-center justify-between px-2">
+            <span class="text-xs font-bold uppercase tracking-widest opacity-80">TOTAL AMOUNT</span>
+            <div class="flex items-center gap-2">
+              <span id="totalPrice" class="text-lg font-black"></span>
+              <span class="font-black text-base tracking-wide">ORDER</span>
+              <span class="material-symbols-outlined" style="font-size:18px">chevron_right</span>
             </div>
-            <div id="rippleEl" class="absolute rounded-full bg-white/20 pointer-events-none
-                                      scale-0 transition-all duration-500"
-                 style="width:120px;height:120px;margin-left:-60px;margin-top:-60px"></div>
-          </button>
-        </div>
+          </div>
+          <div id="rippleEl"
+            class="absolute rounded-full bg-white/20 pointer-events-none scale-0 transition-all duration-500"
+            style="width:120px;height:120px;margin-left:-60px;margin-top:-60px"></div>
+        </button>
 
       </div><!-- /serviceDetails -->
-
-    </form>
+    </div>
   </div>
-
-</div><!-- /newOrderSection -->
+  </div><!-- /newOrderSection -->
 
 <!-- SUCCESS MODAL -->
 <div id="successModal"
   class="fixed inset-0 bg-black/70 hidden z-50 flex items-center justify-center px-4">
   <div id="successModalBox"
     class="bg-[#0f1a30] border border-[#2196f3]/20 rounded-2xl p-6
-           w-full max-w-sm text-center shadow-2xl scale-75 opacity-0
-           transition-all duration-300">
+           w-full max-w-sm text-center shadow-2xl scale-75 opacity-0 transition-all duration-300">
     <div class="w-16 h-16 bg-green-500/10 border border-green-500/30 rounded-full
                 flex items-center justify-center mx-auto mb-4">
       <span class="material-symbols-outlined text-green-400" style="font-size:32px">check_circle</span>
     </div>
     <h3 class="text-xl font-black mb-2 text-white">Order Placed! 🎉</h3>
-    <p class="text-gray-400 text-sm mb-6">
-      Your order has been submitted and is now being processed.
-    </p>
+    <p class="text-gray-400 text-sm mb-6">Your order has been submitted and is now being processed.</p>
     <div class="flex gap-3">
       <button id="closeModalBtn"
         class="flex-1 py-3 rounded-xl bg-[#121c33] border border-white/10
@@ -430,151 +379,13 @@ body {
       </button>
       <button id="viewOrdersBtn"
         class="flex-1 py-3 rounded-xl font-black text-sm text-white
-               bg-gradient-to-r from-[#2196f3] to-[#00bcd4]
-               active:scale-[0.97] transition">
+               bg-gradient-to-r from-[#2196f3] to-[#00bcd4] active:scale-[0.97] transition">
         View Orders
       </button>
     </div>
   </div>
 </div>
 
-
-
-<style>
-/* Animations */
-@keyframes slideDown {
-  from { opacity:0; transform:translateY(-8px); }
-  to   { opacity:1; transform:translateY(0); }
-}
-@keyframes fadeUp {
-  from { opacity:0; transform:translateY(12px); }
-  to   { opacity:1; transform:translateY(0); }
-}
-.animate-slideDown { animation: slideDown 0.22s ease forwards; }
-.animate-fadeUp    { animation: fadeUp 0.3s ease forwards; }
-
-/* Platform pills */
-.platform-pill { transition: all 0.2s ease; }
-.active-pill   { background: #2196f3 !important; color: white !important; border-color: #2196f3 !important; }
-
-/* Hide scrollbar */
-.scrollbar-hide::-webkit-scrollbar { display: none; }
-
-/* Category item hover */
-.cat-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 13px 16px; cursor: pointer;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  transition: background 0.15s;
-  font-size: 0.875rem; font-weight: 700; color: #e2e8f0;
-}
-.cat-item:hover   { background: rgba(33,150,243,0.1); }
-.cat-item.selected{ background: rgba(33,150,243,0.2); color: #2196f3; }
-.cat-item:last-child { border-bottom: none; }
-
-/* Service item */
-.svc-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px; cursor: pointer;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  transition: background 0.15s;
-  font-size: 0.8rem; font-weight: 600; color: #cbd5e0;
-}
-.svc-item:hover    { background: rgba(33,150,243,0.1); }
-.svc-item.selected { background: rgba(33,150,243,0.15); color: white; }
-.svc-item:last-child { border-bottom: none; }
-.svc-num-badge {
-  min-width: 24px; height: 24px; border-radius: 6px;
-  background: #2196f3; color: white; font-size: 11px;
-  font-weight: 900; display: flex; align-items: center;
-  justify-content: center; flex-shrink: 0;
-}
-</style>
-
-<script>
-// ══════════════════════════════════════════
-//  WEB AUDIO — Sound Effects
-// ══════════════════════════════════════════
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let _actx = null;
-function getACtx() {
-  if (!_actx) _actx = new AudioCtx();
-  return _actx;
-}
-
-function playTick() {
-  try {
-    const ctx = getACtx();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = 'sine'; o.frequency.setValueAtTime(880, ctx.currentTime);
-    o.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.08);
-    g.gain.setValueAtTime(0.12, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
-    o.start(); o.stop(ctx.currentTime + 0.13);
-  } catch(e){}
-}
-
-function playPop() {
-  try {
-    const ctx = getACtx();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = 'sine'; o.frequency.setValueAtTime(520, ctx.currentTime);
-    o.frequency.exponentialRampToValueAtTime(780, ctx.currentTime + 0.06);
-    g.gain.setValueAtTime(0.10, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.10);
-    o.start(); o.stop(ctx.currentTime + 0.11);
-  } catch(e){}
-}
-
-function playSuccess() {
-  try {
-    const ctx = getACtx();
-    [523, 659, 784, 1047].forEach((freq, i) => {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.type = 'sine'; o.frequency.value = freq;
-      const t = ctx.currentTime + i * 0.1;
-      g.gain.setValueAtTime(0.10, t);
-      g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
-      o.start(t); o.stop(t + 0.26);
-    });
-  } catch(e){}
-}
-
-// ══════════════════════════════════════════
-//  SERVICES DATA
-// ══════════════════════════════════════════
-const CATEGORIES = [
-  { id:'reel-views',  label:'Instagram - Reel Views'  },
-  { id:'post-views',  label:'Instagram - Post Views'  },
-  { id:'followers',   label:'Instagram - Followers'   },
-  { id:'likes',       label:'Instagram - Likes'       },
-  { id:'comments',    label:'Instagram - Comments'    },
-  { id:'shares',      label:'Instagram - Shares'      },
-  { id:'saves',       label:'Instagram - Saves'       },
-  { id:'reposts',     label:'Instagram - Reposts'     },
-];
-
-const SERVICES = {
-  'reel-views': [
-    { id:1,  name:'Instagram Reel Views – Used By Influencers',   price:0.38,    min:100,  max:2147483647,
-      startTime:'INSTANT', speed:'500K/HOUR', refill:'LIFETIME', cancel:'YES', drop:'NON-DROP', quality:'REAL',
-      delivery:'7 minutes',
-      details:['Real Reel Views.','Use reels link.','Wrong links are non refundable.','Private accounts not accepted.','Start and speed can be slow sometimes.'] },
-    { id:2,  name:'Instagram Reel Views – Used By Celebrities',   price:0.55,    min:100,  max:2147483647,
-      startTime:'INSTANT', speed:'300K/HOUR', refill:'30 DAYS',  cancel:'YES', drop:'NON-DROP', quality:'REAL',
-      delivery:'10 minutes',
-      details:['Real Views from celebrity accounts.','Use reels link.','Private accounts not accepted.'] },
-    { id:3,  name:'Instagram Reel Views – From Explore Page',     price:0.74,    min:100,  max:2147483647,
-      startTime:'INSTANT', speed:'200K/HOUR', refill:'30 DAYS',  cancel:'YES', drop:'NON-DROP', quality:'PREMIUM',
-      delivery:'15 minutes',
-      details:['Views from explore page.','Use reels link only.','Private accounts not accepted.'] },
-    { id:4,  name:'Indian Reel 
 <!-- ================= END NEW ORDER ================= -->
 </main>
 
@@ -587,18 +398,17 @@ const SERVICES = {
       <span>Menu</span>
     </a>
 
-    <a href="Totalorder.html" class="flex flex-col items-center text-gray-400">
+    <button onclick="scrollToNewOrder()" class="flex flex-col items-center text-gray-400">
       <span class="material-symbols-outlined">list_alt</span>
       <span>Orders</span>
-    </a>
+    </button>
 
-<button onclick="scrollToNewOrder()"
-  class="bg-blue-500 text-white w-12 h-12
-         flex items-center justify-center
-         rounded-full -mt-6">
-  <span class="material-symbols-outlined">add</span>
-</button>
-    <a href="Support.html" class="flex flex-col items-center text-gray-400">
+    <button onclick="scrollToNewOrder()"
+      class="bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full -mt-6">
+      <span class="material-symbols-outlined">add</span>
+    </button>
+
+    <a href="#" class="flex flex-col items-center text-gray-400">
       <span class="material-symbols-outlined">support_agent</span>
       <span>Support</span>
     </a>
@@ -613,164 +423,343 @@ const SERVICES = {
 
 <!-- SIDE MENU -->
 <div id="menuOverlay" class="fixed inset-0 bg-black/60 hidden z-40" onclick="closeMenu()"></div>
-
 <div id="sideMenu"
-class="fixed top-0 left-0 h-full w-72 bg-[#0e1629] z-50
-transform -translate-x-full transition-transform duration-300">
-
+  class="fixed top-0 left-0 h-full w-72 bg-[#0e1629] z-50
+         transform -translate-x-full transition-transform duration-300">
   <div class="p-4 space-y-1">
-
     <a href="Dashboard.html" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
-      <span class="material-symbols-outlined text-blue-400">dashboard</span>
-      Dashboard
+      <span class="material-symbols-outlined text-blue-400">dashboard</span> Dashboard
     </a>
-
     <a href="wallet.html" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
-      <span class="material-symbols-outlined text-cyan-400">account_balance_wallet</span>
-      Wallet
+      <span class="material-symbols-outlined text-cyan-400">account_balance_wallet</span> Wallet
     </a>
-
-<button onclick="scrollToNewOrder()"
-  class="flex items-center gap-4
-         px-4 py-3 rounded-lg
-         hover:bg-white/5 w-full text-left">
-  <span class="material-symbols-outlined text-green-400">
-    add_shopping_cart
-  </span>
-  New Order
-</button>
-
-    <a href="Totalorder.html" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
-      <span class="material-symbols-outlined text-yellow-400">list_alt</span>
-      Orders
+    <button onclick="scrollToNewOrder()"
+      class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5 w-full text-left">
+      <span class="material-symbols-outlined text-green-400">add_shopping_cart</span> New Order
+    </button>
+    <a href="#" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
+      <span class="material-symbols-outlined text-yellow-400">list_alt</span> Orders
     </a>
-
-    <a href="Support.html" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
-      <span class="material-symbols-outlined text-purple-400">support_agent</span>
-      Support
+    <a href="#" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
+      <span class="material-symbols-outlined text-purple-400">support_agent</span> Support
     </a>
-
     <button onclick="openAccountPopup()"
       class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5 w-full text-left">
-      <span class="material-symbols-outlined text-gray-400">person</span>
-      Account
+      <span class="material-symbols-outlined text-gray-400">person</span> Account
     </button>
-
   </div>
 </div>
 
-<!-- ACCOUNT POPUP -->
+  <!-- ACCOUNT POPUP -->
 <div id="accountPopup"
-     class="fixed inset-0 bg-black/60 hidden z-50 flex items-end justify-center">
-
-  <div
-    class="w-full max-w-md mx-auto
-           bg-[#0f1a30]
-           rounded-t-3xl
-           px-5 pt-5 pb-6
-           animate-slideUp">
-
-    <!-- USER CARD -->
+  class="fixed inset-0 bg-black/60 hidden z-50 flex items-end justify-center">
+  <div class="w-full max-w-md mx-auto bg-[#0f1a30] rounded-t-3xl px-5 pt-5 pb-6 animate-slideUp">
     <div class="bg-[#121c33] rounded-2xl p-4 mb-4 shadow-inner">
-
-      <p id="popupUsername"
-         class="text-lg font-semibold text-white">
-        User
-      </p>
-
-      <p id="popupEmail"
-         class="text-xs text-gray-400 mt-1">
-        email@example.com
-      </p>
-
+      <p id="popupUsername" class="text-lg font-semibold text-white">User</p>
+      <p id="popupEmail" class="text-xs text-gray-400 mt-1">email@example.com</p>
     </div>
-
-    <!-- ACTIONS -->
     <div class="space-y-3">
-
-      <!-- My Account -->
       <a href="account.html"
-         class="block text-center
-                bg-gradient-to-r from-blue-500 to-cyan-400
-                py-3 rounded-xl
-                font-semibold text-white
-                shadow-md
-                active:scale-[0.98]
-                transition">
+        class="block text-center bg-gradient-to-r from-blue-500 to-cyan-400
+               py-3 rounded-xl font-semibold text-white shadow-md active:scale-[0.98] transition">
         My Account
       </a>
-
-      <!-- Logout -->
       <button onclick="logout()"
-        class="w-full flex items-center justify-center gap-2
-               py-3 rounded-xl
-               bg-red-500/10 text-red-400
-               font-medium
-               active:scale-[0.98]
-               transition">
-        <span class="material-symbols-outlined">logout</span>
-        Logout
+        class="w-full flex items-center justify-center gap-2 py-3 rounded-xl
+               bg-red-500/10 text-red-400 font-medium active:scale-[0.98] transition">
+        <span class="material-symbols-outlined">logout</span> Logout
       </button>
-
     </div>
-
   </div>
 </div>
 
+<!-- STYLES -->
+<style>
+@keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUpAnim { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.platform-pill { transition:all 0.2s ease }
+.active-pill { background:#2196f3 !important;color:white !important;border-color:#2196f3 !important }
+.cat-item {
+  display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s;
+  font-size:0.875rem;font-weight:700;color:#e2e8f0;
+}
+.cat-item:hover { background:rgba(33,150,243,0.1) }
+.cat-item.selected { background:rgba(33,150,243,0.2);color:#2196f3 }
+.cat-item:last-child { border-bottom:none }
+.svc-item {
+  display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s;
+  font-size:0.8rem;font-weight:600;color:#cbd5e0;
+}
+.svc-item:hover { background:rgba(33,150,243,0.1) }
+.svc-item.selected { background:rgba(33,150,243,0.15);color:white }
+.svc-item:last-child { border-bottom:none }
+.svc-num-badge {
+  min-width:24px;height:24px;border-radius:6px;background:#2196f3;color:white;
+  font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+</style>
+
+<!-- MAIN SCRIPT -->
 <script>
+// ── SOUND EFFECTS ──
+const _AC = window.AudioContext || window.webkitAudioContext;
+let _actx = null;
+function _ac() { if(!_actx) _actx = new _AC(); return _actx; }
+function playTick() {
+  try { const c=_ac(),o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);o.type='sine';
+    o.frequency.setValueAtTime(880,c.currentTime);o.frequency.exponentialRampToValueAtTime(660,c.currentTime+0.08);
+    g.gain.setValueAtTime(0.12,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.12);
+    o.start();o.stop(c.currentTime+0.13); } catch(e){}
+}
+function playPop() {
+  try { const c=_ac(),o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);o.type='sine';
+    o.frequency.setValueAtTime(520,c.currentTime);o.frequency.exponentialRampToValueAtTime(780,c.currentTime+0.06);
+    g.gain.setValueAtTime(0.10,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.10);
+    o.start();o.stop(c.currentTime+0.11); } catch(e){}
+}
+function playSuccess() {
+  try { const c=_ac();
+    [523,659,784,1047].forEach((f,i)=>{ const o=c.createOscillator(),g=c.createGain();
+      o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=f;
+      const t=c.currentTime+i*0.1;
+      g.gain.setValueAtTime(0.10,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.25);
+      o.start(t);o.stop(t+0.26); }); } catch(e){}
+}
+// ── SERVICES DATA ──
+const CATEGORIES = [
+  {id:'reel-views', label:'Instagram - Reel Views'},
+  {id:'post-views', label:'Instagram - Post Views'},
+  {id:'followers',  label:'Instagram - Followers'},
+  {id:'likes',      label:'Instagram - Likes'},
+  {id:'comments',   label:'Instagram - Comments'},
+  {id:'shares',     label:'Instagram - Shares'},
+  {id:'saves',      label:'Instagram - Saves'},
+  {id:'reposts',    label:'Instagram - Reposts'},
+];
+const SERVICES = {
+  'reel-views': [
+    {id:1,name:'Instagram Reel Views – Used By Influencers',price:0.38,min:100,max:2147483647,startTime:'INSTANT',speed:'500K/HOUR',refill:'LIFETIME',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'7 minutes',details:['Real Reel Views.','Use reels link.','Wrong links are non refundable.','Private accounts not accepted.','Start and speed can be slow sometimes.']},
+    {id:2,name:'Instagram Reel Views – Used By Celebrities',price:0.55,min:100,max:2147483647,startTime:'INSTANT',speed:'300K/HOUR',refill:'30 DAYS',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'10 minutes',details:['Real Views from celebrity accounts.','Use reels link.','Private accounts not accepted.']},
+    {id:3,name:'Instagram Reel Views – From Explore Page',price:0.74,min:100,max:2147483647,startTime:'INSTANT',speed:'200K/HOUR',refill:'30 DAYS',cancel:'YES',drop:'NON-DROP',quality:'PREMIUM',delivery:'15 minutes',details:['Views from explore page.','Use reels link only.','Private accounts not accepted.']},
+    {id:4,name:'Indian Reel Views – Used By Celebrities',price:1.11,min:100,max:2147483647,startTime:'INSTANT',speed:'100K/HOUR',refill:'30 DAYS',cancel:'NO',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'15 minutes',details:['Indian geo-targeted views.','Use reels link.','Private accounts not accepted.']},
+    {id:5,name:'Instagram Reel Views – Increase Insights',price:0.85,min:100,max:2147483647,startTime:'INSTANT',speed:'400K/HOUR',refill:'LIFETIME',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'10 minutes',details:['Boosts Instagram insights.','Use reels link.','Private accounts not accepted.']},
+  ],
+  'post-views': [
+    {id:6,name:'Instagram Post Views – Used By Influencers',price:1.83,min:100,max:2147483647,startTime:'INSTANT',speed:'1M/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'5 minutes',details:['Works on all public posts.','Use post link.','Private accounts not accepted.']},
+    {id:7,name:'Instagram Post Views – Increase Insights',price:1.74,min:100,max:2147483647,startTime:'INSTANT',speed:'1M/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'5 minutes',details:['Boosts post insights.','Use post link.','Private accounts not accepted.']},
+  ],
+  'followers': [
+    {id:8,name:'Instagram Followers – Used By Influencers',price:151.51,min:100,max:100000,startTime:'0-1 HOUR',speed:'5K/DAY',refill:'30 DAYS',cancel:'NO',drop:'LOW DROP',quality:'HIGH',delivery:'1-6 hours',details:['High quality followers.','Gradual delivery for safety.','Private accounts not accepted.']},
+    {id:9,name:'Instagram Followers – Used By Celebrities',price:134.53,min:100,max:100000,startTime:'0-1 HOUR',speed:'5K/DAY',refill:'60 DAYS',cancel:'NO',drop:'LOW DROP',quality:'PREMIUM',delivery:'1-6 hours',details:['Celebrity-grade followers.','Gradual delivery.','Private accounts not accepted.']},
+    {id:10,name:'Instagram Indian Followers – Used By Influencers',price:187.45,min:100,max:50000,startTime:'0-6 HOURS',speed:'2K/DAY',refill:'30 DAYS',cancel:'NO',drop:'LOW DROP',quality:'REAL INDIAN',delivery:'6-24 hours',details:['Real Indian followers.','Gradual delivery.','Private accounts not accepted.']},
+    {id:11,name:'Instagram Indian Followers – Used By Celebrities',price:218.54,min:100,max:50000,startTime:'0-6 HOURS',speed:'2K/DAY',refill:'60 DAYS',cancel:'NO',drop:'LOW DROP',quality:'INDIAN PREMIUM',delivery:'6-24 hours',details:['Premium Indian followers.','Gradual delivery.','Private accounts not accepted.']},
+  ],
+  'likes': [
+    {id:12,name:'Instagram Likes – Used By Influencers',price:29.02,min:10,max:500000,startTime:'INSTANT',speed:'10K/HOUR',refill:'LIFETIME',cancel:'NO',drop:'NON-DROP',quality:'HIGH',delivery:'5 minutes',details:['High quality likes.','Works on all public posts.']},
+    {id:13,name:'Instagram Likes – Used By Celebrities',price:38.15,min:10,max:500000,startTime:'INSTANT',speed:'5K/HOUR',refill:'30 DAYS',cancel:'YES',drop:'NON-DROP',quality:'PREMIUM',delivery:'8 minutes',details:['Celebrity-grade likes.','Works on all public posts.']},
+    {id:14,name:'Instagram Indian Likes – Used By Influencers',price:49.05,min:10,max:100000,startTime:'INSTANT',speed:'5K/HOUR',refill:'30 DAYS',cancel:'NO',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'10 minutes',details:['Indian audience likes.','Works on public posts only.']},
+    {id:15,name:'Instagram Indian Likes – For Celebrities',price:52.48,min:10,max:100000,startTime:'INSTANT',speed:'3K/HOUR',refill:'30 DAYS',cancel:'NO',drop:'NON-DROP',quality:'INDIAN PREMIUM',delivery:'12 minutes',details:['Premium Indian likes.','Works on public posts only.']},
+  ],
+  'comments': [
+    {id:16,name:'Instagram Indian Comments – Random Comments',price:113.87,min:10,max:10000,startTime:'0-1 HOUR',speed:'500/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'30 minutes',details:['Real Indian random comments.','Works on public posts.']},
+    {id:17,name:'Instagram Indian Comments – Custom Comments',price:165.61,min:10,max:5000,startTime:'0-2 HOURS',speed:'300/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'1-2 hours',details:['Custom comments provided by you.','Works on public posts.']},
+    {id:18,name:'Instagram USA Comments – Female',price:1977.02,min:5,max:1000,startTime:'0-6 HOURS',speed:'100/HOUR',refill:'NO',cancel:'NO',drop:'NON-DROP',quality:'USA FEMALE',delivery:'6-24 hours',details:['Real USA female comments.','Works on public posts.']},
+    {id:19,name:'Instagram 1 Verified Comment + Like',price:57.42,min:1,max:100,startTime:'0-12 HOURS',speed:'10/DAY',refill:'NO',cancel:'NO',drop:'NON-DROP',quality:'VERIFIED',delivery:'12-24 hours',details:['1 verified account comment + like.','Works on public posts.']},
+    {id:20,name:'Instagram 2 Verified Comment + Like',price:96.04,min:1,max:100,startTime:'0-12 HOURS',speed:'10/DAY',refill:'NO',cancel:'NO',drop:'NON-DROP',quality:'VERIFIED',delivery:'12-24 hours',details:['2 verified account comments + likes.','Works on public posts.']},
+  ],
+  'shares': [
+    {id:21,name:'Instagram Shares – Used By Influencers',price:2.44,min:100,max:500000,startTime:'INSTANT',speed:'50K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'5 minutes',details:['Real shares.','Works on public posts and reels.']},
+    {id:22,name:'Instagram Indian Shares – Used By Celebrities',price:3.65,min:100,max:200000,startTime:'INSTANT',speed:'30K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'8 minutes',details:['Indian audience shares.','Works on public posts.']},
+    {id:23,name:'Instagram Profile Shares – Used By Influencers',price:22.91,min:100,max:50000,startTime:'INSTANT',speed:'10K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'10 minutes',details:['Profile shares.','Increases profile reach.']},
+  ],
+  'saves': [
+    {id:24,name:'Instagram Saves – Used By Influencers',price:10.64,min:100,max:500000,startTime:'INSTANT',speed:'20K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'5 minutes',details:['Real saves.','Boosts algorithm score.','Works on public posts.']},
+    {id:25,name:'Instagram Indian Saves – Used By Celebrities',price:18.80,min:100,max:200000,startTime:'INSTANT',speed:'10K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'8 minutes',details:['Indian audience saves.','Works on public posts.']},
+  ],
+  'reposts': [
+    {id:26,name:'Instagram Repost – Used By Influencers',price:84.35,min:100,max:50000,startTime:'INSTANT',speed:'5K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'10 minutes',details:['Real reposts.','Works on public reels and posts.']},
+    {id:27,name:'Instagram Indian Repost – Used By Celebrities',price:93.00,min:100,max:50000,startTime:'INSTANT',speed:'3K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'12 minutes',details:['Indian audience reposts.','Works on public reels.']},
+  ],
+};
 
+// ── STATE ──
+let _selCat=null,_selSvc=null,_catOpen=false,_svcOpen=false;
+
+// ── MENU / ACCOUNT ──
 function openMenu() {
-  document.getElementById("sideMenu").classList.remove("-translate-x-full");
-  document.getElementById("menuOverlay").classList.remove("hidden");
+  document.getElementById('sideMenu').classList.remove('-translate-x-full');
+  document.getElementById('menuOverlay').classList.remove('hidden');
 }
-
 function closeMenu() {
-  document.getElementById("sideMenu").classList.add("-translate-x-full");
-  document.getElementById("menuOverlay").classList.add("hidden");
+  document.getElementById('sideMenu').classList.add('-translate-x-full');
+  document.getElementById('menuOverlay').classList.add('hidden');
+}
+function openAccountPopup() { document.getElementById('accountPopup').classList.remove('hidden'); }
+document.getElementById('accountPopup').addEventListener('click',function(e){ if(e.target===this) this.classList.add('hidden'); });
+function logout() { localStorage.clear(); window.location.href='index.html'; }
+function scrollToNewOrder() { document.getElementById('newOrderSection').scrollIntoView({behavior:'smooth'}); closeMenu(); }
+
+// ── READ USER DATA ──
+let username = localStorage.getItem('getxh_user_name');
+if(!username){ const e=localStorage.getItem('getxh_current_user'); if(e) username=e.split('@')[0]; }
+const _email = localStorage.getItem('getxh_current_user');
+if(username){ document.getElementById('userName').innerText=username; document.getElementById('popupUsername').innerText=username; }
+if(_email){ document.getElementById('popupEmail').innerText=_email; }
+
+// ── TABS & PILLS ──
+function switchOrderTab(t) {
+  playTick();
+  const isNew=t==='new';
+  document.getElementById('tabNewOrder').className='flex-1 py-3 text-sm font-bold transition-all '+(isNew?'bg-[#2196f3] text-white':'bg-[#0e1629] text-gray-400');
+  document.getElementById('tabSubscription').className='flex-1 py-3 text-sm font-bold transition-all '+(!isNew?'bg-[#2196f3] text-white':'bg-[#0e1629] text-gray-400');
+}
+function filterPlatform(el) {
+  playTick();
+  document.querySelectorAll('.platform-pill').forEach(p=>{p.classList.remove('active-pill','bg-[#2196f3]','text-white');p.classList.add('bg-[#0e1629]','text-gray-300');});
+  el.classList.add('active-pill');el.classList.remove('bg-[#0e1629]','text-gray-300');
 }
 
-function openAccountPopup() {
-  document.getElementById("accountPopup").classList.remove("hidden");
+  // ── CATEGORY DROPDOWN ──
+function buildCategoryDropdown() {
+  const dd=document.getElementById('categoryDropdown'); dd.innerHTML='';
+  CATEGORIES.forEach(c=>{
+    const d=document.createElement('div'); d.className='cat-item'+(c.id===_selCat?' selected':'');
+    d.innerHTML=`<img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" class="w-5 h-5 rounded flex-shrink-0"/><span>${c.label}</span>`;
+    d.onclick=()=>selectCategory(c); dd.appendChild(d);
+  });
+}
+function toggleCategoryDropdown() {
+  playTick(); _catOpen=!_catOpen;
+  const dd=document.getElementById('categoryDropdown'),arr=document.getElementById('catArrow');
+  if(_catOpen){buildCategoryDropdown();dd.classList.remove('hidden');dd.style.animation='slideDown 0.22s ease forwards';arr.style.transform='rotate(180deg)';closeSvcDrop();}
+  else{dd.classList.add('hidden');arr.style.transform='rotate(0deg)';}
+}
+function closeCatDrop(){document.getElementById('categoryDropdown').classList.add('hidden');document.getElementById('catArrow').style.transform='rotate(0deg)';_catOpen=false;}
+function selectCategory(cat) {
+  playTick();_selCat=cat.id;_selSvc=null;
+  document.getElementById('catIcon').classList.remove('hidden');
+  document.getElementById('catLabel').textContent=cat.label;document.getElementById('catLabel').className='text-white text-sm font-semibold';
+  closeCatDrop();
+  document.getElementById('serviceWrapper').style.display='block';
+  document.getElementById('svcLabel').textContent='— Select a service —';document.getElementById('svcLabel').className='text-gray-400 text-sm font-semibold truncate';
+  document.getElementById('svcNumBadge').classList.add('hidden');
+  document.getElementById('serviceDetails').classList.add('hidden');
+  document.getElementById('placeOrderBtn').disabled=true;
+  document.getElementById('totalPrice').textContent='';
 }
 
-document.getElementById("accountPopup").addEventListener("click", function(e){
-  if (e.target === this) this.classList.add("hidden");
+// ── SERVICE DROPDOWN ──
+function buildServiceDropdown() {
+  const dd=document.getElementById('serviceDropdown'),q=(document.getElementById('searchService').value||'').toLowerCase();
+  dd.innerHTML='';
+  (SERVICES[_selCat]||[]).filter(s=>!q||s.name.toLowerCase().includes(q)).forEach(s=>{
+    const d=document.createElement('div');d.className='svc-item'+(_selSvc&&_selSvc.id===s.id?' selected':'');
+    d.innerHTML=`<div class="svc-num-badge">${s.id}</div><span class="flex-1 leading-snug">${s.name}</span><span class="text-[#2196f3] font-black text-xs flex-shrink-0 ml-2">₹${s.price.toFixed(2)}/1K</span>`;
+    d.onclick=()=>selectService(s);dd.appendChild(d);
+  });
+}
+function toggleServiceDropdown() {
+  if(!_selCat)return;playTick();_svcOpen=!_svcOpen;
+  const dd=document.getElementById('serviceDropdown'),arr=document.getElementById('svcArrow');
+  if(_svcOpen){buildServiceDropdown();dd.classList.remove('hidden');dd.style.animation='slideDown 0.22s ease forwards';arr.style.transform='rotate(180deg)';closeCatDrop();}
+  else closeSvcDrop();
+}
+function closeSvcDrop(){document.getElementById('serviceDropdown').classList.add('hidden');document.getElementById('svcArrow').style.transform='rotate(0deg)';_svcOpen=false;}
+function selectService(svc) {
+  playPop();_selSvc=svc;
+  document.getElementById('svcNumBadge').textContent=svc.id;document.getElementById('svcNumBadge').classList.remove('hidden');
+  document.getElementById('svcLabel').textContent=svc.name;document.getElementById('svcLabel').className='text-white text-sm font-semibold truncate';
+  closeSvcDrop();
+  document.getElementById('dStartTime').textContent=svc.startTime;
+  document.getElementById('dSpeed').textContent=svc.speed;
+  document.getElementById('dRefill').textContent=svc.refill;
+  document.getElementById('dCancel').textContent=svc.cancel;
+  document.getElementById('dDrop').textContent=svc.drop;
+  document.getElementById('dQuality').textContent=svc.quality;
+  document.getElementById('dDeliveryTime').textContent=svc.delivery;
+  document.getElementById('dDetailsList').innerHTML=svc.details.map(d=>`<li class="flex items-start gap-1.5"><span class="flex-shrink-0">•</span>${d}</li>`).join('');
+  document.getElementById('quantityInput').placeholder=`Min: ${svc.min.toLocaleString()} - Max: ${svc.max.toLocaleString()}`;
+  document.getElementById('quantityInput').value='';
+  document.getElementById('linkInput').value='';
+  document.getElementById('totalPrice').textContent='';
+  document.getElementById('quantityError').classList.add('hidden');
+  document.getElementById('placeOrderBtn').disabled=true;
+  const det=document.getElementById('serviceDetails');
+  det.classList.remove('hidden');det.style.animation='none';det.offsetHeight;det.style.animation='fadeUpAnim 0.35s ease forwards';
+}
+
+// ── SEARCH ──
+document.getElementById('searchService').addEventListener('input',()=>{ if(_svcOpen) buildServiceDropdown(); });
+
+// ── VALIDATION ──
+document.getElementById('quantityInput').addEventListener('input',()=>{
+  if(!_selSvc)return;
+  const qty=parseInt(document.getElementById('quantityInput').value);
+  const err=document.getElementById('quantityError');
+  if(!qty||qty<_selSvc.min||qty>_selSvc.max){err.classList.remove('hidden');document.getElementById('totalPrice').textContent='';document.getElementById('placeOrderBtn').disabled=true;return;}
+  err.classList.add('hidden');
+  document.getElementById('totalPrice').textContent='₹'+((qty/1000)*_selSvc.price).toFixed(2)+'  ';
+  document.getElementById('placeOrderBtn').disabled=!document.getElementById('linkInput').value.trim();
+});
+document.getElementById('linkInput').addEventListener('input',()=>{
+  if(!_selSvc)return;
+  const qty=parseInt(document.getElementById('quantityInput').value);
+  document.getElementById('placeOrderBtn').disabled=!(document.getElementById('linkInput').value.trim()&&qty&&qty>=_selSvc.min&&qty<=_selSvc.max);
 });
 
-/* 🔥 READ EXACT KEYS SAVED BY LOGIN PAGE */
-let username = localStorage.getItem("getxh_user_name");
+// ── PLACE ORDER ──
+document.getElementById('placeOrderBtn').addEventListener('click',function(e){
+  e.preventDefault();if(!_selSvc)return;
+  const qty=parseInt(document.getElementById('quantityInput').value);
+  const link=document.getElementById('linkInput').value.trim();
+  if(!qty||!link)return;
+  // Ripple
+  const rip=document.getElementById('rippleEl'),r=this.getBoundingClientRect();
+  rip.style.left=(e.clientX-r.left)+'px';rip.style.top=(e.clientY-r.top)+'px';
+  rip.style.transform='scale(4)';rip.style.opacity='1';
+  setTimeout(()=>{rip.style.transform='scale(0)';rip.style.opacity='0';},500);
+  playSuccess();
+  // Show modal
+  const modal=document.getElementById('successModal'),box=document.getElementById('successModalBox');
+  modal.classList.remove('hidden');
+  setTimeout(()=>{box.style.transform='scale(1)';box.style.opacity='1';},30);
+   // Save to Firestore via global db (set by Firebase module below)
+  if(typeof _saveOrder==='function') _saveOrder(_selSvc,qty,link);
+});
 
-if (!username) {
-  const emailTemp = localStorage.getItem("getxh_current_user");
-  if (emailTemp) {
-    username = emailTemp.split("@")[0];
-  }
-}
-const email = localStorage.getItem("getxh_current_user");
-
-if (username) {
-  document.getElementById("userName").innerText = username;
-  document.getElementById("popupUsername").innerText = username;
-}
-
-if (email) {
-  document.getElementById("popupEmail").innerText = email;
+document.getElementById('closeModalBtn').addEventListener('click',closeSuccessModal);
+document.getElementById('viewOrdersBtn').addEventListener('click',closeSuccessModal);
+function closeSuccessModal(){
+  const box=document.getElementById('successModalBox');
+  box.style.transform='scale(0.75)';box.style.opacity='0';
+  setTimeout(()=>document.getElementById('successModal').classList.add('hidden'),300);
+  _selSvc=null;_selCat=null;
+  document.getElementById('catLabel').textContent='— Select a category —';document.getElementById('catLabel').className='text-gray-400 text-sm font-semibold';
+  document.getElementById('catIcon').classList.add('hidden');
+  document.getElementById('serviceWrapper').style.display='none';
+  document.getElementById('serviceDetails').classList.add('hidden');
+  document.getElementById('linkInput').value='';document.getElementById('quantityInput').value='';
+  document.getElementById('totalPrice').textContent='';
 }
 
-/* LOGOUT */
-function logout() {
-  localStorage.clear();
-  window.location.href = "index.html";
-}
+// Close dropdowns on outside click
+document.addEventListener('click',e=>{
+  if(!document.getElementById('categoryWrapper').contains(e.target)) closeCatDrop();
+  const sw=document.getElementById('serviceDropdownWrapper');
+  if(sw&&!sw.contains(e.target)) closeSvcDrop();
+});
 </script>
-  <script type="module">
+
+<!-- FIREBASE MODULE -->
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { 
-    getFirestore, collection, addDoc, getDocs, query, orderBy, limit 
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
   authDomain: "getxh-42588.firebaseapp.com",
@@ -780,389 +769,69 @@ const firebaseConfig = {
   appId: "1:170770122888:web:7adcf91077d5695b06b73d"
 };
 
-const app = initializeApp(firebaseConfig);
+const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
-
-// ---------- LOGIN GUARD (via Firebase) ----------
 let currentUid = null;
 
+// ── LOGIN GUARD ──
 onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-        // fallback: localStorage check same jaisa Dashboard me hai
-        if (localStorage.getItem("getxh_user_logged_in") !== "yes") {
-            window.location.href = "index.html";
-            return;
-        }
-    } else {
-        currentUid = user.uid;
+  if (!user) {
+    if (localStorage.getItem("getxh_user_logged_in") !== "yes") {
+      window.location.href = "index.html"; return;
     }
-
-    // UID set ho chuka hoga, ab recent orders load karo
-    loadRecentOrders();
+  } else {
+    currentUid = user.uid;
+  }
+  loadRecentOrders();
 });
 
-// ---------- SERVICES DATA ----------
-const servicesData = [
-    {
-        serviceId: "IF001",
-        serviceName: "Instagram Followers – Used by Influencers – Same Day Delivery",
-        category: "Instagram Followers",
-        pricePer1000: 169.43,
-        minQuantity: 100,
-        maxQuantity: 1000000,
-        description: "High quality followers with same day delivery",
-        cancel: "No",
-        drop: "Low",
-        quality: "High"
-    },
-    {
-        serviceId: "IF002",
-        serviceName: "Instagram Followers – Used by Influencers – Same Day Delivery 2",
-        category: "Instagram Followers",
-        pricePer1000: 172.47,
-        minQuantity: 100,
-        maxQuantity: 1000000,
-        description: "Premium followers with guaranteed delivery",
-        cancel: "No",
-        drop: "Low",
-        quality: "High"
-    },
-    {
-        serviceId: "IF003",
-        serviceName: "Instagram Followers – Used by Celebrities – Same Day Delivery",
-        category: "Instagram Followers",
-        pricePer1000: 159.44,
-        minQuantity: 100,
-        maxQuantity: 1000000,
-        description: "Celebrity-grade followers",
-        cancel: "No",
-        drop: "Very Low",
-        quality: "Premium"
-    },
-
-    {
-        serviceId: "IRV001",
-        serviceName: "Instagram Reel Views – Used by Influencers – Real Views",
-        category: "Instagram Reel Views",
-        pricePer1000: 0.36,
-        minQuantity: 100,
-        maxQuantity: 2147483647,
-        description: "Genuine views from real accounts",
-        cancel: "Yes",
-        drop: "No",
-        quality: "Real"
-    },
-    {
-        serviceId: "IRV002",
-        serviceName: "Instagram Reel Views – Used by Influencers – Real Views 2",
-        category: "Instagram Reel Views",
-        pricePer1000: 0.54,
-        minQuantity: 100,
-        maxQuantity: 2147483647,
-        description: "Fast real views delivery",
-        cancel: "Yes",
-        drop: "No",
-        quality: "Real"
-    },
-    {
-        serviceId: "IRV003",
-        serviceName: "Instagram Reel Views – Used by Celebrities – From Explore Page",
-        category: "Instagram Reel Views",
-        pricePer1000: 0.72,
-        minQuantity: 100,
-        maxQuantity: 2147483647,
-        description: "Views from explore page",
-        cancel: "Yes",
-        drop: "No",
-        quality: "Premium"
-    },
-    {
-        serviceId: "IRV004",
-        serviceName: "Instagram Reel Views – Used by Influencers – Indian Real Views",
-        category: "Instagram Reel Views",
-        pricePer1000: 1.08,
-        minQuantity: 100,
-        maxQuantity: 2147483647,
-        description: "Indian real views",
-        cancel: "No",
-        drop: "None",
-        quality: "Indian Real"
-    },
-
-    {
-        serviceId: "IL001",
-        serviceName: "Instagram Likes – Used by Influencers",
-        category: "Instagram Likes",
-        pricePer1000: 27.68,
-        minQuantity: 10,
-        maxQuantity: 1000000,
-        description: "Quality likes from real accounts",
-        cancel: "No",
-        drop: "Low",
-        quality: "High"
-    },
-    {
-        serviceId: "IL002",
-        serviceName: "Instagram Likes – Used by Celebrities",
-        category: "Instagram Likes",
-        pricePer1000: 37.38,
-        minQuantity: 10,
-        maxQuantity: 1000000,
-        description: "Premium likes for celebrity accounts",
-        cancel: "Yes",
-        drop: "Very Low",
-        quality: "Premium"
-    },
-
-    {
-        serviceId: "IIL001",
-        serviceName: "Instagram Indian Likes – Used by Influencers",
-        category: "Instagram Indian Likes",
-        pricePer1000: 44.27,
-        minQuantity: 10,
-        maxQuantity: 1000000,
-        description: "Indian likes from real Indian accounts",
-        cancel: "No",
-        drop: "Low",
-        quality: "Indian High"
-    },
-    {
-        serviceId: "IIL002",
-        serviceName: "Instagram Indian Likes – Used by Celebrities",
-        category: "Instagram Indian Likes",
-        pricePer1000: 53.01,
-        minQuantity: 10,
-        maxQuantity: 1000000,
-        description: "Premium Indian likes for celebrities",
-        cancel: "No",
-        drop: "Very Low",
-        quality: "Indian Premium"
-    }
-];
-
-// DOM selection ----------
-
-const searchService      = document.getElementById("searchService");
-const categorySelect     = document.getElementById("categorySelect");
-const serviceSelect      = document.getElementById("serviceSelect");
-
-const serviceDetails     = document.getElementById("serviceDetails");
-const serviceDescription = document.getElementById("serviceDescription");
-const serviceCancel      = document.getElementById("serviceCancel");
-const serviceDrop        = document.getElementById("serviceDrop");
-const serviceQuality     = document.getElementById("serviceQuality");
-
-const linkInput          = document.getElementById("linkInput");
-const quantityInput      = document.getElementById("quantityInput");
-const minMaxText         = document.getElementById("minMaxText");
-const quantityError      = document.getElementById("quantityError");
-
-const totalPrice         = document.getElementById("totalPrice");
-const placeOrderBtn      = document.getElementById("placeOrderBtn");
-const recentOrdersContainer = document.getElementById("recentOrdersContainer");
-
-const successModal       = document.getElementById("successModal");
-const closeModalBtn      = document.getElementById("closeModalBtn");
-const viewOrdersBtn      = document.getElementById("viewOrdersBtn");
-
-let selectedService = null;
-
-// ---------- Mobile Menu Toggle ----------
-
-
-// ---------- Update Service Dropdown ----------
-function updateServiceSelect() {
-    const category = categorySelect.value;
-    const searchTerm = searchService.value.toLowerCase();
-
-    serviceSelect.innerHTML = `<option value="">Select a service</option>`;
-
-    if (!category) {
-        serviceSelect.disabled = true;
-        return;
-    }
-
-    const filtered = servicesData.filter(s =>
-        s.category === category &&
-        s.serviceName.toLowerCase().includes(searchTerm)
-    );
-
-    filtered.forEach(service => {
-        const option = document.createElement("option");
-        option.value = service.serviceId;
-        option.textContent = `${service.serviceName} – ₹${service.pricePer1000.toFixed(2)} per 1000`;
-        serviceSelect.appendChild(option);
-    });
-
-    serviceSelect.disabled = filtered.length === 0;
-}
-
-// Search listener
-searchService.addEventListener("input", updateServiceSelect);
-
-// Category change listener
-categorySelect.addEventListener("change", () => {
-    updateServiceSelect();
-    resetServiceSelection();
-});
-
-// ---------- When a service is selected ----------
-serviceSelect.addEventListener("change", () => {
-    const id = serviceSelect.value;
-    selectedService = servicesData.find(s => s.serviceId === id);
-
-    if (!selectedService) return;
-
-    serviceDetails.classList.remove("hidden");
-    serviceDescription.textContent = selectedService.description;
-    serviceCancel.textContent = selectedService.cancel;
-    serviceDrop.textContent = selectedService.drop;
-    serviceQuality.textContent = selectedService.quality;
-
-    minMaxText.textContent = `Min: ${selectedService.minQuantity} – Max: ${selectedService.maxQuantity}`;
-
-    quantityInput.value = "";
-    totalPrice.textContent = "₹0.00";
-});
-
-// ---------- Quantity Calculation ----------
-quantityInput.addEventListener("input", () => {
-    if (!selectedService) return;
-
-    let qty = parseInt(quantityInput.value);
-
-    if (!qty || qty < selectedService.minQuantity || qty > selectedService.maxQuantity) {
-        quantityError.classList.remove("hidden");
-        totalPrice.textContent = "₹0.00";
-        placeOrderBtn.disabled = true;
-        return;
-    }
-
-    quantityError.classList.add("hidden");
-
-    const final = (qty / 1000) * selectedService.pricePer1000;
-    totalPrice.textContent = `₹${final.toFixed(2)}`;
-
-    placeOrderBtn.disabled = false;
-});
-
-// ---------- Reset service details ----------
-function resetServiceSelection() {
-    selectedService = null;
-    serviceDetails.classList.add("hidden");
-    quantityInput.value = "";
-    minMaxText.textContent = "Min: 0 – Max: 0";
-    totalPrice.textContent = "₹0.00";
-    placeOrderBtn.disabled = true;
-}
-
-// ---------- Save Order to FIRESTORE ----------
-async function saveOrderToFirestore(service, qty, link, price) {
-    if (!currentUid) {
-        alert("User not logged in. Please login again.");
-        return;
-    }
-
-    const ordersCol = collection(db, "orders", currentUid, "user_orders");
-
+// ── SAVE ORDER (called from main script) ──
+window._saveOrder = async function(svc, qty, link) {
+  if (!currentUid) return;
+  try {
     const now = new Date();
-
-    const data = {
-        serviceId: service.serviceId,
-        serviceName: service.serviceName,
-        category: service.category,
-        quantity: qty,
-        link: link,
-        price: parseFloat(price),
-        status: "Processing",
-        createdAt: now.toISOString(),
-        createdAtReadable: now.toLocaleString()
-    };
-
-    await addDoc(ordersCol, data);
-}
-
-// ---------- Place Order ----------
-placeOrderBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-    if (!selectedService) return;
-
-    const qty = parseInt(quantityInput.value);
-    const link = linkInput.value.trim();
-    const price = totalPrice.textContent.replace("₹", "");
-
-    if (!qty || !link) return;
-
-    await saveOrderToFirestore(selectedService, qty, link, price);
-
-    // Form clear
-    linkInput.value = "";
-    quantityInput.value = "";
-    resetServiceSelection();
-    totalPrice.textContent = "₹0.00";
-
-    // Modal show
-    successModal.classList.remove("hidden");
-
-    // Recent orders reload
-    loadRecentOrders();
-});
-
-// Close modal
-closeModalBtn.addEventListener("click", () => {
-    successModal.classList.add("hidden");
-});
-
-// View Orders
-viewOrdersBtn.addEventListener("click", () => {
-    window.location.href = "Totalorder.html";
-});
-
-// ---------- Load Recent Orders from Firestore ----------
-async function loadRecentOrders() {
-    if (!currentUid) {
-        // auth state not yet ready
-        recentOrdersContainer.innerHTML =
-            `<p class="text-gray-500 text-sm">Loading orders...</p>`;
-        return;
-    }
-
-    const ordersCol = collection(db, "orders", currentUid, "user_orders");
-
-    const q = query(
-        ordersCol,
-        orderBy("createdAt", "desc"),
-        limit(3)
-    );
-
-    const snap = await getDocs(q);
-
-    if (snap.empty) {
-        recentOrdersContainer.innerHTML =
-            `<p class="text-gray-500 text-sm">No recent orders found.</p>`;
-        return;
-    }
-
-    recentOrdersContainer.innerHTML = "";
-
-    snap.forEach((doc) => {
-        const order = doc.data();
-
-        const box = document.createElement("div");
-        box.className = "p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3";
-
-        box.innerHTML = `
-            <div class="font-semibold text-gray-800 text-sm">${order.serviceName || "-"}</div>
-            <div class="text-xs text-gray-600">Qty: ${order.quantity || 0}</div>
-            <div class="text-xs text-gray-600">₹${(order.price || 0).toFixed ? order.price.toFixed(2) : order.price}</div>
-            <div class="text-xs text-gray-500">${order.createdAtReadable || ""}</div>
-        `;
-
-        recentOrdersContainer.appendChild(box);
+    await addDoc(collection(db, "orders", currentUid, "user_orders"), {
+      serviceName: svc.name,
+      category:    svc.id,
+      quantity:    qty,
+      link:        link,
+      price:       parseFloat(((qty/1000)*svc.price).toFixed(2)),
+      status:      "Processing",
+      createdAt:        now.toISOString(),
+      createdAtReadable:now.toLocaleString()
     });
-}
-  </script>
+    loadRecentOrders();
+  } catch(err) { console.error("Order save error:", err); }
+};
 
+// ── LOAD RECENT ORDERS ──
+async function loadRecentOrders() {
+  const container = document.getElementById("recentOrdersContainer");
+  if (!container) return;
+  if (!currentUid) { container.innerHTML = `<p class="text-gray-500 text-sm">Loading...</p>`; return; }
+
+  try {
+    const q    = query(collection(db,"orders",currentUid,"user_orders"), orderBy("createdAt","desc"), limit(3));
+    const snap = await getDocs(q);
+    if (snap.empty) { container.innerHTML = `<p class="text-gray-500 text-sm">No recent orders found.</p>`; return; }
+    container.innerHTML = "";
+    snap.forEach(doc => {
+      const o = doc.data();
+      const box = document.createElement("div");
+      box.className = "p-4 bg-[#121c33] border border-white/10 rounded-xl mb-3";
+      box.innerHTML = `
+        <div class="font-semibold text-white text-sm mb-1">${o.serviceName||"—"}</div>
+        <div class="flex gap-4 text-xs text-gray-400">
+          <span>Qty: ${o.quantity||0}</span>
+          <span class="text-blue-400 font-bold">₹${(o.price||0).toFixed(2)}</span>
+          <span class="ml-auto">${o.createdAtReadable||""}</span>
+        </div>`;
+      container.appendChild(box);
+    });
+  } catch(err) { console.error("Load orders error:", err); }
+}
+</script>
+           
 </body>
 </html>
