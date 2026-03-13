@@ -615,7 +615,7 @@ body {
       </div>
     </div>
     <div class="px-4 space-y-3">
-      <button onclick="closeAccountPopup();window.location.href='account.html'"
+<button onclick="showAccView('accViewAccount')"
         class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-white text-sm active:scale-[0.98] transition-all"
         style="background:linear-gradient(135deg,#2196f3,#00bcd4);box-shadow:0 4px 20px rgba(33,150,243,0.3)">
         <span class="material-symbols-outlined" style="font-size:18px">manage_accounts</span>
@@ -636,9 +636,51 @@ body {
         Logout
       </button>
     </div>
+     </div>
+</div>
+<!-- VIEW 2: MY ACCOUNT -->
+<div id="accViewAccount" style="display:none">
+  <div class="flex items-center gap-3 px-4 mb-4">
+    <button onclick="showAccView('accViewHome')" class="flex items-center gap-1 font-bold text-sm" style="color:#2196f3">
+      <span class="material-symbols-outlined" style="font-size:20px">arrow_back_ios</span>Back
+    </button>
+    <p class="text-white font-black text-base">My Account</p>
+  </div>
+  <div class="mx-4 mb-4 rounded-xl p-4" style="background:#121c33">
+    <p class="text-sm text-gray-400">Account</p>
+    <p id="accName" class="text-lg font-semibold text-white">-</p>
+    <p id="accEmail" class="text-sm text-gray-400">-</p>
+  </div>
+  <div class="mx-4 mb-4 rounded-xl p-4 space-y-4" style="background:#121c33">
+    <div class="flex items-center gap-4">
+      <span class="material-symbols-outlined text-blue-400">person</span>
+      <div>
+        <p class="text-xs text-gray-400">Username</p>
+        <p id="accDetailUsername" class="text-white">-</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="material-symbols-outlined text-cyan-400">mail</span>
+      <div>
+        <p class="text-xs text-gray-400">Email</p>
+        <p id="accDetailEmail" class="text-white">-</p>
+      </div>
+    </div>
+  </div>
+  <div class="mx-4 mb-4 rounded-xl p-4" style="background:#121c33">
+    <p class="font-medium text-white mb-3">Reset Password</p>
+    <input id="accCurrPass" type="password" placeholder="Current password" class="w-full mb-2 px-3 py-2 rounded text-white text-sm outline-none" style="background:#0e1629"/>
+    <input id="accNewPass" type="password" placeholder="New password" class="w-full mb-2 px-3 py-2 rounded text-white text-sm outline-none" style="background:#0e1629"/>
+    <input id="accConfPass" type="password" placeholder="Confirm new password" class="w-full mb-3 px-3 py-2 rounded text-white text-sm outline-none" style="background:#0e1629"/>
+    <p id="accPassMsg" class="text-sm mb-2 hidden"></p>
+    <button onclick="changePasswordInline()" class="w-full bg-blue-500 py-2 rounded-lg font-medium text-white text-sm">Change Password</button>
+  </div>
+  <div class="mx-4">
+    <button onclick="logout()" class="w-full py-3 rounded-xl flex justify-center gap-2 font-bold text-sm" style="background:rgba(244,67,54,0.1);color:#ef5350;border:1px solid rgba(244,67,54,0.2)">
+      <span class="material-symbols-outlined" style="font-size:18px">logout</span>Logout
+    </button>
   </div>
 </div>
-
 <!-- STYLES -->
 <style>
 @keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
@@ -1038,6 +1080,68 @@ async function loadRecentOrders() {
   } catch(err) { console.error("Load orders error:", err); }
 }
 </script>
-           
+
+  <script>
+function showAccView(viewId) {
+  document.getElementById('accViewHome').style.display = (viewId==='accViewHome') ? 'block' : 'none';
+  document.getElementById('accViewAccount').style.display = (viewId==='accViewAccount') ? 'block' : 'none';
+  if(viewId==='accViewAccount') {
+    const name = localStorage.getItem('getxh_user_name') || '';
+    const email = localStorage.getItem('getxh_current_user') || '';
+    const n = name || email.split('@')[0] || '-';
+    document.getElementById('accName').textContent = n;
+    document.getElementById('accEmail').textContent = email || '-';
+    document.getElementById('accDetailUsername').textContent = n;
+    document.getElementById('accDetailEmail').textContent = email || '-';
+    ['accCurrPass','accNewPass','accConfPass'].forEach(id => document.getElementById(id).value='');
+    const msg = document.getElementById('accPassMsg');
+    msg.classList.add('hidden'); msg.textContent='';
+  }
+}
+function changePasswordInline() {
+  const curr = document.getElementById('accCurrPass').value.trim();
+  const nw   = document.getElementById('accNewPass').value.trim();
+  const conf = document.getElementById('accConfPass').value.trim();
+  const msg  = document.getElementById('accPassMsg');
+  function showMsg(text, isError) {
+    msg.textContent = text;
+    msg.style.color = isError ? '#f87171' : '#4ade80';
+    msg.classList.remove('hidden');
+  }
+  if(!curr||!nw||!conf) return showMsg('⚠ All fields required', true);
+  if(nw.length < 6)     return showMsg('⚠ Min 6 characters', true);
+  if(nw !== conf)       return showMsg('⚠ Passwords do not match', true);
+  if(typeof window._doChangePassword==='function') {
+    showMsg('Updating…', false);
+    window._doChangePassword(curr, nw, function(err) {
+      if(err) showMsg('⚠ Current password is wrong', true);
+      else { showMsg('✓ Changed! Logging out…', false); setTimeout(()=>logout(), 2000); }
+    });
+  }
+}
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588"
+};
+const app2 = initializeApp(firebaseConfig, "pwapp");
+const auth2 = getAuth(app2);
+onAuthStateChanged(auth2, (user) => {
+  if(!user) return;
+  window._doChangePassword = async function(currPass, newPass, callback) {
+    try {
+      const cred = EmailAuthProvider.credential(user.email, currPass);
+      await reauthenticateWithCredential(user, cred);
+      await updatePassword(user, newPass);
+      callback(null);
+    } catch(e) { callback(e); }
+  };
+});
+</script>
 </body>
 </html>
