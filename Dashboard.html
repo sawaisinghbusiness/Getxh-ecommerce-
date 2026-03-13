@@ -642,15 +642,24 @@ function closeCatDrop(){document.getElementById('categoryDropdown').classList.ad
 function selectCategory(cat) {
   playTick();_selCat=cat.id;_selSvc=null;
   document.getElementById('catIcon').classList.remove('hidden');
-  document.getElementById('catLabel').textContent=cat.label;document.getElementById('catLabel').className='text-white text-sm font-semibold';
+  document.getElementById('catLabel').textContent=cat.label;
+  document.getElementById('catLabel').className='text-white text-sm font-semibold';
   closeCatDrop();
+
+  // Show service wrapper
   document.getElementById('serviceWrapper').style.display='block';
-  document.getElementById('svcLabel').textContent='— Select a service —';document.getElementById('svcLabel').className='text-gray-400 text-sm font-semibold truncate';
+  document.getElementById('svcLabel').textContent='— Select a service —';
+  document.getElementById('svcLabel').className='text-gray-400 text-sm font-semibold truncate';
   document.getElementById('svcNumBadge').classList.add('hidden');
   document.getElementById('serviceDetails').classList.add('hidden');
   document.getElementById('placeOrderBtn').disabled=true;
   document.getElementById('totalPrice').textContent='';
+
+  // ⭐ AUTO SELECT FIRST SERVICE — myfame.in jaisa
+  const firstSvc = (SERVICES[cat.id]||[])[0];
+  if(firstSvc) selectService(firstSvc);
 }
+
 
 // ── SERVICE DROPDOWN ──
 function buildServiceDropdown() {
