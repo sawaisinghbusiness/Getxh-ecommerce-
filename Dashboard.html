@@ -749,8 +749,11 @@ function openAccountPopup() {
   const av = document.getElementById('popupAvatar');
   if(av) av.textContent = name.charAt(0).toUpperCase();
 }
-document.getElementById('accountPopup').addEventListener('click',function(e){ if(e.target===this) this.classList.add('hidden'); });
-function logout() { localStorage.clear(); window.location.href='index.html'; }
+document.getElementById('accountPopup').addEventListener('click',function(e){ 
+  if(e.target===this) closeAccountPopup(); 
+});document.getElementById('accountPopup').addEventListener('click',function(e){ 
+  if(e.target===this) closeAccountPopup(); 
+});
 function scrollToNewOrder() { document.getElementById('newOrderSection').scrollIntoView({behavior:'smooth'}); closeMenu(); }
 
 // ── READ USER DATA ──
