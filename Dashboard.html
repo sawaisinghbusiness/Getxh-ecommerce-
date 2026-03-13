@@ -594,22 +594,46 @@ body {
 
   <!-- ACCOUNT POPUP -->
 <div id="accountPopup"
-  class="fixed inset-0 bg-black/60 hidden z-50 flex items-end justify-center">
-  <div class="w-full max-w-md mx-auto bg-[#0f1a30] rounded-t-3xl px-5 pt-5 pb-6 animate-slideUp">
-    <div class="bg-[#121c33] rounded-2xl p-4 mb-4 shadow-inner">
-      <p id="popupUsername" class="text-lg font-semibold text-white">User</p>
-      <p id="popupEmail" class="text-xs text-gray-400 mt-1">email@example.com</p>
+  class="fixed inset-0 z-50 hidden items-end justify-center"
+  style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)"
+  onclick="if(event.target===this)closeAccountPopup()">
+  <div class="w-full max-w-md mx-auto animate-slideUp"
+       style="background:linear-gradient(180deg,#0e1f3d 0%,#0a1628 100%);
+              border-radius:24px 24px 0 0;
+              border-top:1px solid rgba(33,150,243,0.25);
+              padding:0 0 32px;">
+    <div class="flex justify-center pt-3 pb-2">
+      <div class="w-10 h-1 rounded-full" style="background:rgba(255,255,255,0.15)"></div>
     </div>
-    <div class="space-y-3">
-      <a href="account.html"
-        class="block text-center bg-gradient-to-r from-blue-500 to-cyan-400
-               py-3 rounded-xl font-semibold text-white shadow-md active:scale-[0.98] transition">
+    <div class="mx-4 mb-4 rounded-2xl p-4 flex items-center gap-3"
+         style="background:rgba(33,150,243,0.08);border:1px solid rgba(33,150,243,0.2)">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-black text-lg text-white"
+           style="background:linear-gradient(135deg,#2196f3,#00bcd4)" id="popupAvatar">U</div>
+      <div class="min-w-0 flex-1">
+        <p id="popupUsername" class="text-white font-black text-base truncate">User</p>
+        <p id="popupEmail" class="text-xs truncate mt-0.5" style="color:#2196f3">—</p>
+      </div>
+    </div>
+    <div class="px-4 space-y-3">
+      <button onclick="closeAccountPopup();window.location.href='account.html'"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-white text-sm active:scale-[0.98] transition-all"
+        style="background:linear-gradient(135deg,#2196f3,#00bcd4);box-shadow:0 4px 20px rgba(33,150,243,0.3)">
+        <span class="material-symbols-outlined" style="font-size:18px">manage_accounts</span>
         My Account
-      </a>
+        <span class="material-symbols-outlined ml-auto" style="font-size:16px">chevron_right</span>
+      </button>
+      <button onclick="closeAccountPopup();window.location.href='wallet.html'"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all"
+        style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);color:#00e676">
+        <span class="material-symbols-outlined" style="font-size:18px">account_balance_wallet</span>
+        Add Funds
+        <span class="material-symbols-outlined ml-auto" style="font-size:16px">chevron_right</span>
+      </button>
       <button onclick="logout()"
-        class="w-full flex items-center justify-center gap-2 py-3 rounded-xl
-               bg-red-500/10 text-red-400 font-medium active:scale-[0.98] transition">
-        <span class="material-symbols-outlined">logout</span> Logout
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all"
+        style="background:rgba(244,67,54,0.08);border:1px solid rgba(244,67,54,0.2);color:#ef5350">
+        <span class="material-symbols-outlined" style="font-size:18px">logout</span>
+        Logout
       </button>
     </div>
   </div>
