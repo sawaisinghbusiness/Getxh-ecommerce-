@@ -754,7 +754,11 @@ function closeSuccessModal(){
   document.getElementById('linkInput').value='';document.getElementById('quantityInput').value='';
   document.getElementById('totalPrice').textContent='';
 }
-
+// ⭐ AUTO SELECT DEFAULT CATEGORY + SERVICE ON PAGE LOAD
+window.addEventListener('load', () => {
+  const defaultCat = CATEGORIES[0];
+  if(defaultCat) selectCategory(defaultCat);
+});
 // Close dropdowns on outside click
 document.addEventListener('click',e=>{
   if(!document.getElementById('categoryWrapper').contains(e.target)) closeCatDrop();
