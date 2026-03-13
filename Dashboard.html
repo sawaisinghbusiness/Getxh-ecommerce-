@@ -710,8 +710,17 @@ function scrollToNewOrder() { document.getElementById('newOrderSection').scrollI
 let username = localStorage.getItem('getxh_user_name');
 if(!username){ const e=localStorage.getItem('getxh_current_user'); if(e) username=e.split('@')[0]; }
 const _email = localStorage.getItem('getxh_current_user');
-if(username){ document.getElementById('userName').innerText=username; document.getElementById('popupUsername').innerText=username; }
-if(_email){ document.getElementById('popupEmail').innerText=_email; }
+if(username){ 
+  document.getElementById('userName').innerText=username; 
+  document.getElementById('popupUsername').innerText=username;
+  const mu = document.getElementById('menuUsername');
+  if(mu) mu.textContent=username;
+}
+if(_email){ 
+  document.getElementById('popupEmail').innerText=_email;
+  const me = document.getElementById('menuEmail');
+  if(me) me.textContent=_email;
+}
 
 // ── TABS & PILLS ──
 function switchOrderTab(t) {
