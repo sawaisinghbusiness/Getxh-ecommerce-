@@ -895,15 +895,15 @@ function closeSuccessModal(){
   const box=document.getElementById('successModalBox');
   box.style.transform='scale(0.75)';box.style.opacity='0';
   setTimeout(()=>document.getElementById('successModal').classList.add('hidden'),300);
-  _selSvc=null;_selCat=null;
-  document.getElementById('catLabel').textContent='— Select a category —';document.getElementById('catLabel').className='text-gray-400 text-sm font-semibold';
-  document.getElementById('catIcon').classList.add('hidden');
-  document.getElementById('serviceWrapper').style.display='none';
-  document.getElementById('serviceDetails').classList.add('hidden');
-  document.getElementById('linkInput').value='';document.getElementById('quantityInput').value='';
+
+  // Reset sirf link aur quantity — category/service same rahe
+  document.getElementById('linkInput').value='';
+  document.getElementById('quantityInput').value='';
   document.getElementById('totalPrice').textContent='';
+  document.getElementById('placeOrderBtn').disabled=true;
 }
-// ⭐ AUTO SELECT DEFAULT CATEGORY + SERVICE ON PAGE LOAD
+  
+  ⭐ AUTO SELECT DEFAULT CATEGORY + SERVICE ON PAGE LOAD
 window.addEventListener('load', () => {
   const defaultCat = CATEGORIES[0];
   if(defaultCat) selectCategory(defaultCat);
