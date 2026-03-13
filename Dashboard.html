@@ -717,20 +717,7 @@ body {
 const _AC = window.AudioContext || window.webkitAudioContext;
 let _actx = null;
 function _ac() { if(!_actx) _actx = new _AC(); return _actx; }
-function playTick() {
-  try { const c=_ac(),o=c.createOscillator(),g=c.createGain();
-    o.connect(g);g.connect(c.destination);o.type='sine';
-    o.frequency.setValueAtTime(880,c.currentTime);o.frequency.exponentialRampToValueAtTime(660,c.currentTime+0.08);
-    g.gain.setValueAtTime(0.12,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.12);
-    o.start();o.stop(c.currentTime+0.13); } catch(e){}
-}
-function playPop() {
-  try { const c=_ac(),o=c.createOscillator(),g=c.createGain();
-    o.connect(g);g.connect(c.destination);o.type='sine';
-    o.frequency.setValueAtTime(520,c.currentTime);o.frequency.exponentialRampToValueAtTime(780,c.currentTime+0.06);
-    g.gain.setValueAtTime(0.10,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.10);
-    o.start();o.stop(c.currentTime+0.11); } catch(e){}
-}
+
 function playSuccess() {
   try { const c=_ac();
     [523,659,784,1047].forEach((f,i)=>{ const o=c.createOscillator(),g=c.createGain();
