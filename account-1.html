@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>My Account – GETXH</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+</style>
+</head>
+<body class="bg-[#0b1220] text-white min-h-screen">
+
+<!-- TOP HEADER -->
+<div class="flex items-center gap-3 px-4 py-4 sticky top-0 z-50"
+     style="background:#0b1220; border-bottom:1px solid rgba(255,255,255,0.08);">
+  <button onclick="window.location.href='Dashboard.html'"
+    class="w-9 h-9 rounded-xl flex items-center justify-center"
+    style="background:rgba(255,255,255,0.06);">
+    <span class="material-symbols-outlined text-white" style="font-size:20px">arrow_back_ios</span>
+  </button>
+  <p class="text-white font-black text-lg">My Account</p>
+</div>
+
+<!-- CONTENT -->
+<div class="px-4 py-5 pb-24">
+
+  <!-- User Card -->
+  <div class="rounded-2xl p-5 mb-4 flex items-center gap-4"
+       style="background:#121c33; border:1px solid rgba(255,255,255,0.06);">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center font-black text-2xl text-white flex-shrink-0"
+         style="background:linear-gradient(135deg,#2196f3,#00bcd4)" id="maAvatar">U</div>
+    <div>
+      <p id="maName" class="text-white font-black text-lg">-</p>
+      <p id="maEmail" class="text-sm mt-0.5" style="color:#2196f3">-</p>
+    </div>
+  </div>
+
+  <!-- Details Card -->
+  <div class="rounded-2xl mb-4"
+       style="background:#121c33; border:1px solid rgba(255,255,255,0.06);">
+    <div class="flex items-center gap-4 px-5 py-4"
+         style="border-bottom:1px solid rgba(255,255,255,0.06);">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+           style="background:rgba(33,150,243,0.15);">
+        <span class="material-symbols-outlined" style="color:#2196f3;font-size:20px">person</span>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500 mb-0.5">Username</p>
+        <p id="maUsername" class="text-white font-semibold">-</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 px-5 py-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+           style="background:rgba(0,188,212,0.15);">
+        <span class="material-symbols-outlined" style="color:#00bcd4;font-size:20px">mail</span>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500 mb-0.5">Email</p>
+        <p id="maEmailDetail" class="text-white font-semibold">-</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Password Card -->
+  <div class="rounded-2xl mb-4"
+       style="background:#121c33; border:1px solid rgba(255,255,255,0.06);">
+    <div class="flex items-center gap-3 px-5 py-4"
+         style="border-bottom:1px solid rgba(255,255,255,0.06);">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+           style="background:rgba(33,150,243,0.15);">
+        <span class="material-symbols-outlined" style="color:#2196f3;font-size:20px">lock</span>
+      </div>
+      <p class="text-white font-black">Set new password</p>
+    </div>
+    <div class="px-5 py-4">
+      <p class="text-xs text-gray-500 mb-1">Current password</p>
+      <input id="maCurrPass" type="password"
+        class="w-full mb-4 px-4 py-3 rounded-xl text-white text-sm outline-none"
+        style="background:#0e1629; border:1px solid rgba(255,255,255,0.08);"/>
+      <p class="text-xs text-gray-500 mb-1">New password</p>
+      <input id="maNewPass" type="password"
+        class="w-full mb-4 px-4 py-3 rounded-xl text-white text-sm outline-none"
+        style="background:#0e1629; border:1px solid rgba(255,255,255,0.08);"/>
+      <p class="text-xs text-gray-500 mb-1">Confirm new password</p>
+      <input id="maConfPass" type="password"
+        class="w-full mb-4 px-4 py-3 rounded-xl text-white text-sm outline-none"
+        style="background:#0e1629; border:1px solid rgba(255,255,255,0.08);"/>
+      <p id="maPassMsg" class="text-sm mb-3 hidden"></p>
+      <button onclick="changePassword()"
+        class="w-full py-3 rounded-xl font-black text-white text-sm"
+        style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        Change password
+      </button>
+    </div>
+  </div>
+
+  <!-- Logout -->
+  <button onclick="logout()"
+    class="w-full py-4 rounded-2xl flex items-center justify-center gap-2 font-bold"
+    style="background:rgba(244,67,54,0.08); border:1px solid rgba(244,67,54,0.2); color:#ef5350;">
+    <span class="material-symbols-outlined" style="font-size:20px">logout</span>
+    Logout
+  </button>
+
+</div>
+
+<script>
+// Load user data
+const name  = localStorage.getItem('getxh_user_name') || '';
+const email = localStorage.getItem('getxh_current_user') || '';
+const n = name || email.split('@')[0] || '-';
+
+document.getElementById('maAvatar').textContent  = n.charAt(0).toUpperCase();
+document.getElementById('maName').textContent     = n;
+document.getElementById('maEmail').textContent    = email || '-';
+document.getElementById('maUsername').textContent = n;
+document.getElementById('maEmailDetail').textContent = email || '-';
+
+function logout() {
+  localStorage.clear();
+  window.location.href = 'index.html';
+}
+
+function changePassword() {
+  const curr = document.getElementById('maCurrPass').value.trim();
+  const nw   = document.getElementById('maNewPass').value.trim();
+  const conf = document.getElementById('maConfPass').value.trim();
+  const msg  = document.getElementById('maPassMsg');
+
+  function showMsg(text, isError) {
+    msg.textContent = text;
+    msg.style.color = isError ? '#f87171' : '#4ade80';
+    msg.classList.remove('hidden');
+  }
+
+  if(!curr||!nw||!conf) return showMsg('⚠ All fields required', true);
+  if(nw.length < 6)     return showMsg('⚠ Min 6 characters', true);
+  if(nw !== conf)       return showMsg('⚠ Passwords do not match', true);
+
+  if(typeof window._doChangePassword==='function') {
+    showMsg('Updating…', false);
+    window._doChangePassword(curr, nw, function(err) {
+      if(err) showMsg('⚠ Current password is wrong', true);
+      else { showMsg('✓ Changed! Logging out…', false); setTimeout(()=>logout(), 2000); }
+    });
+  }
+}
+</script>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user) => {
+  if(!user) {
+    if(localStorage.getItem('getxh_user_logged_in') !== 'yes') {
+      window.location.href = 'index.html';
+    }
+    return;
+  }
+
+  window._doChangePassword = async function(currPass, newPass, callback) {
+    try {
+      const cred = EmailAuthProvider.credential(user.email, currPass);
+      await reauthenticateWithCredential(user, cred);
+      await updatePassword(user, newPass);
+      callback(null);
+    } catch(err) {
+      callback(err);
+    }
+  };
+});
+</script>
+
+</body>
+</html>
