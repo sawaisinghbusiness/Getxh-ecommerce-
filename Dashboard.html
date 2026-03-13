@@ -433,11 +433,10 @@ body {
       <span class="material-symbols-outlined">dashboard</span>
       <span>Menu</span>
     </a>
-
-    <button onclick="scrollToNewOrder()" class="flex flex-col items-center text-gray-400">
-      <span class="material-symbols-outlined">list_alt</span>
-      <span>Orders</span>
-    </button>
+<a href="orders.html" class="flex flex-col items-center text-gray-400">
+  <span class="material-symbols-outlined">list_alt</span>
+  <span>Orders</span>
+</a>
 
     <button onclick="scrollToNewOrder()"
       class="bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full -mt-6">
@@ -1031,16 +1030,18 @@ window._saveOrder = async function(svc, qty, link) {
   if (!currentUid) return;
   try {
     const now = new Date();
-    await addDoc(collection(db, "orders", currentUid, "user_orders"), {
-      serviceName: svc.name,
-      category:    svc.id,
-      quantity:    qty,
-      link:        link,
-      price:       parseFloat(((qty/1000)*svc.price).toFixed(2)),
-      status:      "Processing",
-      createdAt:        now.toISOString(),
-      createdAtReadable:now.toLocaleString()
-    });
+   const orderId = String(Date.now()).slice(-7);
+await addDoc(collection(db, "orders", currentUid, "user_orders"), {
+  orderId:     orderId,
+  serviceName: svc.name,
+  category:    svc.id,
+  quantity:    qty,
+  link:        link,
+  price:       parseFloat(((qty/1000)*svc.price).toFixed(2)),
+  status:      "Pending",
+  createdAt:        now.toISOString(),
+  createdAtReadable:now.toLocaleString()
+});
     loadRecentOrders();
   } catch(err) { console.error("Order save error:", err); }
 };
