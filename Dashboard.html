@@ -95,41 +95,78 @@ body {
 
 <!-- MAIN CONTENT -->
 <main class="max-w-7xl mx-auto px-4 py-8 pb-[180px]">
+<!-- WELCOME CARD — Unique GETXH Style -->
+<div class="rounded-2xl p-5 mb-6 relative overflow-hidden"
+     style="background: linear-gradient(135deg, #0a1628 0%, #0e1f3d 60%, #112244 100%);
+            border: 1px solid rgba(33,150,243,0.25);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(33,150,243,0.1);">
 
-    <div class="mb-8">
-        <h2 class="text-2xl font-bold mb-1">
-            Welcome,
-            <span id="userName">User</span>
-        </h2>
-        <p class="text-gray-400 text-sm">Account overview</p>
+  <!-- Glow effect top right -->
+  <div class="absolute top-0 right-0 pointer-events-none"
+       style="width:180px;height:180px;
+              background:radial-gradient(circle, rgba(33,150,243,0.15) 0%, transparent 70%);
+              transform:translate(30%,-30%)"></div>
+
+  <!-- Animated dot accent -->
+  <div class="absolute top-4 right-4 w-2 h-2 rounded-full"
+       style="background:#2196f3; box-shadow:0 0 8px #2196f3; animation:glowPulse 2s infinite"></div>
+
+  <!-- Username row -->
+  <div class="flex items-center justify-between mb-5 relative z-10">
+    <div>
+      <p class="text-gray-400 text-xs font-semibold uppercase tracking-widest mb-1">Dashboard</p>
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center"
+             style="background:linear-gradient(135deg,#2196f3,#00bcd4)">
+          <span class="material-symbols-outlined text-white" style="font-size:14px">person</span>
+        </div>
+        <p id="userName" class="text-white text-lg font-black">User</p>
+      </div>
+    </div>
+    <button onclick="window.location.href='wallet.html'"
+      class="flex items-center gap-1.5 px-4 py-2 rounded-xl font-black text-xs
+             active:scale-95 transition-all"
+      style="background:linear-gradient(135deg,#00c853,#00e676);
+             color:#003d10;
+             box-shadow:0 4px 15px rgba(0,200,83,0.3)">
+      <span class="material-symbols-outlined" style="font-size:14px">add</span>
+      Add Funds
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 gap-3 relative z-10">
+
+    <div class="rounded-xl p-4 flex items-center gap-3"
+         style="background:rgba(33,150,243,0.08);
+                border:1px solid rgba(33,150,243,0.2)">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+           style="background:linear-gradient(135deg,rgba(33,150,243,0.3),rgba(33,150,243,0.1))">
+        <span class="material-symbols-outlined" style="font-size:18px;color:#2196f3">account_balance_wallet</span>
+      </div>
+      <div>
+        <p class="text-gray-400 text-xs mb-0.5">Balance</p>
+        <p id="userBalance" class="text-white text-base font-black">₹0</p>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-
-        <div class="bg-[#121c33] rounded-xl p-5 flex items-center gap-4">
-            <span class="material-symbols-outlined text-blue-400 text-3xl">
-                account_balance_wallet
-            </span>
-            <div>
-                <p class="text-gray-400 text-sm">Balance</p>
-                <p id="userBalance" class="text-xl font-semibold">₹0</p>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-b from-[#0f1a30] to-[#0b1220] 
-            rounded-2xl p-6 md:p-8 
-            border border-white/10 
-            shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
-            <span class="material-symbols-outlined text-green-400 text-3xl">
-                shopping_cart
-            </span>
-            <div>
-                <p class="text-gray-400 text-sm">Orders</p>
-                <p id="userOrders" class="text-xl font-semibold">0</p>
-            </div>
-        </div>
-
+    <div class="rounded-xl p-4 flex items-center gap-3"
+         style="background:rgba(0,230,118,0.06);
+                border:1px solid rgba(0,230,118,0.15)">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+           style="background:linear-gradient(135deg,rgba(0,230,118,0.25),rgba(0,230,118,0.08))">
+        <span class="material-symbols-outlined" style="font-size:18px;color:#00e676">shopping_bag</span>
+      </div>
+      <div>
+        <p class="text-gray-400 text-xs mb-0.5">Your Orders</p>
+        <p id="userOrders" class="text-white text-base font-black">0</p>
+      </div>
     </div>
+
+  </div>
+</div>
+
+    
 <!-- ================= NEW ORDER SECTION ================= -->
 <div class="h-px bg-white/10 my-6"></div>
 
