@@ -422,33 +422,136 @@ body {
 </div>
 
 <!-- SIDE MENU -->
-<div id="menuOverlay" class="fixed inset-0 bg-black/60 hidden z-40" onclick="closeMenu()"></div>
+<div id="menuOverlay" class="fixed inset-0 bg-black/60 hidden z-40 backdrop-blur-sm" onclick="closeMenu()"></div>
+
 <div id="sideMenu"
-  class="fixed top-0 left-0 h-full w-72 bg-[#0e1629] z-50
-         transform -translate-x-full transition-transform duration-300">
-  <div class="p-4 space-y-1">
-    <a href="Dashboard.html" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
-      <span class="material-symbols-outlined text-blue-400">dashboard</span> Dashboard
-    </a>
-    <a href="wallet.html" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
-      <span class="material-symbols-outlined text-cyan-400">account_balance_wallet</span> Wallet
-    </a>
-    <button onclick="scrollToNewOrder()"
-      class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5 w-full text-left">
-      <span class="material-symbols-outlined text-green-400">add_shopping_cart</span> New Order
-    </button>
-    <a href="#" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
-      <span class="material-symbols-outlined text-yellow-400">list_alt</span> Orders
-    </a>
-    <a href="#" class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5">
-      <span class="material-symbols-outlined text-purple-400">support_agent</span> Support
-    </a>
-    <button onclick="openAccountPopup()"
-      class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5 w-full text-left">
-      <span class="material-symbols-outlined text-gray-400">person</span> Account
-    </button>
+  class="fixed top-0 left-0 h-full w-72 z-50
+         transform -translate-x-full transition-transform duration-300
+         flex flex-col"
+  style="background: linear-gradient(180deg, #0a1628 0%, #0e1f3d 50%, #0a1628 100%);">
+
+  <!-- MENU HEADER -->
+  <div class="px-5 pt-8 pb-5 border-b border-white/10"
+       style="background: linear-gradient(135deg, #0e1f3d, #162844);">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+           style="background: linear-gradient(135deg, #2196f3, #00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:20px">verified_user</span>
+      </div>
+      <div>
+        <p class="font-black text-white text-base tracking-wide">GETXH<span style="color:#2196f3">.IN</span></p>
+        <p class="text-xs text-gray-400">SMM Panel</p>
+      </div>
+    </div>
+    <!-- User info -->
+    <div class="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+           style="background: linear-gradient(135deg, #2196f3, #00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">person</span>
+      </div>
+      <div class="min-w-0">
+        <p id="menuUsername" class="text-xs font-bold text-white truncate">User</p>
+        <p id="menuEmail" class="text-xs text-gray-500 truncate">—</p>
+      </div>
+    </div>
   </div>
+
+  <!-- MENU ITEMS -->
+  <div class="flex-1 overflow-y-auto py-3 px-3">
+
+    <button onclick="scrollToNewOrder();closeMenu()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left transition-all active:scale-[0.98]"
+      style="background: linear-gradient(135deg, rgba(33,150,243,0.15), rgba(0,188,212,0.1)); border: 1px solid rgba(33,150,243,0.25);">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+           style="background: linear-gradient(135deg, #2196f3, #00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">add_shopping_cart</span>
+      </div>
+      <span class="font-bold text-white text-sm">New Order</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <button onclick="closeMenu()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-yellow-500/15">
+        <span class="material-symbols-outlined text-yellow-400" style="font-size:16px">list_alt</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Orders</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <button onclick="closeMenu()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-500/15">
+        <span class="material-symbols-outlined text-purple-400" style="font-size:16px">support_agent</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Support</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <button onclick="closeMenu()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-500/15">
+        <span class="material-symbols-outlined text-green-400" style="font-size:16px">account_balance_wallet</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Add Funds</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <button onclick="closeMenu()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-orange-500/15">
+        <span class="material-symbols-outlined text-orange-400" style="font-size:16px">group_add</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Affiliates</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <button onclick="closeMenu()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-cyan-500/15">
+        <span class="material-symbols-outlined text-cyan-400" style="font-size:16px">autorenew</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Subscriptions</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <!-- Divider -->
+    <div class="h-px bg-white/10 my-3 mx-2"></div>
+
+    <button onclick="closeMenu()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-400/15">
+        <span class="text-green-400 font-black text-sm">W</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">WhatsApp</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <button onclick="logout()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-red-500/10 transition-all active:scale-[0.98] border border-transparent hover:border-red-500/20">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-500/15">
+        <span class="material-symbols-outlined text-red-400" style="font-size:16px">logout</span>
+      </div>
+      <span class="font-bold text-red-400 text-sm">Logout</span>
+    </button>
+
+  </div>
+
+  <!-- MENU FOOTER -->
+  <div class="px-5 py-4 border-t border-white/10">
+    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
+  </div>
+
 </div>
+
 
   <!-- ACCOUNT POPUP -->
 <div id="accountPopup"
