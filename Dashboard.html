@@ -894,8 +894,11 @@ document.getElementById('viewOrdersBtn').addEventListener('click',closeSuccessMo
 function closeSuccessModal(){
   const box=document.getElementById('successModalBox');
   box.style.transform='scale(0.75)';box.style.opacity='0';
-  setTimeout(()=>document.getElementById('successModal').classList.add('hidden'),300);
-
+  setTimeout(()=>{
+  const m=document.getElementById('successModal');
+  m.classList.add('hidden');
+  m.style.display='none';
+},300);
   // Reset sirf link aur quantity — category/service same rahe
   document.getElementById('linkInput').value='';
   document.getElementById('quantityInput').value='';
