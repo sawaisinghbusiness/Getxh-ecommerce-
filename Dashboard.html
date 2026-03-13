@@ -935,8 +935,11 @@ function selectService(svc) {
 }
 
 // ── SEARCH ──
-document.getElementById('searchService').addEventListener('input',()=>{ if(_svcOpen) buildServiceDropdown(); });
-
+document.getElementById('searchService').addEventListener('input',()=>{
+  if(!_selCat) return;
+  if(!_svcOpen){ toggleServiceDropdown(); }
+  buildServiceDropdown();
+});
 // ── VALIDATION ──
 document.getElementById('quantityInput').addEventListener('input',()=>{
   if(!_selSvc)return;
