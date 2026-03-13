@@ -853,7 +853,7 @@ function buildCategoryDropdown() {
   });
 }
 function toggleCategoryDropdown() {
-  playTick(); _catOpen=!_catOpen;
+  _catOpen=!_catOpen;
   const dd=document.getElementById('categoryDropdown'),arr=document.getElementById('catArrow');
   if(_catOpen){buildCategoryDropdown();dd.classList.remove('hidden');dd.style.animation='slideDown 0.22s ease forwards';arr.style.transform='rotate(180deg)';closeSvcDrop();}
   else{dd.classList.add('hidden');arr.style.transform='rotate(0deg)';}
