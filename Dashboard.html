@@ -832,13 +832,13 @@ if(_email){
 
 // ── TABS & PILLS ──
 function switchOrderTab(t) {
-  playTick();
+
   const isNew=t==='new';
   document.getElementById('tabNewOrder').className='flex-1 py-3 text-sm font-bold transition-all '+(isNew?'bg-[#2196f3] text-white':'bg-[#0e1629] text-gray-400');
   document.getElementById('tabSubscription').className='flex-1 py-3 text-sm font-bold transition-all '+(!isNew?'bg-[#2196f3] text-white':'bg-[#0e1629] text-gray-400');
 }
 function filterPlatform(el) {
-  playTick();
+  
   document.querySelectorAll('.platform-pill').forEach(p=>{p.classList.remove('active-pill','bg-[#2196f3]','text-white');p.classList.add('bg-[#0e1629]','text-gray-300');});
   el.classList.add('active-pill');el.classList.remove('bg-[#0e1629]','text-gray-300');
 }
@@ -860,7 +860,7 @@ function toggleCategoryDropdown() {
 }
 function closeCatDrop(){document.getElementById('categoryDropdown').classList.add('hidden');document.getElementById('catArrow').style.transform='rotate(0deg)';_catOpen=false;}
 function selectCategory(cat) {
-  playTick();_selCat=cat.id;_selSvc=null;
+  _selCat=cat.id;_selSvc=null;
   document.getElementById('catIcon').classList.remove('hidden');
   document.getElementById('catLabel').textContent=cat.label;
   document.getElementById('catLabel').className='text-white text-sm font-semibold';
@@ -892,14 +892,14 @@ function buildServiceDropdown() {
   });
 }
 function toggleServiceDropdown() {
-  if(!_selCat)return;playTick();_svcOpen=!_svcOpen;
+  if(!_selCat)return;_svcOpen=!_svcOpen;
   const dd=document.getElementById('serviceDropdown'),arr=document.getElementById('svcArrow');
   if(_svcOpen){buildServiceDropdown();dd.classList.remove('hidden');dd.style.animation='slideDown 0.22s ease forwards';arr.style.transform='rotate(180deg)';closeCatDrop();}
   else closeSvcDrop();
 }
 function closeSvcDrop(){document.getElementById('serviceDropdown').classList.add('hidden');document.getElementById('svcArrow').style.transform='rotate(0deg)';_svcOpen=false;}
 function selectService(svc) {
-  playPop();_selSvc=svc;
+  _selSvc=svc;
   document.getElementById('svcNumBadge').textContent=svc.id;document.getElementById('svcNumBadge').classList.remove('hidden');
   document.getElementById('svcLabel').textContent=svc.name;document.getElementById('svcLabel').className='text-white text-sm font-semibold truncate';
   closeSvcDrop();
