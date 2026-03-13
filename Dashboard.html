@@ -883,6 +883,7 @@ document.getElementById('placeOrderBtn').addEventListener('click',function(e){
   // Show modal
   const modal=document.getElementById('successModal'),box=document.getElementById('successModalBox');
   modal.classList.remove('hidden');
+modal.style.display='flex';
   setTimeout(()=>{box.style.transform='scale(1)';box.style.opacity='1';},30);
    // Save to Firestore via global db (set by Firebase module below)
   if(typeof _saveOrder==='function') _saveOrder(_selSvc,qty,link);
