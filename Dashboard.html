@@ -740,7 +740,15 @@ function closeMenu() {
   document.getElementById('sideMenu').classList.add('-translate-x-full');
   document.getElementById('menuOverlay').classList.add('hidden');
 }
-function openAccountPopup() { document.getElementById('accountPopup').classList.remove('hidden'); }
+function openAccountPopup() {
+  const popup = document.getElementById('accountPopup');
+  popup.classList.remove('hidden');
+  popup.style.display='flex';
+  // Set avatar letter
+  const name = document.getElementById('popupUsername').textContent || 'U';
+  const av = document.getElementById('popupAvatar');
+  if(av) av.textContent = name.charAt(0).toUpperCase();
+}
 document.getElementById('accountPopup').addEventListener('click',function(e){ if(e.target===this) this.classList.add('hidden'); });
 function logout() { localStorage.clear(); window.location.href='index.html'; }
 function scrollToNewOrder() { document.getElementById('newOrderSection').scrollIntoView({behavior:'smooth'}); closeMenu(); }
