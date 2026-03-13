@@ -779,7 +779,10 @@ function closeAccountPopup() {
   p.style.display='none';
 }
 function scrollToNewOrder() { document.getElementById('newOrderSection').scrollIntoView({behavior:'smooth'}); closeMenu(); }
-
+function logout() {
+  localStorage.clear();
+  window.location.href = 'index.html';
+}
 // ── READ USER DATA ──
 let username = localStorage.getItem('getxh_user_name');
 if(!username){ const e=localStorage.getItem('getxh_current_user'); if(e) username=e.split('@')[0]; }
