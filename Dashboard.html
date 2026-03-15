@@ -1030,7 +1030,12 @@ onAuthStateChanged(auth, async (user) => {
 
 // ── SAVE ORDER (called from main script) ──
 window._saveOrder = async function(svc, qty, link) {
-  if (!currentUid) return;
+  if (!currentUid) {
+    console.error('currentUid is null!');
+    alert('Session expired. Please login again.');
+    window.location.href = 'index.html';
+    return;
+  }
   try {
     const now = new Date();
     const orderId = String(Date.now()).slice(-7);
