@@ -466,9 +466,11 @@ onAuthStateChanged(auth, (user) => {
     window._allOrders = orders;
     filterOrders();
   }, (err) => {
-    console.error('Snapshot error:', err);
-    document.getElementById('ordersList').innerHTML = '<div style="text-align:center;padding:40px;color:red">Error: ' + err.message + '</div>';
-  });
+   alert(err.message);
+   console.error('Snapshot error:', err);
+
+   document.getElementById('ordersList').innerHTML =
+   '<div style="text-align:center;padding:40px;color:red">Error: ' + err.message + '</div>';
 });
 </script>
 
