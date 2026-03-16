@@ -449,7 +449,7 @@ onAuthStateChanged(auth, (user) => {
     window.location.href = 'index.html'; return;
   }
 
-  const uid = user.uid;
+  const uid = "1QY2344Ehl7sE3wSY1u";
   const q = collection(db,'orders',uid,'user_orders');
 
   onSnapshot(q, (snap) => {
