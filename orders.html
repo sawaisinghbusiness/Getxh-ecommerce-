@@ -452,7 +452,7 @@ onAuthStateChanged(auth, (user) => {
   const uid = "1QY2344Ehl7sE3wSY1u";
   const q = collection(db,'orders',uid,'user_orders');
 
- onSnapshot(q, (snap) => {
+onSnapshot(q, (snap) => {
     const orders = [];
     snap.forEach(doc => {
       const d = doc.data();
@@ -468,8 +468,7 @@ onAuthStateChanged(auth, (user) => {
   }, (err) => {
    alert(err.message);
    console.error('Snapshot error:', err);
-   document.getElementById('ordersList').innerHTML =
-   '<div style="text-align:center;padding:40px;color:red">Error: ' + err.message + '</div>';
+   document.getElementById('ordersList').innerHTML = '<div style="text-align:center;padding:40px;color:red">Error: ' + err.message + '</div>';
   });
 }
 </script>
