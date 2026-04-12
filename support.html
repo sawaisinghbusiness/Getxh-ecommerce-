@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Support | GETXH</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hidden {
+  scrollbar-width: none;
+}
+.ticket-row {
+  background: linear-gradient(180deg, rgba(18,28,51,0.96), rgba(14,22,41,0.98));
+  border: 1px solid rgba(255,255,255,0.07);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.ticket-row:hover {
+  border-color: rgba(56,189,248,0.28);
+  transform: translateY(-1px);
+  box-shadow: 0 18px 30px rgba(0,0,0,0.18);
+}
+.field,
+.select-btn,
+textarea {
+  width: 100%;
+  border-radius: 16px;
+  background: #121c33;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.field,
+.select-btn {
+  min-height: 52px;
+  padding: 0 16px;
+}
+textarea {
+  min-height: 138px;
+  padding: 14px 16px;
+  resize: none;
+}
+.field:focus,
+.select-btn.open,
+textarea:focus {
+  outline: none;
+  border-color: rgba(56,189,248,0.85);
+  box-shadow: 0 0 0 4px rgba(56,189,248,0.12);
+}
+.field::placeholder,
+textarea::placeholder {
+  color: #667085;
+}
+.field-invalid {
+  border-color: rgba(239,68,68,0.9) !important;
+  box-shadow: 0 0 0 4px rgba(239,68,68,0.12) !important;
+}
+.custom-select {
+  position: relative;
+}
+.select-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.dropdown-list {
+  display: none;
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  background: #16213c;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  overflow: hidden;
+  z-index: 999;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+}
+.dropdown-list.open {
+  display: block;
+}
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 15px 18px;
+  color: #e5edf8;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+.dropdown-item.selected {
+  color: #38bdf8;
+}
+.dropdown-item:hover {
+  background: rgba(56,189,248,0.08);
+}
+.radio-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.radio-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #38bdf8;
+  display: none;
+}
+.dropdown-item.selected .radio-circle {
+  border-color: #38bdf8;
+}
+.dropdown-item.selected .radio-dot {
+  display: block;
+}
+.bubble-user {
+  background: #18233d;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.bubble-admin {
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+}
+.modal-overlay {
+  background: rgba(0,0,0,0.72);
+  backdrop-filter: blur(8px);
+}
+</style>
+</head>
+<body class="bg-[#0b1220] text-white pb-24">
+
+<div class="fixed inset-x-0 top-0 z-40 border-b border-white/5 bg-[#0b1220]">
+  <div class="flex items-center gap-3 px-4 py-4">
+    <button onclick="history.back()" class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5">
+      <span class="material-symbols-outlined text-[20px]">arrow_back_ios</span>
+    </button>
+    <div>
+      <p class="text-base font-black leading-tight">Support</p>
+      <p class="text-xs text-sky-400">GETXH.IN</p>
+    </div>
+    <button id="newTicketBtn" onclick="openCreatePanel()" class="ml-auto rounded-xl bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-2 text-xs font-black text-white shadow-[0_12px_28px_rgba(14,165,233,0.28)] transition active:scale-[0.98]">
+      New Ticket
+    </button>
+  </div>
+</div>
+
+<main class="px-4 pt-[76px] pb-4">
+  <div id="pageNotice" class="mb-4 hidden rounded-2xl px-4 py-3 text-sm font-semibold"></div>
+
+  <section class="mb-4 rounded-[20px] border border-white/5 bg-[#11192d] p-4 shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Tickets</p>
+        <h1 class="mt-2 text-lg font-black text-white">Professional support inbox</h1>
+        <p class="mt-1 text-xs text-slate-400">Clean ticket tracking with full conversation history.</p>
+      </div>
+      <div class="rounded-2xl border border-sky-400/20 bg-sky-400/10 px-3 py-2 text-right">
+        <p class="text-[10px] uppercase tracking-[0.14em] text-slate-400">Open</p>
+        <p id="openCount" class="text-xl font-black text-sky-400">0</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="createPanel" class="mb-4 hidden rounded-[20px] border border-white/5 bg-[#11192d] p-4 shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
+    <div class="mb-4 flex items-center justify-between gap-3">
+      <div>
+        <p class="text-sm font-black text-white">Create Ticket</p>
+        <p class="mt-1 text-xs text-slate-400">Order tickets require a valid Order ID from your account.</p>
+      </div>
+      <button onclick="closeCreatePanel()" class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-slate-300">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <div id="formNotice" class="mb-4 hidden rounded-2xl px-4 py-3 text-sm font-semibold"></div>
+
+    <div class="mb-4">
+      <p class="mb-2 text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Category</p>
+      <div class="custom-select">
+        <button type="button" class="select-btn" id="categoryBtn" onclick="toggleDropdown('categoryDropdown','categoryBtn')">
+          <span id="categoryBtnText" class="text-slate-400">Select category</span>
+          <span class="material-symbols-outlined text-slate-500 text-[18px]">expand_more</span>
+        </button>
+        <div id="categoryDropdown" class="dropdown-list"></div>
+      </div>
+    </div>
+
+    <div id="subCategoryWrap" class="mb-4 hidden">
+      <div class="mb-2 flex items-center justify-between gap-3">
+        <p class="text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Subcategory</p>
+        <span id="subCategoryHint" class="hidden text-[10px] font-black uppercase tracking-[0.12em] text-sky-400">Auto selected</span>
+      </div>
+      <div class="custom-select">
+        <button type="button" class="select-btn" id="subCategoryBtn" onclick="toggleDropdown('subCategoryDropdown','subCategoryBtn')">
+          <span id="subCategoryBtnText" class="text-slate-400">Select subcategory</span>
+          <span class="material-symbols-outlined text-slate-500 text-[18px]">expand_more</span>
+        </button>
+        <div id="subCategoryDropdown" class="dropdown-list"></div>
+      </div>
+    </div>
+
+    <div id="orderWrap" class="mb-4 hidden">
+      <p class="mb-2 text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Order ID</p>
+      <input id="orderIdInput" class="field" type="text" placeholder="Enter your Order ID"/>
+    </div>
+
+    <div class="mb-4">
+      <p class="mb-2 text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Message</p>
+      <textarea id="ticketMessageInput" placeholder="Describe your issue clearly"></textarea>
+    </div>
+
+    <button id="submitTicketBtn" onclick="createTicket()" class="w-full rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-4 text-sm font-black text-white shadow-[0_16px_32px_rgba(14,165,233,0.28)] transition active:scale-[0.985]">
+      Submit Ticket
+    </button>
+  </section>
+
+  <section>
+    <div id="ticketList" class="space-y-3">
+      <div class="ticket-row rounded-[20px] px-4 py-8 text-center text-slate-400">
+        <p class="text-sm font-semibold">Loading tickets...</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="ticketModal" class="modal-overlay fixed inset-0 z-50 hidden items-end justify-center">
+  <div class="w-full max-w-md rounded-t-[28px] border border-white/8 bg-[#0f172a] shadow-[0_-24px_60px_rgba(0,0,0,0.45)]">
+    <div class="flex justify-center py-3">
+      <div class="h-1 w-10 rounded-full bg-white/15"></div>
+    </div>
+    <div class="flex items-start justify-between gap-3 px-4 pb-4">
+      <div>
+        <p id="modalTitle" class="text-lg font-black text-white">Orders - Refill</p>
+        <p id="modalOrderId" class="mt-1 text-xs text-slate-400">Order ID: -</p>
+      </div>
+      <button onclick="closeTicketModal()" class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-slate-300">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+    <div class="border-t border-white/6"></div>
+    <div id="ticketMessages" class="scrollbar-hidden max-h-[52vh] overflow-y-auto px-4 py-4 space-y-3"></div>
+    <div class="border-t border-white/6 px-4 py-4">
+      <div class="flex items-center justify-between gap-3">
+        <span id="modalStatusBadge" class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em]">Pending</span>
+        <button id="closeTicketAction" onclick="closeCurrentTicket()" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-200 transition active:scale-[0.98]">
+          Close Ticket
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fixed bottom-0 left-0 right-0 z-40 border-t border-[#1e2a4a] bg-[#0e1629]">
+  <div class="flex items-center justify-around py-2 text-xs">
+    <a href="Dashboard.html" class="flex flex-col items-center text-slate-400">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span>Menu</span>
+    </a>
+    <a href="orders.html" class="flex flex-col items-center text-slate-400">
+      <span class="material-symbols-outlined">list_alt</span>
+      <span>Orders</span>
+    </a>
+    <a href="Dashboard.html" class="-mt-6 flex h-12 w-12 items-center justify-center rounded-full bg-blue-500 text-white">
+      <span class="material-symbols-outlined">add</span>
+    </a>
+    <a href="support.html" class="flex flex-col items-center text-blue-400">
+      <span class="material-symbols-outlined">support_agent</span>
+      <span>Support</span>
+    </a>
+    <button onclick="window.location.href='account.html'" class="flex flex-col items-center text-slate-400">
+      <span class="material-symbols-outlined">person</span>
+      <span>Account</span>
+    </button>
+  </div>
+</div>
+
+<script>
+const CATEGORIES = {
+  Orders: ['Refill', 'Cancel', 'Speed', 'Other', 'Refund'],
+  Payments: ['Payment not added']
+};
+
+let currentCategory = null;
+let currentSubCategory = null;
+let ticketRows = [];
+let validOrderIds = new Set();
+let activeTicketDoc = null;
+
+function showNotice(id, message, type = 'error') {
+  const el = document.getElementById(id);
+  el.textContent = message;
+  el.className = 'mb-4 rounded-2xl px-4 py-3 text-sm font-semibold';
+  if (type === 'error') {
+    el.style.background = 'rgba(239,68,68,0.12)';
+    el.style.border = '1px solid rgba(239,68,68,0.18)';
+    el.style.color = '#fca5a5';
+  } else {
+    el.style.background = 'rgba(56,189,248,0.12)';
+    el.style.border = '1px solid rgba(56,189,248,0.18)';
+    el.style.color = '#7dd3fc';
+  }
+  el.classList.remove('hidden');
+}
+
+function hideNotice(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+function markInvalid(id) {
+  const el = document.getElementById(id);
+  el.classList.add('field-invalid');
+  setTimeout(() => el.classList.remove('field-invalid'), 2200);
+}
+
+function formatDateTime(value) {
+  if (!value) return '--';
+  let date = null;
+  if (value.toDate) {
+    date = value.toDate();
+  } else if (value.seconds) {
+    date = new Date(value.seconds * 1000);
+  } else if (typeof value === 'number') {
+    date = new Date(value);
+  } else {
+    date = new Date(value);
+  }
+  if (Number.isNaN(date.getTime())) return '--';
+  return date.toLocaleString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function renderCategoryDropdown() {
+  const root = document.getElementById('categoryDropdown');
+  root.innerHTML = '';
+  Object.keys(CATEGORIES).forEach(category => {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item' + (currentCategory === category ? ' selected' : '');
+    item.innerHTML = `<span>${category}</span><div class="radio-circle"><div class="radio-dot"></div></div>`;
+    item.onclick = () => selectCategory(category);
+    root.appendChild(item);
+  });
+}
+
+function renderSubCategoryDropdown() {
+  const root = document.getElementById('subCategoryDropdown');
+  root.innerHTML = '';
+  (CATEGORIES[currentCategory] || []).forEach(sub => {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item' + (currentSubCategory === sub ? ' selected' : '');
+    item.innerHTML = `<span>${sub}</span><div class="radio-circle"><div class="radio-dot"></div></div>`;
+    item.onclick = () => selectSubCategory(sub);
+    root.appendChild(item);
+  });
+}
+
+function toggleDropdown(dropdownId, buttonId) {
+  const dropdown = document.getElementById(dropdownId);
+  const button = document.getElementById(buttonId);
+  const isOpen = dropdown.classList.contains('open');
+
+  document.querySelectorAll('.dropdown-list').forEach(node => node.classList.remove('open'));
+  document.querySelectorAll('.select-btn').forEach(node => node.classList.remove('open'));
+
+  if (!isOpen) {
+    const rect = button.getBoundingClientRect();
+    dropdown.style.top = (rect.bottom + 6) + 'px';
+    dropdown.classList.add('open');
+    button.classList.add('open');
+  }
+}
+
+document.addEventListener('click', event => {
+  if (!event.target.closest('.custom-select')) {
+    document.querySelectorAll('.dropdown-list').forEach(node => node.classList.remove('open'));
+    document.querySelectorAll('.select-btn').forEach(node => node.classList.remove('open'));
+  }
+});
+
+function selectCategory(category) {
+  currentCategory = category;
+  currentSubCategory = null;
+  document.getElementById('categoryBtnText').textContent = category;
+  document.getElementById('categoryBtnText').className = 'text-white';
+  document.getElementById('subCategoryWrap').classList.remove('hidden');
+  document.getElementById('categoryDropdown').classList.remove('open');
+  document.getElementById('categoryBtn').classList.remove('open');
+  document.getElementById('subCategoryBtnText').textContent = 'Select subcategory';
+  document.getElementById('subCategoryBtnText').className = 'text-slate-400';
+  document.getElementById('subCategoryHint').classList.add('hidden');
+  document.getElementById('orderWrap').classList.add('hidden');
+
+  const subBtn = document.getElementById('subCategoryBtn');
+  subBtn.disabled = false;
+  subBtn.style.opacity = '1';
+
+  renderCategoryDropdown();
+  renderSubCategoryDropdown();
+
+  if (category === 'Payments') {
+    subBtn.disabled = true;
+    subBtn.style.opacity = '0.9';
+    document.getElementById('subCategoryHint').classList.remove('hidden');
+    selectSubCategory(CATEGORIES.Payments[0]);
+  }
+}
+
+function selectSubCategory(sub) {
+  currentSubCategory = sub;
+  document.getElementById('subCategoryBtnText').textContent = sub;
+  document.getElementById('subCategoryBtnText').className = 'text-white';
+  document.getElementById('subCategoryDropdown').classList.remove('open');
+  document.getElementById('subCategoryBtn').classList.remove('open');
+  if (currentCategory === 'Orders') {
+    document.getElementById('orderWrap').classList.remove('hidden');
+  } else {
+    document.getElementById('orderWrap').classList.add('hidden');
+  }
+  renderSubCategoryDropdown();
+}
+
+function openCreatePanel() {
+  const openTickets = ticketRows.filter(ticket => String(ticket.status || '').toLowerCase() === 'pending').length;
+  if (openTickets >= 3) {
+    showNotice('pageNotice', 'You have opened maximum tickets. Please close one before creating a new ticket.');
+    return;
+  }
+  hideNotice('pageNotice');
+  document.getElementById('createPanel').classList.remove('hidden');
+  if (!currentCategory) {
+    selectCategory('Orders');
+    selectSubCategory('Refill');
+  }
+}
+
+function closeCreatePanel() {
+  document.getElementById('createPanel').classList.add('hidden');
+}
+
+function resetCreateForm() {
+  currentCategory = null;
+  currentSubCategory = null;
+  document.getElementById('categoryBtnText').textContent = 'Select category';
+  document.getElementById('categoryBtnText').className = 'text-slate-400';
+  document.getElementById('subCategoryBtnText').textContent = 'Select subcategory';
+  document.getElementById('subCategoryBtnText').className = 'text-slate-400';
+  document.getElementById('subCategoryWrap').classList.add('hidden');
+  document.getElementById('subCategoryHint').classList.add('hidden');
+  document.getElementById('subCategoryBtn').disabled = false;
+  document.getElementById('subCategoryBtn').style.opacity = '1';
+  document.getElementById('orderWrap').classList.add('hidden');
+  document.getElementById('orderIdInput').value = '';
+  document.getElementById('ticketMessageInput').value = '';
+  hideNotice('formNotice');
+  ['orderIdInput', 'ticketMessageInput'].forEach(id => document.getElementById(id).classList.remove('field-invalid'));
+  renderCategoryDropdown();
+}
+
+function renderTicketList(tickets) {
+  const list = document.getElementById('ticketList');
+  const openTickets = tickets.filter(ticket => String(ticket.status || '').toLowerCase() === 'pending').length;
+  document.getElementById('openCount').textContent = String(openTickets);
+
+  if (!tickets.length) {
+    list.innerHTML = `
+      <div class="ticket-row rounded-[20px] px-4 py-10 text-center text-slate-400">
+        <p class="text-sm font-semibold">No tickets yet</p>
+        <p class="mt-1 text-xs text-slate-500">Create your first support ticket.</p>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = tickets.map(ticket => {
+    const status = String(ticket.status || 'pending').toLowerCase();
+    const statusClass = status === 'closed' ? 'bg-white/8 text-slate-400' : 'bg-sky-500/12 text-sky-400';
+    return `
+      <button onclick="openTicketModal('${ticket.id}')" class="ticket-row w-full rounded-[20px] px-4 py-4 text-left">
+        <div class="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
+          <div class="min-w-0">
+            <p class="text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Order ID</p>
+            <p class="mt-1 text-base font-black text-white">${ticket.orderId || 'GENERAL'}</p>
+          </div>
+          <div class="min-w-0">
+            <p class="text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Category</p>
+            <p class="mt-1 text-sm font-bold text-white">${ticket.subject || 'Order'}</p>
+          </div>
+          <div class="min-w-0">
+            <p class="text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Status</p>
+            <span class="mt-1 inline-flex rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] ${statusClass}">${status}</span>
+          </div>
+          <div class="min-w-0 text-left sm:text-right">
+            <p class="text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Ticket Submitted</p>
+            <p class="mt-1 text-xs font-semibold text-slate-300">${formatDateTime(ticket.createdAt)}</p>
+          </div>
+        </div>
+      </button>`;
+  }).join('');
+}
+
+function getTicketById(ticketId) {
+  return ticketRows.find(ticket => ticket.id === ticketId) || null;
+}
+
+function openTicketModal(ticketId) {
+  const ticket = getTicketById(ticketId);
+  if (!ticket) return;
+  activeTicketDoc = ticketId;
+  renderTicketModal(ticket);
+  const modal = document.getElementById('ticketModal');
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+}
+
+function closeTicketModal() {
+  activeTicketDoc = null;
+  const modal = document.getElementById('ticketModal');
+  modal.classList.add('hidden');
+  modal.style.display = 'none';
+}
+
+function renderTicketModal(ticket) {
+  document.getElementById('modalTitle').textContent = `${ticket.category || 'Orders'} - ${ticket.subcategory || 'Refill'}`;
+  document.getElementById('modalOrderId').textContent = `Order ID: ${ticket.orderId || 'GENERAL'}`;
+
+  const status = String(ticket.status || 'pending').toLowerCase();
+  const badge = document.getElementById('modalStatusBadge');
+  badge.textContent = status;
+  badge.className = 'rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] ' + (status === 'closed' ? 'bg-white/8 text-slate-400' : 'bg-sky-500/12 text-sky-400');
+
+  const closeBtn = document.getElementById('closeTicketAction');
+  const isClosed = status === 'closed';
+  closeBtn.classList.toggle('hidden', isClosed);
+
+  const messages = Array.isArray(ticket.messages) ? ticket.messages : [];
+  const root = document.getElementById('ticketMessages');
+  if (!messages.length) {
+    root.innerHTML = '<div class="rounded-2xl bg-white/5 px-4 py-6 text-center text-sm text-slate-400">No messages found.</div>';
+  } else {
+    root.innerHTML = messages.map(message => {
+      const sender = String(message.sender || 'user').toLowerCase();
+      const isAdmin = sender === 'admin';
+      const wrapperClass = isAdmin ? 'items-start' : 'items-end';
+      const bubbleClass = isAdmin ? 'bubble-admin text-white' : 'bubble-user text-slate-100';
+      const label = isAdmin ? 'GETXH' : 'You';
+      return `
+        <div class="flex flex-col ${wrapperClass}">
+          <p class="mb-1 px-1 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">${label}</p>
+          <div class="max-w-[82%] rounded-2xl px-4 py-3 ${bubbleClass}">
+            <p class="text-sm leading-6">${escapeHtml(message.text || '')}</p>
+          </div>
+          <p class="mt-1 px-1 text-[11px] text-slate-500">${formatDateTime(message.createdAt)}</p>
+        </div>`;
+    }).join('');
+  }
+  root.scrollTop = root.scrollHeight;
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import {
+  addDoc,
+  collection,
+  doc,
+  getFirestore,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+  Timestamp,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let currentUser = null;
+
+window.createTicket = async function () {
+  hideNotice('formNotice');
+
+  if (!currentCategory) {
+    showNotice('formNotice', 'Please select a category.');
+    return;
+  }
+  if (!currentSubCategory) {
+    showNotice('formNotice', 'Please select a subcategory.');
+    return;
+  }
+
+  const openTickets = ticketRows.filter(ticket => String(ticket.status || '').toLowerCase() === 'pending').length;
+  if (openTickets >= 3) {
+    showNotice('formNotice', 'You have opened maximum tickets. Please close one before creating a new ticket.');
+    return;
+  }
+
+  const orderIdValue = document.getElementById('orderIdInput').value.trim().toUpperCase();
+  const message = document.getElementById('ticketMessageInput').value.trim();
+  const needsOrder = currentCategory === 'Orders';
+
+  if (needsOrder && !orderIdValue) {
+    showNotice('formNotice', 'Order ID is required for order tickets.');
+    markInvalid('orderIdInput');
+    return;
+  }
+  if (needsOrder && !validOrderIds.has(orderIdValue)) {
+    showNotice('formNotice', 'Please enter a valid Order ID from your orders section.');
+    markInvalid('orderIdInput');
+    return;
+  }
+  if (needsOrder) {
+    const duplicateOpenTicket = ticketRows.some(ticket =>
+      String(ticket.orderId || '').toUpperCase() === orderIdValue &&
+      String(ticket.status || '').toLowerCase() !== 'closed'
+    );
+    if (duplicateOpenTicket) {
+      showNotice('formNotice', 'Ticket already submitted for this Order ID. Please close the current ticket or enter another ID.');
+      markInvalid('orderIdInput');
+      return;
+    }
+  }
+  if (!message || message.length < 4) {
+    showNotice('formNotice', 'Please enter a proper ticket message.');
+    markInvalid('ticketMessageInput');
+    return;
+  }
+
+  const submitBtn = document.getElementById('submitTicketBtn');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting...';
+
+  try {
+    await addDoc(collection(db, 'tickets', currentUser.uid, 'user_tickets'), {
+      orderId: needsOrder ? orderIdValue : '',
+      subject: 'Order',
+      status: 'pending',
+      category: currentCategory,
+      subcategory: currentSubCategory,
+      createdAt: serverTimestamp(),
+      messages: [
+        {
+          sender: 'user',
+          text: message,
+          createdAt: Timestamp.now()
+        }
+      ]
+    });
+
+    resetCreateForm();
+    closeCreatePanel();
+    showNotice('pageNotice', 'Ticket submitted successfully.', 'info');
+  } catch (err) {
+    console.error(err);
+    showNotice('formNotice', 'Unable to submit ticket right now.');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Ticket';
+  }
+};
+
+window.closeCurrentTicket = async function () {
+  if (!activeTicketDoc || !currentUser) return;
+  const closeBtn = document.getElementById('closeTicketAction');
+  closeBtn.disabled = true;
+  closeBtn.textContent = 'Closing...';
+  try {
+    await updateDoc(doc(db, 'tickets', currentUser.uid, 'user_tickets', activeTicketDoc), {
+      status: 'closed'
+    });
+  } catch (err) {
+    console.error(err);
+    showNotice('pageNotice', 'Unable to close ticket right now.');
+  } finally {
+    closeBtn.disabled = false;
+    closeBtn.textContent = 'Close Ticket';
+  }
+};
+
+onAuthStateChanged(auth, user => {
+  if (!user) {
+    window.location.replace('index.html');
+    return;
+  }
+
+  currentUser = user;
+
+  onSnapshot(collection(db, 'orders', user.uid, 'user_orders'), snapshot => {
+    const ids = new Set();
+    snapshot.forEach(item => {
+      const data = item.data();
+      const orderId = String(data.orderId || ('ORD' + item.id.slice(-5).toUpperCase())).toUpperCase();
+      ids.add(orderId);
+    });
+    validOrderIds = ids;
+  });
+
+  const ticketQuery = query(
+    collection(db, 'tickets', user.uid, 'user_tickets'),
+    orderBy('createdAt', 'desc')
+  );
+
+  onSnapshot(ticketQuery, snapshot => {
+    const tickets = [];
+    snapshot.forEach(item => {
+      tickets.push({ id: item.id, ...item.data() });
+    });
+    ticketRows = tickets;
+    renderTicketList(tickets);
+    if (activeTicketDoc) {
+      const current = getTicketById(activeTicketDoc);
+      if (current) {
+        renderTicketModal(current);
+      } else {
+        closeTicketModal();
+      }
+    }
+  }, err => {
+    console.error(err);
+    showNotice('pageNotice', 'Unable to load tickets right now.');
+  });
+});
+</script>
+</body>
+</html>

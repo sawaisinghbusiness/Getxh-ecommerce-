@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Orders – GETXH</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+.brand-badge {
+  display:flex; align-items:center; gap:6px; padding:6px 12px;
+  border-radius:999px;
+  background:linear-gradient(120deg,#0e1a33,#121c33,#0e1a33);
+  box-shadow:0 0 12px rgba(56,189,248,0.25);
+  animation:glowPulse 3s ease-in-out infinite;
+}
+.brand-icon { font-size:18px; color:#38bdf8; }
+.brand-text { font-weight:700; letter-spacing:1px; }
+.brand-text .dot { color:#38bdf8; }
+@keyframes glowPulse {
+  0%   { box-shadow:0 0 8px rgba(56,189,248,0.2); }
+  50%  { box-shadow:0 0 18px rgba(56,189,248,0.6); }
+  100% { box-shadow:0 0 8px rgba(56,189,248,0.2); }
+}
+@keyframes slideUp {
+  from { transform:translateY(100%); opacity:0; }
+  to   { transform:translateY(0); opacity:1; }
+}
+.animate-slideUp { animation:slideUp 0.35s ease-out; }
+.order-card { transition:all 0.2s ease; }
+.order-card:active { transform:scale(0.99); }
+.status-pending    { background:rgba(255,152,0,0.12); color:#ffa726; border:1px solid rgba(255,152,0,0.25); }
+.status-processing { background:rgba(33,150,243,0.12); color:#42a5f5; border:1px solid rgba(33,150,243,0.25); }
+.status-completed  { background:rgba(0,200,83,0.12); color:#4caf50; border:1px solid rgba(0,200,83,0.25); }
+.status-cancelled  { background:rgba(244,67,54,0.12); color:#ef5350; border:1px solid rgba(244,67,54,0.25); }
+</style>
+</head>
+
+<body class="bg-[#0b1220] text-white min-h-screen">
+
+<!-- TOP HEADER -->
+<div class="flex justify-between items-center px-4 py-3 bg-[#0b1220] sticky top-0 z-50">
+  <button onclick="openMenu()">
+    <span class="material-symbols-outlined text-2xl">menu</span>
+  </button>
+  <div class="brand-badge">
+    <span class="material-symbols-outlined brand-icon">verified_user</span>
+    <span class="brand-text">GETXH<span class="dot">.IN</span></span>
+  </div>
+  <a href="wallet.html" class="flex items-center gap-1 bg-[#1e2a4a] px-3 py-1 rounded-full text-sm">
+    <span class="material-symbols-outlined text-base">account_balance_wallet</span>
+    <span id="walletBalanceTop">₹0</span>
+  </a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="w-full px-4 py-4 pb-[120px]">
+
+  <!-- Filter Dropdown -->
+  <div class="relative mb-3" id="filterWrapper">
+    <button onclick="toggleFilter()"
+      class="w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold text-sm"
+      style="background:#121c33; border:1px solid rgba(255,255,255,0.08);">
+      <div class="flex items-center gap-2">
+        <div id="filterDot" class="w-2 h-2 rounded-full bg-gray-400"></div>
+        <span id="filterLabel">All Orders</span>
+      </div>
+      <span id="filterArrow" class="material-symbols-outlined text-gray-400 transition-transform duration-300" style="font-size:20px">expand_more</span>
+    </button>
+    <div id="filterDropdown" class="hidden absolute left-0 right-0 top-full mt-1 rounded-xl overflow-hidden z-50 shadow-2xl"
+         style="background:#121c33; border:1px solid rgba(255,255,255,0.08);">
+      <div onclick="setFilter('all','All Orders','bg-gray-400')" class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 text-sm font-semibold border-b border-white/5">
+        <div class="w-2 h-2 rounded-full bg-gray-400"></div> All Orders
+      </div>
+      <div onclick="setFilter('Pending','Pending','bg-orange-400')" class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 text-sm font-semibold border-b border-white/5">
+        <div class="w-2 h-2 rounded-full bg-orange-400"></div> Pending
+      </div>
+      <div onclick="setFilter('Processing','Processing','bg-blue-400')" class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 text-sm font-semibold border-b border-white/5">
+        <div class="w-2 h-2 rounded-full bg-blue-400"></div> Processing
+      </div>
+      <div onclick="setFilter('Completed','Completed','bg-green-400')" class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 text-sm font-semibold border-b border-white/5">
+        <div class="w-2 h-2 rounded-full bg-green-400"></div> Completed
+      </div>
+      <div onclick="setFilter('Cancelled','Cancelled','bg-red-400')" class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 text-sm font-semibold">
+        <div class="w-2 h-2 rounded-full bg-red-400"></div> Cancelled
+      </div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="relative mb-4">
+    <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-500" style="font-size:18px">search</span>
+    <input type="text" id="searchInput" placeholder="Search by Order ID, Service or Link..."
+      oninput="filterOrders()"
+      class="w-full pl-10 pr-4 py-3 rounded-xl text-white text-sm outline-none placeholder-gray-500"
+      style="background:#121c33; border:1px solid rgba(255,255,255,0.08);"/>
+  </div>
+
+  <!-- Orders List -->
+  <div id="ordersList">
+    <div class="flex flex-col items-center justify-center py-16 text-gray-500">
+      <span class="material-symbols-outlined mb-3" style="font-size:48px">hourglass_empty</span>
+      <p class="text-sm font-semibold">Loading orders...</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-40">
+  <div class="flex justify-around items-center py-2 text-xs">
+    <a href="Dashboard.html" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span>Menu</span>
+    </a>
+    <a href="orders.html" class="flex flex-col items-center text-blue-400">
+      <span class="material-symbols-outlined">list_alt</span>
+      <span>Orders</span>
+    </a>
+    <a href="Dashboard.html"
+      class="bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full -mt-6">
+      <span class="material-symbols-outlined">add</span>
+    </a>
+    <a href="support.html" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">support_agent</span>
+      <span>Support</span>
+    </a>
+    <button onclick="openAccountPopup()" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">person</span>
+      <span>Account</span>
+    </button>
+  </div>
+</div>
+
+<!-- ACCOUNT POPUP -->
+<div id="accountPopup"
+  class="fixed inset-0 z-50 hidden items-end justify-center"
+  style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)"
+  onclick="if(event.target===this)closeAccountPopup()">
+  <div class="w-full max-w-md mx-auto animate-slideUp"
+       style="background:linear-gradient(180deg,#0e1f3d 0%,#0a1628 100%);
+              border-radius:24px 24px 0 0;
+              border-top:1px solid rgba(33,150,243,0.25);
+              padding:0 0 32px;">
+    <div class="flex justify-center pt-3 pb-2">
+      <div class="w-10 h-1 rounded-full" style="background:rgba(255,255,255,0.15)"></div>
+    </div>
+    <div class="mx-4 mb-4 rounded-2xl p-4 flex items-center gap-3"
+         style="background:rgba(33,150,243,0.08);border:1px solid rgba(33,150,243,0.2)">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-black text-lg text-white"
+           style="background:linear-gradient(135deg,#2196f3,#00bcd4)" id="popupAvatar">U</div>
+      <div class="min-w-0 flex-1">
+        <p id="popupUsername" class="text-white font-black text-base truncate">User</p>
+        <p id="popupEmail" class="text-xs truncate mt-0.5" style="color:#2196f3">—</p>
+      </div>
+    </div>
+    <div class="px-4 flex flex-col gap-3">
+      <button onclick="closeAccountPopup();window.location.href='account.html'"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-white text-sm active:scale-[0.98] transition-all"
+        style="background:linear-gradient(135deg,#2196f3,#00bcd4);box-shadow:0 4px 20px rgba(33,150,243,0.3)">
+        <span class="material-symbols-outlined" style="font-size:18px">manage_accounts</span>
+        My Account
+        <span class="material-symbols-outlined ml-auto" style="font-size:16px">chevron_right</span>
+      </button>
+      <button onclick="closeAccountPopup();window.location.href='wallet.html'"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all"
+        style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);color:#00e676">
+        <span class="material-symbols-outlined" style="font-size:18px">account_balance_wallet</span>
+        Add Funds
+        <span class="material-symbols-outlined ml-auto" style="font-size:16px">chevron_right</span>
+      </button>
+      <button onclick="logout()"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all"
+        style="background:rgba(244,67,54,0.08);border:1px solid rgba(244,67,54,0.2);color:#ef5350">
+        <span class="material-symbols-outlined" style="font-size:18px">logout</span>
+        Logout
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SIDE MENU -->
+<div id="menuOverlay" class="fixed inset-0 bg-black/60 hidden z-[105] backdrop-blur-sm" onclick="closeMenu()"></div>
+<div id="sideMenu"
+  class="fixed top-0 left-0 h-full w-72 z-[110] transform -translate-x-full transition-transform duration-300 flex flex-col"
+  style="background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);">
+  <div class="px-5 pt-8 pb-5 border-b border-white/10" style="background:linear-gradient(135deg,#0e1f3d,#162844);">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:20px">verified_user</span>
+      </div>
+      <div>
+        <p class="font-black text-white text-base tracking-wide">GETXH<span style="color:#2196f3">.IN</span></p>
+        <div class="flex items-center gap-1 mt-0.5">
+          <div class="h-1.5 w-1.5 rounded-full bg-green-400" style="animation:glowPulse 2s infinite"></div>
+          <p class="text-xs font-semibold" style="color:#2196f3">Online</p>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">person</span>
+      </div>
+      <div class="min-w-0">
+        <p id="menuUsername" class="text-xs font-bold text-white truncate">User</p>
+        <p id="menuEmail" class="text-xs text-gray-500 truncate">—</p>
+      </div>
+    </div>
+  </div>
+  <div class="flex-1 overflow-y-auto py-3 px-3">
+    <a href="Dashboard.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-500/15">
+        <span class="material-symbols-outlined text-blue-400" style="font-size:16px">dashboard</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Dashboard</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a href="Dashboard.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 transition-all active:scale-[0.98]" style="background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">add_shopping_cart</span>
+      </div>
+      <span class="font-bold text-white text-sm">New Order</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a href="orders.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-yellow-500/15">
+        <span class="material-symbols-outlined text-yellow-400" style="font-size:16px">list_alt</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Orders</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a href="wallet.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-500/15">
+        <span class="material-symbols-outlined text-green-400" style="font-size:16px">account_balance_wallet</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Add Funds</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a href="support.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-500/15">
+        <span class="material-symbols-outlined text-purple-400" style="font-size:16px">support_agent</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Support</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <div class="h-px bg-white/10 my-3 mx-2"></div>
+    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-500/15">
+        <span class="material-symbols-outlined text-red-400" style="font-size:16px">logout</span>
+      </div>
+      <span class="font-bold text-red-400 text-sm">Logout</span>
+    </button>
+  </div>
+  <div class="px-5 py-4 border-t border-white/10">
+    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
+  </div>
+</div>
+
+<script>
+// ── USER DATA ──
+const _uname = localStorage.getItem('getxh_user_name') || '';
+const _email = localStorage.getItem('getxh_current_user') || '';
+const _n = _uname || _email.split('@')[0] || 'User';
+document.getElementById('popupUsername').textContent = _n;
+document.getElementById('popupEmail').textContent = _email;
+const mu = document.getElementById('menuUsername');
+const me = document.getElementById('menuEmail');
+if(mu) mu.textContent = _n;
+if(me) me.textContent = _email;
+
+function openMenu() {
+  document.getElementById('sideMenu').classList.remove('-translate-x-full');
+  document.getElementById('menuOverlay').classList.remove('hidden');
+}
+function closeMenu() {
+  document.getElementById('sideMenu').classList.add('-translate-x-full');
+  document.getElementById('menuOverlay').classList.add('hidden');
+}
+
+function openAccountPopup() {
+  const p = document.getElementById('accountPopup');
+  p.classList.remove('hidden'); p.style.display='flex';
+  document.getElementById('popupAvatar').textContent = _n.charAt(0).toUpperCase();
+}
+function closeAccountPopup() {
+  const p = document.getElementById('accountPopup');
+  p.classList.add('hidden'); p.style.display='none';
+}
+function logout() { localStorage.clear(); window.location.href='index.html'; }
+
+// ── FILTER ──
+let _currentFilter = 'all';
+let _allOrders = [];
+
+function toggleFilter() {
+  const dd = document.getElementById('filterDropdown');
+  const arr = document.getElementById('filterArrow');
+  const isOpen = !dd.classList.contains('hidden');
+  dd.classList.toggle('hidden');
+  arr.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+function setFilter(status, label, dotClass) {
+  _currentFilter = status;
+  document.getElementById('filterLabel').textContent = label;
+  const dot = document.getElementById('filterDot');
+  dot.className = 'w-2 h-2 rounded-full ' + dotClass;
+  document.getElementById('filterDropdown').classList.add('hidden');
+  document.getElementById('filterArrow').style.transform = 'rotate(0deg)';
+  filterOrders();
+}
+document.addEventListener('click', e => {
+  const fw = document.getElementById('filterWrapper');
+  if(fw && !fw.contains(e.target)) {
+    document.getElementById('filterDropdown').classList.add('hidden');
+    document.getElementById('filterArrow').style.transform = 'rotate(0deg)';
+  }
+});
+
+function filterOrders() {
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  let filtered = _allOrders;
+  if(_currentFilter !== 'all') {
+    filtered = filtered.filter(o => (o.status||'').toLowerCase() === _currentFilter.toLowerCase());
+  }
+  if(q) {
+    filtered = filtered.filter(o =>
+      (o.orderId||'').toLowerCase().includes(q) ||
+      (o.serviceName||'').toLowerCase().includes(q) ||
+      (o.link||'').toLowerCase().includes(q)
+    );
+  }
+  renderOrders(filtered);
+}
+
+function getStatusClass(status) {
+  const s = (status||'').toLowerCase();
+  if(s==='completed') return 'status-completed';
+  if(s==='processing') return 'status-processing';
+  if(s==='cancelled') return 'status-cancelled';
+  return 'status-pending';
+}
+function getStatusDot(status) {
+  const s = (status||'').toLowerCase();
+  if(s==='completed') return '#4caf50';
+  if(s==='processing') return '#42a5f5';
+  if(s==='cancelled') return '#ef5350';
+  return '#ffa726';
+}
+
+function renderOrders(orders) {
+  const list = document.getElementById('ordersList');
+  if(!orders || orders.length === 0) {
+    list.innerHTML = `
+      <div class="flex flex-col items-center justify-center py-16 text-gray-500">
+        <span class="material-symbols-outlined mb-3" style="font-size:48px">receipt_long</span>
+        <p class="text-sm font-semibold">No orders found</p>
+      </div>`;
+    return;
+  }
+  list.innerHTML = orders.map(o => `
+    <div class="order-card rounded-2xl mb-3 overflow-hidden"
+         style="background:#121c33; border:1px solid rgba(255,255,255,0.06);">
+
+      <!-- Order Header -->
+      <div class="flex items-center justify-between px-4 py-3"
+           style="border-bottom:1px solid rgba(255,255,255,0.06);">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center"
+               style="background:rgba(33,150,243,0.15);">
+            <span class="material-symbols-outlined" style="font-size:16px;color:#2196f3">receipt</span>
+          </div>
+          <span class="font-black text-sm text-white">#${o.orderId || '—'}</span>
+        </div>
+        <span class="px-3 py-1 rounded-full text-xs font-black ${getStatusClass(o.status)}"
+              style="display:flex;align-items:center;gap:5px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:${getStatusDot(o.status)};display:inline-block;"></span>
+          ${o.status || 'Pending'}
+        </span>
+      </div>
+
+      <!-- Order Details -->
+      <div class="px-4 py-3 space-y-2">
+
+        <div class="flex items-start justify-between gap-2"
+             style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:8px;">
+          <span class="text-gray-400 text-xs">Service:</span>
+          <span class="text-white text-xs font-semibold text-right max-w-[200px] truncate">${o.serviceName || '—'}</span>
+        </div>
+
+        <div class="flex items-center justify-between"
+             style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:8px;">
+          <span class="text-gray-400 text-xs">Link:</span>
+          <a href="${o.link}" target="_blank"
+             class="text-xs font-semibold max-w-[200px] truncate"
+             style="color:#2196f3">${o.link || '—'}</a>
+        </div>
+
+        <div class="flex items-center justify-between"
+             style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:8px;">
+          <span class="text-gray-400 text-xs">Price:</span>
+          <span class="font-black text-sm" style="color:#2196f3">₹${(o.price||0).toFixed(2)}</span>
+        </div>
+
+        <div class="flex items-center justify-between"
+             style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:8px;">
+          <span class="text-gray-400 text-xs">Quantity:</span>
+          <span class="text-white text-xs font-semibold">${(o.quantity||0).toLocaleString()}</span>
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <span class="material-symbols-outlined text-gray-500" style="font-size:14px">calendar_today</span>
+          <span class="text-gray-400 text-xs">${o.createdAtReadable || '—'}</span>
+        </div>
+
+      </div>
+
+      <!-- Progress bar for processing -->
+      ${(o.status||'').toLowerCase()==='completed' ? 
+        `<div style="height:3px;background:linear-gradient(90deg,#00c853,#00e676);"></div>` : 
+        (o.status||'').toLowerCase()==='processing' ?
+        `<div style="height:3px;background:linear-gradient(90deg,#2196f3,#00bcd4);"></div>` : ''}
+    </div>
+  `).join('');
+}
+</script>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, collection, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+onAuthStateChanged(auth, (user) => {
+  if(!user) {
+    window.location.href = 'index.html'; return;
+  }
+
+  loadWalletBalance(user.uid);
+
+  // ✅ Use actual logged-in user's UID
+  const q = collection(db,'orders', user.uid, 'user_orders');
+
+  onSnapshot(q, (snap) => {
+    const orders = [];
+    snap.forEach(doc => {
+      const d = doc.data();
+      orders.push({
+        ...d,
+        orderId: d.orderId || ('ORD' + doc.id.slice(-5).toUpperCase()),
+        docId: doc.id
+      });
+    });
+    orders.sort((a,b) => new Date(b.createdAt||0) - new Date(a.createdAt||0));
+    _allOrders = orders;
+    filterOrders();
+  }, (err) => {
+   alert(err.message);
+   console.error('Snapshot error:', err);
+   document.getElementById('ordersList').innerHTML = '<div style="text-align:center;padding:40px;color:red">Error: ' + err.message + '</div>';
+  });
+});
+
+async function loadWalletBalance(uid) {
+  try {
+    const snap = await getDoc(doc(db, 'Users', uid));
+    const balance = snap.exists() ? Number(snap.data().Balance || 0) : 0;
+    document.getElementById('walletBalanceTop').textContent = `₹${balance.toFixed(2)}`;
+  } catch (err) {
+    console.error('Wallet balance load error:', err);
+  }
+}
+</script>
+
+</body>
+</html>

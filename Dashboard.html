@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>GETXH Dashboard</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+               Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* BRAND BADGE */
+.brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(120deg, #0e1a33, #121c33, #0e1a33);
+  box-shadow: 0 0 12px rgba(56,189,248,0.25);
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+.brand-icon {
+  font-size: 18px;
+  color: #38bdf8;
+}
+
+.brand-text {
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.brand-text .dot {
+  color: #38bdf8;
+}
+
+/* BRAND GLOW ANIMATION */
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 8px rgba(56,189,248,0.2);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(56,189,248,0.6);
+  }
+  100% {
+    box-shadow: 0 0 8px rgba(56,189,248,0.2);
+  }
+}
+
+/* ACCOUNT POPUP ANIMATION */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.35s ease-out;
+}
+</style>
+</head>
+
+<body class="bg-[#0b1220] text-white">
+
+<!-- MOBILE TOP HEADER -->
+<div class="flex justify-between items-center px-4 py-3 bg-[#0b1220] sticky top-0 z-[200] lg:hidden">
+    <button onclick="openMenu()">
+        <span class="material-symbols-outlined text-2xl">menu</span>
+    </button>
+<div class="brand-badge">
+  <span class="material-symbols-outlined brand-icon">
+    verified_user
+  </span>
+  <span class="brand-text">
+    GETXH<span class="dot">.IN</span>
+  </span>
+</div>
+    <a href="wallet.html" class="flex items-center gap-1 bg-[#1e2a4a] px-3 py-1 rounded-full text-sm">
+        <span class="material-symbols-outlined text-base">account_balance_wallet</span>
+        <span id="walletBalanceTop">₹0</span>
+    </a>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="w-full px-4 py-5 pb-[120px]">
+<!-- WELCOME CARD — Unique GETXH Style -->
+<div class="rounded-2xl p-5 mb-6 relative"
+     style="background: linear-gradient(135deg, #0a1628 0%, #0e1f3d 60%, #112244 100%);
+            border: 1px solid rgba(33,150,243,0.25);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(33,150,243,0.1);">
+  <!-- Glow effect top right -->
+  <div class="absolute top-0 right-0 pointer-events-none"
+       style="width:180px;height:180px;
+              background:radial-gradient(circle, rgba(33,150,243,0.15) 0%, transparent 70%);
+              transform:translate(30%,-30%)"></div>
+
+  <!-- Animated dot accent -->
+  <div class="absolute top-4 right-4 w-2 h-2 rounded-full"
+       style="background:#2196f3; box-shadow:0 0 8px #2196f3; animation:glowPulse 2s infinite"></div>
+
+  <!-- Username row -->
+  <div class="flex items-center justify-between mb-5 relative z-10">
+    <div>
+      <p class="text-gray-400 text-xs font-semibold uppercase tracking-widest mb-1">Dashboard</p>
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center"
+             style="background:linear-gradient(135deg,#2196f3,#00bcd4)">
+          <span class="material-symbols-outlined text-white" style="font-size:14px">person</span>
+        </div>
+        <p id="userName" class="text-white text-lg font-black">User</p>
+      </div>
+    </div>
+    <button onclick="window.location.href='wallet.html'"
+      class="flex items-center gap-1.5 px-4 py-2 rounded-xl font-black text-xs
+             active:scale-95 transition-all"
+      style="background:linear-gradient(135deg,#00c853,#00e676);
+             color:#003d10;
+             box-shadow:0 4px 15px rgba(0,200,83,0.3)">
+      <span class="material-symbols-outlined" style="font-size:14px">add</span>
+      Add Funds
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 gap-3 relative z-10">
+
+    <div class="rounded-xl p-4 flex items-center gap-3"
+         style="background:rgba(33,150,243,0.08);
+                border:1px solid rgba(33,150,243,0.2)">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+           style="background:linear-gradient(135deg,rgba(33,150,243,0.3),rgba(33,150,243,0.1))">
+        <span class="material-symbols-outlined" style="font-size:18px;color:#2196f3">account_balance_wallet</span>
+      </div>
+      <div>
+        <p class="text-gray-400 text-xs mb-0.5">Balance</p>
+        <p id="userBalance" class="text-white text-base font-black">₹0</p>
+      </div>
+    </div>
+
+    <div class="rounded-xl p-4 flex items-center gap-3"
+         style="background:rgba(0,230,118,0.06);
+                border:1px solid rgba(0,230,118,0.15)">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+           style="background:linear-gradient(135deg,rgba(0,230,118,0.25),rgba(0,230,118,0.08))">
+        <span class="material-symbols-outlined" style="font-size:18px;color:#00e676">shopping_bag</span>
+      </div>
+      <div>
+        <p class="text-gray-400 text-xs mb-0.5">Your Orders</p>
+        <p id="userOrders" class="text-white text-base font-black">0</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+    
+<!-- ================= NEW ORDER SECTION ================= -->
+<div class="h-px bg-white/10 my-6"></div>
+
+<div id="newOrderSection" class="w-full">
+
+  <!-- Tabs -->
+  <div class="flex rounded-xl overflow-hidden border border-white/10 mb-5">
+    <button id="tabNewOrder" onclick="switchOrderTab('new')"
+      class="flex-1 py-3 text-sm font-bold bg-[#2196f3] text-white transition-all">
+      New Order
+    </button>
+    <button id="tabSubscription" onclick="switchOrderTab('sub')"
+      class="flex-1 py-3 text-sm font-bold bg-[#0e1629] text-gray-400 transition-all">
+      Subscription
+    </button>
+  </div>
+
+  <!-- Platform Pills -->
+  <div class="flex gap-2 overflow-x-auto pb-2 mb-5" style="scrollbar-width:none">
+    <button onclick="filterPlatform(this)"
+      class="platform-pill active-pill flex items-center gap-2 px-4 py-2 rounded-full
+             text-xs font-bold whitespace-nowrap border border-white/10 bg-[#2196f3] text-white">
+      ✔ All
+    </button>
+    <button onclick="filterPlatform(this)"
+      class="platform-pill flex items-center gap-2 px-4 py-2 rounded-full
+             text-xs font-bold whitespace-nowrap border border-white/10 bg-[#0e1629] text-gray-300">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
+           class="w-4 h-4 rounded" alt=""/> Instagram Services
+    </button>
+    <button onclick="filterPlatform(this)"
+      class="platform-pill flex items-center gap-2 px-4 py-2 rounded-full
+             text-xs font-bold whitespace-nowrap border border-white/10 bg-[#0e1629] text-gray-300">
+      ▶ YouTube
+    </button>
+    <button onclick="filterPlatform(this)"
+      class="platform-pill flex items-center gap-2 px-4 py-2 rounded-full
+             text-xs font-bold whitespace-nowrap border border-white/10 bg-[#0e1629] text-gray-300">
+      ✈ Telegram
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="relative mb-5">
+    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#2196f3]">🔍</span>
+    <input type="text" id="searchService" placeholder="Search"
+      class="w-full pl-10 pr-4 py-3 bg-[#0e1629] border border-white/10 rounded-xl
+             text-white placeholder-gray-500 text-sm
+             focus:outline-none focus:border-[#2196f3] transition-all"/>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="rounded-2xl bg-[#0e1629] border border-white/10 shadow-xl mb-6">
+    <div class="p-4">
+
+      <!-- CATEGORY -->
+      <div class="mb-5">
+        <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Category</p>
+        <div class="relative" id="categoryWrapper">
+          <button type="button" onclick="toggleCategoryDropdown()"
+            class="w-full flex items-center justify-between bg-[#121c33]
+                   border border-white/10 rounded-xl px-4 py-3 text-left
+                   hover:border-[#2196f3]/50 transition-all">
+            <div class="flex items-center gap-3">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
+                   id="catIcon" class="w-5 h-5 rounded hidden" alt=""/>
+              <span id="catLabel" class="text-gray-400 text-sm font-semibold">
+                — Select a category —
+              </span>
+            </div>
+            <span id="catArrow" class="text-gray-500 transition-transform duration-300">▼</span>
+          </button>
+          <div id="categoryDropdown"
+            class="hidden absolute left-0 right-0 top-full mt-1 bg-[#121c33]
+                   border border-white/10 rounded-xl overflow-hidden z-50 shadow-2xl">
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICE -->
+      <div class="mb-5" id="serviceWrapper" style="display:none">
+        <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Service</p>
+        <div class="relative" id="serviceDropdownWrapper">
+          <button type="button" onclick="toggleServiceDropdown()"
+            class="w-full flex items-center justify-between bg-[#121c33]
+                   border border-white/10 rounded-xl px-4 py-3 text-left
+                   hover:border-[#2196f3]/50 transition-all">
+            <div class="flex items-center gap-3 min-w-0">
+              <span id="svcNumBadge"
+                class="w-6 h-6 rounded-lg bg-[#2196f3] text-white text-xs
+                       font-black flex items-center justify-center flex-shrink-0 hidden">1</span>
+              <span id="svcLabel" class="text-gray-400 text-sm font-semibold truncate">
+                — Select a service —
+              </span>
+            </div>
+            <span id="svcArrow" class="text-gray-500 transition-transform duration-300 flex-shrink-0">▼</span>
+          </button>
+          <div id="serviceDropdown"
+            class="hidden absolute left-0 right-0 top-full mt-1 bg-[#121c33]
+                   border border-white/10 rounded-xl overflow-hidden z-50 shadow-2xl
+                   max-h-64 overflow-y-auto">
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICE DETAILS -->
+      <div id="serviceDetails" class="hidden">
+
+        <!-- 6 STAT CARDS -->
+        <div class="mb-5">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Description</p>
+          <div class="bg-[#121c33] border border-white/10 rounded-xl p-4">
+            <div class="grid grid-cols-3 gap-2 mb-4">
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">schedule</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Start Time</p>
+                <p id="dStartTime" class="font-black text-xs text-white">INSTANT</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">speed</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Speed</p>
+                <p id="dSpeed" class="font-black text-xs text-white">—</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">autorenew</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Refill</p>
+                <p id="dRefill" class="font-black text-xs text-white">—</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">cancel</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Cancel</p>
+                <p id="dCancel" class="font-black text-xs text-white">—</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">water_drop</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Drop</p>
+                <p id="dDrop" class="font-black text-xs text-white">—</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">star</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Quality</p>
+                <p id="dQuality" class="font-black text-xs text-white">—</p>
+              </div>
+
+            </div>
+            <div class="border-t border-white/10 pt-3">
+              <p class="text-xs text-gray-400 font-bold mb-2 flex items-center gap-1">
+                <span class="material-symbols-outlined" style="font-size:13px">info</span> DETAILS:
+              </p>
+              <ul id="dDetailsList" class="space-y-1.5 text-xs text-white font-semibold"></ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- LINK -->
+        <div class="mb-4">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Link</p>
+          <input type="text" id="linkInput" placeholder="Paste your link"
+            class="w-full px-4 py-3 bg-[#121c33] border border-white/10 rounded-xl
+                   text-white placeholder-gray-500 text-sm
+                   focus:outline-none focus:border-[#2196f3] transition-all"/>
+        </div>
+
+        <!-- QUANTITY -->
+        <div class="mb-4">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Quantity</p>
+          <input type="number" id="quantityInput" placeholder="Min: 0 - Max: 0"
+            class="w-full px-4 py-3 bg-[#121c33] border border-white/10 rounded-xl
+                   text-white placeholder-gray-500 text-sm
+                   focus:outline-none focus:border-[#2196f3] transition-all"/>
+          <p id="quantityError" class="hidden text-xs text-red-400 mt-2 font-semibold">
+            ⚠ Quantity must be between Min and Max
+          </p>
+        </div>
+
+        <!-- DELIVERY TIME -->
+        <div class="mb-4">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2 flex items-center gap-1">
+            Delivery Time
+            <span class="material-symbols-outlined text-gray-500" style="font-size:13px">info</span>
+          </p>
+          <div class="bg-[#121c33] border border-white/10 rounded-xl px-4 py-3">
+            <p id="dDeliveryTime" class="text-white font-bold text-sm">—</p>
+          </div>
+        </div>
+
+        <!-- ORDER BUTTON -->
+        <button id="placeOrderBtn" disabled
+          class="w-full rounded-xl font-black text-base py-4
+                 bg-gradient-to-r from-[#2196f3] to-[#00bcd4]
+                 text-white relative overflow-hidden
+                 disabled:opacity-35 disabled:cursor-not-allowed
+                 transition-all active:scale-[0.98]">
+          <div class="flex items-center justify-between px-2">
+            <span class="text-xs font-bold uppercase tracking-widest opacity-80">TOTAL AMOUNT</span>
+            <div class="flex items-center gap-2">
+              <span id="totalPrice" class="text-lg font-black"></span>
+              <span class="font-black text-base tracking-wide">ORDER</span>
+              <span class="material-symbols-outlined" style="font-size:18px">chevron_right</span>
+            </div>
+          </div>
+          <div id="rippleEl"
+            class="absolute rounded-full bg-white/20 pointer-events-none scale-0 transition-all duration-500"
+            style="width:120px;height:120px;margin-left:-60px;margin-top:-60px"></div>
+        </button>
+
+      </div><!-- /serviceDetails -->
+    </div>
+  </div>
+  </div><!-- /newOrderSection -->
+
+<!-- SUCCESS MODAL -->
+<div id="successModal"
+  class="fixed inset-0 bg-black/70 hidden z-50 items-center justify-center px-4">
+  <div id="successModalBox"
+    class="bg-[#0f1a30] border border-[#2196f3]/20 rounded-2xl p-6
+           w-full max-w-sm text-center shadow-2xl scale-75 opacity-0 transition-all duration-300">
+    <div class="w-16 h-16 bg-green-500/10 border border-green-500/30 rounded-full
+                flex items-center justify-center mx-auto mb-4">
+      <span class="material-symbols-outlined text-green-400" style="font-size:32px">check_circle</span>
+    </div>
+    <h3 class="text-xl font-black mb-2 text-white">Order Placed! 🎉</h3>
+    <p class="text-gray-400 text-sm mb-6">Your order has been submitted and is now being processed.</p>
+    <div class="flex gap-3">
+      <button id="closeModalBtn"
+        class="flex-1 py-3 rounded-xl bg-[#121c33] border border-white/10
+               text-gray-300 font-bold text-sm active:scale-[0.97] transition">
+        Close
+      </button>
+      <button id="viewOrdersBtn"
+        class="flex-1 py-3 rounded-xl font-black text-sm text-white
+               bg-gradient-to-r from-[#2196f3] to-[#00bcd4] active:scale-[0.97] transition">
+        View Orders
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= END NEW ORDER ================= -->
+  <!-- RECENT ORDERS -->
+<div id="recentOrdersContainer" class="mt-4"></div>
+</main>
+
+<!-- BOTTOM NAV -->
+<div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-40 lg:hidden">
+  <div class="flex justify-around items-center py-2 text-xs">
+
+    <a href="Dashboard.html" class="flex flex-col items-center text-blue-400">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span>Menu</span>
+    </a>
+<a href="orders.html" class="flex flex-col items-center text-gray-400">
+  <span class="material-symbols-outlined">list_alt</span>
+  <span>Orders</span>
+</a>
+
+    <button onclick="scrollToNewOrder()"
+      class="bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full -mt-6">
+      <span class="material-symbols-outlined">add</span>
+    </button>
+
+    <a href="support.html" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">support_agent</span>
+      <span>Support</span>
+    </a>
+
+    <button onclick="openAccountPopup()" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">person</span>
+      <span>Account</span>
+    </button>
+
+  </div>
+</div>
+
+<!-- SIDE MENU -->
+<div id="menuOverlay" class="fixed inset-0 bg-black/60 hidden z-40 backdrop-blur-sm" onclick="closeMenu()"></div>
+
+<div id="sideMenu"
+  class="fixed top-0 left-0 h-full w-72 z-[150]
+         transform -translate-x-full transition-transform duration-300
+         flex flex-col"
+  style="background: linear-gradient(180deg, #0a1628 0%, #0e1f3d 50%, #0a1628 100%);">
+
+  <!-- MENU HEADER -->
+<div class="px-5 pt-20 pb-5 border-b border-white/10"
+       style="background: linear-gradient(135deg, #0e1f3d, #162844);">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+           style="background: linear-gradient(135deg, #2196f3, #00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:20px">verified_user</span>
+      </div>
+      <div>
+      <p class="font-black text-white text-base tracking-wide">GETXH<span style="color:#2196f3">.IN</span></p>
+<div class="flex items-center gap-1 mt-0.5">
+  <div class="h-1.5 w-1.5 rounded-full bg-green-400" style="animation:glowPulse 2s infinite"></div>
+  <p class="text-xs font-semibold" style="color:#2196f3">Online</p>
+</div>
+      </div>
+    </div>
+    <!-- User info -->
+    <div class="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+           style="background: linear-gradient(135deg, #2196f3, #00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">person</span>
+      </div>
+      <div class="min-w-0">
+        <p id="menuUsername" class="text-xs font-bold text-white truncate">User</p>
+        <p id="menuEmail" class="text-xs text-gray-500 truncate">—</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENU ITEMS -->
+  <div class="flex-1 overflow-y-auto py-3 px-3">
+
+    <button onclick="scrollToNewOrder();closeMenu()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left transition-all active:scale-[0.98]"
+      style="background: linear-gradient(135deg, rgba(33,150,243,0.15), rgba(0,188,212,0.1)); border: 1px solid rgba(33,150,243,0.25);">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+           style="background: linear-gradient(135deg, #2196f3, #00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">add_shopping_cart</span>
+      </div>
+      <span class="font-bold text-white text-sm">New Order</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <button onclick="closeMenu();window.location.href='orders.html'"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-yellow-500/15">
+        <span class="material-symbols-outlined text-yellow-400" style="font-size:16px">list_alt</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Orders</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <button onclick="closeMenu();window.location.href='support.html'"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-500/15">
+        <span class="material-symbols-outlined text-purple-400" style="font-size:16px">support_agent</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Support</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <button onclick="closeMenu()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-500/15">
+        <span class="material-symbols-outlined text-green-400" style="font-size:16px">account_balance_wallet</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Add Funds</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <button onclick="closeMenu()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-orange-500/15">
+        <span class="material-symbols-outlined text-orange-400" style="font-size:16px">group_add</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Affiliates</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <button onclick="closeMenu()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-cyan-500/15">
+        <span class="material-symbols-outlined text-cyan-400" style="font-size:16px">autorenew</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Subscriptions</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <!-- Divider -->
+    <div class="h-px bg-white/10 my-3 mx-2"></div>
+
+    <button onclick="closeMenu()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-400/15">
+        <span class="text-green-400 font-black text-sm">W</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">WhatsApp</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <button onclick="logout()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-red-500/10 transition-all active:scale-[0.98] border border-transparent hover:border-red-500/20">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-500/15">
+        <span class="material-symbols-outlined text-red-400" style="font-size:16px">logout</span>
+      </div>
+      <span class="font-bold text-red-400 text-sm">Logout</span>
+    </button>
+
+  </div>
+
+  <!-- MENU FOOTER -->
+  <div class="px-5 py-4 border-t border-white/10">
+    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
+  </div>
+
+</div>
+
+
+  <!-- ACCOUNT POPUP -->
+<div id="accountPopup"
+  class="fixed inset-0 z-50 hidden items-end justify-center"
+  style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)"
+  onclick="if(event.target===this)closeAccountPopup()">
+  <div class="w-full max-w-md mx-auto animate-slideUp"
+       style="background:linear-gradient(180deg,#0e1f3d 0%,#0a1628 100%);
+              border-radius:24px 24px 0 0;
+              border-top:1px solid rgba(33,150,243,0.25);
+              padding:0 0 32px;">
+    <div class="flex justify-center pt-3 pb-2">
+      <div class="w-10 h-1 rounded-full" style="background:rgba(255,255,255,0.15)"></div>
+    </div>
+    <div id="accViewHome">
+    <div class="mx-4 mb-4 rounded-2xl p-4 flex items-center gap-3"
+         style="background:rgba(33,150,243,0.08);border:1px solid rgba(33,150,243,0.2)">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-black text-lg text-white"
+           style="background:linear-gradient(135deg,#2196f3,#00bcd4)" id="popupAvatar">U</div>
+      <div class="min-w-0 flex-1">
+        <p id="popupUsername" class="text-white font-black text-base truncate">User</p>
+        <p id="popupEmail" class="text-xs truncate mt-0.5" style="color:#2196f3">—</p>
+      </div>
+    </div>
+    <div class="px-4 space-y-3">
+<button onclick="closeAccountPopup();window.location.href='account.html'"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-white text-sm active:scale-[0.98] transition-all"
+        style="background:linear-gradient(135deg,#2196f3,#00bcd4);box-shadow:0 4px 20px rgba(33,150,243,0.3)">
+        <span class="material-symbols-outlined" style="font-size:18px">manage_accounts</span>
+        My Account
+        <span class="material-symbols-outlined ml-auto" style="font-size:16px">chevron_right</span>
+      </button>
+      <button onclick="closeAccountPopup();window.location.href='wallet.html'"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all"
+        style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);color:#00e676">
+        <span class="material-symbols-outlined" style="font-size:18px">account_balance_wallet</span>
+        Add Funds
+        <span class="material-symbols-outlined ml-auto" style="font-size:16px">chevron_right</span>
+      </button>
+      <button onclick="logout()"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all"
+        style="background:rgba(244,67,54,0.08);border:1px solid rgba(244,67,54,0.2);color:#ef5350">
+        <span class="material-symbols-outlined" style="font-size:18px">logout</span>
+        Logout
+      </button>
+      </div>     
+    </div>
+     </div>
+
+<!-- VIEW 2: MY ACCOUNT -->
+<div id="accViewAccount" style="display:none">
+  <div class="flex items-center gap-3 px-4 mb-4">
+    <button onclick="showAccView('accViewHome')" class="flex items-center gap-1 font-bold text-sm" style="color:#2196f3">
+      <span class="material-symbols-outlined" style="font-size:20px">arrow_back_ios</span>Back
+    </button>
+    <p class="text-white font-black text-base">My Account</p>
+  </div>
+  <div class="mx-4 mb-4 rounded-xl p-4" style="background:#121c33">
+    <p class="text-sm text-gray-400">Account</p>
+    <p id="accName" class="text-lg font-semibold text-white">-</p>
+    <p id="accEmail" class="text-sm text-gray-400">-</p>
+  </div>
+  <div class="mx-4 mb-4 rounded-xl p-4 space-y-4" style="background:#121c33">
+    <div class="flex items-center gap-4">
+      <span class="material-symbols-outlined text-blue-400">person</span>
+      <div>
+        <p class="text-xs text-gray-400">Username</p>
+        <p id="accDetailUsername" class="text-white">-</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="material-symbols-outlined text-cyan-400">mail</span>
+      <div>
+        <p class="text-xs text-gray-400">Email</p>
+        <p id="accDetailEmail" class="text-white">-</p>
+      </div>
+    </div>
+  </div>
+  <div class="mx-4 mb-4 rounded-xl p-4" style="background:#121c33">
+    <p class="font-medium text-white mb-3">Reset Password</p>
+    <input id="accCurrPass" type="password" placeholder="Current password" class="w-full mb-2 px-3 py-2 rounded text-white text-sm outline-none" style="background:#0e1629"/>
+    <input id="accNewPass" type="password" placeholder="New password" class="w-full mb-2 px-3 py-2 rounded text-white text-sm outline-none" style="background:#0e1629"/>
+    <input id="accConfPass" type="password" placeholder="Confirm new password" class="w-full mb-3 px-3 py-2 rounded text-white text-sm outline-none" style="background:#0e1629"/>
+    <p id="accPassMsg" class="text-sm mb-2 hidden"></p>
+    <button onclick="changePasswordInline()" class="w-full bg-blue-500 py-2 rounded-lg font-medium text-white text-sm">Change Password</button>
+  </div>
+  <div class="mx-4">
+    <button onclick="logout()" class="w-full py-3 rounded-xl flex justify-center gap-2 font-bold text-sm" style="background:rgba(244,67,54,0.1);color:#ef5350;border:1px solid rgba(244,67,54,0.2)">
+      <span class="material-symbols-outlined" style="font-size:18px">logout</span>Logout
+    </button>
+  </div>
+</div>
+<!-- STYLES -->
+<style>
+@keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUpAnim { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.platform-pill { transition:all 0.2s ease }
+.active-pill { background:#2196f3 !important;color:white !important;border-color:#2196f3 !important }
+.cat-item {
+  display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s;
+  font-size:0.875rem;font-weight:700;color:#e2e8f0;
+}
+.cat-item:hover { background:rgba(33,150,243,0.1) }
+.cat-item.selected { background:rgba(33,150,243,0.2);color:#2196f3 }
+.cat-item:last-child { border-bottom:none }
+.svc-item {
+  display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s;
+  font-size:0.8rem;font-weight:600;color:#cbd5e0;
+}
+.svc-item:hover { background:rgba(33,150,243,0.1) }
+.svc-item.selected { background:rgba(33,150,243,0.15);color:white }
+.svc-item:last-child { border-bottom:none }
+.svc-num-badge {
+  min-width:24px;height:24px;border-radius:6px;background:#2196f3;color:white;
+  font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+</style>
+
+<!-- MAIN SCRIPT -->
+<script>
+// ── SOUND EFFECTS ──
+const _AC = window.AudioContext || window.webkitAudioContext;
+let _actx = null;
+function _ac() { if(!_actx) _actx = new _AC(); return _actx; }
+
+function playSuccess() {
+  try { const c=_ac();
+    [523,659,784,1047].forEach((f,i)=>{ const o=c.createOscillator(),g=c.createGain();
+      o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=f;
+      const t=c.currentTime+i*0.1;
+      g.gain.setValueAtTime(0.10,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.25);
+      o.start(t);o.stop(t+0.26); }); } catch(e){}
+}
+// ── SERVICES DATA ──
+const CATEGORIES = [
+  {id:'reel-views', label:'Instagram - Reel Views'},
+  {id:'post-views', label:'Instagram - Post Views'},
+  {id:'followers',  label:'Instagram - Followers'},
+  {id:'likes',      label:'Instagram - Likes'},
+  {id:'comments',   label:'Instagram - Comments'},
+  {id:'shares',     label:'Instagram - Shares'},
+  {id:'saves',      label:'Instagram - Saves'},
+  {id:'reposts',    label:'Instagram - Reposts'},
+];
+const SERVICES = {
+  'reel-views': [
+    {id:1,name:'Instagram Reel Views – Used By Influencers',price:0.38,min:100,max:2147483647,startTime:'INSTANT',speed:'500K/HOUR',refill:'LIFETIME',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'7 minutes',details:['Real Reel Views.','Use reels link.','Wrong links are non refundable.','Private accounts not accepted.','Start and speed can be slow sometimes.']},
+    {id:2,name:'Instagram Reel Views – Used By Celebrities',price:0.55,min:100,max:2147483647,startTime:'INSTANT',speed:'300K/HOUR',refill:'30 DAYS',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'10 minutes',details:['Real Views from celebrity accounts.','Use reels link.','Private accounts not accepted.']},
+    {id:3,name:'Instagram Reel Views – From Explore Page',price:0.74,min:100,max:2147483647,startTime:'INSTANT',speed:'200K/HOUR',refill:'30 DAYS',cancel:'YES',drop:'NON-DROP',quality:'PREMIUM',delivery:'15 minutes',details:['Views from explore page.','Use reels link only.','Private accounts not accepted.']},
+    {id:4,name:'Indian Reel Views – Used By Celebrities',price:1.11,min:100,max:2147483647,startTime:'INSTANT',speed:'100K/HOUR',refill:'30 DAYS',cancel:'NO',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'15 minutes',details:['Indian geo-targeted views.','Use reels link.','Private accounts not accepted.']},
+    {id:5,name:'Instagram Reel Views – Increase Insights',price:0.85,min:100,max:2147483647,startTime:'INSTANT',speed:'400K/HOUR',refill:'LIFETIME',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'10 minutes',details:['Boosts Instagram insights.','Use reels link.','Private accounts not accepted.']},
+  ],
+  'post-views': [
+    {id:6,name:'Instagram Post Views – Used By Influencers',price:1.83,min:100,max:2147483647,startTime:'INSTANT',speed:'1M/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'5 minutes',details:['Works on all public posts.','Use post link.','Private accounts not accepted.']},
+    {id:7,name:'Instagram Post Views – Increase Insights',price:1.74,min:100,max:2147483647,startTime:'INSTANT',speed:'1M/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'5 minutes',details:['Boosts post insights.','Use post link.','Private accounts not accepted.']},
+  ],
+  'followers': [
+    {id:8,name:'Instagram Followers – Used By Influencers',price:151.51,min:100,max:100000,startTime:'0-1 HOUR',speed:'5K/DAY',refill:'30 DAYS',cancel:'NO',drop:'LOW DROP',quality:'HIGH',delivery:'1-6 hours',details:['High quality followers.','Gradual delivery for safety.','Private accounts not accepted.']},
+    {id:9,name:'Instagram Followers – Used By Celebrities',price:134.53,min:100,max:100000,startTime:'0-1 HOUR',speed:'5K/DAY',refill:'60 DAYS',cancel:'NO',drop:'LOW DROP',quality:'PREMIUM',delivery:'1-6 hours',details:['Celebrity-grade followers.','Gradual delivery.','Private accounts not accepted.']},
+    {id:10,name:'Instagram Indian Followers – Used By Influencers',price:187.45,min:100,max:50000,startTime:'0-6 HOURS',speed:'2K/DAY',refill:'30 DAYS',cancel:'NO',drop:'LOW DROP',quality:'REAL INDIAN',delivery:'6-24 hours',details:['Real Indian followers.','Gradual delivery.','Private accounts not accepted.']},
+    {id:11,name:'Instagram Indian Followers – Used By Celebrities',price:218.54,min:100,max:50000,startTime:'0-6 HOURS',speed:'2K/DAY',refill:'60 DAYS',cancel:'NO',drop:'LOW DROP',quality:'INDIAN PREMIUM',delivery:'6-24 hours',details:['Premium Indian followers.','Gradual delivery.','Private accounts not accepted.']},
+  ],
+  'likes': [
+    {id:12,name:'Instagram Likes – Used By Influencers',price:29.02,min:10,max:500000,startTime:'INSTANT',speed:'10K/HOUR',refill:'LIFETIME',cancel:'NO',drop:'NON-DROP',quality:'HIGH',delivery:'5 minutes',details:['High quality likes.','Works on all public posts.']},
+    {id:13,name:'Instagram Likes – Used By Celebrities',price:38.15,min:10,max:500000,startTime:'INSTANT',speed:'5K/HOUR',refill:'30 DAYS',cancel:'YES',drop:'NON-DROP',quality:'PREMIUM',delivery:'8 minutes',details:['Celebrity-grade likes.','Works on all public posts.']},
+    {id:14,name:'Instagram Indian Likes – Used By Influencers',price:49.05,min:10,max:100000,startTime:'INSTANT',speed:'5K/HOUR',refill:'30 DAYS',cancel:'NO',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'10 minutes',details:['Indian audience likes.','Works on public posts only.']},
+    {id:15,name:'Instagram Indian Likes – For Celebrities',price:52.48,min:10,max:100000,startTime:'INSTANT',speed:'3K/HOUR',refill:'30 DAYS',cancel:'NO',drop:'NON-DROP',quality:'INDIAN PREMIUM',delivery:'12 minutes',details:['Premium Indian likes.','Works on public posts only.']},
+  ],
+  'comments': [
+    {id:16,name:'Instagram Indian Comments – Random Comments',price:113.87,min:10,max:10000,startTime:'0-1 HOUR',speed:'500/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'30 minutes',details:['Real Indian random comments.','Works on public posts.']},
+    {id:17,name:'Instagram Indian Comments – Custom Comments',price:165.61,min:10,max:5000,startTime:'0-2 HOURS',speed:'300/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'1-2 hours',details:['Custom comments provided by you.','Works on public posts.']},
+    {id:18,name:'Instagram USA Comments – Female',price:1977.02,min:5,max:1000,startTime:'0-6 HOURS',speed:'100/HOUR',refill:'NO',cancel:'NO',drop:'NON-DROP',quality:'USA FEMALE',delivery:'6-24 hours',details:['Real USA female comments.','Works on public posts.']},
+    {id:19,name:'Instagram 1 Verified Comment + Like',price:57.42,min:1,max:100,startTime:'0-12 HOURS',speed:'10/DAY',refill:'NO',cancel:'NO',drop:'NON-DROP',quality:'VERIFIED',delivery:'12-24 hours',details:['1 verified account comment + like.','Works on public posts.']},
+    {id:20,name:'Instagram 2 Verified Comment + Like',price:96.04,min:1,max:100,startTime:'0-12 HOURS',speed:'10/DAY',refill:'NO',cancel:'NO',drop:'NON-DROP',quality:'VERIFIED',delivery:'12-24 hours',details:['2 verified account comments + likes.','Works on public posts.']},
+  ],
+  'shares': [
+    {id:21,name:'Instagram Shares – Used By Influencers',price:2.44,min:100,max:500000,startTime:'INSTANT',speed:'50K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'5 minutes',details:['Real shares.','Works on public posts and reels.']},
+    {id:22,name:'Instagram Indian Shares – Used By Celebrities',price:3.65,min:100,max:200000,startTime:'INSTANT',speed:'30K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'8 minutes',details:['Indian audience shares.','Works on public posts.']},
+    {id:23,name:'Instagram Profile Shares – Used By Influencers',price:22.91,min:100,max:50000,startTime:'INSTANT',speed:'10K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'10 minutes',details:['Profile shares.','Increases profile reach.']},
+  ],
+  'saves': [
+    {id:24,name:'Instagram Saves – Used By Influencers',price:10.64,min:100,max:500000,startTime:'INSTANT',speed:'20K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'5 minutes',details:['Real saves.','Boosts algorithm score.','Works on public posts.']},
+    {id:25,name:'Instagram Indian Saves – Used By Celebrities',price:18.80,min:100,max:200000,startTime:'INSTANT',speed:'10K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'8 minutes',details:['Indian audience saves.','Works on public posts.']},
+  ],
+  'reposts': [
+    {id:26,name:'Instagram Repost – Used By Influencers',price:84.35,min:100,max:50000,startTime:'INSTANT',speed:'5K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'10 minutes',details:['Real reposts.','Works on public reels and posts.']},
+    {id:27,name:'Instagram Indian Repost – Used By Celebrities',price:93.00,min:100,max:50000,startTime:'INSTANT',speed:'3K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'12 minutes',details:['Indian audience reposts.','Works on public reels.']},
+  ],
+};
+
+// ── STATE ──
+let _selCat=null,_selSvc=null,_catOpen=false,_svcOpen=false;
+
+// ── MENU / ACCOUNT ──
+function openMenu() {
+  document.getElementById('sideMenu').classList.remove('-translate-x-full');
+  document.getElementById('menuOverlay').classList.remove('hidden');
+}
+function closeMenu() {
+  document.getElementById('sideMenu').classList.add('-translate-x-full');
+  document.getElementById('menuOverlay').classList.add('hidden');
+}
+function openAccountPopup() {
+  const popup = document.getElementById('accountPopup');
+  popup.classList.remove('hidden');
+  popup.style.display='flex';
+  // Set avatar letter
+  const name = document.getElementById('popupUsername').textContent || 'U';
+  const av = document.getElementById('popupAvatar');
+  if(av) av.textContent = name.charAt(0).toUpperCase();
+}
+function closeAccountPopup() {
+  const p=document.getElementById('accountPopup');
+  p.classList.add('hidden');
+  p.style.display='none';
+}
+function scrollToNewOrder() { document.getElementById('newOrderSection').scrollIntoView({behavior:'smooth'}); closeMenu(); }
+function logout() {
+  localStorage.clear();
+  window.location.href = 'index.html';
+}
+// ── READ USER DATA ──
+let username = localStorage.getItem('getxh_user_name');
+if(!username){ const e=localStorage.getItem('getxh_current_user'); if(e) username=e.split('@')[0]; }
+const _email = localStorage.getItem('getxh_current_user');
+if(username){ 
+  document.getElementById('userName').innerText=username; 
+  document.getElementById('popupUsername').innerText=username;
+  const mu = document.getElementById('menuUsername');
+  if(mu) mu.textContent=username;
+}
+if(_email){ 
+  document.getElementById('popupEmail').innerText=_email;
+  const me = document.getElementById('menuEmail');
+  if(me) me.textContent=_email;
+}
+
+// ── TABS & PILLS ──
+function switchOrderTab(t) {
+
+  const isNew=t==='new';
+  document.getElementById('tabNewOrder').className='flex-1 py-3 text-sm font-bold transition-all '+(isNew?'bg-[#2196f3] text-white':'bg-[#0e1629] text-gray-400');
+  document.getElementById('tabSubscription').className='flex-1 py-3 text-sm font-bold transition-all '+(!isNew?'bg-[#2196f3] text-white':'bg-[#0e1629] text-gray-400');
+}
+function filterPlatform(el) {
+  
+  document.querySelectorAll('.platform-pill').forEach(p=>{p.classList.remove('active-pill','bg-[#2196f3]','text-white');p.classList.add('bg-[#0e1629]','text-gray-300');});
+  el.classList.add('active-pill');el.classList.remove('bg-[#0e1629]','text-gray-300');
+}
+
+  // ── CATEGORY DROPDOWN ──
+function buildCategoryDropdown() {
+  const dd=document.getElementById('categoryDropdown'); dd.innerHTML='';
+  CATEGORIES.forEach(c=>{
+    const d=document.createElement('div'); d.className='cat-item'+(c.id===_selCat?' selected':'');
+    d.innerHTML=`<img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" class="w-5 h-5 rounded flex-shrink-0"/><span>${c.label}</span>`;
+    d.onclick=()=>selectCategory(c); dd.appendChild(d);
+  });
+}
+function toggleCategoryDropdown() {
+  _catOpen=!_catOpen;
+  const dd=document.getElementById('categoryDropdown'),arr=document.getElementById('catArrow');
+  if(_catOpen){buildCategoryDropdown();dd.classList.remove('hidden');dd.style.animation='slideDown 0.22s ease forwards';arr.style.transform='rotate(180deg)';closeSvcDrop();}
+  else{dd.classList.add('hidden');arr.style.transform='rotate(0deg)';}
+}
+function closeCatDrop(){document.getElementById('categoryDropdown').classList.add('hidden');document.getElementById('catArrow').style.transform='rotate(0deg)';_catOpen=false;}
+function selectCategory(cat) {
+  _selCat=cat.id;_selSvc=null;
+  document.getElementById('catIcon').classList.remove('hidden');
+  document.getElementById('catLabel').textContent=cat.label;
+  document.getElementById('catLabel').className='text-white text-sm font-semibold';
+  closeCatDrop();
+
+  // Show service wrapper
+  document.getElementById('serviceWrapper').style.display='block';
+  document.getElementById('svcLabel').textContent='— Select a service —';
+  document.getElementById('svcLabel').className='text-gray-400 text-sm font-semibold truncate';
+  document.getElementById('svcNumBadge').classList.add('hidden');
+  document.getElementById('serviceDetails').classList.add('hidden');
+  document.getElementById('placeOrderBtn').disabled=true;
+  document.getElementById('totalPrice').textContent='';
+
+  // ⭐ AUTO SELECT FIRST SERVICE — myfame.in jaisa
+  const firstSvc = (SERVICES[cat.id]||[])[0];
+  if(firstSvc) selectService(firstSvc);
+}
+
+
+// ── SERVICE DROPDOWN ──
+function buildServiceDropdown() {
+  const dd=document.getElementById('serviceDropdown'),q=(document.getElementById('searchService').value||'').toLowerCase();
+  dd.innerHTML='';
+  (SERVICES[_selCat]||[]).filter(s=>!q||s.name.toLowerCase().includes(q)).forEach(s=>{
+    const d=document.createElement('div');d.className='svc-item'+(_selSvc&&_selSvc.id===s.id?' selected':'');
+    d.innerHTML=`<div class="svc-num-badge">${s.id}</div><span class="flex-1 leading-snug">${s.name}</span><span class="text-[#2196f3] font-black text-xs flex-shrink-0 ml-2">₹${s.price.toFixed(2)}/1K</span>`;
+    d.onclick=()=>selectService(s);dd.appendChild(d);
+  });
+}
+function toggleServiceDropdown() {
+  if(!_selCat)return;_svcOpen=!_svcOpen;
+  const dd=document.getElementById('serviceDropdown'),arr=document.getElementById('svcArrow');
+  if(_svcOpen){buildServiceDropdown();dd.classList.remove('hidden');dd.style.animation='slideDown 0.22s ease forwards';arr.style.transform='rotate(180deg)';closeCatDrop();}
+  else closeSvcDrop();
+}
+function closeSvcDrop(){document.getElementById('serviceDropdown').classList.add('hidden');document.getElementById('svcArrow').style.transform='rotate(0deg)';_svcOpen=false;}
+function selectService(svc) {
+  _selSvc=svc;
+  document.getElementById('svcNumBadge').textContent=svc.id;document.getElementById('svcNumBadge').classList.remove('hidden');
+  document.getElementById('svcLabel').textContent=svc.name;document.getElementById('svcLabel').className='text-white text-sm font-semibold truncate';
+  closeSvcDrop();
+  document.getElementById('dStartTime').textContent=svc.startTime;
+  document.getElementById('dSpeed').textContent=svc.speed;
+  document.getElementById('dRefill').textContent=svc.refill;
+  document.getElementById('dCancel').textContent=svc.cancel;
+  document.getElementById('dDrop').textContent=svc.drop;
+  document.getElementById('dQuality').textContent=svc.quality;
+  document.getElementById('dDeliveryTime').textContent=svc.delivery;
+  document.getElementById('dDetailsList').innerHTML=svc.details.map(d=>`<li class="flex items-start gap-1.5"><span class="flex-shrink-0">•</span>${d}</li>`).join('');
+  document.getElementById('quantityInput').placeholder=`Min: ${svc.min.toLocaleString()} - Max: ${svc.max.toLocaleString()}`;
+  document.getElementById('quantityInput').value='';
+  document.getElementById('linkInput').value='';
+  document.getElementById('totalPrice').textContent='';
+  document.getElementById('quantityError').classList.add('hidden');
+  document.getElementById('placeOrderBtn').disabled=true;
+  const det=document.getElementById('serviceDetails');
+  det.classList.remove('hidden');det.style.animation='none';det.offsetHeight;det.style.animation='fadeUpAnim 0.35s ease forwards';
+}
+
+// ── SEARCH ──
+document.getElementById('searchService').addEventListener('input',()=>{
+  if(!_selCat) return;
+  if(!_svcOpen){ toggleServiceDropdown(); }
+  buildServiceDropdown();
+});
+// ── VALIDATION ──
+document.getElementById('quantityInput').addEventListener('input',()=>{
+  if(!_selSvc)return;
+  const qty=parseInt(document.getElementById('quantityInput').value);
+  const err=document.getElementById('quantityError');
+  if(!qty||qty<_selSvc.min||qty>_selSvc.max){err.classList.remove('hidden');document.getElementById('totalPrice').textContent='';document.getElementById('placeOrderBtn').disabled=true;return;}
+  err.classList.add('hidden');
+  document.getElementById('totalPrice').textContent='₹'+((qty/1000)*_selSvc.price).toFixed(2)+'  ';
+  document.getElementById('placeOrderBtn').disabled=!document.getElementById('linkInput').value.trim();
+});
+document.getElementById('linkInput').addEventListener('input',()=>{
+  if(!_selSvc)return;
+  const qty=parseInt(document.getElementById('quantityInput').value);
+  document.getElementById('placeOrderBtn').disabled=!(document.getElementById('linkInput').value.trim()&&qty&&qty>=_selSvc.min&&qty<=_selSvc.max);
+});
+
+// ── PLACE ORDER ──
+document.getElementById('placeOrderBtn').addEventListener('click',function(e){
+  e.preventDefault();if(!_selSvc)return;
+  const qty=parseInt(document.getElementById('quantityInput').value);
+  const link=document.getElementById('linkInput').value.trim();
+  if(!qty||!link)return;
+  // Ripple
+  const rip=document.getElementById('rippleEl'),r=this.getBoundingClientRect();
+  rip.style.left=(e.clientX-r.left)+'px';rip.style.top=(e.clientY-r.top)+'px';
+  rip.style.transform='scale(4)';rip.style.opacity='1';
+  setTimeout(()=>{rip.style.transform='scale(0)';rip.style.opacity='0';},500);
+  playSuccess();
+  // Show modal
+  const modal=document.getElementById('successModal'),box=document.getElementById('successModalBox');
+  modal.classList.remove('hidden');
+modal.style.display='flex';
+  setTimeout(()=>{box.style.transform='scale(1)';box.style.opacity='1';},30);
+   // Save to Firestore via global db (set by Firebase module below)
+  if(typeof _saveOrder==='function') _saveOrder(_selSvc,qty,link);
+});
+
+document.getElementById('closeModalBtn').addEventListener('click',closeSuccessModal);
+document.getElementById('viewOrdersBtn').addEventListener('click',()=>{
+  closeSuccessModal();
+  window.location.href='orders.html';
+});
+function closeSuccessModal(){
+  const box=document.getElementById('successModalBox');
+  box.style.transform='scale(0.75)';box.style.opacity='0';
+  setTimeout(()=>{
+  const m=document.getElementById('successModal');
+  m.classList.add('hidden');
+  m.style.display='none';
+},300);
+  // Reset sirf link aur quantity — category/service same rahe
+  document.getElementById('linkInput').value='';
+  document.getElementById('quantityInput').value='';
+  document.getElementById('totalPrice').textContent='';
+  document.getElementById('placeOrderBtn').disabled=true;
+}
+  
+// ⭐ AUTO SELECT DEFAULT CATEGORY + SERVICE ON PAGE LOAD
+window.addEventListener('load', () => {
+  const defaultCat = CATEGORIES[0];
+  if(defaultCat) selectCategory(defaultCat);
+});
+// Close dropdowns on outside click
+document.addEventListener('click',e=>{
+  if(!document.getElementById('categoryWrapper').contains(e.target)) closeCatDrop();
+  const sw=document.getElementById('serviceDropdownWrapper');
+  if(sw&&!sw.contains(e.target)) closeSvcDrop();
+});
+</script>
+
+<!-- FIREBASE MODULE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  orderBy,
+  limit,
+  doc,
+  getDoc,
+  setDoc,
+  increment
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+let currentUid = null;
+
+// ── LOGIN GUARD ──
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = "index.html"; return;
+  }
+  currentUid = user.uid;
+  await loadUserStats();
+  loadRecentOrders();
+});
+
+// ── SAVE ORDER (called from main script) ──
+window._saveOrder = async function(svc, qty, link) {
+  if (!currentUid) {
+    console.error('currentUid is null!');
+    alert('Session expired. Please login again.');
+    window.location.href = 'index.html';
+    return;
+  }
+  try {
+    const now = new Date();
+    const orderId = String(Date.now()).slice(-7);
+    const orderPrice = parseFloat(((qty/1000)*svc.price).toFixed(2));
+    await addDoc(collection(db, "orders", currentUid, "user_orders"), {
+      orderId:          orderId,
+      serviceName:      svc.name,
+      category:         svc.id,
+      quantity:         qty,
+      link:             link,
+      price:            orderPrice,
+      status:           "Pending",
+      createdAt:        now.toISOString(),
+      createdAtReadable:now.toLocaleString()
+    });
+    await setDoc(doc(db, "Users", currentUid), {
+      TotalOrders: increment(1),
+      TotalSpent: increment(orderPrice)
+    }, { merge: true });
+    await loadUserStats();
+    loadRecentOrders();
+  } catch(err) { console.error("Order save error:", err); }
+};
+
+async function loadUserStats() {
+  if (!currentUid) return;
+
+  const balanceEl = document.getElementById("userBalance");
+  const topBalanceEl = document.getElementById("walletBalanceTop");
+  const ordersEl = document.getElementById("userOrders");
+
+  try {
+    const userSnap = await getDoc(doc(db, "Users", currentUid));
+    if (userSnap.exists()) {
+      const userData = userSnap.data();
+      const balance = Number(userData.Balance || 0);
+      const totalOrders = Number(userData.TotalOrders || 0);
+
+      balanceEl.textContent = `₹${balance.toFixed(2)}`;
+      topBalanceEl.textContent = `₹${balance.toFixed(2)}`;
+      ordersEl.textContent = totalOrders.toLocaleString();
+      return;
+    }
+  } catch (err) {
+    console.error("Load user stats error:", err);
+  }
+
+  balanceEl.textContent = "₹0.00";
+  topBalanceEl.textContent = "₹0.00";
+  ordersEl.textContent = "0";
+}
+
+// ── LOAD RECENT ORDERS ──
+async function loadRecentOrders() {
+  const container = document.getElementById("recentOrdersContainer");
+  if (!container) return;
+  if (!currentUid) { container.innerHTML = `<p class="text-gray-500 text-sm">Loading...</p>`; return; }
+
+  try {
+    const q    = query(collection(db,"orders",currentUid,"user_orders"), orderBy("createdAt","desc"), limit(3));
+    const snap = await getDocs(q);
+    if (snap.empty) { container.innerHTML = `<p class="text-gray-500 text-sm">No recent orders found.</p>`; return; }
+    container.innerHTML = "";
+    snap.forEach(doc => {
+      const o = doc.data();
+      const box = document.createElement("div");
+      box.className = "p-4 bg-[#121c33] border border-white/10 rounded-xl mb-3";
+      box.innerHTML = `
+        <div class="font-semibold text-white text-sm mb-1">${o.serviceName||"—"}</div>
+        <div class="flex gap-4 text-xs text-gray-400">
+          <span>Qty: ${o.quantity||0}</span>
+          <span class="text-blue-400 font-bold">₹${(o.price||0).toFixed(2)}</span>
+          <span class="ml-auto">${o.createdAtReadable||""}</span>
+        </div>`;
+      container.appendChild(box);
+    });
+  } catch(err) { console.error("Load orders error:", err); }
+}
+</script>
+
+  <script>
+function showAccView(viewId) {
+  document.getElementById('accViewHome').style.display = (viewId==='accViewHome') ? 'block' : 'none';
+  document.getElementById('accViewAccount').style.display = (viewId==='accViewAccount') ? 'block' : 'none';
+  if(viewId==='accViewAccount') {
+    const name = localStorage.getItem('getxh_user_name') || '';
+    const email = localStorage.getItem('getxh_current_user') || '';
+    const n = name || email.split('@')[0] || '-';
+    document.getElementById('accName').textContent = n;
+    document.getElementById('accEmail').textContent = email || '-';
+    document.getElementById('accDetailUsername').textContent = n;
+    document.getElementById('accDetailEmail').textContent = email || '-';
+    ['accCurrPass','accNewPass','accConfPass'].forEach(id => document.getElementById(id).value='');
+    const msg = document.getElementById('accPassMsg');
+    msg.classList.add('hidden'); msg.textContent='';
+  }
+}
+function changePasswordInline() {
+  const curr = document.getElementById('accCurrPass').value.trim();
+  const nw   = document.getElementById('accNewPass').value.trim();
+  const conf = document.getElementById('accConfPass').value.trim();
+  const msg  = document.getElementById('accPassMsg');
+  function showMsg(text, isError) {
+    msg.textContent = text;
+    msg.style.color = isError ? '#f87171' : '#4ade80';
+    msg.classList.remove('hidden');
+  }
+  if(!curr||!nw||!conf) return showMsg('⚠ All fields required', true);
+  if(nw.length < 6)     return showMsg('⚠ Min 6 characters', true);
+  if(nw !== conf)       return showMsg('⚠ Passwords do not match', true);
+  if(typeof window._doChangePassword==='function') {
+    showMsg('Updating…', false);
+    window._doChangePassword(curr, nw, function(err) {
+      if(err) showMsg('⚠ Current password is wrong', true);
+      else { showMsg('✓ Changed! Logging out…', false); setTimeout(()=>logout(), 2000); }
+    });
+  }
+}
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588"
+};
+const app2 = initializeApp(firebaseConfig, "pwapp");
+const auth2 = getAuth(app2);
+onAuthStateChanged(auth2, (user) => {
+  if(!user) return;
+  window._doChangePassword = async function(currPass, newPass, callback) {
+    try {
+      const cred = EmailAuthProvider.credential(user.email, currPass);
+      await reauthenticateWithCredential(user, cred);
+      await updatePassword(user, newPass);
+      callback(null);
+    } catch(e) { callback(e); }
+  };
+});
+</script>
+ 
+  
+</body>
+</html>

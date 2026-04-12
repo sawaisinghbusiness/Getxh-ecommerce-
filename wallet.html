@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Wallet | GETXH</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+</head>
+
+<body class="bg-[#0b1220] text-white min-h-screen">
+
+<div class="sticky top-0 z-40 flex items-center gap-3 px-4 py-4 border-b border-white/10 bg-[#0b1220]">
+  <button onclick="window.location.href='Dashboard.html'"
+    class="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5">
+    <span class="material-symbols-outlined">arrow_back_ios_new</span>
+  </button>
+  <div>
+    <h1 class="text-lg font-black">Wallet</h1>
+    <p class="text-xs text-[#2196f3]">GETXH.IN</p>
+  </div>
+</div>
+
+<main class="px-4 py-5 pb-24">
+  <section class="rounded-3xl p-5 mb-5 border border-[#2196f3]/20"
+    style="background:linear-gradient(135deg,#10203d 0%, #163260 55%, #0b1730 100%);">
+    <p class="text-xs uppercase tracking-[0.25em] text-blue-200/70 mb-2">Available Balance</p>
+    <h2 id="walletBalance" class="text-4xl font-black">&#8377;0.00</h2>
+    <p id="walletUser" class="text-sm text-blue-100/80 mt-2">Loading account...</p>
+
+    <div class="grid grid-cols-2 gap-3 mt-5">
+      <div class="rounded-2xl p-4 bg-white/5 border border-white/10">
+        <p class="text-xs text-gray-400 mb-1">Total Orders</p>
+        <p id="walletOrders" class="text-xl font-black">0</p>
+      </div>
+      <div class="rounded-2xl p-4 bg-white/5 border border-white/10">
+        <p class="text-xs text-gray-400 mb-1">Total Spent</p>
+        <p id="walletSpent" class="text-xl font-black">&#8377;0.00</p>
+      </div>
+    </div>
+
+    <button onclick="document.getElementById('addFundsSection').scrollIntoView({ behavior: 'smooth', block: 'start' })"
+      class="mt-5 w-full rounded-2xl py-3.5 font-black text-sm text-[#06203a]"
+      style="background:linear-gradient(135deg,#9be7ff,#39c3ff);">
+      Add Funds
+    </button>
+  </section>
+
+  <section id="addFundsSection" class="rounded-3xl p-5 mb-5 border border-white/10 bg-[#121c33] shadow-xl">
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div>
+        <h3 class="text-base font-black text-white">Add Funds</h3>
+        <p class="text-xs text-gray-400 mt-1">Submit your payment details. Successful payments appear here in real time.</p>
+      </div>
+      <div class="px-3 py-2 rounded-2xl text-right border border-[#2196f3]/20 bg-[#2196f3]/10">
+        <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400">Status</p>
+        <p class="text-sm font-black text-[#38bdf8]">Live</p>
+      </div>
+    </div>
+
+    <div id="walletNotice" class="hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold"></div>
+
+    <div class="mb-4">
+      <label class="text-xs font-black uppercase tracking-[0.18em] text-gray-500 mb-2 block">Payment Method</label>
+      <div class="w-full rounded-2xl border border-white/10 bg-[#0e1629] px-4 py-3.5 text-white text-sm font-bold">
+        UPI
+      </div>
+    </div>
+
+    <div class="mb-4 rounded-[28px] border border-white/10 bg-white/95 p-4 text-[#111827] shadow-[0_20px_40px_rgba(0,0,0,0.18)]">
+      <label class="text-xs font-black uppercase tracking-[0.18em] text-gray-500 mb-3 block">Instruction</label>
+      <div class="space-y-3">
+        <div class="flex items-start gap-3">
+          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#3b82f6] text-lg font-black text-white">1</div>
+          <div>
+            <p class="text-sm font-black uppercase tracking-[0.04em] text-[#111827]">Step 1</p>
+            <p class="text-sm font-medium text-gray-600">Pay on QR from PhonePe</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#3b82f6] text-lg font-black text-white">2</div>
+          <div>
+            <p class="text-sm font-black uppercase tracking-[0.04em] text-[#111827]">Step 2</p>
+            <p class="text-sm font-medium text-gray-600">On PhonePe, copy Transaction ID</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#3b82f6] text-lg font-black text-white">3</div>
+          <div>
+            <p class="text-sm font-black uppercase tracking-[0.04em] text-[#111827]">Step 3</p>
+            <p class="text-sm font-medium text-gray-600">Paste Transaction ID and enter amount</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#3b82f6] text-lg font-black text-white">4</div>
+          <div>
+            <p class="text-sm font-black uppercase tracking-[0.04em] text-[#111827]">Step 4</p>
+            <p class="text-sm font-medium text-gray-600">Press Pay button</p>
+          </div>
+        </div>
+      </div>
+      <div class="mt-5 flex justify-center">
+        <div class="w-[190px] rounded-[22px] border border-[#dbeafe] bg-white p-3 shadow-[0_10px_24px_rgba(59,130,246,0.12)]">
+          <img src="./payment-qr.png" alt="GETXH payment QR code" class="w-full rounded-[18px] object-contain bg-white"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="text-xs font-black uppercase tracking-[0.18em] text-gray-500 mb-2 block">Transaction ID</label>
+      <input id="paymentRefInput" type="text" placeholder="Enter transaction ID"
+        class="w-full rounded-2xl border border-white/10 bg-[#0e1629] px-4 py-3.5 text-white text-sm outline-none placeholder-gray-500 focus:border-[#2196f3]"/>
+    </div>
+
+    <div class="mb-4">
+      <label class="text-xs font-black uppercase tracking-[0.18em] text-gray-500 mb-2 block">Amount</label>
+      <input id="amountInput" type="number" min="10" step="1" placeholder="Enter amount"
+        class="w-full rounded-2xl border border-white/10 bg-[#0e1629] px-4 py-3.5 text-white text-sm outline-none placeholder-gray-500 focus:border-[#2196f3]"/>
+    </div>
+
+    <button id="submitPaymentBtn" onclick="submitPaymentRequest()"
+      class="w-full rounded-2xl py-3.5 font-black text-sm text-[#06203a] transition active:scale-[0.985]"
+      style="background:linear-gradient(135deg,#9be7ff,#39c3ff);">
+      Pay
+    </button>
+  </section>
+
+  <section>
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-sm font-black tracking-wide">Recent Payments</h3>
+      <span class="text-xs font-bold text-[#2196f3]">Real-time updates</span>
+    </div>
+
+    <div id="transactionsList" class="space-y-3">
+      <div class="rounded-2xl border border-white/10 bg-[#121c33] p-4 text-sm text-gray-400">
+        Loading transactions...
+      </div>
+    </div>
+  </section>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, collection, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const RUPEE = '\u20B9';
+let stopUserListener = null;
+let stopPaymentsListener = null;
+let currentUser = null;
+
+window.pickAmount = function(amount) {
+  document.getElementById("amountInput").value = amount;
+};
+
+function showWalletNotice(message, type = "error") {
+  const el = document.getElementById("walletNotice");
+  el.textContent = message;
+  el.className = "mb-4 rounded-2xl px-4 py-3 text-sm font-semibold";
+  if (type === "error") {
+    el.style.background = "rgba(239,68,68,0.12)";
+    el.style.border = "1px solid rgba(239,68,68,0.2)";
+    el.style.color = "#fca5a5";
+  } else {
+    el.style.background = "rgba(34,197,94,0.12)";
+    el.style.border = "1px solid rgba(34,197,94,0.2)";
+    el.style.color = "#86efac";
+  }
+  el.classList.remove("hidden");
+}
+
+function hideWalletNotice() {
+  document.getElementById("walletNotice").classList.add("hidden");
+}
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  currentUser = user;
+  document.getElementById("walletUser").textContent = user.email || "Logged in user";
+
+  if (typeof stopUserListener === "function") stopUserListener();
+  if (typeof stopPaymentsListener === "function") stopPaymentsListener();
+
+  stopUserListener = subscribeWalletSummary(user.uid);
+  stopPaymentsListener = subscribeRecentPayments(user.uid);
+});
+
+window.submitPaymentRequest = async function() {
+  hideWalletNotice();
+
+  if (!currentUser) {
+    showWalletNotice("Please login again.");
+    return;
+  }
+
+  const amount = Number(document.getElementById("amountInput").value || 0);
+  const paymentMethod = "UPI";
+  const paymentRef = document.getElementById("paymentRefInput").value.trim();
+  const btn = document.getElementById("submitPaymentBtn");
+
+  if (!amount || amount < 10) {
+    showWalletNotice("Minimum add funds amount is ₹10.");
+    return;
+  }
+  if (!paymentMethod) {
+    showWalletNotice("Please select a payment method.");
+    return;
+  }
+  if (!paymentRef || paymentRef.length < 6) {
+    showWalletNotice("Please enter a valid UTR / Reference ID.");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Submitting...";
+
+  try {
+    await addDoc(collection(db, "payments", currentUser.uid, "user_payments"), {
+      title: "Wallet Top-up",
+      amount,
+      status: "pending",
+      paymentMethod,
+      paymentId: paymentRef.toUpperCase(),
+      referenceId: paymentRef.toUpperCase(),
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      uid: currentUser.uid,
+      email: currentUser.email || "",
+      type: "add_funds"
+    });
+
+    document.getElementById("amountInput").value = "";
+    document.getElementById("paymentRefInput").value = "";
+    showWalletNotice("Payment request submitted successfully.", "success");
+  } catch (err) {
+    console.error("Payment request submit error:", err);
+    showWalletNotice("Unable to submit payment right now.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Submit Payment";
+  }
+};
+
+function formatDateTime(value) {
+  if (!value) return "";
+  let date = null;
+  if (value.toDate) {
+    date = value.toDate();
+  } else if (value.seconds) {
+    date = new Date(value.seconds * 1000);
+  } else {
+    date = new Date(value);
+  }
+  if (!date || Number.isNaN(date.getTime())) return "";
+  return date.toLocaleString("en-IN", {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+}
+
+function subscribeWalletSummary(uid) {
+  return onSnapshot(doc(db, "Users", uid), (snap) => {
+    const data = snap.exists() ? snap.data() : {};
+    const balance = Number(data.Balance || 0);
+    const totalOrders = Number(data.TotalOrders || 0);
+    const totalSpent = Number(data.TotalSpent || 0);
+
+    document.getElementById("walletBalance").textContent = `${RUPEE}${balance.toFixed(2)}`;
+    document.getElementById("walletOrders").textContent = totalOrders.toLocaleString();
+    document.getElementById("walletSpent").textContent = `${RUPEE}${totalSpent.toFixed(2)}`;
+  }, (err) => {
+    console.error("Wallet summary load error:", err);
+  });
+}
+
+function subscribeRecentPayments(uid) {
+  const container = document.getElementById("transactionsList");
+
+  return onSnapshot(
+    query(
+      collection(db, "payments", uid, "user_payments"),
+      orderBy("createdAt", "desc"),
+      limit(5)
+    ),
+    (snap) => {
+      if (snap.empty) {
+        container.innerHTML = `
+          <div class="rounded-2xl border border-white/10 bg-[#121c33] p-4 text-sm text-gray-400">
+            No recent payments yet. Successful add-fund payments will appear here instantly.
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+      snap.forEach((docSnap) => {
+        const payment = docSnap.data();
+        const amount = Number(payment.amount || 0);
+        const status = String(payment.status || "pending").toLowerCase();
+        const method = payment.paymentMethod || payment.method || "Not specified";
+        const paymentId = payment.paymentId || payment.transactionId || payment.referenceId || docSnap.id.slice(-8).toUpperCase();
+        const createdAt = formatDateTime(payment.createdAt || payment.updatedAt);
+        const isSuccess = status === "success" || status === "successful" || status === "completed";
+        const amountColor = isSuccess ? "text-green-400" : status === "failed" ? "text-red-400" : "text-yellow-400";
+        const statusColor = isSuccess ? "text-green-400" : status === "failed" ? "text-red-400" : "text-yellow-400";
+        const title = payment.title || "Wallet Top-up";
+
+        const item = document.createElement("div");
+        item.className = "rounded-2xl border border-white/10 bg-[#121c33] p-4 flex items-start justify-between gap-3";
+        item.innerHTML = `
+          <div class="min-w-0">
+            <p class="text-sm font-bold text-white truncate">${title}</p>
+            <p class="text-xs text-gray-400 mt-1">Payment ID: ${paymentId}</p>
+            <p class="text-xs text-gray-400 mt-1">Method: ${method}</p>
+            <p class="text-xs ${statusColor} mt-1 uppercase font-bold tracking-wide">${status}</p>
+            <p class="text-xs text-gray-500 mt-1">${createdAt}</p>
+          </div>
+          <p class="text-sm font-black ${amountColor} whitespace-nowrap">${isSuccess ? "+" : ""} ${RUPEE}${amount.toFixed(2)}</p>`;
+        container.appendChild(item);
+      });
+    },
+    (err) => {
+      console.error("Payment load error:", err);
+      container.innerHTML = `
+        <div class="rounded-2xl border border-red-500/20 bg-[#121c33] p-4 text-sm text-red-400">
+          Recent payments load nahi ho paaye.
+        </div>`;
+    }
+  );
+}
+</script>
+
+</body>
+</html>
