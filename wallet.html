@@ -241,7 +241,7 @@
 
     <div class="mb-3">
       <label class="text-xs font-black uppercase tracking-[0.18em] text-gray-500 mb-2 block">Amount</label>
-      <input id="amountInput" type="number" min="10" step="1" placeholder="Enter amount"
+      <input id="amount" type="number" min="10" step="1" placeholder="Enter amount"
         class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm outline-none placeholder-gray-500"/>
     </div>
 
@@ -251,7 +251,7 @@
       <button type="button" onclick="pickAmount(1000)" class="amount-chip rounded-2xl px-4 py-2.5 text-sm font-bold text-white">&#8377;1000</button>
     </div>
 
-    <button id="submitPaymentBtn" onclick="submitPaymentRequest()"
+    <button id="submitPaymentBtn" onclick="payNow()"
       class="gradient-btn w-full rounded-2xl py-3.5 font-black text-sm text-white active:scale-[0.985]">
       Pay
     </button>
@@ -274,7 +274,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, collection, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, query, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -294,7 +294,7 @@ let stopPaymentsListener = null;
 let currentUser = null;
 
 window.pickAmount = function(amount) {
-  document.getElementById("amountInput").value = amount;
+  document.getElementById("amount").value = amount;
 };
 
 function showWalletNotice(message, type = "error") {
@@ -333,57 +333,136 @@ onAuthStateChanged(auth, async (user) => {
   stopPaymentsListener = subscribeRecentPayments(user.uid);
 });
 
-window.submitPaymentRequest = async function() {
+window.payNow = async function() {
   hideWalletNotice();
 
-  if (!currentUser) {
-    showWalletNotice("Please login again.");
-    return;
-  }
-
-  const amount = Number(document.getElementById("amountInput").value || 0);
-  const paymentMethod = "UPI";
-  const paymentRef = document.getElementById("paymentRefInput").value.trim();
+  const amountInput = document.getElementById("amount");
+  const enteredAmount = Number(amountInput.value || 0);
   const btn = document.getElementById("submitPaymentBtn");
 
-  if (!amount || amount < 10) {
-    showWalletNotice("Minimum add funds amount is ₹10.");
+  if (!enteredAmount) {
+    alert("Please enter amount");
     return;
   }
-  if (!paymentMethod) {
-    showWalletNotice("Please select a payment method.");
-    return;
-  }
-  if (!paymentRef || paymentRef.length < 6) {
-    showWalletNotice("Please enter a valid UTR / Reference ID.");
+
+  if (enteredAmount <= 0) {
+    alert("Please enter a valid amount");
     return;
   }
 
   btn.disabled = true;
-  btn.textContent = "Verifying payment...";
+  btn.textContent = "Processing...";
 
   try {
-    await addDoc(collection(db, "payments", currentUser.uid, "user_payments"), {
-      title: "Wallet Top-up",
-      amount,
-      status: "pending",
-      paymentMethod,
-      paymentId: paymentRef.toUpperCase(),
-      referenceId: paymentRef.toUpperCase(),
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-      uid: currentUser.uid,
-      email: currentUser.email || "",
-      type: "add_funds"
+    const orderResponse = await fetch("http://localhost:5000/create-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ amount: enteredAmount })
     });
 
-    document.getElementById("amountInput").value = "";
-    document.getElementById("paymentRefInput").value = "";
-    showWalletNotice("Payment request submitted successfully.", "success");
+    if (!orderResponse.ok) {
+      throw new Error("Order creation failed");
+    }
+
+    const order = await orderResponse.json();
+    const razorpay = new window.Razorpay({
+      key: "rzp_test_123456789",
+      amount: order.amount,
+      currency: "INR",
+      order_id: order.id,
+      name: "GETXH",
+      description: "Add Funds",
+      handler: async function(response) {
+        try {
+          console.log("Razorpay success response:", response);
+
+          const verifyResponse = await fetch("http://localhost:5000/verify", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              order_id: response.razorpay_order_id,
+              payment_id: response.razorpay_payment_id,
+              signature: response.razorpay_signature
+            })
+          });
+
+          if (!verifyResponse.ok) {
+            throw new Error("Verification request failed");
+          }
+
+          const verification = await verifyResponse.json();
+          console.log("Verification response:", verification);
+
+          if (!verification.success) {
+            throw new Error("Payment verification failed");
+          }
+
+          if (!currentUser) {
+            throw new Error("User session not found");
+          }
+
+          const paymentId = response.razorpay_payment_id;
+          const paymentRef = doc(db, "payments", currentUser.uid, "user_payments", paymentId);
+          const userRef = doc(db, "Users", currentUser.uid);
+
+          console.log("Checking payment duplicate for:", paymentId);
+          const existingPayment = await getDoc(paymentRef);
+          if (existingPayment.exists()) {
+            console.warn("Duplicate payment detected:", paymentId);
+            showWalletNotice("Duplicate payment detected");
+            return;
+          }
+
+          console.log("Updating wallet balance for user:", currentUser.uid);
+          await updateDoc(userRef, {
+            Balance: increment(enteredAmount)
+          });
+
+          console.log("Saving payment record:", paymentId);
+          await setDoc(paymentRef, {
+            title: "Wallet Top-up",
+            amount: enteredAmount,
+            status: "success",
+            paymentId,
+            orderId: response.razorpay_order_id,
+            method: "Razorpay",
+            paymentMethod: "Razorpay",
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+            uid: currentUser.uid,
+            email: currentUser.email || "",
+            type: "add_funds"
+          });
+
+          amountInput.value = "";
+          document.getElementById("paymentRefInput").value = "";
+          showWalletNotice("Payment successful. Balance updated.", "success");
+          alert("Payment Successful");
+        } catch (error) {
+          console.error("Payment verification error:", error);
+          showWalletNotice(error.message || "Payment verification failed");
+          alert("Payment Failed");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Pay";
+        }
+      },
+      modal: {
+        ondismiss: function() {
+          btn.disabled = false;
+          btn.textContent = "Pay";
+        }
+      }
+    });
+
+    razorpay.open();
   } catch (err) {
-    console.error("Payment request submit error:", err);
-    showWalletNotice("Unable to submit payment right now.");
-  } finally {
+    console.error("Payment initialization error:", err);
+    alert("Server error");
     btn.disabled = false;
     btn.textContent = "Pay";
   }
@@ -480,6 +559,7 @@ function subscribeRecentPayments(uid) {
   );
 }
 </script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 </body>
 </html>

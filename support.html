@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -139,14 +139,150 @@ textarea::placeholder {
   background: linear-gradient(135deg, #2563eb, #0ea5e9);
 }
 .modal-overlay {
-  background: rgba(0,0,0,0.72);
-  backdrop-filter: blur(8px);
+  background: #0b1220;
+}
+.ticket-modal-shell {
+  background:
+    radial-gradient(circle at top, rgba(34, 211, 238, 0.08), transparent 24%),
+    linear-gradient(180deg, #0d1628 0%, #0b1220 58%, #09111f 100%);
+}
+.ticket-modal-messages {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.ticket-modal-messages::-webkit-scrollbar {
+  width: 5px;
+}
+.ticket-modal-messages::-webkit-scrollbar-thumb {
+  background: rgba(148,163,184,0.28);
+  border-radius: 999px;
+}
+.ticket-modal-messages {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148,163,184,0.28) transparent;
+}
+.desktop-sidebar {
+  background:
+    radial-gradient(circle at top left, rgba(56,189,248,0.08), transparent 30%),
+    linear-gradient(180deg, #0e1629 0%, #0b1220 100%);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 18px 0 40px rgba(2,8,23,0.32);
+}
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.sidebar-link:hover {
+  background: rgba(56,189,248,0.08);
+  color: #e0f2fe;
+  box-shadow: 0 0 0 1px rgba(56,189,248,0.12), 0 14px 30px rgba(2,8,23,0.24);
+  transform: translateX(2px);
+}
+.sidebar-link.active {
+  background: linear-gradient(90deg, rgba(14,165,233,0.16), rgba(34,211,238,0.08));
+  color: #38bdf8;
+  box-shadow: inset 0 0 0 1px rgba(56,189,248,0.18), 0 18px 30px rgba(2,8,23,0.24);
+}
+.sidebar-link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: inherit;
 }
 </style>
 </head>
-<body class="bg-[#0b1220] text-white pb-24">
+<body class="bg-[#0b1220] text-white pb-24 lg:pb-0">
 
-<div class="fixed inset-x-0 top-0 z-40 border-b border-white/5 bg-[#0b1220]">
+<aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-72 lg:flex-col lg:overflow-hidden lg:border-r lg:border-white/10"
+  style="background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);">
+  <div class="px-5 pt-8 pb-5 border-b border-white/10" style="background:linear-gradient(135deg,#0e1f3d,#162844);">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:20px">verified_user</span>
+      </div>
+      <div>
+        <p class="font-black text-white text-base tracking-wide">GETXH<span style="color:#2196f3">.IN</span></p>
+        <div class="flex items-center gap-1 mt-0.5">
+          <div class="h-1.5 w-1.5 rounded-full bg-green-400" style="animation:glowPulse 2s infinite"></div>
+          <p class="text-xs font-semibold" style="color:#2196f3">Online</p>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">person</span>
+      </div>
+      <div class="min-w-0">
+        <p id="menuUsername" class="text-xs font-bold text-white truncate">User</p>
+        <p id="menuEmail" class="text-xs text-gray-500 truncate">—</p>
+      </div>
+    </div>
+  </div>
+  <div class="flex-1 overflow-y-auto py-3 px-3">
+    <a href="Dashboard.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-500/15">
+        <span class="material-symbols-outlined text-blue-400" style="font-size:16px">dashboard</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Dashboard</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a href="Dashboard.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-500/15">
+        <span class="material-symbols-outlined text-blue-400" style="font-size:16px">add_shopping_cart</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">New Order</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a href="support.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 transition-all active:scale-[0.98]" style="background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">support_agent</span>
+      </div>
+      <span class="font-bold text-white text-sm">Support</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a href="orders.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-yellow-500/15">
+        <span class="material-symbols-outlined text-yellow-400" style="font-size:16px">list_alt</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Orders</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a href="wallet.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-500/15">
+        <span class="material-symbols-outlined text-green-400" style="font-size:16px">account_balance_wallet</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Add Funds</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <div class="h-px bg-white/10 my-3 mx-2"></div>
+    <button onclick="window.location.href='index.html'" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-500/15">
+        <span class="material-symbols-outlined text-red-400" style="font-size:16px">logout</span>
+      </div>
+      <span class="font-bold text-red-400 text-sm">Logout</span>
+    </button>
+  </div>
+  <div class="px-5 py-4 border-t border-white/10">
+    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
+  </div>
+</aside>
+
+<div class="lg:pl-72">
+<div class="fixed inset-x-0 top-0 z-40 border-b border-white/5 bg-[#0b1220] lg:left-72">
   <div class="flex items-center gap-3 px-4 py-4">
     <button onclick="history.back()" class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5">
       <span class="material-symbols-outlined text-[20px]">arrow_back_ios</span>
@@ -161,7 +297,8 @@ textarea::placeholder {
   </div>
 </div>
 
-<main class="px-4 pt-[76px] pb-4">
+<main class="px-4 pt-[76px] pb-4 lg:px-8 lg:pt-[88px] lg:pb-8">
+  <div class="lg:mx-auto lg:max-w-6xl">
   <div id="pageNotice" class="mb-4 hidden rounded-2xl px-4 py-3 text-sm font-semibold"></div>
 
   <section class="mb-4 rounded-[20px] border border-white/5 bg-[#11192d] p-4 shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
@@ -238,25 +375,22 @@ textarea::placeholder {
       </div>
     </div>
   </section>
+  </div>
 </main>
 
-<div id="ticketModal" class="modal-overlay fixed inset-0 z-50 hidden items-end justify-center">
-  <div class="w-full max-w-md rounded-t-[28px] border border-white/8 bg-[#0f172a] shadow-[0_-24px_60px_rgba(0,0,0,0.45)]">
-    <div class="flex justify-center py-3">
-      <div class="h-1 w-10 rounded-full bg-white/15"></div>
-    </div>
-    <div class="flex items-start justify-between gap-3 px-4 pb-4">
-      <div>
-        <p id="modalTitle" class="text-lg font-black text-white">Orders - Refill</p>
-        <p id="modalOrderId" class="mt-1 text-xs text-slate-400">Order ID: -</p>
-      </div>
-      <button onclick="closeTicketModal()" class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-slate-300">
-        <span class="material-symbols-outlined text-[20px]">close</span>
+<div id="ticketModal" class="modal-overlay fixed inset-0 z-50 hidden">
+  <div class="ticket-modal-shell flex h-screen w-full flex-col">
+    <div class="flex items-center gap-3 border-b border-white/8 px-4 py-4">
+      <button onclick="closeTicketModal()" class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-slate-300">
+        <span class="material-symbols-outlined text-[20px]">arrow_back_ios_new</span>
       </button>
+      <div class="min-w-0 flex-1">
+        <p id="modalTitle" class="truncate text-lg font-black text-white">Orders - Refill</p>
+        <p id="modalOrderId" class="mt-1 truncate text-xs text-slate-400">Order ID: -</p>
+      </div>
     </div>
-    <div class="border-t border-white/6"></div>
-    <div id="ticketMessages" class="scrollbar-hidden max-h-[52vh] overflow-y-auto px-4 py-4 space-y-3"></div>
-    <div class="border-t border-white/6 px-4 py-4">
+    <div id="ticketMessages" class="ticket-modal-messages flex-1 overflow-y-auto px-4 py-5"></div>
+    <div class="border-t border-white/8 bg-[#0d1628]/95 px-4 py-4 backdrop-blur-sm">
       <div class="flex items-center justify-between gap-3">
         <span id="modalStatusBadge" class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em]">Pending</span>
         <button id="closeTicketAction" onclick="closeCurrentTicket()" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-200 transition active:scale-[0.98]">
@@ -267,7 +401,7 @@ textarea::placeholder {
   </div>
 </div>
 
-<div class="fixed bottom-0 left-0 right-0 z-40 border-t border-[#1e2a4a] bg-[#0e1629]">
+<div class="fixed bottom-0 left-0 right-0 z-40 border-t border-[#1e2a4a] bg-[#0e1629] lg:hidden">
   <div class="flex items-center justify-around py-2 text-xs">
     <a href="Dashboard.html" class="flex flex-col items-center text-slate-400">
       <span class="material-symbols-outlined">dashboard</span>
@@ -290,6 +424,7 @@ textarea::placeholder {
     </button>
   </div>
 </div>
+</div>
 
 <script>
 const CATEGORIES = {
@@ -302,6 +437,15 @@ let currentSubCategory = null;
 let ticketRows = [];
 let validOrderIds = new Set();
 let activeTicketDoc = null;
+let unsubscribeActiveTicket = null;
+
+const _menuName = localStorage.getItem('getxh_user_name') || '';
+const _menuEmail = localStorage.getItem('getxh_current_user') || '';
+const _menuInitial = _menuName || (_menuEmail.split('@')[0] || 'User');
+const menuUserEl = document.getElementById('menuUsername');
+const menuEmailEl = document.getElementById('menuEmail');
+if (menuUserEl) menuUserEl.textContent = _menuInitial;
+if (menuEmailEl) menuEmailEl.textContent = _menuEmail;
 
 function showNotice(id, message, type = 'error') {
   const el = document.getElementById(id);
@@ -492,7 +636,7 @@ function renderTicketList(tickets) {
 
   list.innerHTML = tickets.map(ticket => {
     const status = String(ticket.status || 'pending').toLowerCase();
-    const statusClass = status === 'closed' ? 'bg-white/8 text-slate-400' : 'bg-sky-500/12 text-sky-400';
+    const statusClass = status === 'solved' ? 'bg-emerald-500/12 text-emerald-300' : 'bg-sky-500/12 text-sky-400';
     return `
       <button onclick="openTicketModal('${ticket.id}')" class="ticket-row w-full rounded-[20px] px-4 py-4 text-left">
         <div class="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
@@ -502,7 +646,7 @@ function renderTicketList(tickets) {
           </div>
           <div class="min-w-0">
             <p class="text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Category</p>
-            <p class="mt-1 text-sm font-bold text-white">${ticket.subject || 'Order'}</p>
+            <p class="mt-1 text-sm font-bold text-white">${ticket.category || 'Order'}${ticket.subcategory ? ` / ${ticket.subcategory}` : ''}</p>
           </div>
           <div class="min-w-0">
             <p class="text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Status</p>
@@ -526,16 +670,26 @@ function openTicketModal(ticketId) {
   if (!ticket) return;
   activeTicketDoc = ticketId;
   renderTicketModal(ticket);
+  if (typeof unsubscribeActiveTicket === 'function') unsubscribeActiveTicket();
   const modal = document.getElementById('ticketModal');
   modal.classList.remove('hidden');
-  modal.style.display = 'flex';
+  modal.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  if (window.startActiveTicketListener) {
+    window.startActiveTicketListener(ticketId);
+  }
 }
 
 function closeTicketModal() {
   activeTicketDoc = null;
+  if (typeof unsubscribeActiveTicket === 'function') {
+    unsubscribeActiveTicket();
+    unsubscribeActiveTicket = null;
+  }
   const modal = document.getElementById('ticketModal');
   modal.classList.add('hidden');
   modal.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 function renderTicketModal(ticket) {
@@ -545,34 +699,40 @@ function renderTicketModal(ticket) {
   const status = String(ticket.status || 'pending').toLowerCase();
   const badge = document.getElementById('modalStatusBadge');
   badge.textContent = status;
-  badge.className = 'rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] ' + (status === 'closed' ? 'bg-white/8 text-slate-400' : 'bg-sky-500/12 text-sky-400');
+  badge.className = 'rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] ' + (status === 'solved' ? 'bg-emerald-500/12 text-emerald-300' : 'bg-sky-500/12 text-sky-400');
 
   const closeBtn = document.getElementById('closeTicketAction');
-  const isClosed = status === 'closed';
+  const isClosed = status === 'solved';
   closeBtn.classList.toggle('hidden', isClosed);
 
   const messages = Array.isArray(ticket.messages) ? ticket.messages : [];
   const root = document.getElementById('ticketMessages');
+  const availabilityNote = `
+    <div class="mb-4 rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-xs text-slate-300">
+      <span class="font-bold text-sky-400">Support hours:</span> 10:00 AM – 10:00 PM IST. Replies typically within 2–6 hours.
+    </div>`;
   if (!messages.length) {
-    root.innerHTML = '<div class="rounded-2xl bg-white/5 px-4 py-6 text-center text-sm text-slate-400">No messages found.</div>';
+    root.innerHTML = availabilityNote + '<div class="rounded-3xl border border-white/8 bg-white/5 px-4 py-6 text-center text-sm text-slate-400">No messages found.</div>';
   } else {
-    root.innerHTML = messages.map(message => {
+    root.innerHTML = availabilityNote + messages.map(message => {
       const sender = String(message.sender || 'user').toLowerCase();
       const isAdmin = sender === 'admin';
       const wrapperClass = isAdmin ? 'items-start' : 'items-end';
       const bubbleClass = isAdmin ? 'bubble-admin text-white' : 'bubble-user text-slate-100';
-      const label = isAdmin ? 'GETXH' : 'You';
+      const label = isAdmin ? 'GETXH Support' : 'You';
       return `
-        <div class="flex flex-col ${wrapperClass}">
+        <div class="mb-4 flex flex-col ${wrapperClass}">
           <p class="mb-1 px-1 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">${label}</p>
-          <div class="max-w-[82%] rounded-2xl px-4 py-3 ${bubbleClass}">
+          <div class="max-w-[75%] rounded-[22px] px-4 py-3 ${bubbleClass}">
             <p class="text-sm leading-6">${escapeHtml(message.text || '')}</p>
           </div>
           <p class="mt-1 px-1 text-[11px] text-slate-500">${formatDateTime(message.createdAt)}</p>
         </div>`;
     }).join('');
   }
-  root.scrollTop = root.scrollHeight;
+  requestAnimationFrame(() => {
+    root.scrollTop = root.scrollHeight;
+  });
 }
 
 function escapeHtml(value) {
@@ -598,7 +758,8 @@ import {
   query,
   serverTimestamp,
   Timestamp,
-  updateDoc
+  updateDoc,
+  where
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -650,7 +811,7 @@ window.createTicket = async function () {
   if (needsOrder) {
     const duplicateOpenTicket = ticketRows.some(ticket =>
       String(ticket.orderId || '').toUpperCase() === orderIdValue &&
-      String(ticket.status || '').toLowerCase() !== 'closed'
+      String(ticket.status || '').toLowerCase() !== 'solved'
     );
     if (duplicateOpenTicket) {
       showNotice('formNotice', 'Ticket already submitted for this Order ID. Please close the current ticket or enter another ID.');
@@ -669,9 +830,11 @@ window.createTicket = async function () {
   submitBtn.textContent = 'Submitting...';
 
   try {
-    await addDoc(collection(db, 'tickets', currentUser.uid, 'user_tickets'), {
+    await addDoc(collection(db, 'tickets'), {
+      uid: currentUser.uid,
+      userEmail: currentUser.email || '',
+      userName: currentUser.displayName || 'User',
       orderId: needsOrder ? orderIdValue : '',
-      subject: 'Order',
       status: 'pending',
       category: currentCategory,
       subcategory: currentSubCategory,
@@ -690,7 +853,12 @@ window.createTicket = async function () {
     showNotice('pageNotice', 'Ticket submitted successfully.', 'info');
   } catch (err) {
     console.error(err);
-    showNotice('formNotice', 'Unable to submit ticket right now.');
+    const errorCode = String(err?.code || '');
+    if (errorCode === 'permission-denied') {
+      showNotice('formNotice', 'Ticket submit blocked by Firestore rules. Deploy the updated rules first.');
+    } else {
+      showNotice('formNotice', 'Unable to submit ticket right now.');
+    }
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = 'Submit Ticket';
@@ -703,8 +871,8 @@ window.closeCurrentTicket = async function () {
   closeBtn.disabled = true;
   closeBtn.textContent = 'Closing...';
   try {
-    await updateDoc(doc(db, 'tickets', currentUser.uid, 'user_tickets', activeTicketDoc), {
-      status: 'closed'
+    await updateDoc(doc(db, 'tickets', activeTicketDoc), {
+      status: 'solved'
     });
   } catch (err) {
     console.error(err);
@@ -723,6 +891,26 @@ onAuthStateChanged(auth, user => {
 
   currentUser = user;
 
+  window.startActiveTicketListener = function(ticketId) {
+    if (typeof unsubscribeActiveTicket === 'function') unsubscribeActiveTicket();
+    unsubscribeActiveTicket = onSnapshot(doc(db, 'tickets', ticketId), docSnap => {
+      if (!docSnap.exists()) {
+        closeTicketModal();
+        return;
+      }
+      const current = { id: docSnap.id, ...docSnap.data() };
+      const nextRows = ticketRows.filter(ticket => ticket.id !== ticketId);
+      nextRows.push(current);
+      ticketRows = nextRows.sort((a, b) => {
+        const aTime = a.createdAt?.seconds ? a.createdAt.seconds : new Date(a.createdAt || 0).getTime() / 1000;
+        const bTime = b.createdAt?.seconds ? b.createdAt.seconds : new Date(b.createdAt || 0).getTime() / 1000;
+        return bTime - aTime;
+      });
+      renderTicketList(ticketRows);
+      if (activeTicketDoc === ticketId) renderTicketModal(current);
+    });
+  };
+
   onSnapshot(collection(db, 'orders', user.uid, 'user_orders'), snapshot => {
     const ids = new Set();
     snapshot.forEach(item => {
@@ -734,8 +922,8 @@ onAuthStateChanged(auth, user => {
   });
 
   const ticketQuery = query(
-    collection(db, 'tickets', user.uid, 'user_tickets'),
-    orderBy('createdAt', 'desc')
+    collection(db, 'tickets'),
+    where('uid', '==', user.uid)
   );
 
   onSnapshot(ticketQuery, snapshot => {
@@ -743,8 +931,12 @@ onAuthStateChanged(auth, user => {
     snapshot.forEach(item => {
       tickets.push({ id: item.id, ...item.data() });
     });
-    ticketRows = tickets;
-    renderTicketList(tickets);
+    ticketRows = tickets.sort((a, b) => {
+      const aTime = a.createdAt?.seconds ? a.createdAt.seconds : new Date(a.createdAt || 0).getTime() / 1000;
+      const bTime = b.createdAt?.seconds ? b.createdAt.seconds : new Date(b.createdAt || 0).getTime() / 1000;
+      return bTime - aTime;
+    });
+    renderTicketList(ticketRows);
     if (activeTicketDoc) {
       const current = getTicketById(activeTicketDoc);
       if (current) {

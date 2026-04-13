@@ -87,10 +87,134 @@ body {
   color: #67e8f9;
   transform: translateY(-1px);
 }
+.desktop-sidebar {
+  background:
+    radial-gradient(circle at top left, rgba(56,189,248,0.08), transparent 28%),
+    linear-gradient(180deg, #0e1629 0%, #0b1220 100%);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 18px 0 42px rgba(2, 8, 23, 0.32);
+}
+.desktop-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.desktop-sidebar-link:hover {
+  background: rgba(56,189,248,0.08);
+  color: #e0f2fe;
+  box-shadow: 0 0 0 1px rgba(56,189,248,0.12), 0 14px 30px rgba(2,8,23,0.24);
+  transform: translateX(2px);
+}
+.desktop-sidebar-link.active {
+  background: linear-gradient(90deg, rgba(14,165,233,0.16), rgba(34,211,238,0.08));
+  color: #38bdf8;
+  box-shadow: inset 0 0 0 1px rgba(56,189,248,0.18), 0 18px 30px rgba(2,8,23,0.24);
+}
+.desktop-sidebar-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: inherit;
+  flex-shrink: 0;
+}
 </style>
 </head>
 
 <body class="bg-[#0b1220] text-white">
+
+<aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-72 lg:flex-col lg:overflow-hidden lg:border-r lg:border-white/10"
+  style="background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);">
+  <div class="px-5 pt-8 pb-5 border-b border-white/10" style="background:linear-gradient(135deg,#0e1f3d,#162844);">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:20px">verified_user</span>
+      </div>
+      <div>
+        <p class="font-black text-white text-base tracking-wide">GETXH<span style="color:#2196f3">.IN</span></p>
+        <div class="flex items-center gap-1 mt-0.5">
+          <div class="h-1.5 w-1.5 rounded-full bg-green-400" style="animation:glowPulse 2s infinite"></div>
+          <p class="text-xs font-semibold" style="color:#2196f3">Online</p>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">person</span>
+      </div>
+      <div class="min-w-0">
+        <p id="menuUsernameDesktop" class="text-xs font-bold text-white truncate">User</p>
+        <p id="menuEmailDesktop" class="text-xs text-gray-500 truncate">—</p>
+      </div>
+    </div>
+  </div>
+  <div class="flex-1 overflow-y-auto py-3 px-3">
+    <a href="Dashboard.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 transition-all active:scale-[0.98]" style="background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">dashboard</span>
+      </div>
+      <span class="font-bold text-white text-sm">Dashboard</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <button onclick="scrollToNewOrder()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-500/15">
+        <span class="material-symbols-outlined text-blue-400" style="font-size:16px">add_shopping_cart</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">New Order</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+    <a href="orders.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-yellow-500/15">
+        <span class="material-symbols-outlined text-yellow-400" style="font-size:16px">list_alt</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Orders</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a href="wallet.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-500/15">
+        <span class="material-symbols-outlined text-green-400" style="font-size:16px">account_balance_wallet</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Add Funds</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a href="support.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-500/15">
+        <span class="material-symbols-outlined text-purple-400" style="font-size:16px">support_agent</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Support</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a id="desktopAdminBtn" href="admin.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 hidden">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-cyan-500/15">
+        <span class="material-symbols-outlined text-cyan-400" style="font-size:16px">admin_panel_settings</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Admin Panel</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <div class="h-px bg-white/10 my-3 mx-2"></div>
+    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-500/15">
+        <span class="material-symbols-outlined text-red-400" style="font-size:16px">logout</span>
+      </div>
+      <span class="font-bold text-red-400 text-sm">Logout</span>
+    </button>
+  </div>
+  <div class="px-5 py-4 border-t border-white/10">
+    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
+  </div>
+</aside>
+
+<div class="lg:pl-72">
 
 <!-- MOBILE TOP HEADER -->
 <div class="flex justify-between items-center px-4 py-3 bg-[#0b1220] sticky top-0 z-[200] lg:hidden">
@@ -112,7 +236,8 @@ body {
 </div>
 
 <!-- MAIN CONTENT -->
-<main class="w-full px-4 py-5 pb-[120px]">
+<main class="w-full px-4 py-5 pb-[120px] lg:px-8 lg:py-8 lg:pb-10">
+<div class="lg:mx-auto lg:max-w-6xl">
 <!-- WELCOME CARD — Unique GETXH Style -->
 <div class="rounded-2xl p-5 mb-6 relative"
      style="background: linear-gradient(135deg, #0a1628 0%, #0e1f3d 60%, #112244 100%);
@@ -466,6 +591,7 @@ body {
     GETXH.IN © 2026. All rights reserved.
   </div>
 </section>
+</div>
 </main>
 
 <!-- BOTTOM NAV -->
@@ -569,6 +695,16 @@ body {
         <span class="material-symbols-outlined text-purple-400" style="font-size:16px">support_agent</span>
       </div>
       <span class="font-bold text-gray-300 text-sm">Support</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </button>
+
+    <button id="adminBtn" onclick="closeMenu();window.location.href='admin.html'"
+      class="menu-item hidden w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
+             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-cyan-500/15">
+        <span class="material-symbols-outlined text-cyan-400" style="font-size:16px">admin_panel_settings</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Admin</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
     </button>
 
@@ -869,11 +1005,15 @@ if(username){
   document.getElementById('popupUsername').innerText=username;
   const mu = document.getElementById('menuUsername');
   if(mu) mu.textContent=username;
+  const muDesktop = document.getElementById('menuUsernameDesktop');
+  if(muDesktop) muDesktop.textContent=username;
 }
 if(_email){ 
   document.getElementById('popupEmail').innerText=_email;
   const me = document.getElementById('menuEmail');
   if(me) me.textContent=_email;
+  const meDesktop = document.getElementById('menuEmailDesktop');
+  if(meDesktop) meDesktop.textContent=_email;
 }
 
 // ── TABS & PILLS ──
@@ -1089,7 +1229,13 @@ window._logoutUser = async function() {
 // ── LOGIN GUARD ──
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    window.location.href = "index.html"; return;
+  window.location.href = "index.html"; return;
+  }
+  const currentEmail = String(user?.email || '').trim().toLowerCase();
+  if (currentEmail === "agency@getxh.in") {
+    document.getElementById("adminBtn").classList.remove("hidden");
+    const desktopAdminBtn = document.getElementById("desktopAdminBtn");
+    if (desktopAdminBtn) desktopAdminBtn.classList.remove("hidden");
   }
   currentUid = user.uid;
   await loadUserStats();
@@ -1247,6 +1393,6 @@ onAuthStateChanged(auth2, (user) => {
 });
 </script>
  
-  
+</div>
 </body>
 </html>

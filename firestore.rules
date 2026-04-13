@@ -1,16 +1,32 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == "agency@getxh.in";
+    }
+
     match /Users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
 
     match /orders/{userId}/user_orders/{orderId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
 
-    match /tickets/{userId}/user_tickets/{ticketId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    match /tickets/{ticketId} {
+      allow create: if isSignedIn() &&
+        (request.resource.data.uid == request.auth.uid || isAdmin());
+
+      allow read, update, delete: if isAdmin() ||
+        (isSignedIn() && resource.data.uid == request.auth.uid);
     }
   }
 }
