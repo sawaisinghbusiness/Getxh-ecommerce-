@@ -171,6 +171,16 @@ body {
         window.location.href = "Dashboard.html";
     });
 
+    function clearLoginFields() {
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        if (emailInput) emailInput.value = "";
+        if (passwordInput) passwordInput.value = "";
+    }
+
+    window.addEventListener("DOMContentLoaded", clearLoginFields);
+    window.addEventListener("pageshow", clearLoginFields);
+
     // Login button handler
     window.loginNow = function () {
         let email = normalizeEmail(document.getElementById("email").value);
@@ -250,7 +260,7 @@ body {
 <div class="flex flex-col">
 <label class="text-[#111827] text-sm font-medium mb-2">Email</label>
 <div class="form-input-container">
-<input id="email" type="email" class="form-input w-full rounded-xl border border-gray-300 bg-gray-50 h-12 px-4 text-sm text-slate-900 outline-none placeholder:text-slate-400 hover:border-slate-400 focus:border-[#2563eb] focus:bg-white focus:ring-4 focus:ring-blue-100" placeholder="you@example.com"/>
+<input id="email" type="email" autocomplete="off" autocapitalize="none" spellcheck="false" readonly onfocus="this.removeAttribute('readonly');" class="form-input w-full rounded-xl border border-gray-300 bg-gray-50 h-12 px-4 text-sm text-slate-900 outline-none placeholder:text-slate-400 hover:border-slate-400 focus:border-[#2563eb] focus:bg-white focus:ring-4 focus:ring-blue-100" placeholder="you@example.com"/>
 <span class="material-symbols-outlined">mail</span>
 </div>
 </div>
@@ -258,7 +268,7 @@ body {
 <div class="flex flex-col">
 <label class="text-[#111827] text-sm font-medium mb-2">Password</label>
 <div class="form-input-container">
-<input id="password" type="password" class="form-input w-full rounded-xl border border-gray-300 bg-gray-50 h-12 px-4 pr-12 text-sm text-slate-900 outline-none placeholder:text-slate-400 hover:border-slate-400 focus:border-[#2563eb] focus:bg-white focus:ring-4 focus:ring-blue-100" placeholder="Enter your password"/>
+<input id="password" type="password" autocomplete="new-password" autocapitalize="none" spellcheck="false" readonly onfocus="this.removeAttribute('readonly');" class="form-input w-full rounded-xl border border-gray-300 bg-gray-50 h-12 px-4 pr-12 text-sm text-slate-900 outline-none placeholder:text-slate-400 hover:border-slate-400 focus:border-[#2563eb] focus:bg-white focus:ring-4 focus:ring-blue-100" placeholder="Enter your password"/>
 <span class="material-symbols-outlined">lock</span>
 <div class="toggle-password" onclick="togglePassword()">
 <span class="material-symbols-outlined">visibility</span>

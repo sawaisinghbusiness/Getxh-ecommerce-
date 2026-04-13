@@ -853,6 +853,10 @@ function closeAccountPopup() {
 }
 function scrollToNewOrder() { document.getElementById('newOrderSection').scrollIntoView({behavior:'smooth'}); closeMenu(); }
 function logout() {
+  if (typeof window._logoutUser === 'function') {
+    window._logoutUser();
+    return;
+  }
   localStorage.clear();
   window.location.href = 'index.html';
 }
@@ -1042,7 +1046,7 @@ document.addEventListener('click',e=>{
 <!-- FIREBASE MODULE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
   getFirestore,
   collection,
@@ -1070,6 +1074,17 @@ const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 let currentUid = null;
+
+window._logoutUser = async function() {
+  try {
+    await signOut(auth);
+  } catch (err) {
+    console.error("Logout error:", err);
+  } finally {
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+};
 
 // ── LOGIN GUARD ──
 onAuthStateChanged(auth, async (user) => {

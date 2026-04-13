@@ -119,6 +119,10 @@ document.getElementById('maUsername').textContent = n;
 document.getElementById('maEmailDetail').textContent = email || '-';
 
 function logout() {
+  if (typeof window._logoutUser === 'function') {
+    window._logoutUser();
+    return;
+  }
   localStorage.clear();
   window.location.href = 'index.html';
 }
@@ -152,7 +156,7 @@ function changePassword() {
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential, signOut, updatePassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -165,6 +169,17 @@ const firebaseConfig = {
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
+window._logoutUser = async function() {
+  try {
+    await signOut(auth);
+  } catch (err) {
+    console.error("Logout error:", err);
+  } finally {
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+};
 
 onAuthStateChanged(auth, (user) => {
   if(!user) {
