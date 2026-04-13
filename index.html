@@ -168,7 +168,6 @@ body {
     onAuthStateChanged(auth, (user) => {
         if (!user) return;
         saveSession(user);
-        window.location.href = "Dashboard.html";
     });
 
     function clearLoginFields() {
@@ -279,7 +278,7 @@ body {
 </div>
 
 <div class="mt-6 flex flex-col gap-4">
-<button id="loginBtn" onclick="loginNow()" class="primary-button w-full h-12 text-white rounded-xl font-semibold">
+<button id="loginBtn" type="button" onclick="loginNow()" class="primary-button w-full h-12 text-white rounded-xl font-semibold">
     Sign In
 </button>
 </div>
