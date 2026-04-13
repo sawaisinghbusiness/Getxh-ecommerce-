@@ -6,6 +6,140 @@
   <title>Wallet | GETXH</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top, rgba(34, 211, 238, 0.12), transparent 30%),
+        radial-gradient(circle at 85% 15%, rgba(59, 130, 246, 0.18), transparent 28%),
+        linear-gradient(180deg, #08101d 0%, #0b1220 45%, #060b14 100%);
+    }
+
+    .premium-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 24px 60px rgba(3, 8, 20, 0.45);
+      backdrop-filter: blur(16px);
+    }
+
+    .section-card {
+      background: #121a2b;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 24px 50px rgba(2, 8, 23, 0.45);
+    }
+
+    .dark-field {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease, transform 180ms ease;
+    }
+
+    .dark-field:focus {
+      border-color: rgba(56, 189, 248, 0.85);
+      box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.12), 0 10px 30px rgba(14, 165, 233, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .gradient-btn {
+      background: linear-gradient(135deg, #1d4ed8 0%, #22d3ee 100%);
+      box-shadow: 0 16px 34px rgba(14, 165, 233, 0.24);
+      transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease, opacity 180ms ease;
+    }
+
+    .gradient-btn:hover {
+      transform: translateY(-1px) scale(1.01);
+      box-shadow: 0 22px 40px rgba(14, 165, 233, 0.28);
+      filter: saturate(1.08);
+    }
+
+    .gradient-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+      filter: none;
+    }
+
+    .amount-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    }
+
+    .amount-chip:hover {
+      transform: translateY(-1px);
+      border-color: rgba(34, 211, 238, 0.42);
+      background: rgba(34, 211, 238, 0.1);
+      box-shadow: 0 10px 20px rgba(14, 165, 233, 0.12);
+    }
+
+    .qr-image {
+      width: min(220px, 100%);
+      border-radius: 26px;
+      box-shadow: 0 18px 36px rgba(15, 23, 42, 0.28);
+      display: block;
+      transform: scale(1.13);
+      transform-origin: center;
+    }
+
+    .instruction-step {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      align-items: center;
+      gap: 0.9rem;
+      padding: 0.8rem 0.9rem;
+      border-radius: 1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .instruction-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.82fr) minmax(220px, 1.18fr);
+      align-items: center;
+      gap: 1.5rem;
+      padding: 0.25rem 0;
+    }
+
+    .steps-column {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      min-width: 0;
+    }
+
+    .qr-column {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100%;
+      padding: 0.5rem 0.25rem;
+    }
+
+    @media (max-width: 640px) {
+      .instruction-step {
+        grid-template-columns: 40px minmax(0, 1fr);
+        gap: 0.75rem;
+        padding: 0.85rem 0.9rem;
+      }
+
+      .instruction-layout {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+
+      .steps-column {
+        order: 2;
+      }
+
+      .qr-column {
+        order: 1;
+        padding: 0;
+      }
+    }
+  </style>
 </head>
 
 <body class="bg-[#0b1220] text-white min-h-screen">
@@ -21,87 +155,80 @@
   </div>
 </div>
 
-<main class="px-4 py-5 pb-24">
-  <section class="rounded-3xl p-5 mb-5 border border-[#2196f3]/20"
+<main class="mx-auto w-full max-w-3xl px-4 py-5 pb-24 sm:px-5">
+  <section class="premium-card rounded-[30px] p-5 mb-5"
     style="background:linear-gradient(135deg,#10203d 0%, #163260 55%, #0b1730 100%);">
     <p class="text-xs uppercase tracking-[0.25em] text-blue-200/70 mb-2">Available Balance</p>
-    <h2 id="walletBalance" class="text-4xl font-black">&#8377;0.00</h2>
+    <h2 id="walletBalance" class="text-5xl font-black tracking-tight sm:text-6xl">&#8377;0.00</h2>
     <p id="walletUser" class="text-sm text-blue-100/80 mt-2">Loading account...</p>
 
     <div class="grid grid-cols-2 gap-3 mt-5">
-      <div class="rounded-2xl p-4 bg-white/5 border border-white/10">
+      <div class="rounded-2xl p-4 bg-white/5 border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
         <p class="text-xs text-gray-400 mb-1">Total Orders</p>
         <p id="walletOrders" class="text-xl font-black">0</p>
       </div>
-      <div class="rounded-2xl p-4 bg-white/5 border border-white/10">
+      <div class="rounded-2xl p-4 bg-white/5 border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
         <p class="text-xs text-gray-400 mb-1">Total Spent</p>
         <p id="walletSpent" class="text-xl font-black">&#8377;0.00</p>
       </div>
     </div>
 
     <button onclick="document.getElementById('addFundsSection').scrollIntoView({ behavior: 'smooth', block: 'start' })"
-      class="mt-5 w-full rounded-2xl py-3.5 font-black text-sm text-[#06203a]"
-      style="background:linear-gradient(135deg,#9be7ff,#39c3ff);">
+      class="gradient-btn mt-5 w-full rounded-2xl py-3.5 font-black text-sm text-white active:scale-[0.985]">
       Add Funds
     </button>
   </section>
 
-  <section id="addFundsSection" class="rounded-3xl p-5 mb-5 border border-white/10 bg-[#121c33] shadow-xl">
-    <div class="flex items-start justify-between gap-3 mb-4">
+  <section id="addFundsSection" class="section-card rounded-[30px] p-5 mb-5 sm:p-6">
+    <div class="flex flex-col gap-4 mb-5 sm:flex-row sm:items-start sm:justify-between">
       <div>
-        <h3 class="text-base font-black text-white">Add Funds</h3>
-        <p class="text-xs text-gray-400 mt-1">Submit your payment details. Successful payments appear here in real time.</p>
+        <h3 class="text-lg font-black text-white">Add Funds</h3>
+        <p class="text-sm text-gray-400 mt-1">Scan the QR, complete the UPI transfer, and submit your details for verification.</p>
       </div>
-      <div class="px-3 py-2 rounded-2xl text-right border border-[#2196f3]/20 bg-[#2196f3]/10">
+      <div class="self-start px-3 py-2 rounded-2xl text-right border border-[#2196f3]/20 bg-[#2196f3]/10">
         <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400">Status</p>
         <p class="text-sm font-black text-[#38bdf8]">Live</p>
       </div>
     </div>
 
-    <div id="walletNotice" class="hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold"></div>
+    <div id="walletNotice" class="hidden mb-5 rounded-2xl px-4 py-3 text-sm font-semibold"></div>
 
-    <div class="mb-4">
+    <div class="mb-5">
       <label class="text-xs font-black uppercase tracking-[0.18em] text-gray-500 mb-2 block">Payment Method</label>
-      <div class="w-full rounded-2xl border border-white/10 bg-[#0e1629] px-4 py-3.5 text-white text-sm font-bold">
+      <div class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm font-bold">
         UPI
       </div>
     </div>
 
-    <div class="mb-4 rounded-[28px] border border-white/10 bg-white/95 p-4 text-[#111827] shadow-[0_20px_40px_rgba(0,0,0,0.18)]">
-      <label class="text-xs font-black uppercase tracking-[0.18em] text-gray-500 mb-3 block">Instruction</label>
-      <div class="space-y-3">
-        <div class="flex items-start gap-3">
-          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#3b82f6] text-lg font-black text-white">1</div>
-          <div>
-            <p class="text-sm font-black uppercase tracking-[0.04em] text-[#111827]">Step 1</p>
-            <p class="text-sm font-medium text-gray-600">Pay on QR from PhonePe</p>
-          </div>
+    <div class="premium-card mb-5 rounded-[28px] p-4 sm:p-5">
+      <div class="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <label class="text-xs font-black uppercase tracking-[0.18em] text-gray-500 mb-2 block">Instructions</label>
+          <p class="text-sm text-gray-300">Follow the steps below, then submit the UPI reference and amount.</p>
         </div>
-        <div class="flex items-start gap-3">
-          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#3b82f6] text-lg font-black text-white">2</div>
-          <div>
-            <p class="text-sm font-black uppercase tracking-[0.04em] text-[#111827]">Step 2</p>
-            <p class="text-sm font-medium text-gray-600">On PhonePe, copy Transaction ID</p>
-          </div>
-        </div>
-        <div class="flex items-start gap-3">
-          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#3b82f6] text-lg font-black text-white">3</div>
-          <div>
-            <p class="text-sm font-black uppercase tracking-[0.04em] text-[#111827]">Step 3</p>
-            <p class="text-sm font-medium text-gray-600">Paste Transaction ID and enter amount</p>
-          </div>
-        </div>
-        <div class="flex items-start gap-3">
-          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#3b82f6] text-lg font-black text-white">4</div>
-          <div>
-            <p class="text-sm font-black uppercase tracking-[0.04em] text-[#111827]">Step 4</p>
-            <p class="text-sm font-medium text-gray-600">Press Pay button</p>
-          </div>
-        </div>
+        <div class="text-xs text-cyan-300/80 uppercase tracking-[0.2em] font-bold">Secure UPI Transfer</div>
       </div>
-      <div class="mt-5 flex justify-center">
-        <div class="w-[190px] rounded-[22px] border border-[#dbeafe] bg-white p-3 shadow-[0_10px_24px_rgba(59,130,246,0.12)]">
-          <img src="./payment-qr.png" alt="GETXH payment QR code" class="w-full rounded-[18px] object-contain bg-white"/>
+      <div class="instruction-layout">
+        <div class="steps-column">
+          <div class="instruction-step">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 text-lg font-black text-white">1</div>
+            <p class="text-sm font-semibold text-right text-gray-200">Scan QR</p>
+          </div>
+          <div class="instruction-step">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 text-lg font-black text-white">2</div>
+            <p class="text-sm font-semibold text-right text-gray-200">Copy Txn ID</p>
+          </div>
+          <div class="instruction-step">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 text-lg font-black text-white">3</div>
+            <p class="text-sm font-semibold text-right text-gray-200">Enter details</p>
+          </div>
+          <div class="instruction-step">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 text-lg font-black text-white">4</div>
+            <p class="text-sm font-semibold text-right text-gray-200">Click Pay</p>
+          </div>
+        </div>
+        <div class="qr-column">
+          <img src="./payment-qr.png" alt="GETXH payment QR code" class="qr-image object-contain"/>
         </div>
       </div>
     </div>
@@ -109,24 +236,29 @@
     <div class="mb-4">
       <label class="text-xs font-black uppercase tracking-[0.18em] text-gray-500 mb-2 block">Transaction ID</label>
       <input id="paymentRefInput" type="text" placeholder="Enter transaction ID"
-        class="w-full rounded-2xl border border-white/10 bg-[#0e1629] px-4 py-3.5 text-white text-sm outline-none placeholder-gray-500 focus:border-[#2196f3]"/>
+        class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm outline-none placeholder-gray-500"/>
     </div>
 
-    <div class="mb-4">
+    <div class="mb-3">
       <label class="text-xs font-black uppercase tracking-[0.18em] text-gray-500 mb-2 block">Amount</label>
       <input id="amountInput" type="number" min="10" step="1" placeholder="Enter amount"
-        class="w-full rounded-2xl border border-white/10 bg-[#0e1629] px-4 py-3.5 text-white text-sm outline-none placeholder-gray-500 focus:border-[#2196f3]"/>
+        class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm outline-none placeholder-gray-500"/>
+    </div>
+
+    <div class="mb-5 flex flex-wrap gap-2.5">
+      <button type="button" onclick="pickAmount(100)" class="amount-chip rounded-2xl px-4 py-2.5 text-sm font-bold text-white">&#8377;100</button>
+      <button type="button" onclick="pickAmount(500)" class="amount-chip rounded-2xl px-4 py-2.5 text-sm font-bold text-white">&#8377;500</button>
+      <button type="button" onclick="pickAmount(1000)" class="amount-chip rounded-2xl px-4 py-2.5 text-sm font-bold text-white">&#8377;1000</button>
     </div>
 
     <button id="submitPaymentBtn" onclick="submitPaymentRequest()"
-      class="w-full rounded-2xl py-3.5 font-black text-sm text-[#06203a] transition active:scale-[0.985]"
-      style="background:linear-gradient(135deg,#9be7ff,#39c3ff);">
+      class="gradient-btn w-full rounded-2xl py-3.5 font-black text-sm text-white active:scale-[0.985]">
       Pay
     </button>
   </section>
 
-  <section>
-    <div class="flex items-center justify-between mb-3">
+  <section class="section-card rounded-[30px] p-5 sm:p-6">
+    <div class="flex items-center justify-between mb-4">
       <h3 class="text-sm font-black tracking-wide">Recent Payments</h3>
       <span class="text-xs font-bold text-[#2196f3]">Real-time updates</span>
     </div>
@@ -168,7 +300,7 @@ window.pickAmount = function(amount) {
 function showWalletNotice(message, type = "error") {
   const el = document.getElementById("walletNotice");
   el.textContent = message;
-  el.className = "mb-4 rounded-2xl px-4 py-3 text-sm font-semibold";
+  el.className = "mb-5 rounded-2xl px-4 py-3 text-sm font-semibold";
   if (type === "error") {
     el.style.background = "rgba(239,68,68,0.12)";
     el.style.border = "1px solid rgba(239,68,68,0.2)";
@@ -228,7 +360,7 @@ window.submitPaymentRequest = async function() {
   }
 
   btn.disabled = true;
-  btn.textContent = "Submitting...";
+  btn.textContent = "Verifying payment...";
 
   try {
     await addDoc(collection(db, "payments", currentUser.uid, "user_payments"), {
@@ -253,7 +385,7 @@ window.submitPaymentRequest = async function() {
     showWalletNotice("Unable to submit payment right now.");
   } finally {
     btn.disabled = false;
-    btn.textContent = "Submit Payment";
+    btn.textContent = "Pay";
   }
 };
 
@@ -325,7 +457,7 @@ function subscribeRecentPayments(uid) {
         const title = payment.title || "Wallet Top-up";
 
         const item = document.createElement("div");
-        item.className = "rounded-2xl border border-white/10 bg-[#121c33] p-4 flex items-start justify-between gap-3";
+        item.className = "rounded-2xl border border-white/10 bg-[rgba(255,255,255,0.05)] p-4 flex items-start justify-between gap-3 shadow-[0_12px_28px_rgba(2,8,23,0.24)]";
         item.innerHTML = `
           <div class="min-w-0">
             <p class="text-sm font-bold text-white truncate">${title}</p>

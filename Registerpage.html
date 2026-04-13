@@ -191,7 +191,7 @@ Continue
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -213,9 +213,26 @@ const errorBox = document.getElementById("errorBox");
 const formState = document.getElementById("formState");
 const successState = document.getElementById("successState");
 
+function normalizeEmail(value) {
+    return String(value || "").trim().toLowerCase();
+}
+
+function saveSession(user, fallbackName = "", fallbackEmail = "") {
+    const email = normalizeEmail(user?.email || fallbackEmail);
+    localStorage.setItem("getxh_user_logged_in", "yes");
+    localStorage.setItem("getxh_current_user", email);
+    localStorage.setItem("getxh_current_user_uid", user?.uid || "");
+    localStorage.setItem("getxh_user_name", user?.displayName || fallbackName || "");
+}
+
+onAuthStateChanged(auth, (user) => {
+    if (!user) return;
+    saveSession(user);
+});
+
 registerBtn.onclick = async function () {
     const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
+    const email = normalizeEmail(document.getElementById("email").value);
     const pass = document.getElementById("password").value.trim();
     const cpass = document.getElementById("confirmPassword").value.trim();
     const terms = document.getElementById("terms").checked;
@@ -265,9 +282,7 @@ registerBtn.onclick = async function () {
         console.warn("Firestore write failed, continuing");
     }
 
-    localStorage.setItem("getxh_user_logged_in", "yes");
-    localStorage.setItem("getxh_current_user", email);
-    localStorage.setItem("getxh_user_name", name);
+    saveSession(userCred.user, name, email);
 
     formState.classList.add("hidden");
     successState.classList.add("active");

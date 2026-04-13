@@ -85,12 +85,60 @@ body {
     opacity: 0.85;
     cursor: not-allowed;
 }
+.site-footer {
+    width: 100%;
+    background: #0b1220;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.footer-shell {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1rem 2.5rem;
+}
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+.footer-card {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1.25rem;
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 18px 40px rgba(2, 8, 23, 0.32);
+    backdrop-filter: blur(14px);
+}
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+.footer-link {
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+}
+.footer-link:hover {
+    color: #67e8f9;
+    border-color: rgba(103, 232, 249, 0.4);
+    background: rgba(34, 211, 238, 0.08);
+    transform: translateY(-1px);
+}
+@media (max-width: 640px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
 
 <!-- ⭐ Firebase SDK -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } 
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } 
     from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -103,11 +151,29 @@ body {
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
+    const auth = getAuth(app);
+
+    function normalizeEmail(value) {
+        return String(value || "").trim().toLowerCase();
+    }
+
+    function saveSession(user, fallbackEmail = "") {
+        const email = normalizeEmail(user?.email || fallbackEmail);
+        localStorage.setItem("getxh_user_name", user?.displayName || "");
+        localStorage.setItem("getxh_current_user_uid", user?.uid || "");
+        localStorage.setItem("getxh_user_logged_in", "yes");
+        localStorage.setItem("getxh_current_user", email);
+    }
+
+    onAuthStateChanged(auth, (user) => {
+        if (!user) return;
+        saveSession(user);
+        window.location.href = "Dashboard.html";
+    });
 
     // Login button handler
     window.loginNow = function () {
-        let email = document.getElementById("email").value.trim();
+        let email = normalizeEmail(document.getElementById("email").value);
         let password = document.getElementById("password").value.trim();
         let errorBox = document.getElementById("errorBox");
         let loginBtn = document.getElementById("loginBtn");
@@ -134,14 +200,11 @@ body {
             const user = userCredential.user;
 
             // ⭐ Save logged-in user name (from Firebase profile)
-            localStorage.setItem("getxh_user_name", user.displayName || "");
+            saveSession(user, email);
 
             // ⭐ Save UID (this connects user → Firestore)
-            localStorage.setItem("getxh_current_user_uid", user.uid);
 
             // ⭐ Save login status and email
-            localStorage.setItem("getxh_user_logged_in", "yes");
-            localStorage.setItem("getxh_current_user", email);
 
             window.location.href = "Dashboard.html";
         })
@@ -150,6 +213,9 @@ body {
             if (error.code === "auth/user-not-found") msg = "No account exists with this email";
             if (error.code === "auth/wrong-password") msg = "Incorrect password";
             if (error.code === "auth/invalid-email") msg = "Enter a valid email";
+            if (error.code === "auth/invalid-credential") msg = "Incorrect email or password";
+            if (error.code === "auth/too-many-requests") msg = "Too many attempts. Please try again in a moment";
+            if (error.code === "auth/network-request-failed") msg = "Network error. Check your internet and try again";
 
             errorBox.textContent = msg;
             errorBox.classList.remove("hidden");
@@ -218,6 +284,31 @@ body {
 </div>
 
 </div>
+
+<footer class="site-footer">
+  <div class="footer-shell">
+    <div class="footer-grid">
+      <div class="footer-card p-6 text-white">
+        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-300/80">GETXH</p>
+        <h2 class="mt-3 text-2xl font-semibold tracking-tight">Policies & Company Information</h2>
+        <p class="mt-3 text-sm leading-6 text-slate-300">
+          Review our policy pages, contact details, and platform information. These links are publicly accessible for users and payment review.
+        </p>
+      </div>
+      <div class="footer-card p-6">
+        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-300/80">Quick Links</p>
+        <div class="footer-links mt-4">
+          <a class="footer-link" href="refund.html">Refund Policy</a>
+          <a class="footer-link" href="privacy.html">Privacy Policy</a>
+          <a class="footer-link" href="terms.html">Terms</a>
+          <a class="footer-link" href="about.html">About</a>
+          <a class="footer-link" href="contact.html">Contact</a>
+          <a class="footer-link" href="cancellation.html">Cancellation</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
 
 <script>
 function togglePassword() {
