@@ -206,17 +206,6 @@ body {
         signInWithEmailAndPassword(auth, email, password)
         .then(async (userCredential) => {
             const user = userCredential.user;
-
-            // Block unverified users
-            if (!user.emailVerified) {
-                await signOut(auth);
-                errorBox.innerHTML = 'Please verify your email before logging in. <button onclick="resendVerification(\'' + email + '\',\'' + password + '\')" style="color:#2563eb;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;padding:0">Resend email</button>';
-                errorBox.classList.remove("hidden");
-                loginBtn.disabled = false;
-                loginBtn.textContent = "Sign In";
-                return;
-            }
-
             saveSession(user, email);
             window.location.href = "Dashboard.html";
         })
@@ -234,18 +223,6 @@ body {
             loginBtn.disabled = false;
             loginBtn.textContent = "Sign In";
         });
-    };
-
-    // ── RESEND VERIFICATION EMAIL ──
-    window.resendVerification = async function(email, password) {
-        try {
-            const cred = await signInWithEmailAndPassword(auth, email, password);
-            await cred.user.sendEmailVerification();
-            await signOut(auth);
-            const errorBox = document.getElementById("errorBox");
-            errorBox.textContent = "✓ Verification email resent. Please check your inbox.";
-            errorBox.style.color = "#16a34a";
-        } catch(_) {}
     };
 
     // ── FORGOT PASSWORD ──

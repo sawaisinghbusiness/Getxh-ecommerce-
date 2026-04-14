@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>GETXH - Register</title>
+<title>GETXH - Create Account</title>
 
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -19,12 +19,14 @@ body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
   font-size: 20px;
 }
+
 .signup-card {
   border: 1px solid #e5e7eb;
   border-radius: 1rem;
   background: rgba(255,255,255,0.97);
   box-shadow: 0 24px 60px rgba(15,23,42,0.10);
 }
+
 .form-input {
   width: 100%; height: 48px; border-radius: 12px;
   border: 1px solid #d1d5db; background: #f9fafb;
@@ -36,6 +38,7 @@ body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
   box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
 }
 .form-input::placeholder { color: #94a3b8; }
+
 .fi { position: relative; }
 .fi .material-symbols-outlined {
   position: absolute; left: 14px; top: 50%;
@@ -64,20 +67,6 @@ body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
 .primary-btn:active:not(:disabled) { transform: scale(0.99); }
 .primary-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
-.secondary-btn {
-  width: 100%; height: 44px; border-radius: 12px;
-  background: #f8fafc; color: #64748b; font-weight: 600; font-size: 0.875rem;
-  border: 1px solid #e5e7eb; cursor: pointer; transition: all 0.2s;
-}
-.secondary-btn:hover { background: #f1f5f9; }
-
-.step { display: none; }
-.step.active { display: block; animation: fadeUp 0.25s ease forwards; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinner {
   width: 16px; height: 16px; border-radius: 50%;
@@ -85,227 +74,173 @@ body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
   animation: spin 0.7s linear infinite; flex-shrink: 0;
 }
 
-/* OTP input */
-#otpInput {
-  letter-spacing: 0.5em; font-size: 1.4rem;
-  font-weight: 800; text-align: center; height: 60px;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.otp-dots { display: flex; gap: 8px; justify-content: center; margin-bottom: 14px; }
-.otp-dot {
-  width: 11px; height: 11px; border-radius: 50%;
-  background: #e2e8f0; transition: all 0.15s;
-}
-.otp-dot.filled { background: #2563eb; transform: scale(1.2); }
-
-/* Step indicator */
-.step-indicator {
-  display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 24px;
-}
-.step-dot {
-  width: 8px; height: 8px; border-radius: 50%; background: #e2e8f0; transition: all 0.3s;
-}
-.step-dot.active { background: #2563eb; width: 22px; border-radius: 4px; }
-.step-dot.done   { background: #86efac; }
+.fade-up { animation: fadeUp 0.3s ease forwards; }
 
 #successState { display: none; }
-#successState.active { display: block; animation: fadeUp 0.3s ease forwards; }
+#successState.active { display: block; animation: fadeUp 0.35s ease forwards; }
 </style>
 </head>
 
 <body class="text-[#0f172a] min-h-screen flex items-center justify-center px-4 py-10">
 <div class="w-full max-w-[390px]">
 
-<!-- ════════════════════════ FORM CARD ════════════════════════ -->
-<div id="formState" class="signup-card p-8">
+<!-- ══════════════════ FORM CARD ══════════════════ -->
+<div id="formState" class="signup-card p-8 fade-up">
 
   <!-- Header -->
-  <div class="text-center mb-6">
+  <div class="text-center mb-7">
     <p class="text-3xl font-bold tracking-[0.2em] text-[#2563eb]">GETXH</p>
     <h1 class="mt-3 text-2xl font-semibold text-[#111827]">Create Account</h1>
-    <p class="mt-1 text-sm text-slate-500" id="stepSubtitle">Fill in your details to get started</p>
-  </div>
-
-  <!-- Step indicator -->
-  <div class="step-indicator">
-    <div class="step-dot active" id="dot1"></div>
-    <div class="step-dot" id="dot2"></div>
-    <div class="step-dot" id="dot3"></div>
+    <p class="mt-1 text-sm text-slate-500">Fill in your details to get started</p>
   </div>
 
   <!-- Error box -->
-  <div id="errorBox" class="hidden rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-600 text-center mb-5"></div>
-
-  <!-- ══════════════════════════════════════════════ -->
-  <!-- STEP 1 — Name + Password                      -->
-  <!-- ══════════════════════════════════════════════ -->
-  <div id="step1" class="step active">
-    <div class="flex flex-col gap-4">
-
-      <div class="flex flex-col">
-        <label class="text-sm font-medium text-[#111827] mb-2">Full Name</label>
-        <div class="fi">
-          <input id="name" type="text" autocomplete="off" autocapitalize="words"
-            class="form-input" placeholder="Your full name"
-            readonly onfocus="this.removeAttribute('readonly')"
-            onkeydown="if(event.key==='Enter')document.getElementById('email').focus()"/>
-          <span class="material-symbols-outlined">person</span>
-        </div>
-      </div>
-
-      <div class="flex flex-col">
-        <label class="text-sm font-medium text-[#111827] mb-2">Email</label>
-        <div class="fi">
-          <input id="email" type="email" autocomplete="off" autocapitalize="none"
-            class="form-input" placeholder="you@example.com"
-            readonly onfocus="this.removeAttribute('readonly')"
-            onkeydown="if(event.key==='Enter')document.getElementById('password').focus()"/>
-          <span class="material-symbols-outlined">mail</span>
-        </div>
-      </div>
-
-      <div class="flex flex-col">
-        <label class="text-sm font-medium text-[#111827] mb-2">Password</label>
-        <div class="fi" style="position:relative">
-          <input id="password" type="password" autocomplete="new-password"
-            class="form-input" style="padding-right:3rem" placeholder="Min. 6 characters"
-            readonly onfocus="this.removeAttribute('readonly')"
-            onkeydown="if(event.key==='Enter')document.getElementById('confirmPassword').focus()"/>
-          <span class="material-symbols-outlined">lock</span>
-          <div class="toggle-password" onclick="togglePass('password',this)">
-            <span class="material-symbols-outlined">visibility</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex flex-col">
-        <label class="text-sm font-medium text-[#111827] mb-2">Confirm Password</label>
-        <div class="fi" style="position:relative">
-          <input id="confirmPassword" type="password" autocomplete="new-password"
-            class="form-input" style="padding-right:3rem" placeholder="Re-enter password"
-            readonly onfocus="this.removeAttribute('readonly')"
-            onkeydown="if(event.key==='Enter')goToPhone()"/>
-          <span class="material-symbols-outlined">lock</span>
-          <div class="toggle-password" onclick="togglePass('confirmPassword',this)">
-            <span class="material-symbols-outlined">visibility</span>
-          </div>
-        </div>
-      </div>
-
-      <label class="flex items-start gap-3 cursor-pointer">
-        <input id="terms" type="checkbox"
-          class="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#2563eb] focus:ring-[#2563eb]"/>
-        <span class="text-xs leading-5 text-slate-500">I agree to the Terms and Conditions</span>
-      </label>
-    </div>
-
-    <button class="primary-btn mt-6" onclick="goToPhone()">
-      Continue →
-    </button>
+  <div id="errorBox"
+    class="hidden rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-600 text-center mb-5">
   </div>
 
-  <!-- ══════════════════════════════════════════════ -->
-  <!-- STEP 2 — Phone Number                         -->
-  <!-- ══════════════════════════════════════════════ -->
-  <div id="step2" class="step">
-    <div class="rounded-xl px-4 py-3 mb-5 text-sm text-center"
-         style="background:rgba(37,99,235,0.06);border:1px solid rgba(37,99,235,0.15)">
-      <span class="text-slate-500">Almost there! Verify your mobile number to secure your account.</span>
-    </div>
+  <!-- Fields -->
+  <div class="flex flex-col gap-4">
 
-    <div class="flex flex-col mb-1">
-      <label class="text-sm font-medium text-[#111827] mb-2">Mobile Number</label>
-      <div class="flex gap-2">
-        <div class="flex items-center justify-center px-3 h-12 rounded-xl border border-gray-300 bg-gray-50 text-sm font-bold text-slate-700 select-none whitespace-nowrap">
-          🇮🇳 +91
-        </div>
-        <input id="phoneInput" type="tel" maxlength="10"
-          class="form-input flex-1 font-mono tracking-widest"
-          placeholder="XXXXXXXXXX"
-          autocomplete="off" readonly onfocus="this.removeAttribute('readonly')"
-          oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)"
-          onkeydown="if(event.key==='Enter')sendOTP()"/>
+    <!-- Name -->
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-[#111827] mb-2">Full Name</label>
+      <div class="fi">
+        <input id="name" type="text" autocomplete="off" autocapitalize="words"
+          class="form-input" placeholder="Your full name"
+          readonly onfocus="this.removeAttribute('readonly')"
+          onkeydown="if(event.key==='Enter')document.getElementById('email').focus()"/>
+        <span class="material-symbols-outlined">person</span>
       </div>
-      <p class="text-xs text-slate-400 mt-1.5 mb-5">Enter 10-digit number without country code</p>
     </div>
 
-    <button class="primary-btn mb-3" id="sendOtpBtn" onclick="sendOTP()">
-      Send OTP
-    </button>
-    <button class="secondary-btn" onclick="backToStep1()">← Back</button>
+    <!-- Email -->
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-[#111827] mb-2">Email Address</label>
+      <div class="fi">
+        <input id="email" type="email" autocomplete="off" autocapitalize="none"
+          class="form-input" placeholder="you@example.com"
+          readonly onfocus="this.removeAttribute('readonly')"
+          onkeydown="if(event.key==='Enter')document.getElementById('password').focus()"/>
+        <span class="material-symbols-outlined">mail</span>
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-[#111827] mb-2">Password</label>
+      <div class="fi" style="position:relative">
+        <input id="password" type="password" autocomplete="new-password"
+          class="form-input" style="padding-right:3rem" placeholder="Min. 6 characters"
+          readonly onfocus="this.removeAttribute('readonly')"
+          onkeydown="if(event.key==='Enter')document.getElementById('confirmPassword').focus()"/>
+        <span class="material-symbols-outlined">lock</span>
+        <div class="toggle-password" onclick="togglePass('password',this)">
+          <span class="material-symbols-outlined">visibility</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-[#111827] mb-2">Confirm Password</label>
+      <div class="fi" style="position:relative">
+        <input id="confirmPassword" type="password" autocomplete="new-password"
+          class="form-input" style="padding-right:3rem" placeholder="Re-enter password"
+          readonly onfocus="this.removeAttribute('readonly')"
+          onkeydown="if(event.key==='Enter')doRegister()"/>
+        <span class="material-symbols-outlined">lock</span>
+        <div class="toggle-password" onclick="togglePass('confirmPassword',this)">
+          <span class="material-symbols-outlined">visibility</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terms -->
+    <label class="flex items-start gap-3 cursor-pointer mt-1">
+      <input id="terms" type="checkbox"
+        class="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#2563eb] focus:ring-[#2563eb]"/>
+      <span class="text-xs leading-5 text-slate-500">
+        I agree to the
+        <a href="#" class="text-[#2563eb] font-semibold hover:underline">Terms & Conditions</a>
+        and
+        <a href="#" class="text-[#2563eb] font-semibold hover:underline">Privacy Policy</a>
+      </span>
+    </label>
   </div>
 
-  <!-- ══════════════════════════════════════════════ -->
-  <!-- STEP 3 — OTP Verify                           -->
-  <!-- ══════════════════════════════════════════════ -->
-  <div id="step3" class="step">
-    <div class="rounded-xl px-4 py-3 mb-5 text-sm text-center"
-         style="background:rgba(37,99,235,0.07);border:1px solid rgba(37,99,235,0.18)">
-      <span class="text-slate-500">OTP sent to</span>
-      <span id="otpSentTo" class="font-bold text-[#2563eb] ml-1"></span>
-    </div>
+  <!-- Register Button -->
+  <button id="registerBtn" class="primary-btn mt-6" onclick="doRegister()">
+    Create Account
+  </button>
 
-    <div class="otp-dots">
-      <div class="otp-dot" id="d0"></div>
-      <div class="otp-dot" id="d1"></div>
-      <div class="otp-dot" id="d2"></div>
-      <div class="otp-dot" id="d3"></div>
-      <div class="otp-dot" id="d4"></div>
-      <div class="otp-dot" id="d5"></div>
-    </div>
-
-    <label class="text-sm font-medium text-[#111827] block mb-2">Enter OTP</label>
-    <input id="otpInput" type="text" maxlength="6" autocomplete="one-time-code"
-      class="form-input mb-4"
-      placeholder="• • • • • •"
-      oninput="this.value=this.value.replace(/\D/g,'').slice(0,6);updateOtpDots(this.value)"
-      onkeydown="if(event.key==='Enter')verifyOTP()"/>
-
-    <button class="primary-btn mb-3" id="verifyOtpBtn" onclick="verifyOTP()">
-      Verify & Create Account
-    </button>
-    <button class="secondary-btn" onclick="backToStep2()">← Change Number</button>
-
-    <p class="text-center text-xs text-slate-400 mt-4">
-      Didn't receive?
-      <button id="resendBtn" onclick="resendOTP()"
-        class="text-[#2563eb] font-semibold" style="background:none;border:none;cursor:pointer">
-        Resend OTP
-      </button>
-      <span id="resendTimer" class="text-slate-400 font-medium"></span>
-    </p>
-  </div>
-
-  <div class="text-center mt-6">
+  <div class="text-center mt-5">
     <a href="index.html" class="text-sm text-slate-500">
-      Already have an account? <span class="text-[#2563eb] font-semibold">Sign In</span>
+      Already have an account?
+      <span class="text-[#2563eb] font-semibold">Sign In</span>
     </a>
   </div>
 
 </div><!-- /formState -->
 
-<!-- ════════════════════════ SUCCESS CARD ════════════════════════ -->
+<!-- ══════════════════ SUCCESS CARD ══════════════════ -->
 <div id="successState" class="signup-card p-8 text-center">
   <p class="text-3xl font-bold tracking-[0.2em] text-[#2563eb]">GETXH</p>
-  <div class="mt-6 mx-auto w-16 h-16 rounded-full bg-green-50 flex items-center justify-center">
-    <span class="material-symbols-outlined text-green-500" style="font-size:32px">check_circle</span>
+
+  <div class="mt-6 mx-auto w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center">
+    <span class="material-symbols-outlined text-[#2563eb]" style="font-size:32px">mark_email_read</span>
   </div>
-  <h2 class="mt-5 text-2xl font-semibold text-[#111827]">Account Created!</h2>
-  <p class="mt-2 text-sm text-slate-500">Your GETXH account is ready. You can now login.</p>
-  <button onclick="window.location.href='index.html'" class="primary-btn mt-7">
+
+  <h2 class="mt-5 text-xl font-semibold text-[#111827]">Verify Your Email</h2>
+  <p class="mt-2 text-sm text-slate-500 leading-6">
+    We've sent a verification link to<br/>
+    <span id="sentEmailDisplay" class="font-semibold text-[#111827]"></span>
+  </p>
+
+  <!-- Info box -->
+  <div class="mt-5 rounded-xl px-4 py-3 text-left text-xs text-slate-500 leading-5"
+       style="background:rgba(37,99,235,0.05);border:1px solid rgba(37,99,235,0.15)">
+    <p class="font-semibold text-[#2563eb] mb-1">Next steps</p>
+    <p>1. Open your email inbox</p>
+    <p>2. Click the verification link</p>
+    <p>3. Come back and sign in</p>
+    <p class="mt-1 text-slate-400">Not in inbox? Check your <strong>spam/junk</strong> folder.</p>
+  </div>
+
+  <!-- Resend -->
+  <p class="mt-4 text-xs text-slate-400">
+    Didn't receive it?
+    <button id="resendVerifyBtn" onclick="resendVerification()"
+      class="text-[#2563eb] font-semibold" style="background:none;border:none;cursor:pointer">
+      Resend email
+    </button>
+    <span id="resendVerifyTimer" class="text-slate-400 font-medium"></span>
+  </p>
+  <p id="resendMsg" class="hidden mt-2 text-xs text-green-600 font-medium">Verification email resent!</p>
+
+  <button onclick="window.location.href='index.html'" class="primary-btn mt-6">
     Go to Login
   </button>
 </div>
 
-</div>
+</div><!-- /wrapper -->
 
-<!-- ════════════════════════ FIREBASE ════════════════════════ -->
+<!-- ══════════════════ FIREBASE ══════════════════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import {
-  getAuth, updateProfile,
-  signInWithPhoneNumber
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  sendEmailVerification
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import {
+  getFirestore, doc, setDoc
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey:            "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -316,78 +251,34 @@ const firebaseConfig = {
   appId:             "1:170770122888:web:7adcf91077d5695b06b73d"
 };
 
-const app = initializeApp(firebaseConfig);
+const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
-// Captcha disabled for now
-auth.settings.appVerificationDisabledForTesting = true;
+let _lastUser        = null;
+let resendInterval   = null;
 
-let confirmResult  = null;
-let resendInterval = null;
-
-// Temp store of step1 data
-let _name = "", _email = "", _pass = "";
-
-// ── Helpers ──────────────────────────
+// ── Helpers ──────────────────────────────────────────────────
 function showError(msg) {
   const b = document.getElementById("errorBox");
-  b.textContent = msg; b.classList.remove("hidden");
+  b.textContent = msg;
+  b.classList.remove("hidden");
 }
-function hideError() { document.getElementById("errorBox").classList.add("hidden"); }
-
-function setStep(n) {
-  [1,2,3].forEach(i => {
-    document.getElementById("step"+i).classList.toggle("active", i===n);
-  });
-  // Update dots
-  const subtitles = ["Fill in your details","Verify your mobile number","Enter OTP to confirm"];
-  document.getElementById("stepSubtitle").textContent = subtitles[n-1];
-  [1,2,3].forEach(i => {
-    const dot = document.getElementById("dot"+i);
-    dot.classList.remove("active","done");
-    if (i === n) dot.classList.add("active");
-    else if (i < n) dot.classList.add("done");
-  });
-  hideError();
+function hideError() {
+  document.getElementById("errorBox").classList.add("hidden");
 }
 
-function setBtnLoading(id, loading, label) {
-  const btn = document.getElementById(id);
+function setBtnLoading(loading) {
+  const btn = document.getElementById("registerBtn");
   btn.disabled = loading;
-  btn.innerHTML = loading ? `<span class="spinner"></span>${label}` : label;
+  btn.innerHTML = loading
+    ? `<span class="spinner"></span>Creating Account...`
+    : `Create Account`;
 }
 
-function saveSession(user) {
-  localStorage.setItem("getxh_user_logged_in",  "yes");
-  localStorage.setItem("getxh_current_user",     user.email || user.phoneNumber || "");
-  localStorage.setItem("getxh_current_user_uid", user.uid);
-  localStorage.setItem("getxh_user_name",        user.displayName || _name || "");
-}
-
-async function saveFirestore(user) {
-  try {
-    const ref  = doc(db, "Users", user.uid);
-    const snap = await getDoc(ref);
-    if (!snap.exists()) {
-      await setDoc(ref, {
-        Name: _name, Email: _email, Phone: user.phoneNumber || "",
-        TotalOrders: 0, Balance: 0, TotalSpent: 0
-      });
-    }
-  } catch(_) {}
-}
-
-function initRecaptcha() {
-  if (recaptcha) { try { recaptcha.clear(); } catch(_) {} recaptcha = null; }
-  recaptcha = new RecaptchaVerifier(auth, "sendOtpBtn", {
-    size: "invisible", callback: () => {}
-  });
-}
-
-function startResendTimer(sec = 30) {
-  const btn = document.getElementById("resendBtn");
-  const tmr = document.getElementById("resendTimer");
+function startResendTimer(sec = 60) {
+  const btn = document.getElementById("resendVerifyBtn");
+  const tmr = document.getElementById("resendVerifyTimer");
   btn.disabled = true;
   let left = sec;
   tmr.textContent = ` (${left}s)`;
@@ -404,119 +295,81 @@ function startResendTimer(sec = 30) {
   }, 1000);
 }
 
-// ── STEP 1 → STEP 2 ──────────────────
-window.goToPhone = function() {
+// ── Register ─────────────────────────────────────────────────
+window.doRegister = async function() {
   hideError();
+
   const name  = document.getElementById("name").value.trim();
   const email = document.getElementById("email").value.trim().toLowerCase();
   const pass  = document.getElementById("password").value;
   const cpass = document.getElementById("confirmPassword").value;
   const terms = document.getElementById("terms").checked;
 
-  if (!name)             return showError("Name cannot be empty.");
+  if (!name)                          return showError("Name cannot be empty.");
   if (!email || !email.includes("@")) return showError("Enter a valid email address.");
-  if (pass.length < 6)   return showError("Password must be at least 6 characters.");
-  if (pass !== cpass)    return showError("Passwords do not match.");
-  if (!terms)            return showError("Please accept the Terms and Conditions.");
+  if (pass.length < 6)               return showError("Password must be at least 6 characters.");
+  if (pass !== cpass)                return showError("Passwords do not match.");
+  if (!terms)                        return showError("Please accept the Terms & Conditions.");
 
-  // Store for later use
-  _name = name; _email = email; _pass = pass;
-  setStep(2);
-  setTimeout(() => document.getElementById("phoneInput").focus(), 150);
-};
+  setBtnLoading(true);
 
-window.backToStep1 = function() { setStep(1); };
-
-// ── SEND OTP ─────────────────────────
-window.sendOTP = async function() {
-  hideError();
-  const raw = document.getElementById("phoneInput").value.trim();
-  if (!/^\d{10}$/.test(raw)) return showError("Enter a valid 10-digit mobile number.");
-
-  setBtnLoading("sendOtpBtn", true, "Sending OTP...");
-  initRecaptcha();
-
+  // ── Step 1: Create account ────────────────────────────────
+  let user;
   try {
-    confirmResult = await signInWithPhoneNumber(auth, "+91" + raw, recaptcha);
-    document.getElementById("otpSentTo").textContent = "+91 " + raw;
-    document.getElementById("otpInput").value = "";
-    updateOtpDots("");
-    setStep(3);
-    startResendTimer(30);
-    setTimeout(() => document.getElementById("otpInput").focus(), 150);
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    user = cred.user;
   } catch(err) {
-    let msg = "Failed to send OTP. Please try again.";
-    if (err.code === "auth/invalid-phone-number")   msg = "Invalid phone number.";
-    if (err.code === "auth/too-many-requests")      msg = "Too many attempts. Wait a moment.";
-    if (err.code === "auth/network-request-failed") msg = "Network error. Check your connection.";
+    let msg = "Registration failed. Please try again.";
+    if (err.code === "auth/email-already-in-use") msg = "This email is already registered. Try signing in.";
+    if (err.code === "auth/weak-password")        msg = "Password too weak. Use at least 6 characters.";
+    if (err.code === "auth/invalid-email")        msg = "Invalid email address.";
     showError(msg);
-    if (recaptcha) { try { recaptcha.clear(); } catch(_) {} recaptcha = null; }
-  } finally {
-    setBtnLoading("sendOtpBtn", false, "Send OTP");
+    setBtnLoading(false);
+    return;
   }
-};
 
-window.backToStep2 = function() {
-  clearInterval(resendInterval);
-  confirmResult = null;
-  document.getElementById("otpInput").value = "";
-  updateOtpDots("");
-  setStep(2);
-};
-
-// ── RESEND OTP ────────────────────────
-window.resendOTP = async function() {
-  hideError();
-  const raw = document.getElementById("phoneInput").value.trim();
-  initRecaptcha();
+  // ── Step 2: Save profile + Firestore ─────────────────────
   try {
-    confirmResult = await signInWithPhoneNumber(auth, "+91" + raw, recaptcha);
-    startResendTimer(30);
-    document.getElementById("otpInput").value = "";
-    updateOtpDots("");
-  } catch(_) {
-    showError("Failed to resend. Try again.");
-  }
-};
+    await updateProfile(user, { displayName: name });
+    await setDoc(doc(db, "Users", user.uid), {
+      Name: name, Email: email,
+      Balance: 0, TotalOrders: 0, TotalSpent: 0
+    });
+  } catch(_) {}
 
-// ── VERIFY OTP → CREATE ACCOUNT ───────
-window.verifyOTP = async function() {
-  hideError();
-  const code = document.getElementById("otpInput").value.trim();
-  if (code.length !== 6) return showError("Enter the 6-digit OTP.");
-
-  setBtnLoading("verifyOtpBtn", true, "Creating Account...");
-
+  // ── Step 3: Send verification email ──────────────────────
   try {
-    const result = await confirmResult.confirm(code);
-    const user   = result.user;
-    clearInterval(resendInterval);
-
-    // Save name & profile
-    await updateProfile(user, { displayName: _name });
-    await saveFirestore(user);
-    saveSession(user);
-
-    // Show success
-    document.getElementById("formState").style.display = "none";
-    document.getElementById("successState").classList.add("active");
+    await sendEmailVerification(user);
   } catch(err) {
-    let msg = "Incorrect OTP. Please try again.";
-    if (err.code === "auth/code-expired")               msg = "OTP expired. Please resend.";
-    if (err.code === "auth/invalid-verification-code")  msg = "Wrong OTP. Check and try again.";
-    showError(msg);
-  } finally {
-    setBtnLoading("verifyOtpBtn", false, "Verify & Create Account");
+    // Account was created but email failed — show exact Firebase error
+    showError("Account created but email failed: [" + (err.code || err.message) + "]");
+    setBtnLoading(false);
+    return;
   }
+
+  // ── Step 4: Show success ──────────────────────────────────
+  _lastUser = user;
+  document.getElementById("sentEmailDisplay").textContent = email;
+  document.getElementById("formState").style.display = "none";
+  document.getElementById("successState").classList.add("active");
+  startResendTimer(60);
+};
+
+// ── Resend verification ───────────────────────────────────────
+window.resendVerification = async function() {
+  if (!_lastUser) return;
+  const msg = document.getElementById("resendMsg");
+  try {
+    await sendEmailVerification(_lastUser);
+    msg.classList.remove("hidden");
+    setTimeout(() => msg.classList.add("hidden"), 4000);
+    startResendTimer(60);
+  } catch(_) {}
 };
 
 </script>
 
 <script>
-function updateOtpDots(val) {
-  for (let i = 0; i < 6; i++)
-    document.getElementById("d"+i).classList.toggle("filled", i < val.length);
-}
 function togglePass(id, el) {
   const input = document.getElementById(id);
   const icon  = el.querySelector(".material-symbols-outlined");

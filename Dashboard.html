@@ -401,6 +401,9 @@ body {
             <div class="flex items-center gap-3">
               <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
                    id="catIcon" class="w-5 h-5 rounded hidden" alt=""/>
+              <div id="catIconWelcome" style="display:none;width:20px;height:20px;border-radius:4px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);flex-shrink:0;align-items:center;justify-content:center;">
+                <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><text x="5.5" y="8.5" text-anchor="middle" font-size="9" fill="white">★</text></svg>
+              </div>
               <span id="catLabel" class="text-gray-400 text-sm font-semibold">
                 — Select a category —
               </span>
@@ -424,8 +427,8 @@ body {
                    hover:border-[#2196f3]/50 transition-all">
             <div class="flex items-center gap-3 min-w-0">
               <span id="svcNumBadge"
-                class="w-6 h-6 rounded-lg bg-[#2196f3] text-white text-xs
-                       font-black flex items-center justify-center flex-shrink-0 hidden">1</span>
+                class="h-6 min-w-[44px] px-2 rounded-lg bg-[#2196f3] text-white text-xs
+                       font-black flex items-center justify-center flex-shrink-0 hidden"></span>
               <span id="svcLabel" class="text-gray-400 text-sm font-semibold truncate">
                 — Select a service —
               </span>
@@ -895,8 +898,8 @@ body {
 .svc-item.selected { background:rgba(33,150,243,0.15);color:white }
 .svc-item:last-child { border-bottom:none }
 .svc-num-badge {
-  min-width:24px;height:24px;border-radius:6px;background:#2196f3;color:white;
-  font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  min-width:44px;height:24px;border-radius:6px;background:#2196f3;color:white;
+  font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0 6px;
 }
 </style>
 
@@ -917,7 +920,9 @@ function playSuccess() {
 }
 // ── SERVICES DATA ──
 const CATEGORIES = [
-  {id:'reel-views', label:'Instagram - Reel Views'},
+  {id:'welcome-offer',   label:'Welcome Offer'},
+  {id:'cheap_followers', label:'Cheapest Instagram Followers', subtitle:'Cheapest in The World 🌍'},
+  {id:'reel-views',      label:'Instagram - Reel Views'},
   {id:'post-views', label:'Instagram - Post Views'},
   {id:'followers',  label:'Instagram - Followers'},
   {id:'likes',      label:'Instagram - Likes'},
@@ -927,6 +932,16 @@ const CATEGORIES = [
   {id:'reposts',    label:'Instagram - Reposts'},
 ];
 const SERVICES = {
+  'welcome-offer': [
+    {id:12278,name:'Instagram Followers',price:151.51,min:10,max:100000,startTime:'0-10 Minutes',speed:'20-50K/Day',refill:'LIFETIME ♻️',cancel:'YES',drop:'Low Drop',quality:'HQ',delivery:'0-10 minutes',details:['Kindly make sure your account is public, Not private','In case of high demand, speed and start time may change','Do not place second order on same link before completion']},
+    {id:12179,name:'Instagram Views',price:0.38,min:100,max:2147483647,startTime:'Instant',speed:'300K/Day',refill:'NO',cancel:'YES',drop:'—',quality:'—',delivery:'Instant',details:['Use reels or post link','Private accounts not accepted']},
+    {id:12305,name:'Instagram Likes',price:21.23,min:10,max:500000,startTime:'0-10 Minutes',speed:'50K-100K+/Day',refill:'365 Days',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'0-10 minutes',details:['When service is busy, start speed may change','Do not place second order on same link before completion','Contact support if any issue']},
+  ],
+  'cheap_followers': [
+    {id:12135,name:'Instagram Followers',price:89.23,min:10,max:100000,startTime:'0-2 Minutes',speed:'100K/Day',refill:'365 Days ♻️',cancel:'-',drop:'Low Drop',quality:'Real Accounts',delivery:'0-2 minutes',details:['Location: Global','Use profile link or username','Kindly make sure your account is public, Not private','In case of high demand, speed and start time may change','Do not place second order on same link before completion']},
+    {id:12005,name:'Instagram Followers',price:62.88,min:10,max:50000,startTime:'0-2 Minutes',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'-',drop:'High Drop Possible',quality:'Real Accounts',delivery:'0-2 minutes',details:['Location: Global','Use profile link or username','Kindly make sure your account is public, Not private','In case of high demand, speed and start time may change','Do not place second order on same link before completion','⚠️ NOTE: It may give completed status without delivery','This is a bot service','We are not responsible']},
+    {id:12314,name:'Instagram Followers',price:43.71,min:10,max:100000,startTime:'0-10 Minutes',speed:'20K-50K+/Day',refill:'30 Days',cancel:'-',drop:'10-30% Drop',quality:'Real Accounts',delivery:'0-10 minutes',details:['When service is busy, start time may change','Do not place second order on same link before completion','Contact support if any issue']},
+  ],
   'reel-views': [
     {id:1,name:'Instagram Reel Views – Used By Influencers',price:0.38,min:100,max:2147483647,startTime:'INSTANT',speed:'500K/HOUR',refill:'LIFETIME',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'7 minutes',details:['Real Reel Views.','Use reels link.','Wrong links are non refundable.','Private accounts not accepted.','Start and speed can be slow sometimes.']},
     {id:2,name:'Instagram Reel Views – Used By Celebrities',price:0.55,min:100,max:2147483647,startTime:'INSTANT',speed:'300K/HOUR',refill:'30 DAYS',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'10 minutes',details:['Real Views from celebrity accounts.','Use reels link.','Private accounts not accepted.']},
@@ -1045,7 +1060,13 @@ function buildCategoryDropdown() {
   const dd=document.getElementById('categoryDropdown'); dd.innerHTML='';
   CATEGORIES.forEach(c=>{
     const d=document.createElement('div'); d.className='cat-item'+(c.id===_selCat?' selected':'');
-    d.innerHTML=`<img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" class="w-5 h-5 rounded flex-shrink-0"/><span>${c.label}</span>`;
+    const iconHTML = c.id==='welcome-offer'
+      ? `<svg width="20" height="20" viewBox="0 0 20 20" class="flex-shrink-0" style="border-radius:4px;flex-shrink:0"><defs><linearGradient id="woGrad" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#f09433"/><stop offset="33%" stop-color="#e6683c"/><stop offset="66%" stop-color="#cc2366"/><stop offset="100%" stop-color="#bc1888"/></linearGradient></defs><rect width="20" height="20" rx="5" fill="url(#woGrad)"/><text x="10" y="14.5" text-anchor="middle" font-size="11" fill="white">★</text></svg>`
+      : `<img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" class="w-5 h-5 rounded flex-shrink-0"/>`;
+    const labelHTML = c.subtitle
+      ? `<div style="display:flex;flex-direction:column;gap:1px"><span>${c.label}</span><span style="font-size:10px;font-weight:600;color:#94a3b8;line-height:1.2">${c.subtitle}</span></div>`
+      : `<span>${c.label}</span>`;
+    d.innerHTML=`${iconHTML}${labelHTML}`;
     d.onclick=()=>selectCategory(c); dd.appendChild(d);
   });
 }
@@ -1058,7 +1079,9 @@ function toggleCategoryDropdown() {
 function closeCatDrop(){document.getElementById('categoryDropdown').classList.add('hidden');document.getElementById('catArrow').style.transform='rotate(0deg)';_catOpen=false;}
 function selectCategory(cat) {
   _selCat=cat.id;_selSvc=null;
-  document.getElementById('catIcon').classList.remove('hidden');
+  const isWelcome = cat.id==='welcome-offer';
+  document.getElementById('catIcon').classList[isWelcome?'add':'remove']('hidden');
+  document.getElementById('catIconWelcome').style.display = isWelcome?'flex':'none';
   document.getElementById('catLabel').textContent=cat.label;
   document.getElementById('catLabel').className='text-white text-sm font-semibold';
   closeCatDrop();
@@ -1153,7 +1176,7 @@ function buildGlobalSearch(q) {
     const d = document.createElement('div');
     d.className = 'search-result-item';
     d.innerHTML = `
-      <div class="svc-num-badge" style="min-width:24px">${svc.id}</div>
+      <div class="svc-num-badge">${svc.id}</div>
       <span class="flex-1 leading-snug text-xs font-semibold text-gray-200">${svc.name}</span>
       <span class="search-cat-badge">${cat.label.split(' - ')[1] || cat.label}</span>
       <span class="text-[#2196f3] font-black text-xs flex-shrink-0 ml-1">₹${svc.price.toFixed(2)}/1K</span>
