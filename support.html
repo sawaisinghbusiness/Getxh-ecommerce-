@@ -268,6 +268,14 @@ textarea::placeholder {
       <span class="font-bold text-gray-300 text-sm">Add Funds</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
     </a>
+    <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer"
+      class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-400/15">
+        <span class="text-green-400 font-black text-sm">W</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">WhatsApp</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
     <div class="h-px bg-white/10 my-3 mx-2"></div>
     <button onclick="window.location.href='index.html'" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20">
       <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-500/15">
@@ -277,6 +285,14 @@ textarea::placeholder {
     </button>
   </div>
   <div class="px-5 py-4 border-t border-white/10">
+    <div class="grid gap-2 text-xs">
+      <a href="privacy.html" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+      <a href="terms.html" class="text-gray-400 hover:text-white transition">Terms</a>
+      <a href="refund.html" class="text-gray-400 hover:text-white transition">Refund Policy</a>
+      <a href="cancellation.html" class="text-gray-400 hover:text-white transition">Cancellation</a>
+      <a href="about.html" class="text-gray-400 hover:text-white transition">About</a>
+      <a href="contact.html" class="text-gray-400 hover:text-white transition">Contact</a>
+    </div>
     <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
   </div>
 </aside>
@@ -403,10 +419,10 @@ textarea::placeholder {
 
 <div class="fixed bottom-0 left-0 right-0 z-40 border-t border-[#1e2a4a] bg-[#0e1629] lg:hidden">
   <div class="flex items-center justify-around py-2 text-xs">
-    <a href="Dashboard.html" class="flex flex-col items-center text-slate-400">
+    <button onclick="openMenu()" class="flex flex-col items-center text-slate-400">
       <span class="material-symbols-outlined">dashboard</span>
       <span>Menu</span>
-    </a>
+    </button>
     <a href="orders.html" class="flex flex-col items-center text-slate-400">
       <span class="material-symbols-outlined">list_alt</span>
       <span>Orders</span>
@@ -426,6 +442,99 @@ textarea::placeholder {
 </div>
 </div>
 
+<!-- MOBILE SIDE MENU -->
+<div id="menuOverlay" class="fixed inset-0 hidden bg-black/60 backdrop-blur-sm z-[105]" onclick="closeMenu()"></div>
+<div id="sideMenu"
+  class="fixed top-0 left-0 h-full w-72 z-[110] transform -translate-x-full transition-transform duration-300 flex flex-col"
+  style="background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);">
+  <div class="px-5 pt-8 pb-5 border-b border-white/10" style="background:linear-gradient(135deg,#0e1f3d,#162844);">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:20px">verified_user</span>
+      </div>
+      <div>
+        <p class="font-black text-white text-base tracking-wide">GETXH<span style="color:#2196f3">.IN</span></p>
+        <div class="flex items-center gap-1 mt-0.5">
+          <div class="h-1.5 w-1.5 rounded-full bg-green-400" style="animation:glowPulse 2s infinite"></div>
+          <p class="text-xs font-semibold" style="color:#2196f3">Online</p>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">person</span>
+      </div>
+      <div class="min-w-0">
+        <p id="menuUsernameMobile" class="text-xs font-bold text-white truncate">User</p>
+        <p id="menuEmailMobile" class="text-xs text-gray-500 truncate">—</p>
+      </div>
+    </div>
+  </div>
+  <div class="flex-1 overflow-y-auto py-3 px-3">
+    <a href="Dashboard.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-500/15">
+        <span class="material-symbols-outlined text-blue-400" style="font-size:16px">dashboard</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Dashboard</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a href="Dashboard.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 transition-all active:scale-[0.98]" style="background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">add_shopping_cart</span>
+      </div>
+      <span class="font-bold text-white text-sm">New Order</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a href="orders.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-yellow-500/15">
+        <span class="material-symbols-outlined text-yellow-400" style="font-size:16px">list_alt</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Orders</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a href="support.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-500/15">
+        <span class="material-symbols-outlined text-purple-400" style="font-size:16px">support_agent</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Support</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <a href="wallet.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-500/15">
+        <span class="material-symbols-outlined text-green-400" style="font-size:16px">account_balance_wallet</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">Add Funds</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <div class="h-px bg-white/10 my-3 mx-2"></div>
+    <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer"
+      class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-400/15">
+        <span class="text-green-400 font-black text-sm">W</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">WhatsApp</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
+    <button onclick="window.location.href='index.html'" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-500/15">
+        <span class="material-symbols-outlined text-red-400" style="font-size:16px">logout</span>
+      </div>
+      <span class="font-bold text-red-400 text-sm">Logout</span>
+    </button>
+  </div>
+  <div class="px-5 py-4 border-t border-white/10">
+    <div class="grid gap-2 text-xs">
+      <a href="privacy.html" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+      <a href="terms.html" class="text-gray-400 hover:text-white transition">Terms</a>
+      <a href="refund.html" class="text-gray-400 hover:text-white transition">Refund Policy</a>
+      <a href="cancellation.html" class="text-gray-400 hover:text-white transition">Cancellation</a>
+      <a href="about.html" class="text-gray-400 hover:text-white transition">About</a>
+      <a href="contact.html" class="text-gray-400 hover:text-white transition">Contact</a>
+    </div>
+    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
+  </div>
+</div>
+
 <script>
 const CATEGORIES = {
   Orders: ['Refill', 'Cancel', 'Speed', 'Other', 'Refund'],
@@ -443,9 +552,22 @@ const _menuName = localStorage.getItem('getxh_user_name') || '';
 const _menuEmail = localStorage.getItem('getxh_current_user') || '';
 const _menuInitial = _menuName || (_menuEmail.split('@')[0] || 'User');
 const menuUserEl = document.getElementById('menuUsername');
+const menuUserMobileEl = document.getElementById('menuUsernameMobile');
 const menuEmailEl = document.getElementById('menuEmail');
+const menuEmailMobileEl = document.getElementById('menuEmailMobile');
 if (menuUserEl) menuUserEl.textContent = _menuInitial;
+if (menuUserMobileEl) menuUserMobileEl.textContent = _menuInitial;
 if (menuEmailEl) menuEmailEl.textContent = _menuEmail;
+if (menuEmailMobileEl) menuEmailMobileEl.textContent = _menuEmail;
+
+function openMenu() {
+  document.getElementById('sideMenu').classList.remove('-translate-x-full');
+  document.getElementById('menuOverlay').classList.remove('hidden');
+}
+function closeMenu() {
+  document.getElementById('sideMenu').classList.add('-translate-x-full');
+  document.getElementById('menuOverlay').classList.add('hidden');
+}
 
 function showNotice(id, message, type = 'error') {
   const el = document.getElementById(id);
@@ -874,8 +996,7 @@ window.closeCurrentTicket = async function () {
     await updateDoc(doc(db, 'tickets', activeTicketDoc), {
       status: 'solved'
     });
-  } catch (err) {
-    console.error(err);
+  } catch (_) {
     showNotice('pageNotice', 'Unable to close ticket right now.');
   } finally {
     closeBtn.disabled = false;
@@ -911,7 +1032,7 @@ onAuthStateChanged(auth, user => {
     });
   };
 
-  onSnapshot(collection(db, 'orders', user.uid, 'user_orders'), snapshot => {
+  const _unsubOrders = onSnapshot(collection(db, 'orders', user.uid, 'user_orders'), snapshot => {
     const ids = new Set();
     snapshot.forEach(item => {
       const data = item.data();
@@ -926,7 +1047,7 @@ onAuthStateChanged(auth, user => {
     where('uid', '==', user.uid)
   );
 
-  onSnapshot(ticketQuery, snapshot => {
+  const _unsubTickets = onSnapshot(ticketQuery, snapshot => {
     const tickets = [];
     snapshot.forEach(item => {
       tickets.push({ id: item.id, ...item.data() });
@@ -945,9 +1066,15 @@ onAuthStateChanged(auth, user => {
         closeTicketModal();
       }
     }
-  }, err => {
-    console.error(err);
+  }, () => {
     showNotice('pageNotice', 'Unable to load tickets right now.');
+  });
+
+  // Cleanup on page leave
+  window.addEventListener('beforeunload', () => {
+    _unsubOrders();
+    _unsubTickets();
+    if (typeof unsubscribeActiveTicket === 'function') unsubscribeActiveTicket();
   });
 });
 </script>

@@ -138,7 +138,7 @@ body {
 <!-- ⭐ Firebase SDK -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } 
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, signOut }
     from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -204,26 +204,29 @@ body {
         loginBtn.innerHTML = '<span class="inline-block h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin align-[-2px] mr-2"></span>Signing In...';
 
         signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-
+        .then(async (userCredential) => {
             const user = userCredential.user;
 
-            // ⭐ Save logged-in user name (from Firebase profile)
+            // Block unverified users
+            if (!user.emailVerified) {
+                await signOut(auth);
+                errorBox.innerHTML = 'Please verify your email before logging in. <button onclick="resendVerification(\'' + email + '\',\'' + password + '\')" style="color:#2563eb;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;padding:0">Resend email</button>';
+                errorBox.classList.remove("hidden");
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Sign In";
+                return;
+            }
+
             saveSession(user, email);
-
-            // ⭐ Save UID (this connects user → Firestore)
-
-            // ⭐ Save login status and email
-
             window.location.href = "Dashboard.html";
         })
         .catch((error) => {
             let msg = "Invalid email or password";
-            if (error.code === "auth/user-not-found") msg = "No account exists with this email";
-            if (error.code === "auth/wrong-password") msg = "Incorrect password";
-            if (error.code === "auth/invalid-email") msg = "Enter a valid email";
-            if (error.code === "auth/invalid-credential") msg = "Incorrect email or password";
-            if (error.code === "auth/too-many-requests") msg = "Too many attempts. Please try again in a moment";
+            if (error.code === "auth/user-not-found")       msg = "No account exists with this email";
+            if (error.code === "auth/wrong-password")        msg = "Incorrect password";
+            if (error.code === "auth/invalid-email")         msg = "Enter a valid email";
+            if (error.code === "auth/invalid-credential")    msg = "Incorrect email or password";
+            if (error.code === "auth/too-many-requests")     msg = "Too many attempts. Please try again in a moment";
             if (error.code === "auth/network-request-failed") msg = "Network error. Check your internet and try again";
 
             errorBox.textContent = msg;
@@ -231,6 +234,63 @@ body {
             loginBtn.disabled = false;
             loginBtn.textContent = "Sign In";
         });
+    };
+
+    // ── RESEND VERIFICATION EMAIL ──
+    window.resendVerification = async function(email, password) {
+        try {
+            const cred = await signInWithEmailAndPassword(auth, email, password);
+            await cred.user.sendEmailVerification();
+            await signOut(auth);
+            const errorBox = document.getElementById("errorBox");
+            errorBox.textContent = "✓ Verification email resent. Please check your inbox.";
+            errorBox.style.color = "#16a34a";
+        } catch(_) {}
+    };
+
+    // ── FORGOT PASSWORD ──
+    window.openForgotPassword = function() {
+        const emailVal = normalizeEmail(document.getElementById('email').value);
+        if (emailVal) document.getElementById('resetEmail').value = emailVal;
+        document.getElementById('forgotModal').classList.remove('hidden');
+        document.getElementById('forgotModal').style.display = 'flex';
+        document.getElementById('resetMsg').classList.add('hidden');
+        document.getElementById('resetEmail').focus();
+    };
+    window.closeForgotPassword = function() {
+        document.getElementById('forgotModal').classList.add('hidden');
+        document.getElementById('forgotModal').style.display = 'none';
+    };
+    window.sendReset = async function() {
+        const email = normalizeEmail(document.getElementById('resetEmail').value);
+        const msg   = document.getElementById('resetMsg');
+        const btn   = document.getElementById('resetBtn');
+        if (!email) {
+            msg.textContent = 'Please enter your email address.';
+            msg.style.color = '#f87171';
+            msg.classList.remove('hidden');
+            return;
+        }
+        btn.disabled = true;
+        btn.innerHTML = '<span class="inline-block h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin align-[-2px] mr-2"></span>Sending...';
+        try {
+            await sendPasswordResetEmail(auth, email);
+            msg.textContent = '✓ Reset link sent! Check your email inbox.';
+            msg.style.color = '#4ade80';
+            msg.classList.remove('hidden');
+            btn.textContent = 'Sent';
+            setTimeout(() => window.closeForgotPassword(), 3000);
+        } catch(e) {
+            let errMsg = 'Something went wrong. Try again.';
+            if (e.code === 'auth/user-not-found')  errMsg = 'No account found with this email.';
+            if (e.code === 'auth/invalid-email')   errMsg = 'Enter a valid email address.';
+            if (e.code === 'auth/too-many-requests') errMsg = 'Too many attempts. Please wait a moment.';
+            msg.textContent = errMsg;
+            msg.style.color = '#f87171';
+            msg.classList.remove('hidden');
+            btn.disabled = false;
+            btn.textContent = 'Send Reset Link';
+        }
     };
 </script>
 
@@ -284,7 +344,7 @@ body {
 </div>
 
 <div class="mt-5 flex flex-col items-center justify-between gap-2 text-center sm:flex-row sm:text-left">
-<a class="text-sm text-gray-500 transition-colors duration-200 hover:text-gray-700" href="#">Forgot Password?</a>
+<a class="text-sm text-gray-500 transition-colors duration-200 hover:text-gray-700 cursor-pointer" onclick="openForgotPassword()">Forgot Password?</a>
 <a class="text-sm font-medium text-blue-600 transition-colors duration-200 hover:text-blue-700" href="Registerpage.html">Create Account</a>
 </div>
 
@@ -318,6 +378,41 @@ body {
     </div>
   </div>
 </footer>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div id="forgotModal"
+     class="fixed inset-0 z-50 hidden items-end justify-center"
+     style="background:rgba(0,0,0,0.7);backdrop-filter:blur(6px)"
+     onclick="if(event.target===this)closeForgotPassword()">
+  <div class="w-full max-w-md mx-auto rounded-t-3xl p-6 pb-10"
+       style="background:linear-gradient(180deg,#0e1f3d 0%,#0a1628 100%);border-top:1px solid rgba(33,150,243,0.25)">
+    <div class="flex justify-center mb-4">
+      <div class="w-10 h-1 rounded-full" style="background:rgba(255,255,255,0.15)"></div>
+    </div>
+    <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
+         style="background:rgba(33,150,243,0.12);border:1px solid rgba(33,150,243,0.25)">
+      <span class="material-symbols-outlined" style="color:#2196f3;font-size:22px">lock_reset</span>
+    </div>
+    <h2 class="text-white font-black text-lg mb-1">Reset Password</h2>
+    <p class="text-gray-400 text-sm mb-5">Enter your email and we'll send you a reset link.</p>
+    <input id="resetEmail" type="email" placeholder="Your email address"
+           autocomplete="email"
+           class="w-full px-4 py-3.5 rounded-xl text-sm text-white placeholder-gray-500 outline-none mb-3"
+           style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12)"
+           onkeydown="if(event.key==='Enter')sendReset()"/>
+    <p id="resetMsg" class="hidden text-sm font-semibold mb-3"></p>
+    <button id="resetBtn" onclick="sendReset()"
+            class="w-full py-3.5 rounded-xl font-black text-sm text-white mb-3"
+            style="background:linear-gradient(135deg,#1d4ed8,#2196f3);box-shadow:0 8px 24px rgba(33,150,243,0.3)">
+      Send Reset Link
+    </button>
+    <button onclick="closeForgotPassword()"
+            class="w-full py-3 rounded-xl font-bold text-sm text-gray-400"
+            style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)">
+      Cancel
+    </button>
+  </div>
+</div>
 
 <script>
 function togglePassword() {

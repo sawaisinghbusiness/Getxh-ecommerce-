@@ -41,9 +41,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
 <!-- TOP HEADER -->
 <div class="flex justify-between items-center px-4 py-3 bg-[#0b1220] sticky top-0 z-50">
-  <button onclick="openMenu()">
-    <span class="material-symbols-outlined text-2xl">menu</span>
-  </button>
+  <div class="w-9"></div>
   <div class="brand-badge">
     <span class="material-symbols-outlined brand-icon">verified_user</span>
     <span class="brand-text">GETXH<span class="dot">.IN</span></span>
@@ -110,10 +108,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <!-- BOTTOM NAV -->
 <div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-40">
   <div class="flex justify-around items-center py-2 text-xs">
-    <a href="Dashboard.html" class="flex flex-col items-center text-gray-400">
+    <button onclick="openMenu()" class="flex flex-col items-center text-gray-400">
       <span class="material-symbols-outlined">dashboard</span>
       <span>Menu</span>
-    </a>
+    </button>
     <a href="orders.html" class="flex flex-col items-center text-blue-400">
       <span class="material-symbols-outlined">list_alt</span>
       <span>Orders</span>
@@ -253,6 +251,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </button>
   </div>
   <div class="px-5 py-4 border-t border-white/10">
+    <div class="mt-3 grid gap-2 text-xs">
+      <a href="privacy.html" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+      <a href="terms.html" class="text-gray-400 hover:text-white transition">Terms</a>
+      <a href="refund.html" class="text-gray-400 hover:text-white transition">Refund Policy</a>
+      <a href="cancellation.html" class="text-gray-400 hover:text-white transition">Cancellation</a>
+      <a href="about.html" class="text-gray-400 hover:text-white transition">About</a>
+      <a href="contact.html" class="text-gray-400 hover:text-white transition">Contact</a>
+    </div>
     <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
   </div>
 </div>
@@ -436,7 +442,7 @@ function renderOrders(orders) {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -451,56 +457,80 @@ const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
+let _unsubOrders = null;
+let _unsubWallet = null;
+
 window._logoutUser = async function() {
-  try {
-    await signOut(auth);
-  } catch (err) {
-    console.error("Logout error:", err);
-  } finally {
-    localStorage.clear();
-    window.location.href = 'index.html';
-  }
+  if (_unsubOrders) _unsubOrders();
+  if (_unsubWallet) _unsubWallet();
+  try { await signOut(auth); } catch(_) {}
+  localStorage.clear();
+  window.location.href = 'index.html';
 };
 
+// Skeleton loader
+function showSkeleton() {
+  document.getElementById('ordersList').innerHTML = [1,2,3].map(() => `
+    <div class="rounded-2xl mb-3 overflow-hidden animate-pulse" style="background:#121c33;border:1px solid rgba(255,255,255,0.06)">
+      <div class="flex items-center justify-between px-4 py-3" style="border-bottom:1px solid rgba(255,255,255,0.06)">
+        <div class="h-4 w-24 rounded" style="background:rgba(255,255,255,0.08)"></div>
+        <div class="h-6 w-20 rounded-full" style="background:rgba(255,255,255,0.06)"></div>
+      </div>
+      <div class="px-4 py-3 space-y-3">
+        <div class="h-3 w-3/4 rounded" style="background:rgba(255,255,255,0.06)"></div>
+        <div class="h-3 w-1/2 rounded" style="background:rgba(255,255,255,0.05)"></div>
+        <div class="h-3 w-1/3 rounded" style="background:rgba(255,255,255,0.04)"></div>
+      </div>
+    </div>`).join('');
+}
+
 onAuthStateChanged(auth, (user) => {
-  if(!user) {
-    window.location.href = 'index.html'; return;
-  }
+  if (!user) { window.location.href = 'index.html'; return; }
 
-  loadWalletBalance(user.uid);
+  showSkeleton();
 
-  // ✅ Use actual logged-in user's UID
-  const q = collection(db,'orders', user.uid, 'user_orders');
-
-  onSnapshot(q, (snap) => {
-    const orders = [];
-    snap.forEach(doc => {
-      const d = doc.data();
-      orders.push({
-        ...d,
-        orderId: d.orderId || ('ORD' + doc.id.slice(-5).toUpperCase()),
-        docId: doc.id
-      });
-    });
-    orders.sort((a,b) => new Date(b.createdAt||0) - new Date(a.createdAt||0));
-    _allOrders = orders;
-    filterOrders();
-  }, (err) => {
-   alert(err.message);
-   console.error('Snapshot error:', err);
-   document.getElementById('ordersList').innerHTML = '<div style="text-align:center;padding:40px;color:red">Error: ' + err.message + '</div>';
-  });
-});
-
-async function loadWalletBalance(uid) {
-  try {
-    const snap = await getDoc(doc(db, 'Users', uid));
+  // Real-time wallet balance
+  if (_unsubWallet) _unsubWallet();
+  _unsubWallet = onSnapshot(doc(db, 'Users', user.uid), (snap) => {
     const balance = snap.exists() ? Number(snap.data().Balance || 0) : 0;
     document.getElementById('walletBalanceTop').textContent = `₹${balance.toFixed(2)}`;
-  } catch (err) {
-    console.error('Wallet balance load error:', err);
-  }
-}
+  });
+
+  // Real-time orders
+  if (_unsubOrders) _unsubOrders();
+  _unsubOrders = onSnapshot(
+    collection(db, 'orders', user.uid, 'user_orders'),
+    (snap) => {
+      const orders = [];
+      snap.forEach(d => {
+        const data = d.data();
+        orders.push({
+          ...data,
+          orderId: data.orderId || ('ORD' + d.id.slice(-5).toUpperCase()),
+          docId: d.id
+        });
+      });
+      orders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      _allOrders = orders;
+      filterOrders();
+    },
+    () => {
+      document.getElementById('ordersList').innerHTML = `
+        <div class="flex flex-col items-center justify-center py-16 gap-3 text-center"
+             style="background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.15);border-radius:16px">
+          <span class="material-symbols-outlined text-red-400/50" style="font-size:40px">wifi_off</span>
+          <p class="text-sm font-bold text-red-400">Unable to load orders</p>
+          <p class="text-xs text-gray-600">Check your connection and refresh the page.</p>
+        </div>`;
+    }
+  );
+});
+
+// Cleanup on page leave
+window.addEventListener('beforeunload', () => {
+  if (_unsubOrders) _unsubOrders();
+  if (_unsubWallet) _unsubWallet();
+});
 </script>
 
 </body>

@@ -139,6 +139,40 @@
         padding: 0;
       }
     }
+
+  /* Skeleton loader */
+  @keyframes shimmer {
+    0% { background-position: -400px 0 }
+    100% { background-position: 400px 0 }
+  }
+  .skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
+    background-size: 800px 100%;
+    animation: shimmer 1.4s infinite linear;
+    border-radius: 10px;
+  }
+
+  /* Live dot */
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.75); }
+  }
+  .live-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: #22c55e;
+    display: inline-block; animation: pulse-dot 1.6s ease-in-out infinite;
+    box-shadow: 0 0 6px rgba(34,197,94,0.6);
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Payment card hover */
+  .payment-card {
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .payment-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 32px rgba(2,8,23,0.4);
+  }
   </style>
 </head>
 
@@ -258,14 +292,34 @@
   </section>
 
   <section class="section-card rounded-[30px] p-5 sm:p-6">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="text-sm font-black tracking-wide">Recent Payments</h3>
-      <span class="text-xs font-bold text-[#2196f3]">Real-time updates</span>
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <h3 class="text-base font-black tracking-wide text-white">Recent Payments</h3>
+        <p class="text-xs text-gray-500 mt-0.5">Last 5 transactions</p>
+      </div>
+      <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl" style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2)">
+        <span class="live-dot"></span>
+        <span class="text-xs font-bold text-green-400">Live</span>
+      </div>
     </div>
 
     <div id="transactionsList" class="space-y-3">
-      <div class="rounded-2xl border border-white/10 bg-[#121c33] p-4 text-sm text-gray-400">
-        Loading transactions...
+      <!-- Skeleton loaders -->
+      <div class="rounded-2xl border border-white/8 bg-[#121c33] p-4 flex items-center justify-between gap-3">
+        <div class="flex-1 space-y-2">
+          <div class="skeleton h-4 w-2/3"></div>
+          <div class="skeleton h-3 w-1/2"></div>
+          <div class="skeleton h-3 w-1/3"></div>
+        </div>
+        <div class="skeleton h-5 w-16 rounded-lg"></div>
+      </div>
+      <div class="rounded-2xl border border-white/8 bg-[#121c33] p-4 flex items-center justify-between gap-3">
+        <div class="flex-1 space-y-2">
+          <div class="skeleton h-4 w-3/5"></div>
+          <div class="skeleton h-3 w-2/5"></div>
+          <div class="skeleton h-3 w-1/4"></div>
+        </div>
+        <div class="skeleton h-5 w-16 rounded-lg"></div>
       </div>
     </div>
   </section>
@@ -336,134 +390,72 @@ onAuthStateChanged(auth, async (user) => {
 window.payNow = async function() {
   hideWalletNotice();
 
+  const txnInput    = document.getElementById("paymentRefInput");
   const amountInput = document.getElementById("amount");
-  const enteredAmount = Number(amountInput.value || 0);
-  const btn = document.getElementById("submitPaymentBtn");
+  const btn         = document.getElementById("submitPaymentBtn");
 
-  if (!enteredAmount) {
-    alert("Please enter amount");
+  const txnId        = txnInput.value.trim();
+  const enteredAmount = Number(amountInput.value || 0);
+
+  if (!txnId) {
+    showWalletNotice("Please enter your UPI Transaction ID.", "error");
+    txnInput.focus();
     return;
   }
-
-  if (enteredAmount <= 0) {
-    alert("Please enter a valid amount");
+  if (!enteredAmount || enteredAmount <= 0) {
+    showWalletNotice("Please enter a valid amount.", "error");
+    amountInput.focus();
+    return;
+  }
+  if (enteredAmount < 10) {
+    showWalletNotice("Minimum top-up amount is ₹10.", "error");
+    amountInput.focus();
+    return;
+  }
+  if (!currentUser) {
+    showWalletNotice("Session expired. Please login again.", "error");
     return;
   }
 
   btn.disabled = true;
-  btn.textContent = "Processing...";
+  btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px;vertical-align:-3px;animation:spin 1s linear infinite">progress_activity</span> Submitting...`;
 
   try {
-    const orderResponse = await fetch("http://localhost:5000/create-order", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ amount: enteredAmount })
-    });
+    const paymentRef = doc(db, "payments", currentUser.uid, "user_payments", txnId);
 
-    if (!orderResponse.ok) {
-      throw new Error("Order creation failed");
+    // Duplicate check
+    const existing = await getDoc(paymentRef);
+    if (existing.exists()) {
+      showWalletNotice("This Transaction ID has already been submitted.", "error");
+      btn.disabled = false;
+      btn.textContent = "Pay";
+      return;
     }
 
-    const order = await orderResponse.json();
-    const razorpay = new window.Razorpay({
-      key: "rzp_test_123456789",
-      amount: order.amount,
-      currency: "INR",
-      order_id: order.id,
-      name: "GETXH",
-      description: "Add Funds",
-      handler: async function(response) {
-        try {
-          console.log("Razorpay success response:", response);
-
-          const verifyResponse = await fetch("http://localhost:5000/verify", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              order_id: response.razorpay_order_id,
-              payment_id: response.razorpay_payment_id,
-              signature: response.razorpay_signature
-            })
-          });
-
-          if (!verifyResponse.ok) {
-            throw new Error("Verification request failed");
-          }
-
-          const verification = await verifyResponse.json();
-          console.log("Verification response:", verification);
-
-          if (!verification.success) {
-            throw new Error("Payment verification failed");
-          }
-
-          if (!currentUser) {
-            throw new Error("User session not found");
-          }
-
-          const paymentId = response.razorpay_payment_id;
-          const paymentRef = doc(db, "payments", currentUser.uid, "user_payments", paymentId);
-          const userRef = doc(db, "Users", currentUser.uid);
-
-          console.log("Checking payment duplicate for:", paymentId);
-          const existingPayment = await getDoc(paymentRef);
-          if (existingPayment.exists()) {
-            console.warn("Duplicate payment detected:", paymentId);
-            showWalletNotice("Duplicate payment detected");
-            return;
-          }
-
-          console.log("Updating wallet balance for user:", currentUser.uid);
-          await updateDoc(userRef, {
-            Balance: increment(enteredAmount)
-          });
-
-          console.log("Saving payment record:", paymentId);
-          await setDoc(paymentRef, {
-            title: "Wallet Top-up",
-            amount: enteredAmount,
-            status: "success",
-            paymentId,
-            orderId: response.razorpay_order_id,
-            method: "Razorpay",
-            paymentMethod: "Razorpay",
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-            uid: currentUser.uid,
-            email: currentUser.email || "",
-            type: "add_funds"
-          });
-
-          amountInput.value = "";
-          document.getElementById("paymentRefInput").value = "";
-          showWalletNotice("Payment successful. Balance updated.", "success");
-          alert("Payment Successful");
-        } catch (error) {
-          console.error("Payment verification error:", error);
-          showWalletNotice(error.message || "Payment verification failed");
-          alert("Payment Failed");
-        } finally {
-          btn.disabled = false;
-          btn.textContent = "Pay";
-        }
-      },
-      modal: {
-        ondismiss: function() {
-          btn.disabled = false;
-          btn.textContent = "Pay";
-        }
-      }
+    // Save to Firestore — onSnapshot will instantly reflect in UI
+    await setDoc(paymentRef, {
+      title:        "Wallet Top-up",
+      amount:       enteredAmount,
+      status:       "Pending",
+      paymentId:    txnId,
+      method:       "UPI",
+      paymentMethod:"UPI",
+      createdAt:    serverTimestamp(),
+      updatedAt:    serverTimestamp(),
+      uid:          currentUser.uid,
+      email:        currentUser.email || "",
+      type:         "add_funds"
     });
 
-    razorpay.open();
+    txnInput.value    = "";
+    amountInput.value = "";
+    showWalletNotice("Payment submitted! Our team will verify and credit your wallet shortly.", "success");
+
   } catch (err) {
-    console.error("Payment initialization error:", err);
-    alert("Server error");
-    btn.disabled = false;
+    console.error("Payment submit error:", err);
+    showWalletNotice("Something went wrong. Please try again.", "error");
+  } finally {
+    btn.disabled   = false;
     btn.textContent = "Pay";
   }
 };
@@ -516,8 +508,13 @@ function subscribeRecentPayments(uid) {
     (snap) => {
       if (snap.empty) {
         container.innerHTML = `
-          <div class="rounded-2xl border border-white/10 bg-[#121c33] p-4 text-sm text-gray-400">
-            No recent payments yet. Successful add-fund payments will appear here instantly.
+          <div class="rounded-2xl p-6 flex flex-col items-center gap-3 text-center"
+               style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1)">
+            <span class="material-symbols-outlined text-gray-600" style="font-size:36px">receipt_long</span>
+            <div>
+              <p class="text-sm font-bold text-gray-400">No transactions yet</p>
+              <p class="text-xs text-gray-600 mt-1">Your payment history will appear here after your first top-up.</p>
+            </div>
           </div>`;
         return;
       }
@@ -527,39 +524,60 @@ function subscribeRecentPayments(uid) {
         const payment = docSnap.data();
         const amount = Number(payment.amount || 0);
         const status = String(payment.status || "pending").toLowerCase();
-        const method = payment.paymentMethod || payment.method || "Not specified";
+        const method = payment.paymentMethod || payment.method || "UPI";
         const paymentId = payment.paymentId || payment.transactionId || payment.referenceId || docSnap.id.slice(-8).toUpperCase();
         const createdAt = formatDateTime(payment.createdAt || payment.updatedAt);
         const isSuccess = status === "success" || status === "successful" || status === "completed";
-        const amountColor = isSuccess ? "text-green-400" : status === "failed" ? "text-red-400" : "text-yellow-400";
-        const statusColor = isSuccess ? "text-green-400" : status === "failed" ? "text-red-400" : "text-yellow-400";
+        const isFailed = status === "failed";
         const title = payment.title || "Wallet Top-up";
 
+        const statusBg    = isSuccess ? "rgba(34,197,94,0.1)"   : isFailed ? "rgba(239,68,68,0.1)"   : "rgba(234,179,8,0.1)";
+        const statusBorder = isSuccess ? "rgba(34,197,94,0.25)"  : isFailed ? "rgba(239,68,68,0.25)"  : "rgba(234,179,8,0.25)";
+        const statusText  = isSuccess ? "#4ade80"               : isFailed ? "#f87171"               : "#facc15";
+        const statusLabel = isSuccess ? "Success"               : isFailed ? "Failed"                : "Pending";
+        const iconBg      = isSuccess ? "rgba(34,197,94,0.12)"  : isFailed ? "rgba(239,68,68,0.12)"  : "rgba(234,179,8,0.12)";
+        const iconColor   = isSuccess ? "#4ade80"               : isFailed ? "#f87171"               : "#facc15";
+        const iconName    = isSuccess ? "check_circle"          : isFailed ? "cancel"                : "schedule";
+        const amountColor = isSuccess ? "#4ade80"               : isFailed ? "#f87171"               : "#facc15";
+
         const item = document.createElement("div");
-        item.className = "rounded-2xl border border-white/10 bg-[rgba(255,255,255,0.05)] p-4 flex items-start justify-between gap-3 shadow-[0_12px_28px_rgba(2,8,23,0.24)]";
+        item.className = "payment-card rounded-2xl p-4 flex items-center gap-3";
+        item.style.cssText = "background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);box-shadow:0 8px 24px rgba(2,8,23,0.2)";
         item.innerHTML = `
-          <div class="min-w-0">
-            <p class="text-sm font-bold text-white truncate">${title}</p>
-            <p class="text-xs text-gray-400 mt-1">Payment ID: ${paymentId}</p>
-            <p class="text-xs text-gray-400 mt-1">Method: ${method}</p>
-            <p class="text-xs ${statusColor} mt-1 uppercase font-bold tracking-wide">${status}</p>
-            <p class="text-xs text-gray-500 mt-1">${createdAt}</p>
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+               style="background:${iconBg}">
+            <span class="material-symbols-outlined" style="font-size:20px;color:${iconColor}">${iconName}</span>
           </div>
-          <p class="text-sm font-black ${amountColor} whitespace-nowrap">${isSuccess ? "+" : ""} ${RUPEE}${amount.toFixed(2)}</p>`;
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <p class="text-sm font-bold text-white truncate">${title}</p>
+              <p class="text-sm font-black whitespace-nowrap" style="color:${amountColor}">${isSuccess ? '+' : ''}${RUPEE}${amount.toFixed(2)}</p>
+            </div>
+            <div class="flex items-center justify-between gap-2 mt-1.5">
+              <p class="text-xs text-gray-500 truncate">ID: ${paymentId} · ${method}</p>
+              <span class="text-[10px] font-black px-2 py-0.5 rounded-lg flex-shrink-0"
+                    style="background:${statusBg};border:1px solid ${statusBorder};color:${statusText}">${statusLabel}</span>
+            </div>
+            ${createdAt ? `<p class="text-xs text-gray-600 mt-1">${createdAt}</p>` : ''}
+          </div>`;
         container.appendChild(item);
       });
     },
     (err) => {
       console.error("Payment load error:", err);
       container.innerHTML = `
-        <div class="rounded-2xl border border-red-500/20 bg-[#121c33] p-4 text-sm text-red-400">
-          Recent payments load nahi ho paaye.
+        <div class="rounded-2xl p-6 flex flex-col items-center gap-3 text-center"
+             style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1)">
+          <span class="material-symbols-outlined text-gray-600" style="font-size:36px">receipt_long</span>
+          <div>
+            <p class="text-sm font-bold text-gray-400">No recent payments</p>
+            <p class="text-xs text-gray-600 mt-1">Your payment history will appear here after your first top-up.</p>
+          </div>
         </div>`;
     }
   );
 }
 </script>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 </body>
 </html>

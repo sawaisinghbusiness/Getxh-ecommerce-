@@ -194,6 +194,14 @@ body {
       <span class="font-bold text-gray-300 text-sm">Support</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
     </a>
+    <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer"
+      class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-400/15">
+        <span class="text-green-400 font-black text-sm">W</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm">WhatsApp</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+    </a>
     <a id="desktopAdminBtn" href="admin.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 hidden">
       <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-cyan-500/15">
         <span class="material-symbols-outlined text-cyan-400" style="font-size:16px">admin_panel_settings</span>
@@ -210,6 +218,14 @@ body {
     </button>
   </div>
   <div class="px-5 py-4 border-t border-white/10">
+    <div class="grid gap-2 text-xs">
+      <a href="privacy.html" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+      <a href="terms.html" class="text-gray-400 hover:text-white transition">Terms</a>
+      <a href="refund.html" class="text-gray-400 hover:text-white transition">Refund Policy</a>
+      <a href="cancellation.html" class="text-gray-400 hover:text-white transition">Cancellation</a>
+      <a href="about.html" class="text-gray-400 hover:text-white transition">About</a>
+      <a href="contact.html" class="text-gray-400 hover:text-white transition">Contact</a>
+    </div>
     <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
   </div>
 </aside>
@@ -218,9 +234,7 @@ body {
 
 <!-- MOBILE TOP HEADER -->
 <div class="flex justify-between items-center px-4 py-3 bg-[#0b1220] sticky top-0 z-[200] lg:hidden">
-    <button onclick="openMenu()">
-        <span class="material-symbols-outlined text-2xl">menu</span>
-    </button>
+    <div class="w-9"></div>
 <div class="brand-badge">
   <span class="material-symbols-outlined brand-icon">
     verified_user
@@ -229,9 +243,13 @@ body {
     GETXH<span class="dot">.IN</span>
   </span>
 </div>
-    <a href="wallet.html" class="flex items-center gap-1 bg-[#1e2a4a] px-3 py-1 rounded-full text-sm">
-        <span class="material-symbols-outlined text-base">account_balance_wallet</span>
-        <span id="walletBalanceTop">₹0</span>
+    <a href="wallet.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs active:scale-95 transition-all"
+       style="background:linear-gradient(135deg,rgba(0,200,83,0.15),rgba(0,230,118,0.08));
+              border:1px solid rgba(0,230,118,0.25);
+              color:#00e676;
+              box-shadow:0 0 12px rgba(0,230,118,0.1)">
+        <span class="material-symbols-outlined" style="font-size:15px">account_balance_wallet</span>
+        <span id="walletBalanceTop" class="font-black">₹0</span>
     </a>
 </div>
 
@@ -321,7 +339,7 @@ body {
       New Order
     </button>
     <button id="tabSubscription" onclick="switchOrderTab('sub')"
-      class="flex-1 py-3 text-sm font-bold bg-[#0e1629] text-gray-400 transition-all">
+      class="flex-1 py-3 text-sm font-bold bg-[#0e1629] text-gray-400 transition-all hidden">
       Subscription
     </button>
   </div>
@@ -353,11 +371,19 @@ body {
 
   <!-- Search -->
   <div class="relative mb-5">
-    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#2196f3]">🔍</span>
-    <input type="text" id="searchService" placeholder="Search"
-      class="w-full pl-10 pr-4 py-3 bg-[#0e1629] border border-white/10 rounded-xl
+    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#2196f3]" style="z-index:1">🔍</span>
+    <input type="text" id="searchService" placeholder="Search services..."
+      autocomplete="new-password" readonly
+      onfocus="this.removeAttribute('readonly')"
+      class="w-full pl-10 pr-10 py-3 bg-[#0e1629] border border-white/10 rounded-xl
              text-white placeholder-gray-500 text-sm
              focus:outline-none focus:border-[#2196f3] transition-all"/>
+    <button id="searchClearBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-all" style="font-size:18px;line-height:1">✕</button>
+    <!-- Global Search Results -->
+    <div id="globalSearchDrop"
+      class="hidden absolute left-0 right-0 top-full mt-1 rounded-xl overflow-hidden shadow-2xl"
+      style="background:#0e1629;border:1px solid rgba(33,150,243,0.3);z-index:999;max-height:300px;overflow-y:auto">
+    </div>
   </div>
 
   <!-- FORM CARD -->
@@ -568,29 +594,12 @@ body {
 <!-- ================= END NEW ORDER ================= -->
 <!-- RECENT ORDERS -->
 <div id="recentOrdersContainer" class="mt-4"></div>
+<!--
 
-<section class="dashboard-footer-card rounded-2xl p-5 mt-8 mb-4">
-  <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-    <div class="max-w-xl">
-      <p class="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-300/80">GETXH</p>
-      <h3 class="mt-2 text-lg font-black text-white">Policies, Support & Legal Information</h3>
-      <p class="mt-2 text-sm leading-6 text-gray-400">
-        Review our company information, legal pages, and contact details directly from the dashboard.
-      </p>
-    </div>
-    <div class="flex flex-wrap gap-2">
-      <a href="refund.html" class="dashboard-footer-link rounded-full px-4 py-2 text-sm font-semibold text-slate-200">Refund Policy</a>
-      <a href="privacy.html" class="dashboard-footer-link rounded-full px-4 py-2 text-sm font-semibold text-slate-200">Privacy Policy</a>
-      <a href="terms.html" class="dashboard-footer-link rounded-full px-4 py-2 text-sm font-semibold text-slate-200">Terms</a>
-      <a href="about.html" class="dashboard-footer-link rounded-full px-4 py-2 text-sm font-semibold text-slate-200">About</a>
-      <a href="contact.html" class="dashboard-footer-link rounded-full px-4 py-2 text-sm font-semibold text-slate-200">Contact</a>
-      <a href="cancellation.html" class="dashboard-footer-link rounded-full px-4 py-2 text-sm font-semibold text-slate-200">Cancellation</a>
-    </div>
-  </div>
-  <div class="mt-5 border-t border-white/10 pt-4 text-center text-xs text-gray-500">
+
     GETXH.IN © 2026. All rights reserved.
+-->
   </div>
-</section>
 </div>
 </main>
 
@@ -598,10 +607,10 @@ body {
 <div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-40 lg:hidden">
   <div class="flex justify-around items-center py-2 text-xs">
 
-    <a href="Dashboard.html" class="flex flex-col items-center text-blue-400">
+    <button onclick="openMenu()" class="flex flex-col items-center text-blue-400">
       <span class="material-symbols-outlined">dashboard</span>
       <span>Menu</span>
-    </a>
+    </button>
 <a href="orders.html" class="flex flex-col items-center text-gray-400">
   <span class="material-symbols-outlined">list_alt</span>
   <span>Orders</span>
@@ -708,7 +717,7 @@ body {
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
     </button>
 
-    <button onclick="closeMenu()"
+    <button onclick="closeMenu();window.location.href='wallet.html'"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
              text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
       <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-500/15">
@@ -718,30 +727,10 @@ body {
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
     </button>
 
-    <button onclick="closeMenu()"
-      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
-             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-orange-500/15">
-        <span class="material-symbols-outlined text-orange-400" style="font-size:16px">group_add</span>
-      </div>
-      <span class="font-bold text-gray-300 text-sm">Affiliates</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
-    </button>
-
-    <button onclick="closeMenu()"
-      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
-             text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-cyan-500/15">
-        <span class="material-symbols-outlined text-cyan-400" style="font-size:16px">autorenew</span>
-      </div>
-      <span class="font-bold text-gray-300 text-sm">Subscriptions</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
-    </button>
-
     <!-- Divider -->
     <div class="h-px bg-white/10 my-3 mx-2"></div>
 
-    <button onclick="closeMenu()"
+    <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
              text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10">
       <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-400/15">
@@ -749,7 +738,7 @@ body {
       </div>
       <span class="font-bold text-gray-300 text-sm">WhatsApp</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
-    </button>
+    </a>
 
     <button onclick="logout()"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1
@@ -764,6 +753,14 @@ body {
 
   <!-- MENU FOOTER -->
   <div class="px-5 py-4 border-t border-white/10">
+    <div class="grid gap-2 text-xs mb-3">
+      <a href="privacy.html" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+      <a href="terms.html" class="text-gray-400 hover:text-white transition">Terms</a>
+      <a href="refund.html" class="text-gray-400 hover:text-white transition">Refund Policy</a>
+      <a href="cancellation.html" class="text-gray-400 hover:text-white transition">Cancellation</a>
+      <a href="about.html" class="text-gray-400 hover:text-white transition">About</a>
+      <a href="contact.html" class="text-gray-400 hover:text-white transition">Contact</a>
+    </div>
     <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
   </div>
 
@@ -864,6 +861,20 @@ body {
 <!-- STYLES -->
 <style>
 @keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.search-result-item {
+  display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s;
+}
+.search-result-item:hover { background:rgba(33,150,243,0.12) }
+.search-result-item:last-child { border-bottom:none }
+.search-cat-badge {
+  font-size:10px;font-weight:900;color:#2196f3;
+  background:rgba(33,150,243,0.12);border:1px solid rgba(33,150,243,0.25);
+  border-radius:6px;padding:2px 7px;white-space:nowrap;flex-shrink:0;
+}
+.search-no-result {
+  padding:20px;text-align:center;color:#64748b;font-size:0.8rem;font-weight:600;
+}
 @keyframes fadeUpAnim { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
 .platform-pill { transition:all 0.2s ease }
 .active-pill { background:#2196f3 !important;color:white !important;border-color:#2196f3 !important }
@@ -1107,11 +1118,75 @@ function selectService(svc) {
   det.classList.remove('hidden');det.style.animation='none';det.offsetHeight;det.style.animation='fadeUpAnim 0.35s ease forwards';
 }
 
-// ── SEARCH ──
-document.getElementById('searchService').addEventListener('input',()=>{
-  if(!_selCat) return;
-  if(!_svcOpen){ toggleServiceDropdown(); }
-  buildServiceDropdown();
+// ── GLOBAL SEARCH ──
+function clearGlobalSearch() {
+  const inp = document.getElementById('searchService');
+  inp.value = '';
+  document.getElementById('globalSearchDrop').classList.add('hidden');
+  document.getElementById('searchClearBtn').classList.add('hidden');
+  inp.focus();
+}
+
+function buildGlobalSearch(q) {
+  const drop = document.getElementById('globalSearchDrop');
+  drop.innerHTML = '';
+  if (!q) { drop.classList.add('hidden'); document.getElementById('searchClearBtn').classList.add('hidden'); return; }
+  document.getElementById('searchClearBtn').classList.remove('hidden');
+
+  const results = [];
+  CATEGORIES.forEach(cat => {
+    (SERVICES[cat.id] || []).forEach(svc => {
+      if (svc.name.toLowerCase().includes(q) || cat.label.toLowerCase().includes(q)) {
+        results.push({ cat, svc });
+      }
+    });
+  });
+
+  if (results.length === 0) {
+    drop.innerHTML = '<div class="search-no-result">No services found for "<b style="color:#fff">' + q + '</b>"</div>';
+    drop.classList.remove('hidden');
+    drop.style.animation = 'slideDown 0.2s ease forwards';
+    return;
+  }
+
+  results.forEach(({ cat, svc }) => {
+    const d = document.createElement('div');
+    d.className = 'search-result-item';
+    d.innerHTML = `
+      <div class="svc-num-badge" style="min-width:24px">${svc.id}</div>
+      <span class="flex-1 leading-snug text-xs font-semibold text-gray-200">${svc.name}</span>
+      <span class="search-cat-badge">${cat.label.split(' - ')[1] || cat.label}</span>
+      <span class="text-[#2196f3] font-black text-xs flex-shrink-0 ml-1">₹${svc.price.toFixed(2)}/1K</span>
+    `;
+    d.onclick = () => {
+      // Close dropdowns & clear search
+      closeCatDrop(); closeSvcDrop();
+      document.getElementById('globalSearchDrop').classList.add('hidden');
+      document.getElementById('searchClearBtn').classList.add('hidden');
+      document.getElementById('searchService').value = '';
+      // Select category then service
+      selectCategory(cat);
+      selectService(svc);
+      // Scroll form into view
+      document.getElementById('newOrderSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    drop.appendChild(d);
+  });
+
+  drop.classList.remove('hidden');
+  drop.style.animation = 'slideDown 0.2s ease forwards';
+}
+
+document.getElementById('searchService').addEventListener('input', function () {
+  buildGlobalSearch(this.value.trim().toLowerCase());
+});
+
+// Close global search on outside click
+document.addEventListener('click', function (e) {
+  const wrap = document.getElementById('searchService').closest('.relative');
+  if (!wrap.contains(e.target)) {
+    document.getElementById('globalSearchDrop').classList.add('hidden');
+  }
 });
 // ── VALIDATION ──
 document.getElementById('quantityInput').addEventListener('input',()=>{
@@ -1183,22 +1258,16 @@ document.addEventListener('click',e=>{
 });
 </script>
 
-<!-- FIREBASE MODULE -->
+<!-- FIREBASE MODULE — single init, real-time listeners, no race condition -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  query,
-  orderBy,
-  limit,
-  doc,
-  getDoc,
-  setDoc,
-  increment
+  getAuth, onAuthStateChanged, signOut,
+  EmailAuthProvider, reauthenticateWithCredential, updatePassword
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import {
+  getFirestore, collection, addDoc, query, orderBy, limit,
+  doc, setDoc, increment, onSnapshot
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -1213,138 +1282,156 @@ const firebaseConfig = {
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
-let currentUid = null;
 
+let currentUid     = null;
+let _unsubStats    = null;
+let _unsubOrders   = null;
+
+// ── LOGOUT ──
 window._logoutUser = async function() {
-  try {
-    await signOut(auth);
-  } catch (err) {
-    console.error("Logout error:", err);
-  } finally {
-    localStorage.clear();
-    window.location.href = 'index.html';
-  }
+  if (_unsubStats)  _unsubStats();
+  if (_unsubOrders) _unsubOrders();
+  try { await signOut(auth); } catch(_) {}
+  localStorage.clear();
+  window.location.href = 'index.html';
 };
 
-// ── LOGIN GUARD ──
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-  window.location.href = "index.html"; return;
+// ── AUTH GUARD — single onAuthStateChanged, no race condition ──
+onAuthStateChanged(auth, (user) => {
+  if (!user) { window.location.href = "index.html"; return; }
+
+  // Admin button
+  if ((user.email || '').trim().toLowerCase() === "agency@getxh.in") {
+    document.getElementById("adminBtn")?.classList.remove("hidden");
+    document.getElementById("desktopAdminBtn")?.classList.remove("hidden");
   }
-  const currentEmail = String(user?.email || '').trim().toLowerCase();
-  if (currentEmail === "agency@getxh.in") {
-    document.getElementById("adminBtn").classList.remove("hidden");
-    const desktopAdminBtn = document.getElementById("desktopAdminBtn");
-    if (desktopAdminBtn) desktopAdminBtn.classList.remove("hidden");
-  }
+
   currentUid = user.uid;
-  await loadUserStats();
-  loadRecentOrders();
+
+  // Password change — wired up here, no second Firebase init needed
+  window._doChangePassword = async function(currPass, newPass, callback) {
+    try {
+      const cred = EmailAuthProvider.credential(user.email, currPass);
+      await reauthenticateWithCredential(user, cred);
+      await updatePassword(user, newPass);
+      callback(null);
+    } catch(e) { callback(e); }
+  };
+
+  // ── REAL-TIME: user stats (balance, orders) ──
+  if (_unsubStats) _unsubStats();
+  _unsubStats = onSnapshot(doc(db, "Users", currentUid), (snap) => {
+    const data = snap.exists() ? snap.data() : {};
+    const balance     = Number(data.Balance || 0);
+    const totalOrders = Number(data.TotalOrders || 0);
+    document.getElementById("userBalance").textContent      = `₹${balance.toFixed(2)}`;
+    document.getElementById("walletBalanceTop").textContent = `₹${balance.toFixed(2)}`;
+    document.getElementById("userOrders").textContent       = totalOrders.toLocaleString();
+  });
+
+  // ── REAL-TIME: recent orders ──
+  if (_unsubOrders) _unsubOrders();
+  const container = document.getElementById("recentOrdersContainer");
+  if (container) {
+    container.innerHTML = `
+      <div class="space-y-3">
+        ${[1,2].map(()=>`
+        <div class="p-4 bg-[#121c33] border border-white/10 rounded-xl flex gap-3 animate-pulse">
+          <div class="flex-1 space-y-2">
+            <div class="h-3 bg-white/8 rounded w-2/3"></div>
+            <div class="h-3 bg-white/5 rounded w-1/3"></div>
+          </div>
+        </div>`).join('')}
+      </div>`;
+
+    const q = query(
+      collection(db, "orders", currentUid, "user_orders"),
+      orderBy("createdAt", "desc"), limit(3)
+    );
+    _unsubOrders = onSnapshot(q, (snap) => {
+      if (snap.empty) {
+        container.innerHTML = `
+          <div class="rounded-xl p-5 flex flex-col items-center gap-2 text-center"
+               style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1)">
+            <span class="material-symbols-outlined text-gray-600" style="font-size:32px">receipt_long</span>
+            <p class="text-sm font-bold text-gray-500">No orders yet</p>
+            <p class="text-xs text-gray-600">Your recent orders will appear here instantly.</p>
+          </div>`;
+        return;
+      }
+      container.innerHTML = "";
+      snap.forEach(d => {
+        const o   = d.data();
+        const box = document.createElement("div");
+        box.className = "p-4 rounded-xl mb-3 flex items-start justify-between gap-3";
+        box.style.cssText = "background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)";
+        const statusColor = o.status === "Completed" ? "#4ade80" : o.status === "Failed" ? "#f87171" : "#facc15";
+        box.innerHTML = `
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold text-white truncate mb-1">${o.serviceName || "—"}</p>
+            <div class="flex flex-wrap gap-3 text-xs text-gray-400">
+              <span>Qty: <b class="text-white">${(o.quantity||0).toLocaleString()}</b></span>
+              <span>₹<b class="text-blue-400">${(o.price||0).toFixed(2)}</b></span>
+              <span>${o.createdAtReadable || ""}</span>
+            </div>
+          </div>
+          <span class="text-xs font-black px-2 py-1 rounded-lg flex-shrink-0"
+                style="background:${statusColor}18;border:1px solid ${statusColor}40;color:${statusColor}">
+            ${o.status || "Pending"}
+          </span>`;
+        container.appendChild(box);
+      });
+    });
+  }
 });
 
-// ── SAVE ORDER (called from main script) ──
+// ── SAVE ORDER ──
 window._saveOrder = async function(svc, qty, link) {
-  if (!currentUid) {
-    console.error('currentUid is null!');
-    alert('Session expired. Please login again.');
-    window.location.href = 'index.html';
-    return;
-  }
+  if (!currentUid) { window.location.href = 'index.html'; return; }
   try {
-    const now = new Date();
-    const orderId = String(Date.now()).slice(-7);
-    const orderPrice = parseFloat(((qty/1000)*svc.price).toFixed(2));
+    const now        = new Date();
+    const orderPrice = parseFloat(((qty / 1000) * svc.price).toFixed(2));
     await addDoc(collection(db, "orders", currentUid, "user_orders"), {
-      orderId:          orderId,
-      serviceName:      svc.name,
-      category:         svc.id,
-      quantity:         qty,
-      link:             link,
-      price:            orderPrice,
-      status:           "Pending",
-      createdAt:        now.toISOString(),
-      createdAtReadable:now.toLocaleString()
+      orderId:           String(Date.now()).slice(-7),
+      serviceName:       svc.name,
+      category:          svc.id,
+      quantity:          qty,
+      link:              link,
+      price:             orderPrice,
+      status:            "Pending",
+      createdAt:         now.toISOString(),
+      createdAtReadable: now.toLocaleString()
     });
     await setDoc(doc(db, "Users", currentUid), {
       TotalOrders: increment(1),
-      TotalSpent: increment(orderPrice)
+      TotalSpent:  increment(orderPrice)
     }, { merge: true });
-    await loadUserStats();
-    loadRecentOrders();
-  } catch(err) { console.error("Order save error:", err); }
+    // onSnapshot handles UI update automatically — no manual call needed
+  } catch(_) {}
 };
 
-async function loadUserStats() {
-  if (!currentUid) return;
-
-  const balanceEl = document.getElementById("userBalance");
-  const topBalanceEl = document.getElementById("walletBalanceTop");
-  const ordersEl = document.getElementById("userOrders");
-
-  try {
-    const userSnap = await getDoc(doc(db, "Users", currentUid));
-    if (userSnap.exists()) {
-      const userData = userSnap.data();
-      const balance = Number(userData.Balance || 0);
-      const totalOrders = Number(userData.TotalOrders || 0);
-
-      balanceEl.textContent = `₹${balance.toFixed(2)}`;
-      topBalanceEl.textContent = `₹${balance.toFixed(2)}`;
-      ordersEl.textContent = totalOrders.toLocaleString();
-      return;
-    }
-  } catch (err) {
-    console.error("Load user stats error:", err);
-  }
-
-  balanceEl.textContent = "₹0.00";
-  topBalanceEl.textContent = "₹0.00";
-  ordersEl.textContent = "0";
-}
-
-// ── LOAD RECENT ORDERS ──
-async function loadRecentOrders() {
-  const container = document.getElementById("recentOrdersContainer");
-  if (!container) return;
-  if (!currentUid) { container.innerHTML = `<p class="text-gray-500 text-sm">Loading...</p>`; return; }
-
-  try {
-    const q    = query(collection(db,"orders",currentUid,"user_orders"), orderBy("createdAt","desc"), limit(3));
-    const snap = await getDocs(q);
-    if (snap.empty) { container.innerHTML = `<p class="text-gray-500 text-sm">No recent orders found.</p>`; return; }
-    container.innerHTML = "";
-    snap.forEach(doc => {
-      const o = doc.data();
-      const box = document.createElement("div");
-      box.className = "p-4 bg-[#121c33] border border-white/10 rounded-xl mb-3";
-      box.innerHTML = `
-        <div class="font-semibold text-white text-sm mb-1">${o.serviceName||"—"}</div>
-        <div class="flex gap-4 text-xs text-gray-400">
-          <span>Qty: ${o.quantity||0}</span>
-          <span class="text-blue-400 font-bold">₹${(o.price||0).toFixed(2)}</span>
-          <span class="ml-auto">${o.createdAtReadable||""}</span>
-        </div>`;
-      container.appendChild(box);
-    });
-  } catch(err) { console.error("Load orders error:", err); }
-}
+// ── CLEANUP on page leave ──
+window.addEventListener('beforeunload', () => {
+  if (_unsubStats)  _unsubStats();
+  if (_unsubOrders) _unsubOrders();
+});
 </script>
 
-  <script>
+<script>
 function showAccView(viewId) {
   document.getElementById('accViewHome').style.display = (viewId==='accViewHome') ? 'block' : 'none';
   document.getElementById('accViewAccount').style.display = (viewId==='accViewAccount') ? 'block' : 'none';
   if(viewId==='accViewAccount') {
-    const name = localStorage.getItem('getxh_user_name') || '';
+    const name  = localStorage.getItem('getxh_user_name') || '';
     const email = localStorage.getItem('getxh_current_user') || '';
-    const n = name || email.split('@')[0] || '-';
+    const n = name || (email ? email.split('@')[0] : '') || '-';
     document.getElementById('accName').textContent = n;
     document.getElementById('accEmail').textContent = email || '-';
     document.getElementById('accDetailUsername').textContent = n;
     document.getElementById('accDetailEmail').textContent = email || '-';
-    ['accCurrPass','accNewPass','accConfPass'].forEach(id => document.getElementById(id).value='');
+    ['accCurrPass','accNewPass','accConfPass'].forEach(id => document.getElementById(id).value = '');
     const msg = document.getElementById('accPassMsg');
-    msg.classList.add('hidden'); msg.textContent='';
+    msg.classList.add('hidden'); msg.textContent = '';
   }
 }
 function changePasswordInline() {
@@ -1357,40 +1444,17 @@ function changePasswordInline() {
     msg.style.color = isError ? '#f87171' : '#4ade80';
     msg.classList.remove('hidden');
   }
-  if(!curr||!nw||!conf) return showMsg('⚠ All fields required', true);
-  if(nw.length < 6)     return showMsg('⚠ Min 6 characters', true);
-  if(nw !== conf)       return showMsg('⚠ Passwords do not match', true);
-  if(typeof window._doChangePassword==='function') {
+  if (!curr||!nw||!conf) return showMsg('⚠ All fields required', true);
+  if (nw.length < 6)     return showMsg('⚠ Min 6 characters', true);
+  if (nw !== conf)       return showMsg('⚠ Passwords do not match', true);
+  if (typeof window._doChangePassword === 'function') {
     showMsg('Updating…', false);
     window._doChangePassword(curr, nw, function(err) {
-      if(err) showMsg('⚠ Current password is wrong', true);
-      else { showMsg('✓ Changed! Logging out…', false); setTimeout(()=>logout(), 2000); }
+      if (err) showMsg('⚠ Current password is wrong', true);
+      else { showMsg('✓ Changed! Logging out…', false); setTimeout(() => logout(), 2000); }
     });
   }
 }
-</script>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
-  authDomain: "getxh-42588.firebaseapp.com",
-  projectId: "getxh-42588"
-};
-const app2 = initializeApp(firebaseConfig, "pwapp");
-const auth2 = getAuth(app2);
-onAuthStateChanged(auth2, (user) => {
-  if(!user) return;
-  window._doChangePassword = async function(currPass, newPass, callback) {
-    try {
-      const cred = EmailAuthProvider.credential(user.email, currPass);
-      await reauthenticateWithCredential(user, cred);
-      await updatePassword(user, newPass);
-      callback(null);
-    } catch(e) { callback(e); }
-  };
-});
 </script>
  
 </div>
