@@ -6,324 +6,523 @@
 <title>GETXH - Register</title>
 
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
 <style>
+* { font-family: 'Inter', sans-serif; }
+body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
+
 .material-symbols-outlined {
-    font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20;
-    font-size:20px;
-}
-body {
-    font-family:'Inter',sans-serif;
-    background:linear-gradient(180deg,#f5f7fb 0%,#eef2ff 100%);
-}
-.form-input-container {
-    position:relative;
-}
-.form-input-container .material-symbols-outlined {
-    position:absolute;
-    left:1rem;
-    top:50%;
-    transform:translateY(-50%);
-    color:#94a3b8;
-    pointer-events:none;
-    transition:color 0.25s ease;
-}
-.form-input-container .form-input {
-    padding-left:3rem;
-    transition:border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
-}
-.form-input-container:focus-within .material-symbols-outlined {
-    color:#2563eb;
-}
-.toggle-password {
-    position:absolute;
-    right:0.75rem;
-    top:50%;
-    transform:translateY(-50%);
-    color:#94a3b8;
-    cursor:pointer;
-    width:2rem;
-    height:2rem;
-    border-radius:9999px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
-.toggle-password:hover {
-    color:#334155;
-    background:#f1f5f9;
-}
-.toggle-password:active {
-    transform:translateY(-50%) scale(0.96);
-}
-.toggle-password .material-symbols-outlined {
-    pointer-events:auto;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+  font-size: 20px;
 }
 .signup-card {
-    border:1px solid #e5e7eb;
-    border-radius:1rem;
-    background:rgba(255,255,255,0.96);
-    box-shadow:0 24px 60px rgba(15,23,42,0.10);
-    transition:transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  background: rgba(255,255,255,0.97);
+  box-shadow: 0 24px 60px rgba(15,23,42,0.10);
 }
-.signup-card:hover {
-    transform:translateY(-4px) scale(1.01);
-    box-shadow:0 28px 70px rgba(15,23,42,0.12);
+.form-input {
+  width: 100%; height: 48px; border-radius: 12px;
+  border: 1px solid #d1d5db; background: #f9fafb;
+  padding: 0 1rem; font-size: 0.875rem; color: #0f172a;
+  outline: none; transition: all 0.2s ease;
 }
-.primary-button {
-    background:#2563eb;
-    box-shadow:0 14px 30px rgba(37,99,235,0.22);
-    transition:background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+.form-input:focus {
+  border-color: #2563eb; background: #fff;
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
 }
-.primary-button:hover {
-    background:#1d4ed8;
-    transform:scale(1.015);
+.form-input::placeholder { color: #94a3b8; }
+.fi { position: relative; }
+.fi .material-symbols-outlined {
+  position: absolute; left: 14px; top: 50%;
+  transform: translateY(-50%); color: #94a3b8; pointer-events: none;
+  transition: color 0.2s;
 }
-.primary-button:active {
-    transform:scale(0.985);
+.fi:focus-within .material-symbols-outlined { color: #2563eb; }
+.fi .form-input { padding-left: 3rem; }
+
+.toggle-password {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  color: #94a3b8; cursor: pointer; width: 28px; height: 28px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
 }
-.primary-button:disabled {
-    opacity:0.85;
-    cursor:not-allowed;
+.toggle-password:hover { color: #475569; background: #f1f5f9; }
+
+.primary-btn {
+  width: 100%; height: 48px; border-radius: 12px;
+  background: #2563eb; color: #fff; font-weight: 600; font-size: 0.875rem;
+  border: none; cursor: pointer;
+  box-shadow: 0 8px 24px rgba(37,99,235,0.25);
+  transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
-.success-state {
-    display:none;
+.primary-btn:hover:not(:disabled) { background: #1d4ed8; transform: scale(1.01); }
+.primary-btn:active:not(:disabled) { transform: scale(0.99); }
+.primary-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.secondary-btn {
+  width: 100%; height: 44px; border-radius: 12px;
+  background: #f8fafc; color: #64748b; font-weight: 600; font-size: 0.875rem;
+  border: 1px solid #e5e7eb; cursor: pointer; transition: all 0.2s;
 }
-.success-state.active {
-    display:block;
+.secondary-btn:hover { background: #f1f5f9; }
+
+.step { display: none; }
+.step.active { display: block; animation: fadeUp 0.25s ease forwards; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.form-state.hidden {
-    display:none;
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+  animation: spin 0.7s linear infinite; flex-shrink: 0;
 }
+
+/* OTP input */
+#otpInput {
+  letter-spacing: 0.5em; font-size: 1.4rem;
+  font-weight: 800; text-align: center; height: 60px;
+}
+.otp-dots { display: flex; gap: 8px; justify-content: center; margin-bottom: 14px; }
+.otp-dot {
+  width: 11px; height: 11px; border-radius: 50%;
+  background: #e2e8f0; transition: all 0.15s;
+}
+.otp-dot.filled { background: #2563eb; transform: scale(1.2); }
+
+/* Step indicator */
+.step-indicator {
+  display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 24px;
+}
+.step-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: #e2e8f0; transition: all 0.3s;
+}
+.step-dot.active { background: #2563eb; width: 22px; border-radius: 4px; }
+.step-dot.done   { background: #86efac; }
+
+#successState { display: none; }
+#successState.active { display: block; animation: fadeUp 0.3s ease forwards; }
 </style>
 </head>
 
-<body class="text-[#0f172a]">
+<body class="text-[#0f172a] min-h-screen flex items-center justify-center px-4 py-10">
+<div class="w-full max-w-[390px]">
 
-<div class="min-h-screen flex items-center justify-center px-4 py-10">
-<div class="w-full max-w-[380px]">
+<!-- ════════════════════════ FORM CARD ════════════════════════ -->
+<div id="formState" class="signup-card p-8">
 
-<div id="formState" class="signup-card form-state p-8 sm:p-9">
-<div class="text-center mb-8">
-<p class="text-3xl font-bold tracking-[0.22em] text-[#2563eb]">GETXH</p>
-<h1 class="mt-4 text-3xl font-semibold tracking-tight text-[#111827]">Create Account</h1>
-<p class="mt-2 text-sm text-slate-500">Start growing your Instagram with GETXH</p>
+  <!-- Header -->
+  <div class="text-center mb-6">
+    <p class="text-3xl font-bold tracking-[0.2em] text-[#2563eb]">GETXH</p>
+    <h1 class="mt-3 text-2xl font-semibold text-[#111827]">Create Account</h1>
+    <p class="mt-1 text-sm text-slate-500" id="stepSubtitle">Fill in your details to get started</p>
+  </div>
+
+  <!-- Step indicator -->
+  <div class="step-indicator">
+    <div class="step-dot active" id="dot1"></div>
+    <div class="step-dot" id="dot2"></div>
+    <div class="step-dot" id="dot3"></div>
+  </div>
+
+  <!-- Error box -->
+  <div id="errorBox" class="hidden rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-600 text-center mb-5"></div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- STEP 1 — Name + Password                      -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div id="step1" class="step active">
+    <div class="flex flex-col gap-4">
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-[#111827] mb-2">Full Name</label>
+        <div class="fi">
+          <input id="name" type="text" autocomplete="off" autocapitalize="words"
+            class="form-input" placeholder="Your full name"
+            readonly onfocus="this.removeAttribute('readonly')"
+            onkeydown="if(event.key==='Enter')document.getElementById('email').focus()"/>
+          <span class="material-symbols-outlined">person</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-[#111827] mb-2">Email</label>
+        <div class="fi">
+          <input id="email" type="email" autocomplete="off" autocapitalize="none"
+            class="form-input" placeholder="you@example.com"
+            readonly onfocus="this.removeAttribute('readonly')"
+            onkeydown="if(event.key==='Enter')document.getElementById('password').focus()"/>
+          <span class="material-symbols-outlined">mail</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-[#111827] mb-2">Password</label>
+        <div class="fi" style="position:relative">
+          <input id="password" type="password" autocomplete="new-password"
+            class="form-input" style="padding-right:3rem" placeholder="Min. 6 characters"
+            readonly onfocus="this.removeAttribute('readonly')"
+            onkeydown="if(event.key==='Enter')document.getElementById('confirmPassword').focus()"/>
+          <span class="material-symbols-outlined">lock</span>
+          <div class="toggle-password" onclick="togglePass('password',this)">
+            <span class="material-symbols-outlined">visibility</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-[#111827] mb-2">Confirm Password</label>
+        <div class="fi" style="position:relative">
+          <input id="confirmPassword" type="password" autocomplete="new-password"
+            class="form-input" style="padding-right:3rem" placeholder="Re-enter password"
+            readonly onfocus="this.removeAttribute('readonly')"
+            onkeydown="if(event.key==='Enter')goToPhone()"/>
+          <span class="material-symbols-outlined">lock</span>
+          <div class="toggle-password" onclick="togglePass('confirmPassword',this)">
+            <span class="material-symbols-outlined">visibility</span>
+          </div>
+        </div>
+      </div>
+
+      <label class="flex items-start gap-3 cursor-pointer">
+        <input id="terms" type="checkbox"
+          class="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#2563eb] focus:ring-[#2563eb]"/>
+        <span class="text-xs leading-5 text-slate-500">I agree to the Terms and Conditions</span>
+      </label>
+    </div>
+
+    <button class="primary-btn mt-6" onclick="goToPhone()">
+      Continue →
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- STEP 2 — Phone Number                         -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div id="step2" class="step">
+    <div class="rounded-xl px-4 py-3 mb-5 text-sm text-center"
+         style="background:rgba(37,99,235,0.06);border:1px solid rgba(37,99,235,0.15)">
+      <span class="text-slate-500">Almost there! Verify your mobile number to secure your account.</span>
+    </div>
+
+    <div class="flex flex-col mb-1">
+      <label class="text-sm font-medium text-[#111827] mb-2">Mobile Number</label>
+      <div class="flex gap-2">
+        <div class="flex items-center justify-center px-3 h-12 rounded-xl border border-gray-300 bg-gray-50 text-sm font-bold text-slate-700 select-none whitespace-nowrap">
+          🇮🇳 +91
+        </div>
+        <input id="phoneInput" type="tel" maxlength="10"
+          class="form-input flex-1 font-mono tracking-widest"
+          placeholder="XXXXXXXXXX"
+          autocomplete="off" readonly onfocus="this.removeAttribute('readonly')"
+          oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)"
+          onkeydown="if(event.key==='Enter')sendOTP()"/>
+      </div>
+      <p class="text-xs text-slate-400 mt-1.5 mb-5">Enter 10-digit number without country code</p>
+    </div>
+
+    <button class="primary-btn mb-3" id="sendOtpBtn" onclick="sendOTP()">
+      Send OTP
+    </button>
+    <button class="secondary-btn" onclick="backToStep1()">← Back</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- STEP 3 — OTP Verify                           -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div id="step3" class="step">
+    <div class="rounded-xl px-4 py-3 mb-5 text-sm text-center"
+         style="background:rgba(37,99,235,0.07);border:1px solid rgba(37,99,235,0.18)">
+      <span class="text-slate-500">OTP sent to</span>
+      <span id="otpSentTo" class="font-bold text-[#2563eb] ml-1"></span>
+    </div>
+
+    <div class="otp-dots">
+      <div class="otp-dot" id="d0"></div>
+      <div class="otp-dot" id="d1"></div>
+      <div class="otp-dot" id="d2"></div>
+      <div class="otp-dot" id="d3"></div>
+      <div class="otp-dot" id="d4"></div>
+      <div class="otp-dot" id="d5"></div>
+    </div>
+
+    <label class="text-sm font-medium text-[#111827] block mb-2">Enter OTP</label>
+    <input id="otpInput" type="text" maxlength="6" autocomplete="one-time-code"
+      class="form-input mb-4"
+      placeholder="• • • • • •"
+      oninput="this.value=this.value.replace(/\D/g,'').slice(0,6);updateOtpDots(this.value)"
+      onkeydown="if(event.key==='Enter')verifyOTP()"/>
+
+    <button class="primary-btn mb-3" id="verifyOtpBtn" onclick="verifyOTP()">
+      Verify & Create Account
+    </button>
+    <button class="secondary-btn" onclick="backToStep2()">← Change Number</button>
+
+    <p class="text-center text-xs text-slate-400 mt-4">
+      Didn't receive?
+      <button id="resendBtn" onclick="resendOTP()"
+        class="text-[#2563eb] font-semibold" style="background:none;border:none;cursor:pointer">
+        Resend OTP
+      </button>
+      <span id="resendTimer" class="text-slate-400 font-medium"></span>
+    </p>
+  </div>
+
+  <div class="text-center mt-6">
+    <a href="index.html" class="text-sm text-slate-500">
+      Already have an account? <span class="text-[#2563eb] font-semibold">Sign In</span>
+    </a>
+  </div>
+
+</div><!-- /formState -->
+
+<!-- ════════════════════════ SUCCESS CARD ════════════════════════ -->
+<div id="successState" class="signup-card p-8 text-center">
+  <p class="text-3xl font-bold tracking-[0.2em] text-[#2563eb]">GETXH</p>
+  <div class="mt-6 mx-auto w-16 h-16 rounded-full bg-green-50 flex items-center justify-center">
+    <span class="material-symbols-outlined text-green-500" style="font-size:32px">check_circle</span>
+  </div>
+  <h2 class="mt-5 text-2xl font-semibold text-[#111827]">Account Created!</h2>
+  <p class="mt-2 text-sm text-slate-500">Your GETXH account is ready. You can now login.</p>
+  <button onclick="window.location.href='index.html'" class="primary-btn mt-7">
+    Go to Login
+  </button>
 </div>
 
-<div id="errorBox" class="hidden rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-red-600 text-center text-sm font-medium mb-4"></div>
-
-<div class="flex flex-col gap-4">
-<div class="flex flex-col">
-<label class="text-sm font-medium text-[#111827] mb-2">Full Name</label>
-<div class="form-input-container">
-<input id="name" type="text" autocomplete="off" autocapitalize="words" spellcheck="false" readonly onfocus="this.removeAttribute('readonly');" class="form-input w-full rounded-xl border border-gray-300 bg-gray-50 h-12 px-4 text-sm text-slate-900 outline-none placeholder:text-slate-400 hover:border-slate-400 focus:border-[#2563eb] focus:bg-white focus:ring-4 focus:ring-blue-100" placeholder="Your full name"/>
-<span class="material-symbols-outlined">person</span>
-</div>
 </div>
 
-<div class="flex flex-col">
-<label class="text-sm font-medium text-[#111827] mb-2">Email</label>
-<div class="form-input-container">
-<input id="email" type="email" autocomplete="off" autocapitalize="none" spellcheck="false" readonly onfocus="this.removeAttribute('readonly');" class="form-input w-full rounded-xl border border-gray-300 bg-gray-50 h-12 px-4 text-sm text-slate-900 outline-none placeholder:text-slate-400 hover:border-slate-400 focus:border-[#2563eb] focus:bg-white focus:ring-4 focus:ring-blue-100" placeholder="you@example.com"/>
-<span class="material-symbols-outlined">mail</span>
-</div>
-</div>
-
-<div class="flex flex-col">
-<label class="text-sm font-medium text-[#111827] mb-2">Password</label>
-<div class="form-input-container">
-<input id="password" type="password" autocomplete="new-password" autocapitalize="none" spellcheck="false" readonly onfocus="this.removeAttribute('readonly');" class="form-input w-full rounded-xl border border-gray-300 bg-gray-50 h-12 px-4 pr-12 text-sm text-slate-900 outline-none placeholder:text-slate-400 hover:border-slate-400 focus:border-[#2563eb] focus:bg-white focus:ring-4 focus:ring-blue-100" placeholder="Create password"/>
-<span class="material-symbols-outlined">lock</span>
-<div class="toggle-password" onclick="togglePass('password', this)">
-<span class="material-symbols-outlined">visibility</span>
-</div>
-</div>
-</div>
-
-<div class="flex flex-col">
-<label class="text-sm font-medium text-[#111827] mb-2">Confirm Password</label>
-<div class="form-input-container">
-<input id="confirmPassword" type="password" autocomplete="new-password" autocapitalize="none" spellcheck="false" readonly onfocus="this.removeAttribute('readonly');" class="form-input w-full rounded-xl border border-gray-300 bg-gray-50 h-12 px-4 pr-12 text-sm text-slate-900 outline-none placeholder:text-slate-400 hover:border-slate-400 focus:border-[#2563eb] focus:bg-white focus:ring-4 focus:ring-blue-100" placeholder="Re-enter password"/>
-<span class="material-symbols-outlined">lock</span>
-<div class="toggle-password" onclick="togglePass('confirmPassword', this)">
-<span class="material-symbols-outlined">visibility</span>
-</div>
-</div>
-</div>
-
-<label class="flex items-start gap-3 pt-1 cursor-pointer">
-<input id="terms" type="checkbox" class="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#2563eb] focus:ring-[#2563eb]"/>
-<span class="text-xs leading-5 text-slate-500">I agree to the Terms and Conditions</span>
-</label>
-</div>
-
-<button id="registerBtn" class="primary-button mt-6 w-full h-12 text-white font-semibold rounded-xl">
-Create Account
-</button>
-
-<div class="text-center mt-6">
-<a href="index.html" class="text-sm text-slate-600">
-Already have an account? <span class="text-[#2563eb] font-semibold">Sign In</span>
-</a>
-</div>
-</div>
-
-<div id="successState" class="signup-card success-state p-8 sm:p-9 text-center">
-<p class="text-3xl font-bold tracking-[0.22em] text-[#2563eb]">GETXH</p>
-<div class="mt-6 mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-[#2563eb]">
-<span class="material-symbols-outlined">check</span>
-</div>
-<h2 class="mt-5 text-2xl font-semibold tracking-tight text-[#111827]">Account Created</h2>
-<p class="mt-2 text-sm text-slate-500">A verification email has been sent to your inbox. Please verify before logging in.</p>
-<div class="mt-4 rounded-xl px-4 py-3 text-sm font-semibold text-left"
-     style="background:rgba(37,99,235,0.07);border:1px solid rgba(37,99,235,0.18);color:#2563eb">
-  ✉ Check your email and click the verification link, then login.
-</div>
-<button id="continueBtn" class="primary-button mt-6 w-full h-12 text-white font-semibold rounded-xl">
-Go to Login
-</button>
-</div>
-
-</div>
-</div>
-
+<!-- ════════════════════════ FIREBASE ════════════════════════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import {
+  getAuth, updateProfile,
+  signInWithPhoneNumber
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
-  authDomain: "getxh-42588.firebaseapp.com",
-  projectId: "getxh-42588",
-  storageBucket: "getxh-42588.firebasestorage.app",
+  apiKey:            "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain:        "getxh-42588.firebaseapp.com",
+  projectId:         "getxh-42588",
+  storageBucket:     "getxh-42588.firebasestorage.app",
   messagingSenderId: "170770122888",
-  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+  appId:             "1:170770122888:web:7adcf91077d5695b06b73d"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db   = getFirestore(app);
 
-const registerBtn = document.getElementById("registerBtn");
-const continueBtn = document.getElementById("continueBtn");
-const errorBox = document.getElementById("errorBox");
-const formState = document.getElementById("formState");
-const successState = document.getElementById("successState");
+// Captcha disabled for now
+auth.settings.appVerificationDisabledForTesting = true;
 
-function normalizeEmail(value) {
-    return String(value || "").trim().toLowerCase();
+let confirmResult  = null;
+let resendInterval = null;
+
+// Temp store of step1 data
+let _name = "", _email = "", _pass = "";
+
+// ── Helpers ──────────────────────────
+function showError(msg) {
+  const b = document.getElementById("errorBox");
+  b.textContent = msg; b.classList.remove("hidden");
+}
+function hideError() { document.getElementById("errorBox").classList.add("hidden"); }
+
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    document.getElementById("step"+i).classList.toggle("active", i===n);
+  });
+  // Update dots
+  const subtitles = ["Fill in your details","Verify your mobile number","Enter OTP to confirm"];
+  document.getElementById("stepSubtitle").textContent = subtitles[n-1];
+  [1,2,3].forEach(i => {
+    const dot = document.getElementById("dot"+i);
+    dot.classList.remove("active","done");
+    if (i === n) dot.classList.add("active");
+    else if (i < n) dot.classList.add("done");
+  });
+  hideError();
 }
 
-function saveSession(user, fallbackName = "", fallbackEmail = "") {
-    const email = normalizeEmail(user?.email || fallbackEmail);
-    localStorage.setItem("getxh_user_logged_in", "yes");
-    localStorage.setItem("getxh_current_user", email);
-    localStorage.setItem("getxh_current_user_uid", user?.uid || "");
-    localStorage.setItem("getxh_user_name", user?.displayName || fallbackName || "");
+function setBtnLoading(id, loading, label) {
+  const btn = document.getElementById(id);
+  btn.disabled = loading;
+  btn.innerHTML = loading ? `<span class="spinner"></span>${label}` : label;
 }
 
-onAuthStateChanged(auth, (user) => {
-    if (!user) return;
+function saveSession(user) {
+  localStorage.setItem("getxh_user_logged_in",  "yes");
+  localStorage.setItem("getxh_current_user",     user.email || user.phoneNumber || "");
+  localStorage.setItem("getxh_current_user_uid", user.uid);
+  localStorage.setItem("getxh_user_name",        user.displayName || _name || "");
+}
+
+async function saveFirestore(user) {
+  try {
+    const ref  = doc(db, "Users", user.uid);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      await setDoc(ref, {
+        Name: _name, Email: _email, Phone: user.phoneNumber || "",
+        TotalOrders: 0, Balance: 0, TotalSpent: 0
+      });
+    }
+  } catch(_) {}
+}
+
+function initRecaptcha() {
+  if (recaptcha) { try { recaptcha.clear(); } catch(_) {} recaptcha = null; }
+  recaptcha = new RecaptchaVerifier(auth, "sendOtpBtn", {
+    size: "invisible", callback: () => {}
+  });
+}
+
+function startResendTimer(sec = 30) {
+  const btn = document.getElementById("resendBtn");
+  const tmr = document.getElementById("resendTimer");
+  btn.disabled = true;
+  let left = sec;
+  tmr.textContent = ` (${left}s)`;
+  clearInterval(resendInterval);
+  resendInterval = setInterval(() => {
+    left--;
+    if (left <= 0) {
+      clearInterval(resendInterval);
+      btn.disabled = false;
+      tmr.textContent = "";
+    } else {
+      tmr.textContent = ` (${left}s)`;
+    }
+  }, 1000);
+}
+
+// ── STEP 1 → STEP 2 ──────────────────
+window.goToPhone = function() {
+  hideError();
+  const name  = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim().toLowerCase();
+  const pass  = document.getElementById("password").value;
+  const cpass = document.getElementById("confirmPassword").value;
+  const terms = document.getElementById("terms").checked;
+
+  if (!name)             return showError("Name cannot be empty.");
+  if (!email || !email.includes("@")) return showError("Enter a valid email address.");
+  if (pass.length < 6)   return showError("Password must be at least 6 characters.");
+  if (pass !== cpass)    return showError("Passwords do not match.");
+  if (!terms)            return showError("Please accept the Terms and Conditions.");
+
+  // Store for later use
+  _name = name; _email = email; _pass = pass;
+  setStep(2);
+  setTimeout(() => document.getElementById("phoneInput").focus(), 150);
+};
+
+window.backToStep1 = function() { setStep(1); };
+
+// ── SEND OTP ─────────────────────────
+window.sendOTP = async function() {
+  hideError();
+  const raw = document.getElementById("phoneInput").value.trim();
+  if (!/^\d{10}$/.test(raw)) return showError("Enter a valid 10-digit mobile number.");
+
+  setBtnLoading("sendOtpBtn", true, "Sending OTP...");
+  initRecaptcha();
+
+  try {
+    confirmResult = await signInWithPhoneNumber(auth, "+91" + raw, recaptcha);
+    document.getElementById("otpSentTo").textContent = "+91 " + raw;
+    document.getElementById("otpInput").value = "";
+    updateOtpDots("");
+    setStep(3);
+    startResendTimer(30);
+    setTimeout(() => document.getElementById("otpInput").focus(), 150);
+  } catch(err) {
+    let msg = "Failed to send OTP. Please try again.";
+    if (err.code === "auth/invalid-phone-number")   msg = "Invalid phone number.";
+    if (err.code === "auth/too-many-requests")      msg = "Too many attempts. Wait a moment.";
+    if (err.code === "auth/network-request-failed") msg = "Network error. Check your connection.";
+    showError(msg);
+    if (recaptcha) { try { recaptcha.clear(); } catch(_) {} recaptcha = null; }
+  } finally {
+    setBtnLoading("sendOtpBtn", false, "Send OTP");
+  }
+};
+
+window.backToStep2 = function() {
+  clearInterval(resendInterval);
+  confirmResult = null;
+  document.getElementById("otpInput").value = "";
+  updateOtpDots("");
+  setStep(2);
+};
+
+// ── RESEND OTP ────────────────────────
+window.resendOTP = async function() {
+  hideError();
+  const raw = document.getElementById("phoneInput").value.trim();
+  initRecaptcha();
+  try {
+    confirmResult = await signInWithPhoneNumber(auth, "+91" + raw, recaptcha);
+    startResendTimer(30);
+    document.getElementById("otpInput").value = "";
+    updateOtpDots("");
+  } catch(_) {
+    showError("Failed to resend. Try again.");
+  }
+};
+
+// ── VERIFY OTP → CREATE ACCOUNT ───────
+window.verifyOTP = async function() {
+  hideError();
+  const code = document.getElementById("otpInput").value.trim();
+  if (code.length !== 6) return showError("Enter the 6-digit OTP.");
+
+  setBtnLoading("verifyOtpBtn", true, "Creating Account...");
+
+  try {
+    const result = await confirmResult.confirm(code);
+    const user   = result.user;
+    clearInterval(resendInterval);
+
+    // Save name & profile
+    await updateProfile(user, { displayName: _name });
+    await saveFirestore(user);
     saveSession(user);
-});
 
-function clearRegisterFields() {
-    ["name", "email", "password", "confirmPassword"].forEach((id) => {
-        const el = document.getElementById(id);
-        if (el) el.value = "";
-    });
-}
-
-window.addEventListener("DOMContentLoaded", clearRegisterFields);
-window.addEventListener("pageshow", clearRegisterFields);
-
-registerBtn.onclick = async function () {
-    const name = document.getElementById("name").value.trim();
-    const email = normalizeEmail(document.getElementById("email").value);
-    const pass = document.getElementById("password").value.trim();
-    const cpass = document.getElementById("confirmPassword").value.trim();
-    const terms = document.getElementById("terms").checked;
-
-    if (!name) return show("Name cannot be empty");
-    if (!email) return show("Email cannot be empty");
-    if (!email.includes("@")) return show("Enter a valid email");
-    if (pass.length < 6) return show("Password must be at least 6 characters");
-    if (pass !== cpass) return show("Passwords do not match");
-    if (!terms) return show("Please accept the Terms and Conditions");
-
-    errorBox.classList.add("hidden");
-    registerBtn.disabled = true;
-    registerBtn.innerHTML = '<span class="inline-block h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin align-[-2px] mr-2"></span>Creating Account...';
-
-    let userCred;
-
-    try {
-        userCred = await createUserWithEmailAndPassword(auth, email, pass);
-        await updateProfile(userCred.user, { displayName: name });
-    } catch (error) {
-        let msg = "Registration failed.";
-
-        if (error.code === "auth/email-already-in-use") {
-            msg = "Email already registered. Please login.";
-        } else if (error.code === "auth/weak-password") {
-            msg = "Password must be at least 6 characters.";
-        } else if (error.code === "auth/invalid-email") {
-            msg = "Enter a valid email address.";
-        }
-
-        show(msg);
-        registerBtn.disabled = false;
-        registerBtn.textContent = "Create Account";
-        return;
-    }
-
-    try {
-        await setDoc(doc(db, "Users", userCred.user.uid), {
-            Name: name,
-            Email: email,
-            TotalOrders: 0,
-            Balance: 0,
-            TotalSpent: 0
-        });
-    } catch (e) {
-        console.warn("Firestore write failed, continuing");
-    }
-
-    // Send verification email
-    try {
-        await sendEmailVerification(userCred.user);
-    } catch (_) {}
-
-    saveSession(userCred.user, name, email);
-
-    formState.classList.add("hidden");
-    successState.classList.add("active");
+    // Show success
+    document.getElementById("formState").style.display = "none";
+    document.getElementById("successState").classList.add("active");
+  } catch(err) {
+    let msg = "Incorrect OTP. Please try again.";
+    if (err.code === "auth/code-expired")               msg = "OTP expired. Please resend.";
+    if (err.code === "auth/invalid-verification-code")  msg = "Wrong OTP. Check and try again.";
+    showError(msg);
+  } finally {
+    setBtnLoading("verifyOtpBtn", false, "Verify & Create Account");
+  }
 };
 
-continueBtn.onclick = function () {
-    window.location.href = "index.html";
-};
-
-function show(msg){
-    errorBox.textContent = msg;
-    errorBox.classList.remove("hidden");
-}
 </script>
 
 <script>
-function togglePass(id, el){
-    const input = document.getElementById(id);
-    const icon = el.querySelector(".material-symbols-outlined");
-    const visible = input.type === "password";
-    input.type = visible ? "text" : "password";
-    icon.textContent = visible ? "visibility_off" : "visibility";
+function updateOtpDots(val) {
+  for (let i = 0; i < 6; i++)
+    document.getElementById("d"+i).classList.toggle("filled", i < val.length);
+}
+function togglePass(id, el) {
+  const input = document.getElementById(id);
+  const icon  = el.querySelector(".material-symbols-outlined");
+  const show  = input.type === "password";
+  input.type  = show ? "text" : "password";
+  icon.textContent = show ? "visibility_off" : "visibility";
 }
 </script>
 
