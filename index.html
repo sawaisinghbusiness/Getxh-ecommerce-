@@ -85,54 +85,6 @@ body {
     opacity: 0.85;
     cursor: not-allowed;
 }
-.site-footer {
-    width: 100%;
-    background: #0b1220;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-.footer-shell {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 2rem 1rem 2.5rem;
-}
-.footer-grid {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 1.5rem;
-    align-items: start;
-}
-.footer-card {
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 1.25rem;
-    background: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 18px 40px rgba(2, 8, 23, 0.32);
-    backdrop-filter: blur(14px);
-}
-.footer-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-}
-.footer-link {
-    color: #e2e8f0;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 999px;
-    padding: 0.7rem 1rem;
-    font-size: 0.95rem;
-    transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
-}
-.footer-link:hover {
-    color: #67e8f9;
-    border-color: rgba(103, 232, 249, 0.4);
-    background: rgba(34, 211, 238, 0.08);
-    transform: translateY(-1px);
-}
-@media (max-width: 640px) {
-    .footer-grid {
-        grid-template-columns: 1fr;
-    }
-}
 </style>
 
 <!-- ⭐ Firebase SDK -->
@@ -331,30 +283,6 @@ body {
 
 </div>
 
-<footer class="site-footer">
-  <div class="footer-shell">
-    <div class="footer-grid">
-      <div class="footer-card p-6 text-white">
-        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-300/80">GETXH</p>
-        <h2 class="mt-3 text-2xl font-semibold tracking-tight">Policies & Company Information</h2>
-        <p class="mt-3 text-sm leading-6 text-slate-300">
-          Review our policy pages, contact details, and platform information. These links are publicly accessible for users and payment review.
-        </p>
-      </div>
-      <div class="footer-card p-6">
-        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-300/80">Quick Links</p>
-        <div class="footer-links mt-4">
-          <a class="footer-link" href="refund.html">Refund Policy</a>
-          <a class="footer-link" href="privacy.html">Privacy Policy</a>
-          <a class="footer-link" href="terms.html">Terms</a>
-          <a class="footer-link" href="about.html">About</a>
-          <a class="footer-link" href="contact.html">Contact</a>
-          <a class="footer-link" href="cancellation.html">Cancellation</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</footer>
 
 <!-- FORGOT PASSWORD MODAL -->
 <div id="forgotModal"

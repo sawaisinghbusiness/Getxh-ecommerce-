@@ -519,6 +519,24 @@ body {
                    focus:outline-none focus:border-[#2196f3] transition-all"/>
         </div>
 
+        <!-- CUSTOM COMMENTS BOX (shown only for Custom comment services) -->
+        <div id="customCommentsWrap" class="hidden mb-4">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2 flex items-center gap-1">
+            Custom Comments
+            <span class="text-gray-500 normal-case font-normal text-xs">(1 line = 1 comment)</span>
+          </p>
+          <textarea id="customCommentsInput"
+            placeholder="Type each comment on a new line&#10;Press Enter for next comment..."
+            rows="5"
+            class="w-full px-4 py-3 bg-[#121c33] border border-white/10 rounded-xl
+                   text-white placeholder-gray-500 text-sm resize-none
+                   focus:outline-none focus:border-[#2196f3] transition-all leading-relaxed"></textarea>
+          <p id="customCommentsCount" class="text-xs text-gray-500 mt-1.5 font-semibold">0 comments entered</p>
+          <p id="customCommentsError" class="hidden text-xs text-red-400 mt-1 font-semibold">
+            ⚠ Enter at least <span id="customCommentsMin"></span> comments to place order
+          </p>
+        </div>
+
         <!-- QUANTITY -->
         <div class="mb-4">
           <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Quantity</p>
@@ -553,7 +571,7 @@ body {
             <span class="text-xs font-bold uppercase tracking-widest opacity-80">TOTAL AMOUNT</span>
             <div class="flex items-center gap-2">
               <span id="totalPrice" class="text-lg font-black"></span>
-              <span class="font-black text-base tracking-wide">ORDER</span>
+              <span class="font-black text-base tracking-wide order-label">ORDER</span>
               <span class="material-symbols-outlined" style="font-size:18px">chevron_right</span>
             </div>
           </div>
@@ -562,10 +580,27 @@ body {
             style="width:120px;height:120px;margin-left:-60px;margin-top:-60px"></div>
         </button>
 
+        <!-- ORDER ERROR TOAST -->
+        <div id="orderErrorToast" class="hidden mt-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-semibold"></div>
+
+
       </div><!-- /serviceDetails -->
     </div>
   </div>
   </div><!-- /newOrderSection -->
+
+<!-- ORDER TRACKING CARD -->
+<div id="orderTrackingCard" class="order-card hidden" style="max-width:480px;margin:20px auto;">
+  <h3 style="margin:0 0 12px;font-size:15px;font-weight:800;letter-spacing:.04em;">Order Tracking</h3>
+  <p style="margin:0 0 6px;font-size:13px;">Order ID: <span id="orderId" style="font-weight:700;">-</span></p>
+  <p style="margin:0 0 6px;font-size:13px;">Status:
+    <span id="orderStatus" class="status pending">Pending</span>
+  </p>
+  <div class="progress-bar">
+    <div id="orderProgress" class="progress"></div>
+  </div>
+  <p style="margin:0;font-size:13px;">Remaining: <span id="orderRemains" style="font-weight:700;">0</span></p>
+</div>
 
 <!-- SUCCESS MODAL -->
 <div id="successModal"
@@ -826,10 +861,10 @@ body {
     </button>
     <p class="text-white font-black text-base">My Account</p>
   </div>
-  <div class="mx-4 mb-4 rounded-xl p-4" style="background:#121c33">
-    <p class="text-sm text-gray-400">Account</p>
-    <p id="accName" class="text-lg font-semibold text-white">-</p>
-    <p id="accEmail" class="text-sm text-gray-400">-</p>
+  <div class="mx-4 mb-4 rounded-xl p-4" style="background:#f9fafb;border:1px solid #e5e7eb">
+    <p class="text-sm text-[#6b7280]">Account</p>
+    <p id="accName" class="text-lg font-semibold text-[#111827]">-</p>
+    <p id="accEmail" class="text-sm text-[#6b7280]">-</p>
   </div>
   <div class="mx-4 mb-4 rounded-xl p-4 space-y-4" style="background:#121c33">
     <div class="flex items-center gap-4">
@@ -847,13 +882,13 @@ body {
       </div>
     </div>
   </div>
-  <div class="mx-4 mb-4 rounded-xl p-4" style="background:#121c33">
-    <p class="font-medium text-white mb-3">Reset Password</p>
-    <input id="accCurrPass" type="password" placeholder="Current password" class="w-full mb-2 px-3 py-2 rounded text-white text-sm outline-none" style="background:#0e1629"/>
-    <input id="accNewPass" type="password" placeholder="New password" class="w-full mb-2 px-3 py-2 rounded text-white text-sm outline-none" style="background:#0e1629"/>
-    <input id="accConfPass" type="password" placeholder="Confirm new password" class="w-full mb-3 px-3 py-2 rounded text-white text-sm outline-none" style="background:#0e1629"/>
+  <div class="mx-4 mb-4 rounded-xl p-4" style="background:#f9fafb;border:1px solid #e5e7eb">
+    <p class="font-medium text-[#111827] mb-3">Reset Password</p>
+    <input id="accCurrPass" type="password" placeholder="Current password" class="w-full mb-2 px-3 py-2 rounded-lg text-[#111827] text-sm outline-none border border-[#e5e7eb]" style="background:#ffffff"/>
+    <input id="accNewPass" type="password" placeholder="New password" class="w-full mb-2 px-3 py-2 rounded-lg text-[#111827] text-sm outline-none border border-[#e5e7eb]" style="background:#ffffff"/>
+    <input id="accConfPass" type="password" placeholder="Confirm new password" class="w-full mb-3 px-3 py-2 rounded-lg text-[#111827] text-sm outline-none border border-[#e5e7eb]" style="background:#ffffff"/>
     <p id="accPassMsg" class="text-sm mb-2 hidden"></p>
-    <button onclick="changePasswordInline()" class="w-full bg-blue-500 py-2 rounded-lg font-medium text-white text-sm">Change Password</button>
+    <button onclick="changePasswordInline()" class="w-full py-2 rounded-lg font-medium text-white text-sm" style="background:#6366f1">Change Password</button>
   </div>
   <div class="mx-4">
     <button onclick="logout()" class="w-full py-3 rounded-xl flex justify-center gap-2 font-bold text-sm" style="background:rgba(244,67,54,0.1);color:#ef5350;border:1px solid rgba(244,67,54,0.2)">
@@ -901,6 +936,112 @@ body {
   min-width:44px;height:24px;border-radius:6px;background:#2196f3;color:white;
   font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0 6px;
 }
+/* ── ORDER TRACKING CARD ── */
+.order-card {
+  background: #111;
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+.status {
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+.pending    { background: orange; }
+.completed  { background: green; }
+.inprogress { background: blue; }
+.partial    { background: purple; }
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background: #333;
+  border-radius: 10px;
+  margin: 10px 0;
+}
+.progress {
+  height: 100%;
+  width: 0%;
+  background: green;
+  border-radius: 10px;
+  transition: width 0.3s;
+}
+/* ── TOAST ── */
+#toastContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+  width: 90%;
+  max-width: 340px;
+}
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  min-width: 260px;
+  max-width: 320px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transform: scale(0.85);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(.22,1,.36,1), opacity 0.35s ease;
+  pointer-events: auto;
+}
+.toast.show {
+  transform: scale(1);
+  opacity: 1;
+}
+.toast.hide {
+  transform: scale(0.85);
+  opacity: 0;
+}
+.toast-success {
+  background: rgba(15,30,55,0.95);
+  border: 1px solid rgba(0,200,83,0.35);
+}
+.toast-error {
+  background: rgba(15,30,55,0.95);
+  border: 1px solid rgba(244,67,54,0.35);
+}
+.toast-warn {
+  background: rgba(15,30,55,0.95);
+  border: 1px solid rgba(255,152,0,0.35);
+}
+.toast-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+.toast-success .toast-icon { background: rgba(0,200,83,0.15); color: #00c853; }
+.toast-error   .toast-icon { background: rgba(244,67,54,0.15); color: #ef5350; }
+.toast-warn    .toast-icon { background: rgba(255,152,0,0.15);  color: #ffa726; }
+.toast-body { flex: 1; min-width: 0; }
+.toast-title { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 2px; }
+.toast-msg   { font-size: 11px; color: rgba(255,255,255,0.55); line-height: 1.4; word-break: break-all; }
+.toast-bar {
+  height: 2px;
+  border-radius: 2px;
+  margin-top: 10px;
+  width: 100%;
+  animation: toastBar 3s linear forwards;
+}
+.toast-success .toast-bar { background: #00c853; }
+.toast-error   .toast-bar { background: #ef5350; }
+.toast-warn    .toast-bar { background: #ffa726; }
+@keyframes toastBar { from { width: 100%; } to { width: 0%; } }
 </style>
 
 <!-- MAIN SCRIPT -->
@@ -922,14 +1063,23 @@ function playSuccess() {
 const CATEGORIES = [
   {id:'welcome-offer',   label:'Welcome Offer'},
   {id:'cheap_followers', label:'Cheapest Instagram Followers', subtitle:'Cheapest in The World 🌍'},
-  {id:'reel-views',      label:'Instagram - Reel Views'},
-  {id:'post-views', label:'Instagram - Post Views'},
+  {id:'reel-views',      label:'Instagram - Reel/Post Views'},
   {id:'followers',  label:'Instagram - Followers'},
   {id:'likes',      label:'Instagram - Likes'},
   {id:'comments',   label:'Instagram - Comments'},
-  {id:'shares',     label:'Instagram - Shares'},
-  {id:'saves',      label:'Instagram - Saves'},
-  {id:'reposts',    label:'Instagram - Reposts'},
+  {id:'shares',     label:'Instagram - Shares/Saves'},
+  {id:'yt-likes',        label:'YouTube - Likes'},
+  {id:'yt-views',        label:'YouTube - Views'},
+  {id:'yt-subscribers',  label:'YouTube - Subscribers'},
+  {id:'yt-native-ad',    label:'YouTube - Native Ad Views'},
+  {id:'yt-adwords',      label:'YouTube - Adwords Views'},
+  {id:'yt-livestream',   label:'YouTube - Live Stream Views'},
+  {id:'fb-views',        label:'Facebook - Views'},
+  {id:'fb-reactions',    label:'Facebook - Post Reactions'},
+  {id:'fb-followers',    label:'Facebook - Followers'},
+  {id:'fb-livestream',   label:'Facebook - Live Stream Views'},
+  {id:'tg-members',      label:'Telegram - Members'},
+  {id:'wa-members',      label:'WhatsApp - Members'},
 ];
 const SERVICES = {
   'welcome-offer': [
@@ -938,52 +1088,135 @@ const SERVICES = {
     {id:12305,name:'Instagram Likes',price:21.23,min:10,max:500000,startTime:'0-10 Minutes',speed:'50K-100K+/Day',refill:'365 Days',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'0-10 minutes',details:['When service is busy, start speed may change','Do not place second order on same link before completion','Contact support if any issue']},
   ],
   'cheap_followers': [
-    {id:12135,name:'Instagram Followers',price:89.23,min:10,max:100000,startTime:'0-2 Minutes',speed:'100K/Day',refill:'365 Days ♻️',cancel:'-',drop:'Low Drop',quality:'Real Accounts',delivery:'0-2 minutes',details:['Location: Global','Use profile link or username','Kindly make sure your account is public, Not private','In case of high demand, speed and start time may change','Do not place second order on same link before completion']},
-    {id:12005,name:'Instagram Followers',price:62.88,min:10,max:50000,startTime:'0-2 Minutes',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'-',drop:'High Drop Possible',quality:'Real Accounts',delivery:'0-2 minutes',details:['Location: Global','Use profile link or username','Kindly make sure your account is public, Not private','In case of high demand, speed and start time may change','Do not place second order on same link before completion','⚠️ NOTE: It may give completed status without delivery','This is a bot service','We are not responsible']},
-    {id:12314,name:'Instagram Followers',price:43.71,min:10,max:100000,startTime:'0-10 Minutes',speed:'20K-50K+/Day',refill:'30 Days',cancel:'-',drop:'10-30% Drop',quality:'Real Accounts',delivery:'0-10 minutes',details:['When service is busy, start time may change','Do not place second order on same link before completion','Contact support if any issue']},
+    {id:12135,name:'Instagram Followers | Real Accounts | 100K/Day | 365 Days | Low Drop',price:89.23,min:10,max:100000,startTime:'0-2 Minutes',speed:'100K/Day',refill:'365 Days ♻️',cancel:'-',drop:'Low Drop',quality:'Real Accounts',delivery:'0-2 minutes',details:['Location: Global','Use profile link or username','Kindly make sure your account is public, Not private','In case of high demand, speed and start time may change','Do not place second order on same link before completion']},
+    {id:12005,name:'Instagram Followers | Real Accounts | 10K/Day | No Refill | High Drop ⚠️',price:62.88,min:10,max:50000,startTime:'0-2 Minutes',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'-',drop:'High Drop Possible',quality:'Real Accounts',delivery:'0-2 minutes',details:['Location: Global','Use profile link or username','Kindly make sure your account is public, Not private','In case of high demand, speed and start time may change','Do not place second order on same link before completion','⚠️ NOTE: It may give completed status without delivery','This is a bot service','We are not responsible']},
+    {id:12314,name:'Instagram Followers | Real Accounts | 20K-50K+/Day | 30 Days | 10-30% Drop',price:43.71,min:10,max:100000,startTime:'0-10 Minutes',speed:'20K-50K+/Day',refill:'30 Days',cancel:'-',drop:'10-30% Drop',quality:'Real Accounts',delivery:'0-10 minutes',details:['When service is busy, start time may change','Do not place second order on same link before completion','Contact support if any issue']},
   ],
   'reel-views': [
-    {id:1,name:'Instagram Reel Views – Used By Influencers',price:0.38,min:100,max:2147483647,startTime:'INSTANT',speed:'500K/HOUR',refill:'LIFETIME',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'7 minutes',details:['Real Reel Views.','Use reels link.','Wrong links are non refundable.','Private accounts not accepted.','Start and speed can be slow sometimes.']},
-    {id:2,name:'Instagram Reel Views – Used By Celebrities',price:0.55,min:100,max:2147483647,startTime:'INSTANT',speed:'300K/HOUR',refill:'30 DAYS',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'10 minutes',details:['Real Views from celebrity accounts.','Use reels link.','Private accounts not accepted.']},
-    {id:3,name:'Instagram Reel Views – From Explore Page',price:0.74,min:100,max:2147483647,startTime:'INSTANT',speed:'200K/HOUR',refill:'30 DAYS',cancel:'YES',drop:'NON-DROP',quality:'PREMIUM',delivery:'15 minutes',details:['Views from explore page.','Use reels link only.','Private accounts not accepted.']},
-    {id:4,name:'Indian Reel Views – Used By Celebrities',price:1.11,min:100,max:2147483647,startTime:'INSTANT',speed:'100K/HOUR',refill:'30 DAYS',cancel:'NO',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'15 minutes',details:['Indian geo-targeted views.','Use reels link.','Private accounts not accepted.']},
-    {id:5,name:'Instagram Reel Views – Increase Insights',price:0.85,min:100,max:2147483647,startTime:'INSTANT',speed:'400K/HOUR',refill:'LIFETIME',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'10 minutes',details:['Boosts Instagram insights.','Use reels link.','Private accounts not accepted.']},
+    {id:12179,name:'Instagram Views',price:0.0854,min:50,max:2147483647,startTime:'Instant',speed:'300K/Day',refill:'NO',cancel:'YES',drop:'—',quality:'—',delivery:'Instant',details:['Works on Reels and Post links','Use reel or post link only','Private accounts not accepted','Wrong links are non-refundable']},
+    {id:12007,name:'Instagram Video Views',price:0.1012,min:10,max:2147483647,startTime:'Instant',speed:'100K/Day',refill:'NO',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['Make sure to make your account public. If the account is not public, the order will be marked as complete.','Use reel or post link only','Wrong links are non-refundable']},
+    {id:12008,name:'Instagram Video Views',price:0.086,min:50,max:2147483647,startTime:'Instant',speed:'500K-1M/Day',refill:'NO',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['Works on Video, Reel & IGTV links','Make sure to make your account public. If the account is not public, the order will be marked as complete.','Wrong links are non-refundable']},
   ],
   'post-views': [
     {id:6,name:'Instagram Post Views – Used By Influencers',price:1.83,min:100,max:2147483647,startTime:'INSTANT',speed:'1M/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'5 minutes',details:['Works on all public posts.','Use post link.','Private accounts not accepted.']},
     {id:7,name:'Instagram Post Views – Increase Insights',price:1.74,min:100,max:2147483647,startTime:'INSTANT',speed:'1M/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'5 minutes',details:['Boosts post insights.','Use post link.','Private accounts not accepted.']},
   ],
   'followers': [
-    {id:8,name:'Instagram Followers – Used By Influencers',price:151.51,min:100,max:100000,startTime:'0-1 HOUR',speed:'5K/DAY',refill:'30 DAYS',cancel:'NO',drop:'LOW DROP',quality:'HIGH',delivery:'1-6 hours',details:['High quality followers.','Gradual delivery for safety.','Private accounts not accepted.']},
-    {id:9,name:'Instagram Followers – Used By Celebrities',price:134.53,min:100,max:100000,startTime:'0-1 HOUR',speed:'5K/DAY',refill:'60 DAYS',cancel:'NO',drop:'LOW DROP',quality:'PREMIUM',delivery:'1-6 hours',details:['Celebrity-grade followers.','Gradual delivery.','Private accounts not accepted.']},
-    {id:10,name:'Instagram Indian Followers – Used By Influencers',price:187.45,min:100,max:50000,startTime:'0-6 HOURS',speed:'2K/DAY',refill:'30 DAYS',cancel:'NO',drop:'LOW DROP',quality:'REAL INDIAN',delivery:'6-24 hours',details:['Real Indian followers.','Gradual delivery.','Private accounts not accepted.']},
-    {id:11,name:'Instagram Indian Followers – Used By Celebrities',price:218.54,min:100,max:50000,startTime:'0-6 HOURS',speed:'2K/DAY',refill:'60 DAYS',cancel:'NO',drop:'LOW DROP',quality:'INDIAN PREMIUM',delivery:'6-24 hours',details:['Premium Indian followers.','Gradual delivery.','Private accounts not accepted.']},
+    {id:12282,name:'Low Quality Followers',price:50.6209,min:50,max:1000000,startTime:'0-10 Minutes',speed:'100K-200K+/Day',refill:'365 Days ♻️',cancel:'NO',drop:'Low Drop',quality:'Good',delivery:'0-10 minutes',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11977,name:'Low Quality Followers',price:79.31,min:50,max:500000,startTime:'0-10 Minutes',speed:'5K-30K+/Hour',refill:'Lifetime ♻️',cancel:'NO',drop:'Low Drop',quality:'Good',delivery:'0-10 minutes',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11965,name:'Good Quality Followers',price:83.5439,min:10,max:500000,startTime:'0-10 Minutes',speed:'5K-30K+/Hour',refill:'30 Days ♻️',cancel:'NO',drop:'Non Drop',quality:'Good',delivery:'0-10 minutes',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11969,name:'High Quality Followers',price:105.4908,min:10,max:500000,startTime:'0-10 Minutes',speed:'5K-30K+/Hour',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'0-10 minutes',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11492,name:'Premium Quality Followers',price:105.5853,min:20,max:1000000,startTime:'0-10 Minutes',speed:'50K-100K+/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'100% Real Indian 🇮🇳',delivery:'0-10 minutes',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
   ],
   'likes': [
-    {id:12,name:'Instagram Likes – Used By Influencers',price:29.02,min:10,max:500000,startTime:'INSTANT',speed:'10K/HOUR',refill:'LIFETIME',cancel:'NO',drop:'NON-DROP',quality:'HIGH',delivery:'5 minutes',details:['High quality likes.','Works on all public posts.']},
-    {id:13,name:'Instagram Likes – Used By Celebrities',price:38.15,min:10,max:500000,startTime:'INSTANT',speed:'5K/HOUR',refill:'30 DAYS',cancel:'YES',drop:'NON-DROP',quality:'PREMIUM',delivery:'8 minutes',details:['Celebrity-grade likes.','Works on all public posts.']},
-    {id:14,name:'Instagram Indian Likes – Used By Influencers',price:49.05,min:10,max:100000,startTime:'INSTANT',speed:'5K/HOUR',refill:'30 DAYS',cancel:'NO',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'10 minutes',details:['Indian audience likes.','Works on public posts only.']},
-    {id:15,name:'Instagram Indian Likes – For Celebrities',price:52.48,min:10,max:100000,startTime:'INSTANT',speed:'3K/HOUR',refill:'30 DAYS',cancel:'NO',drop:'NON-DROP',quality:'INDIAN PREMIUM',delivery:'12 minutes',details:['Premium Indian likes.','Works on public posts only.']},
+    {id:12305,name:'Instagram Likes | Real Profiles | 100K+/Day | 365 Days Refill',price:7.7725,min:10,max:500000,startTime:'Instant',speed:'100K+/Day',refill:'365 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Real Profile',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12308,name:'Instagram Likes | Indian 🇮🇳 | 300K/Day | 30 Days Refill',price:10.5832,min:50,max:500000,startTime:'Instant',speed:'300K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Indian Profiles 🇮🇳',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12312,name:'Instagram Likes | Indian 🇮🇳 | 300K/Day | Lifetime Refill',price:11.0755,min:50,max:500000,startTime:'Instant',speed:'300K/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'Indian Profiles 🇮🇳',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11418,name:'Instagram Likes | Real Indian + Story 🇮🇳 | 10K+/Hour | Lifetime Refill',price:23.69,min:100,max:1000000,startTime:'0-1 Minute',speed:'10K+/Hour',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'100% Real Indian Profile with Story 🇮🇳',delivery:'0-1 minute',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
   ],
   'comments': [
-    {id:16,name:'Instagram Indian Comments – Random Comments',price:113.87,min:10,max:10000,startTime:'0-1 HOUR',speed:'500/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'30 minutes',details:['Real Indian random comments.','Works on public posts.']},
-    {id:17,name:'Instagram Indian Comments – Custom Comments',price:165.61,min:10,max:5000,startTime:'0-2 HOURS',speed:'300/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'1-2 hours',details:['Custom comments provided by you.','Works on public posts.']},
-    {id:18,name:'Instagram USA Comments – Female',price:1977.02,min:5,max:1000,startTime:'0-6 HOURS',speed:'100/HOUR',refill:'NO',cancel:'NO',drop:'NON-DROP',quality:'USA FEMALE',delivery:'6-24 hours',details:['Real USA female comments.','Works on public posts.']},
-    {id:19,name:'Instagram 1 Verified Comment + Like',price:57.42,min:1,max:100,startTime:'0-12 HOURS',speed:'10/DAY',refill:'NO',cancel:'NO',drop:'NON-DROP',quality:'VERIFIED',delivery:'12-24 hours',details:['1 verified account comment + like.','Works on public posts.']},
-    {id:20,name:'Instagram 2 Verified Comment + Like',price:96.04,min:1,max:100,startTime:'0-12 HOURS',speed:'10/DAY',refill:'NO',cancel:'NO',drop:'NON-DROP',quality:'VERIFIED',delivery:'12-24 hours',details:['2 verified account comments + likes.','Works on public posts.']},
+    {id:10389,name:'Instagram Comments | Random | 100% Real Users | Non Drop | 10K/Day',price:58.077,min:50,max:50000,startTime:'0-1 Hour',speed:'10K/Day',refill:'No Refill',cancel:'YES',drop:'Non Drop',quality:'100% Real Users',delivery:'0-1 hour',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:10390,name:'Instagram Comments | Custom | 100% Real Users | Non Drop | 10K/Day',price:57.68,min:50,max:50000,startTime:'0-1 Hour',speed:'10K/Day',refill:'No Refill',cancel:'YES',drop:'Non Drop',quality:'100% Real Users',delivery:'0-1 hour',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
   ],
   'shares': [
-    {id:21,name:'Instagram Shares – Used By Influencers',price:2.44,min:100,max:500000,startTime:'INSTANT',speed:'50K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'5 minutes',details:['Real shares.','Works on public posts and reels.']},
-    {id:22,name:'Instagram Indian Shares – Used By Celebrities',price:3.65,min:100,max:200000,startTime:'INSTANT',speed:'30K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'8 minutes',details:['Indian audience shares.','Works on public posts.']},
-    {id:23,name:'Instagram Profile Shares – Used By Influencers',price:22.91,min:100,max:50000,startTime:'INSTANT',speed:'10K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'10 minutes',details:['Profile shares.','Increases profile reach.']},
+    {id:8705,name:'Instagram Shares',price:4.017,min:100,max:1000000,startTime:'Instant',speed:'Ultra Fast',refill:'No Refill',cancel:'YES',drop:'—',quality:'—',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:8704,name:'Instagram Post Share Indian 🇮🇳',price:32.4185,min:10,max:10000000,startTime:'Instant',speed:'100K/Day',refill:'No Refill',cancel:'YES',drop:'Non Drop',quality:'Indian 🇮🇳',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12317,name:'Instagram Saves',price:12.3088,min:100,max:200000,startTime:'Instant',speed:'100K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'100% Real Accounts',delivery:'Instant',details:['Link: Instagram username / Profile Link','Location: Worldwide 🌍 | Quality: 100% Real Accounts | Drop Rate: 0% | No Refill','In case of high demand for the service, there may be changes in speed and start time.','Closing the 2nd order on the same link after the completion of the order system you have given.']},
+    {id:12001,name:'Instagram Saves',price:5.2456,min:10,max:400000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'—',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
   ],
-  'saves': [
-    {id:24,name:'Instagram Saves – Used By Influencers',price:10.64,min:100,max:500000,startTime:'INSTANT',speed:'20K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'5 minutes',details:['Real saves.','Boosts algorithm score.','Works on public posts.']},
-    {id:25,name:'Instagram Indian Saves – Used By Celebrities',price:18.80,min:100,max:200000,startTime:'INSTANT',speed:'10K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'8 minutes',details:['Indian audience saves.','Works on public posts.']},
+  'yt-likes':       [
+    {id:12349,name:'YouTube Likes | HQ Profiles | 500K/Day | 365 Days',price:46.8746,min:10,max:5000000,startTime:'Instant',speed:'500K/Day',refill:'365 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'HQ Profiles',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11579,name:'YouTube Likes | High Quality | 50K+/Day | 365 Days',price:22.1578,min:10,max:500000,startTime:'Instant',speed:'50K+/Day',refill:'365 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11285,name:'YouTube Likes | 200K+/Day | 30 Days | 1 Min Complete',price:35.0831,min:10,max:500000,startTime:'0-1 Minute',speed:'200K+/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'0-1 minute',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11289,name:'YouTube Likes | 200K+/Day | Lifetime | 1 Min Complete',price:40.0071,min:10,max:500000,startTime:'0-1 Minute',speed:'200K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'0-1 minute',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
   ],
-  'reposts': [
-    {id:26,name:'Instagram Repost – Used By Influencers',price:84.35,min:100,max:50000,startTime:'INSTANT',speed:'5K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'10 minutes',details:['Real reposts.','Works on public reels and posts.']},
-    {id:27,name:'Instagram Indian Repost – Used By Celebrities',price:93.00,min:100,max:50000,startTime:'INSTANT',speed:'3K/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL INDIAN',delivery:'12 minutes',details:['Indian audience reposts.','Works on public reels.']},
+  'yt-views':       [
+    {id:11346,name:'YouTube Views | Non Drop | 3K-5K+/Day | Lifetime',price:96.017,min:100,max:10000000,startTime:'Instant',speed:'3K-5K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:10007,name:'YouTube Views | Social Ads | 200K+/Day | Real Users | Lifetime',price:109.53,min:10000,max:3000000,startTime:'Instant',speed:'200K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'Real Users',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12303,name:'YouTube Views | Non Drop | 5K-10K+/Day | Lifetime',price:90.9444,min:100,max:10000000,startTime:'Instant',speed:'5K-10K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11580,name:'YouTube Views | Worldwide | 20K+/Day | Lifetime',price:110.7413,min:100,max:500000,startTime:'Instant',speed:'20K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'yt-subscribers': [
+    {id:12224,name:'YouTube Subscribers | Low Quality | No Refill | 30K/Hour',price:5.1702,min:10,max:30000,startTime:'Instant',speed:'30K/Hour',refill:'No Refill ⚠️',cancel:'YES',drop:'—',quality:'Low Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11586,name:'YouTube Subscribers | Non Drop | 100/Day | Lifetime',price:1784.9313,min:100,max:100000,startTime:'Instant',speed:'100/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11589,name:'YouTube Subscribers | Non Drop | 1000/Day | Lifetime',price:2460.7432,min:100,max:100000,startTime:'Instant',speed:'1000/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'yt-native-ad':   [
+    {id:10796,name:'YouTube Native Ads Views | 500K+/Day | Lifetime | Min 1K',price:103.6302,min:1000,max:10000000,startTime:'Instant',speed:'500K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:10795,name:'YouTube Native Ads Views | 500K+/Day | Lifetime | Min 5K',price:109.0643,min:5000,max:10000000,startTime:'Instant',speed:'500K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11754,name:'YouTube Native Ads Views | 500K+/Day | Lifetime | Min 500K',price:31.534,min:500000,max:10000000,startTime:'Instant',speed:'500K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:10789,name:'YouTube Native Ads Views | 500K+/Day | Lifetime | Min 200K',price:58.7238,min:200000,max:10000000,startTime:'Instant',speed:'500K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'yt-adwords':     [
+    {id:12042,name:'YouTube Adwords Views | 100% Indian 🇮🇳 | 1M/Day | Lifetime | Min 50K',price:65.748,min:50000,max:500000,startTime:'Instant',speed:'1M/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'100% Indian 🇮🇳',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12041,name:'YouTube Adwords Views | 100% Indian 🇮🇳 | 1M/Day | Lifetime | Min 100K',price:70.6436,min:100000,max:500000,startTime:'Instant',speed:'1M/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'100% Indian 🇮🇳',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:9805,name:'YouTube Adwords Views | 500K/Day | Lifetime | Min 1M | Start 24-48H',price:37.0195,min:1000000,max:100000000,startTime:'24-48 Hours',speed:'500K/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'24-48 hours',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'yt-livestream':  [
+    {id:10248,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 15 Min',price:4.5423,min:100,max:500000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 15 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10249,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 30 Min',price:9.097,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 30 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10250,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 60 Min',price:18.2432,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 60 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10251,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 90 Min',price:27.6972,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 90 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10252,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 120 Min',price:36.5603,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 120 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10253,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 180 Min',price:72.0127,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 180 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10254,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 240 Min',price:72.5051,min:50,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 240 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10255,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 360 Min',price:108.2038,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 360 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10256,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 720 Min',price:217.8847,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 720 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10257,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 1 Day',price:430.8455,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 1 Day','Real Views + Likes included','Use YouTube live stream link']},
+  ],
+  'fb-views':      [
+    {id:12257,name:'Facebook Views | Non Drop | Lifetime | 50K/Day',price:1.9351,min:500,max:2147483647,startTime:'Instant',speed:'50K/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12418,name:'Facebook Views (Video/Reels) | Non Drop | Lifetime | 100K/Day',price:2.7674,min:100,max:2147483647,startTime:'Instant',speed:'100K/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12417,name:'Facebook Views (Video/Reels) | Non Drop | Lifetime | 1M/Day',price:3.7737,min:100,max:100000000,startTime:'Instant',speed:'1M/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'fb-reactions':  [
+    {id:12232,name:'Facebook Post Reactions | Like 👍 | Worldwide | 30 Days | 10K/Day',price:9.6608,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12233,name:'Facebook Post Reactions | Love ❤️ | Worldwide | 30 Days | 10K/Day',price:9.977,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12234,name:'Facebook Post Reactions | Wow 😲 | Worldwide | 30 Days | 10K/Day',price:9.7243,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12235,name:'Facebook Post Reactions | Care 🤗 | Worldwide | 30 Days | 10K/Day',price:9.1232,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12236,name:'Facebook Post Reactions | Haha 😆 | Worldwide | 30 Days | 10K/Day',price:9.1232,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12237,name:'Facebook Post Reactions | Sad 🥲 | Worldwide | 30 Days | 10K/Day',price:9.1232,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12238,name:'Facebook Post Reactions | Angry 😡 | Worldwide | 30 Days | 10K/Day',price:9.1232,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12239,name:'Facebook Post Reactions | Like 👍 | Worldwide | No Refill | 10K/Day',price:8.9188,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12240,name:'Facebook Post Reactions | Love ❤️ | Worldwide | No Refill | 10K/Day',price:8.9188,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12241,name:'Facebook Post Reactions | Care 🤗 | Worldwide | No Refill | 10K/Day',price:8.9188,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12242,name:'Facebook Post Reactions | Haha 😆 | Worldwide | No Refill | 10K/Day',price:8.9188,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12243,name:'Facebook Post Reactions | Wow 😲 | Worldwide | No Refill | 10K/Day',price:8.9188,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12244,name:'Facebook Post Reactions | Sad 🥲 | Worldwide | No Refill | 10K/Day',price:8.9188,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12245,name:'Facebook Post Reactions | Angry 😡 | Worldwide | No Refill | 10K/Day',price:8.9188,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11889,name:'Facebook Post Reactions | Like 👍 | Mix Quality | No Refill | 10K/Day',price:9.977,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Mix Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11890,name:'Facebook Post Reactions | Love ❤️ | Mix Quality | No Refill | 10K/Day',price:9.977,min:10,max:100000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Mix Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11891,name:'Facebook Post Reactions | Wow 😲 | Mix Quality | No Refill | 10K/Day',price:9.7243,min:10,max:100000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Mix Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11892,name:'Facebook Post Reactions | Care 🤗 | Mix Quality | No Refill | 10K/Day',price:9.3825,min:10,max:100000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Mix Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11893,name:'Facebook Post Reactions | Haha 😆 | Mix Quality | No Refill | 10K/Day',price:9.3825,min:10,max:100000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Mix Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11894,name:'Facebook Post Reactions | Sad 🥲 | Mix Quality | No Refill | 10K/Day',price:9.3825,min:10,max:100000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Mix Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11895,name:'Facebook Post Reactions | Angry 😡 | Mix Quality | No Refill | 10K/Day',price:9.3825,min:10,max:100000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Mix Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'fb-followers':  [
+    {id:12182,name:'Facebook Followers | All Type Profile | Non Drop | 365 Days | 100K+/Day',price:28.625,min:100,max:1000000,startTime:'Instant',speed:'100K+/Day',refill:'365 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'All Type Profile',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12210,name:'Facebook Followers | All Type Profile & Page | Non Drop | Lifetime | 200K/Day',price:28.8599,min:10,max:500000,startTime:'Instant',speed:'200K/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'All Type Profile & Page',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12198,name:'Facebook Followers | All Type Profile | Non Drop | Lifetime | 100K+/Day',price:23.318,min:10,max:100000,startTime:'Instant',speed:'100K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'All Type Profile',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'wa-members':    [
+    {id:11607,name:'WhatsApp Channel Members | Worldwide 🌏 | Non Drop | No Refill | 10K/Day',price:242.8273,min:10,max:10000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide 🌏',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11608,name:'WhatsApp Channel Members | Worldwide 🌏 | Non Drop | 30 Days | 100K/Day',price:305.0598,min:10,max:10000,startTime:'Instant',speed:'100K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide 🌏',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11609,name:'WhatsApp Channel Members | Worldwide 🌏 | Non Drop | 365 Days | 100K/Day',price:423.8239,min:10,max:10000,startTime:'Instant',speed:'100K/Day',refill:'365 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide 🌏',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'tg-members':    [
+    {id:12180,name:'Telegram Members | High Quality | Non Drop | Lifetime | 100K+/Day',price:64.4033,min:10,max:1000000,startTime:'Instant',speed:'100K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12366,name:'Telegram Premium Members | Premium Account | 10 Days Refill | 15-20 Days Non Drop | 30K/Day',price:300.4136,min:100,max:50000,startTime:'Instant',speed:'30K/Day',refill:'10 Days ♻️',cancel:'YES',drop:'15-20 Days Non Drop',quality:'Premium Account',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12367,name:'Telegram Premium Members | Premium Account | 20 Days Refill | 25-30 Days Non Drop | 30K/Day',price:415.4656,min:100,max:50000,startTime:'Instant',speed:'30K/Day',refill:'20 Days ♻️',cancel:'YES',drop:'25-30 Days Non Drop',quality:'Premium Account',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12368,name:'Telegram Premium Members | Premium Account | 30 Days Refill | 30-40 Days Non Drop | 30K/Day',price:562.4765,min:100,max:50000,startTime:'Instant',speed:'30K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'30-40 Days Non Drop',quality:'Premium Account',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'fb-livestream': [
+    {id:12258,name:'Facebook Live Stream Views | 100% Concurrent | 15 Min | Max 5K',price:34.373,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 15 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+    {id:12259,name:'Facebook Live Stream Views | 100% Concurrent | 30 Min | Max 5K',price:68.7459,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 30 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+    {id:12260,name:'Facebook Live Stream Views | 100% Concurrent | 60 Min | Max 5K',price:137.4918,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 60 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+    {id:12261,name:'Facebook Live Stream Views | 100% Concurrent | 90 Min | Max 5K',price:206.2377,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 90 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+    {id:12262,name:'Facebook Live Stream Views | 100% Concurrent | 120 Min | Max 5K',price:274.9835,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 120 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+    {id:12263,name:'Facebook Live Stream Views | 100% Concurrent | 180 Min | Max 5K',price:412.4753,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 180 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+    {id:12264,name:'Facebook Live Stream Views | 100% Concurrent | 240 Min | Max 5K',price:549.9672,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 240 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+    {id:12265,name:'Facebook Live Stream Views | 100% Concurrent | 360 Min | Max 5K',price:824.9507,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 360 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
   ],
 };
 
@@ -1062,6 +1295,14 @@ function buildCategoryDropdown() {
     const d=document.createElement('div'); d.className='cat-item'+(c.id===_selCat?' selected':'');
     const iconHTML = c.id==='welcome-offer'
       ? `<svg width="20" height="20" viewBox="0 0 20 20" class="flex-shrink-0" style="border-radius:4px;flex-shrink:0"><defs><linearGradient id="woGrad" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#f09433"/><stop offset="33%" stop-color="#e6683c"/><stop offset="66%" stop-color="#cc2366"/><stop offset="100%" stop-color="#bc1888"/></linearGradient></defs><rect width="20" height="20" rx="5" fill="url(#woGrad)"/><text x="10" y="14.5" text-anchor="middle" font-size="11" fill="white">★</text></svg>`
+      : c.id.startsWith('yt-')
+      ? `<img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" class="w-5 h-5 rounded flex-shrink-0"/>`
+      : c.id.startsWith('fb-')
+      ? `<img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" class="w-5 h-5 rounded flex-shrink-0"/>`
+      : c.id.startsWith('tg-')
+      ? `<img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" class="w-5 h-5 rounded flex-shrink-0"/>`
+      : c.id.startsWith('wa-')
+      ? `<img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" class="w-5 h-5 rounded flex-shrink-0"/>`
       : `<img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" class="w-5 h-5 rounded flex-shrink-0"/>`;
     const labelHTML = c.subtitle
       ? `<div style="display:flex;flex-direction:column;gap:1px"><span>${c.label}</span><span style="font-size:10px;font-weight:600;color:#94a3b8;line-height:1.2">${c.subtitle}</span></div>`
@@ -1137,6 +1378,25 @@ function selectService(svc) {
   document.getElementById('totalPrice').textContent='';
   document.getElementById('quantityError').classList.add('hidden');
   document.getElementById('placeOrderBtn').disabled=true;
+  // Custom comments box logic
+  const isCustomComment = svc.name.toLowerCase().includes('custom');
+  const ccWrap = document.getElementById('customCommentsWrap');
+  const ccInput = document.getElementById('customCommentsInput');
+  const qtyInput = document.getElementById('quantityInput');
+  if(isCustomComment){
+    ccWrap.classList.remove('hidden');
+    ccInput.value='';
+    document.getElementById('customCommentsCount').textContent='0 comments entered';
+    document.getElementById('customCommentsError').classList.add('hidden');
+    document.getElementById('customCommentsMin').textContent=svc.min;
+    qtyInput.readOnly=true;
+    qtyInput.classList.add('opacity-50','cursor-not-allowed');
+  } else {
+    ccWrap.classList.add('hidden');
+    ccInput.value='';
+    qtyInput.readOnly=false;
+    qtyInput.classList.remove('opacity-50','cursor-not-allowed');
+  }
   const det=document.getElementById('serviceDetails');
   det.classList.remove('hidden');det.style.animation='none';det.offsetHeight;det.style.animation='fadeUpAnim 0.35s ease forwards';
 }
@@ -1214,6 +1474,7 @@ document.addEventListener('click', function (e) {
 // ── VALIDATION ──
 document.getElementById('quantityInput').addEventListener('input',()=>{
   if(!_selSvc)return;
+  if(_selSvc.name.toLowerCase().includes('custom'))return; // custom mode — qty is read-only
   const qty=parseInt(document.getElementById('quantityInput').value);
   const err=document.getElementById('quantityError');
   if(!qty||qty<_selSvc.min||qty>_selSvc.max){err.classList.remove('hidden');document.getElementById('totalPrice').textContent='';document.getElementById('placeOrderBtn').disabled=true;return;}
@@ -1223,29 +1484,132 @@ document.getElementById('quantityInput').addEventListener('input',()=>{
 });
 document.getElementById('linkInput').addEventListener('input',()=>{
   if(!_selSvc)return;
+  if(_selSvc.name.toLowerCase().includes('custom')){
+    // custom mode — recheck line count
+    const lines=document.getElementById('customCommentsInput').value.split('\n').filter(l=>l.trim()!=='').length;
+    document.getElementById('placeOrderBtn').disabled=!(document.getElementById('linkInput').value.trim()&&lines>=_selSvc.min);
+    return;
+  }
   const qty=parseInt(document.getElementById('quantityInput').value);
   document.getElementById('placeOrderBtn').disabled=!(document.getElementById('linkInput').value.trim()&&qty&&qty>=_selSvc.min&&qty<=_selSvc.max);
 });
+// ── CUSTOM COMMENTS TEXTAREA ──
+document.getElementById('customCommentsInput').addEventListener('input',function(){
+  if(!_selSvc)return;
+  const lines=this.value.split('\n').filter(l=>l.trim()!=='').length;
+  const countEl=document.getElementById('customCommentsCount');
+  const errEl=document.getElementById('customCommentsError');
+  countEl.textContent=lines+' comment'+(lines===1?'':'s')+' entered';
+  document.getElementById('quantityInput').value=lines||'';
+  if(lines>0&&lines<_selSvc.min){
+    errEl.classList.remove('hidden');
+    document.getElementById('totalPrice').textContent='';
+    document.getElementById('placeOrderBtn').disabled=true;
+  } else if(lines>=_selSvc.min){
+    errEl.classList.add('hidden');
+    document.getElementById('totalPrice').textContent='₹'+((lines/1000)*_selSvc.price).toFixed(2)+'  ';
+    document.getElementById('placeOrderBtn').disabled=!document.getElementById('linkInput').value.trim();
+  } else {
+    errEl.classList.add('hidden');
+    document.getElementById('totalPrice').textContent='';
+    document.getElementById('placeOrderBtn').disabled=true;
+  }
+});
 
 // ── PLACE ORDER ──
-document.getElementById('placeOrderBtn').addEventListener('click',function(e){
-  e.preventDefault();if(!_selSvc)return;
-  const qty=parseInt(document.getElementById('quantityInput').value);
-  const link=document.getElementById('linkInput').value.trim();
-  if(!qty||!link)return;
+// ── PLACE ORDER API ──
+// ── TOAST ──
+function showToast(type, title, msg) {
+  const icons = { success: 'check_circle', error: 'cancel', warn: 'warning' };
+  const container = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.innerHTML = `
+    <div class="toast-icon">
+      <span class="material-symbols-outlined" style="font-size:17px">${icons[type]||'info'}</span>
+    </div>
+    <div class="toast-body">
+      <div class="toast-title">${title}</div>
+      ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+      <div class="toast-bar"></div>
+    </div>`;
+  container.appendChild(t);
+  requestAnimationFrame(() => { requestAnimationFrame(() => { t.classList.add('show'); }); });
+  setTimeout(() => {
+    t.classList.add('hide');
+    setTimeout(() => t.remove(), 380);
+  }, 3000);
+}
+
+// ── PLACE ORDER ──
+async function placeOrder(serviceId) {
+  const link     = document.getElementById('linkInput').value.trim();
+  const quantity = document.getElementById('quantityInput').value;
+
+  if (!link || !quantity) {
+    showToast('warn', 'Missing Fields', 'Please enter a link and quantity.');
+    return;
+  }
+
+  const btn       = document.getElementById('placeOrderBtn');
+  const labelSpan = btn.querySelector('.order-label');
+  const chevron   = btn.querySelector('.material-symbols-outlined');
+
+  // ── Loading state ──
+  btn.disabled = true;
+  if (labelSpan) labelSpan.textContent = 'Processing...';
+  if (chevron)   chevron.style.display = 'none';
+
+  try {
+    const res = await fetch('https://backend-for-api-connect-1.onrender.com/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ service: serviceId, link: link, quantity: quantity })
+    });
+    const data = await res.json();
+
+    if (data.order) {
+      // ── Success ──
+      playSuccess();
+      showToast('success', 'Order Placed!', 'Order ID: ' + data.order);
+      localStorage.setItem('lastOrderId', data.order);
+      startTracking();
+      if (typeof _saveOrder === 'function') _saveOrder(_selSvc, parseInt(quantity), link, data.order);
+
+      // Auto scroll to order tracking card
+      setTimeout(() => {
+        const card = document.getElementById('orderTrackingCard');
+        if (card && !card.classList.contains('hidden')) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 400);
+
+    } else {
+      showToast('error', 'Unable to Place Order', 'Something went wrong. Please try again or contact support.');
+    }
+  } catch (err) {
+    showToast('error', 'Unable to Place Order', 'Service is temporarily unavailable. Please try again later.');
+  } finally {
+    // ── Restore button ──
+    if (labelSpan) labelSpan.textContent = 'ORDER';
+    if (chevron)   chevron.style.display = '';
+    btn.disabled = !(
+      document.getElementById('linkInput').value.trim() &&
+      parseInt(document.getElementById('quantityInput').value) >= (_selSvc ? _selSvc.min : 1)
+    );
+  }
+}
+
+document.getElementById('placeOrderBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  if (!_selSvc) return;
   // Ripple
-  const rip=document.getElementById('rippleEl'),r=this.getBoundingClientRect();
-  rip.style.left=(e.clientX-r.left)+'px';rip.style.top=(e.clientY-r.top)+'px';
-  rip.style.transform='scale(4)';rip.style.opacity='1';
-  setTimeout(()=>{rip.style.transform='scale(0)';rip.style.opacity='0';},500);
-  playSuccess();
-  // Show modal
-  const modal=document.getElementById('successModal'),box=document.getElementById('successModalBox');
-  modal.classList.remove('hidden');
-modal.style.display='flex';
-  setTimeout(()=>{box.style.transform='scale(1)';box.style.opacity='1';},30);
-   // Save to Firestore via global db (set by Firebase module below)
-  if(typeof _saveOrder==='function') _saveOrder(_selSvc,qty,link);
+  const rip = document.getElementById('rippleEl'), r = this.getBoundingClientRect();
+  rip.style.left = (e.clientX - r.left) + 'px';
+  rip.style.top  = (e.clientY - r.top)  + 'px';
+  rip.style.transform = 'scale(4)'; rip.style.opacity = '1';
+  setTimeout(() => { rip.style.transform = 'scale(0)'; rip.style.opacity = '0'; }, 500);
+  placeOrder(_selSvc.id);
 });
 
 document.getElementById('closeModalBtn').addEventListener('click',closeSuccessModal);
@@ -1266,12 +1630,71 @@ function closeSuccessModal(){
   document.getElementById('quantityInput').value='';
   document.getElementById('totalPrice').textContent='';
   document.getElementById('placeOrderBtn').disabled=true;
+  document.getElementById('customCommentsInput').value='';
+  document.getElementById('customCommentsCount').textContent='0 comments entered';
+  document.getElementById('customCommentsError').classList.add('hidden');
+  document.getElementById('orderErrorToast').classList.add('hidden');
 }
   
 // ⭐ AUTO SELECT DEFAULT CATEGORY + SERVICE ON PAGE LOAD
+// ── ORDER TRACKING ──
+async function checkStatus(orderId) {
+  try {
+    const res  = await fetch('https://backend-for-api-connect-1.onrender.com/status/' + orderId);
+    const data = await res.json();
+
+    console.log('LIVE STATUS:', data);
+
+    const statusEl   = document.getElementById('orderStatus');
+    const remainsEl  = document.getElementById('orderRemains');
+    const progressEl = document.getElementById('orderProgress');
+    if (!statusEl || !remainsEl || !progressEl) return;
+
+    const status = (data.status || '').toLowerCase();
+
+    statusEl.innerText  = data.status;
+    remainsEl.innerText = data.remains;
+    statusEl.className  = 'status';
+
+    if (status === 'completed') {
+      statusEl.classList.add('completed');
+      progressEl.style.width = '100%';
+    } else if (status === 'inprogress') {
+      statusEl.classList.add('inprogress');
+      progressEl.style.width = '70%';
+    } else if (status === 'partial') {
+      statusEl.classList.add('partial');
+      progressEl.style.width = '85%';
+    } else {
+      statusEl.classList.add('pending');
+      progressEl.style.width = '20%';
+    }
+  } catch (err) {
+    console.log('ERROR:', err);
+  }
+}
+
+let _trackingInterval = null;
+function startTracking() {
+  const orderId = localStorage.getItem('lastOrderId');
+  if (!orderId) return;
+
+  document.getElementById('orderId').innerText = orderId;
+  document.getElementById('orderTrackingCard').classList.remove('hidden');
+  checkStatus(orderId);
+
+  // Ensure only one interval runs at a time
+  if (_trackingInterval) clearInterval(_trackingInterval);
+  _trackingInterval = setInterval(() => {
+    const id = localStorage.getItem('lastOrderId');
+    if (id) checkStatus(id);
+  }, 5000);
+}
+
 window.addEventListener('load', () => {
   const defaultCat = CATEGORIES[0];
   if(defaultCat) selectCategory(defaultCat);
+  startTracking();
 });
 // Close dropdowns on outside click
 document.addEventListener('click',e=>{
@@ -1409,19 +1832,21 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // ── SAVE ORDER ──
-window._saveOrder = async function(svc, qty, link) {
+window._saveOrder = async function(svc, qty, link, apiOrderId) {
   if (!currentUid) { window.location.href = 'index.html'; return; }
   try {
     const now        = new Date();
     const orderPrice = parseFloat(((qty / 1000) * svc.price).toFixed(2));
     await addDoc(collection(db, "orders", currentUid, "user_orders"), {
       orderId:           String(Date.now()).slice(-7),
+      apiOrderId:        apiOrderId ? String(apiOrderId) : null,
       serviceName:       svc.name,
       category:          svc.id,
       quantity:          qty,
       link:              link,
       price:             orderPrice,
       status:            "Pending",
+      remaining:         qty,
       createdAt:         now.toISOString(),
       createdAtReadable: now.toLocaleString()
     });
@@ -1479,7 +1904,9 @@ function changePasswordInline() {
   }
 }
 </script>
- 
+
 </div>
+
+<div id="toastContainer"></div>
 </body>
 </html>
