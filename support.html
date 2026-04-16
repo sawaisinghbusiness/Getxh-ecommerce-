@@ -890,7 +890,8 @@ import {
   query,
   serverTimestamp,
   updateDoc,
-  where
+  where,
+  writeBatch
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -961,7 +962,10 @@ window.createTicket = async function () {
   submitBtn.textContent = 'Submitting...';
 
   try {
-    const ticketRef = await addDoc(collection(db, 'tickets'), {
+    const batch = writeBatch(db);
+
+    const ticketRef = doc(collection(db, 'tickets'));
+    batch.set(ticketRef, {
       userId: currentUser.uid,
       userEmail: currentUser.email || '',
       userName: currentUser.displayName || 'User',
@@ -972,14 +976,16 @@ window.createTicket = async function () {
       createdAt: serverTimestamp(),
     });
 
-    await addDoc(collection(db, 'messages'), {
+    const msgRef = doc(collection(db, 'messages'));
+    batch.set(msgRef, {
       ticketId: ticketRef.id,
       senderId: currentUser.uid,
       sender: 'user',
       text: message,
-      message: message,
       createdAt: Date.now(),
     });
+
+    await batch.commit();
 
     resetCreateForm();
     closeCreatePanel();

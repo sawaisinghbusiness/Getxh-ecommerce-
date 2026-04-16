@@ -1,620 +1,89 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>GETXH - Create Account</title>
-
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-
 <style>
-* { font-family: 'Inter', sans-serif; box-sizing: border-box; }
-body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
-
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
-  font-size: 20px;
-}
-
-.card {
-  border: 1px solid #e5e7eb;
-  border-radius: 1rem;
-  background: rgba(255,255,255,0.97);
-  box-shadow: 0 24px 60px rgba(15,23,42,0.10);
-}
-
-.form-input {
-  width: 100%; height: 48px; border-radius: 12px;
-  border: 1px solid #d1d5db; background: #f9fafb;
-  padding: 0 1rem; font-size: 0.875rem; color: #0f172a;
-  outline: none; transition: all 0.2s ease;
-}
-.form-input:focus {
-  border-color: #2563eb; background: #fff;
-  box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
-}
-.form-input::placeholder { color: #94a3b8; }
-
-.fi { position: relative; }
-.fi .material-symbols-outlined {
-  position: absolute; left: 14px; top: 50%;
-  transform: translateY(-50%); color: #94a3b8; pointer-events: none;
-  transition: color 0.2s;
-}
-.fi:focus-within .material-symbols-outlined { color: #2563eb; }
-.fi .form-input { padding-left: 3rem; }
-
-.toggle-password {
-  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-  color: #94a3b8; cursor: pointer; width: 28px; height: 28px;
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s; background: none; border: none;
-}
-.toggle-password:hover { color: #475569; background: #f1f5f9; }
-
-.primary-btn {
-  width: 100%; height: 48px; border-radius: 12px;
-  background: #2563eb; color: #fff; font-weight: 600; font-size: 0.875rem;
-  border: none; cursor: pointer;
-  box-shadow: 0 8px 24px rgba(37,99,235,0.22);
-  transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.primary-btn:hover:not(:disabled) { background: #1d4ed8; transform: scale(1.01); }
-.primary-btn:active:not(:disabled) { transform: scale(0.99); }
-.primary-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none !important; box-shadow: none; }
-
-@keyframes spin { to { transform: rotate(360deg); } }
-.spinner {
-  width: 16px; height: 16px; border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
-  animation: spin 0.7s linear infinite; flex-shrink: 0;
-}
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.fade-up { animation: fadeUp 0.32s ease forwards; }
-
-/* OTP digit boxes */
-.otp-box {
-  width: 48px; height: 56px;
-  border: 2px solid #d1d5db; border-radius: 12px;
-  background: #f9fafb; font-size: 1.5rem; font-weight: 800;
-  text-align: center; color: #0f172a; outline: none;
-  transition: all 0.18s; caret-color: #2563eb;
-}
-.otp-box:focus {
-  border-color: #2563eb; background: #fff;
-  box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
-}
-.otp-box.filled {
-  border-color: #2563eb;
-  background: #eff6ff;
-}
-.otp-box.error {
-  border-color: #ef4444;
-  background: #fef2f2;
-  animation: shake 0.35s ease;
-}
-@keyframes shake {
-  0%,100% { transform: translateX(0); }
-  20%      { transform: translateX(-5px); }
-  40%      { transform: translateX(5px); }
-  60%      { transform: translateX(-4px); }
-  80%      { transform: translateX(4px); }
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#020617;--bg2:#0f172a;--purple:#8b5cf6;--blue:#3b82f6;--cyan:#22d3ee;--grad:linear-gradient(135deg,#8b5cf6 0%,#3b82f6 100%);--text:#f1f5f9;--muted:#94a3b8;--dim:#64748b}
+html,body{min-height:100%;font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0f172a 0%,#020617 100%);color:var(--text);overflow-x:hidden}
+a,button,input,.card,.feat-icon,.link-acc,.orb,.otp-box,.step-panel{transition:all .3s ease}
+.page{display:flex;min-height:100vh}.left{flex:1;display:flex;flex-direction:column;justify-content:center;padding:60px 64px;position:relative;overflow:hidden}.left::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;opacity:.68;will-change:transform,opacity}.orb-1{width:500px;height:500px;background:rgba(139,92,246,.28);top:-140px;left:-120px;animation:floatA 14s ease-in-out infinite alternate,blobPulse 10s ease-in-out infinite}.orb-2{width:380px;height:380px;background:rgba(59,130,246,.22);bottom:-80px;right:-60px;animation:floatB 16s ease-in-out infinite alternate,blobPulse 11s ease-in-out infinite}.orb-3{width:260px;height:260px;background:rgba(6,182,212,.14);top:55%;left:42%;animation:floatC 18s ease-in-out infinite alternate,blobPulse 9s ease-in-out infinite alternate}.orb-4{width:180px;height:180px;background:rgba(167,139,250,.17);top:24%;right:8%;animation:floatB 15s ease-in-out infinite alternate,blobPulse 8s ease-in-out infinite}.left-content{position:relative;z-index:1;max-width:520px;animation:fadeUpSoft .75s cubic-bezier(.22,1,.36,1) both}.logo{display:flex;align-items:center;gap:12px;margin-bottom:60px}.logo-icon{width:44px;height:44px;border-radius:12px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;box-shadow:0 8px 28px rgba(139,92,246,.45)}.logo-name{font-size:21px;font-weight:800;letter-spacing:.14em;background:linear-gradient(135deg,#fff 0%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}.left-heading{font-size:clamp(28px,3.2vw,46px);font-weight:800;line-height:1.12;letter-spacing:-.025em;margin-bottom:18px;color:#fff;text-shadow:0 0 20px rgba(99,102,241,.4)}.left-heading .grad-text{background:linear-gradient(135deg,#8b5cf6 0%,#22d3ee 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:0 0 20px rgba(99,102,241,.4)}.left-sub{font-size:15px;color:var(--muted);line-height:1.75;max-width:420px;margin-bottom:44px}.features{display:flex;flex-direction:column;gap:18px}.feat{display:flex;align-items:center;gap:14px}.feat-icon{width:36px;height:36px;border-radius:10px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;animation:iconPulse 3.4s ease-in-out infinite}.feat:hover .feat-icon{background:rgba(139,92,246,.18);transform:translateY(-2px) scale(1.04);box-shadow:0 0 20px rgba(139,92,246,.2)}.feat-icon svg{width:16px;height:16px;filter:drop-shadow(0 0 10px rgba(139,92,246,.45))}.feat-label{font-size:14px;font-weight:500;color:#e2e8f0}.right{width:460px;min-width:460px;display:flex;align-items:center;justify-content:center;padding:40px 32px;background:rgba(255,255,255,.014);border-left:1px solid rgba(255,255,255,.05);position:relative}.card{width:100%;max-width:390px;background:rgba(15,23,42,.85);border:1px solid rgba(255,255,255,.13);border-radius:24px;padding:40px 34px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 32px 72px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.05),inset 0 1px 0 rgba(255,255,255,.1);animation:fadeUpSoft .7s cubic-bezier(.22,1,.36,1) both;overflow:hidden}.card:hover{transform:translateY(-6px);box-shadow:0 40px 84px rgba(0,0,0,.62),0 0 0 1px rgba(255,255,255,.07),0 0 28px rgba(99,102,241,.12),inset 0 1px 0 rgba(255,255,255,.1)}.mob-head{display:none;flex-direction:column;align-items:center;margin-bottom:28px}.mob-logo{display:flex;align-items:center;gap:10px;margin-bottom:6px}.mob-logo-icon{width:36px;height:36px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff}.mob-logo-name{font-size:18px;font-weight:800;letter-spacing:.12em;background:linear-gradient(135deg,#fff 0%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}.mob-tag{font-size:12px;color:#64748b}.card-head{text-align:center;margin-bottom:28px}.card-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:999px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.22);font-size:10px;font-weight:700;color:#a78bfa;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}.badge-dot{width:6px;height:6px;border-radius:50%;background:#a78bfa;animation:pulseDot 2s ease-in-out infinite}.card-title{font-size:25px;font-weight:800;letter-spacing:-.02em;color:#fff;text-shadow:0 0 20px rgba(99,102,241,.4)}.card-sub{font-size:13px;color:#94a3b8;margin-top:6px}.step-shell{position:relative;min-height:470px}.step-panel{position:absolute;inset:0;opacity:0;pointer-events:none;transform:translateX(28px)}.step-panel.is-active{opacity:1;pointer-events:auto;transform:translateX(0)}.step-panel.is-exit-left{opacity:0;transform:translateX(-28px)}.message{display:none;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:500;margin-bottom:18px}.message.is-visible{display:flex}.message.error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5}.message.info{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:#93c5fd}.fgroup{margin-bottom:16px}.flabel{display:block;font-size:11px;font-weight:700;color:#7c8fa8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}.iwrap{position:relative}.iicon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#64748b;pointer-events:none;display:flex}.iwrap:focus-within .iicon{color:#8b5cf6}.finput{width:100%;height:48px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:0 14px 0 40px;color:#e2e8f0;font-size:14px;font-family:'Inter',sans-serif;outline:none}.finput.has-toggle{padding-right:46px}.finput::placeholder{color:#64748b}.finput:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.07)}.finput:focus{border-color:rgba(99,102,241,.7);box-shadow:0 0 0 3px rgba(99,102,241,.16),0 0 20px rgba(99,102,241,.22);background:rgba(255,255,255,.07)}.toggle-pwd{position:absolute;right:11px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#475569;background:transparent;border:none}.toggle-pwd:hover{background:rgba(255,255,255,.07);color:#94a3b8}.btn{width:100%;height:50px;border:none;border-radius:12px;background:linear-gradient(135deg,#8b5cf6 0%,#3b82f6 100%);background-size:200% 200%;color:#fff;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(139,92,246,.32);display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}.btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.16) 0%,transparent 55%);opacity:0}.btn:hover:not(:disabled){transform:translateY(-2px) scale(1.03);background-position:100% 50%;box-shadow:0 16px 36px rgba(139,92,246,.5),0 0 28px rgba(59,130,246,.28),0 0 0 1px rgba(139,92,246,.3)}.btn:hover:not(:disabled)::before{opacity:1}.btn:active:not(:disabled){transform:translateY(0) scale(.982);box-shadow:0 4px 12px rgba(139,92,246,.28)}.btn:disabled{opacity:.7;cursor:not-allowed;transform:none}.secondary-btn{width:100%;height:46px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#94a3b8;font-weight:600;font-size:14px;font-family:'Inter',sans-serif;cursor:pointer}.secondary-btn:hover{background:rgba(255,255,255,.07);color:#cbd5e1}.terms{display:flex;align-items:flex-start;gap:10px;color:#94a3b8;font-size:12px;line-height:1.6;margin-top:4px}.terms input{width:15px;height:15px;margin-top:2px;accent-color:#8b5cf6}.terms a{color:#c4b5fd;text-decoration:none}.terms a:hover{color:#22d3ee}.otp-icon{width:64px;height:64px;border-radius:20px;margin:4px auto 18px;display:flex;align-items:center;justify-content:center;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.24);box-shadow:0 0 24px rgba(139,92,246,.18)}.otp-email{font-weight:700;color:#e2e8f0;word-break:break-word}.otp-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:24px 0 18px}.otp-box{width:100%;height:58px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;font-size:24px;font-weight:800;text-align:center;outline:none;caret-color:transparent}.otp-box:hover{border-color:rgba(255,255,255,.18)}.otp-box:focus{border-color:rgba(99,102,241,.75);box-shadow:0 0 0 3px rgba(99,102,241,.16),0 0 20px rgba(99,102,241,.22);background:rgba(255,255,255,.08)}.otp-box.filled{border-color:rgba(99,102,241,.4);background:rgba(99,102,241,.12)}.otp-box.error{border-color:rgba(239,68,68,.55);background:rgba(239,68,68,.08);animation:shake .35s ease}.otp-actions{display:flex;flex-direction:column;gap:10px}.otp-meta{margin-top:16px;text-align:center;font-size:12px;color:#94a3b8;line-height:1.7}.resend-btn{background:none;border:none;cursor:pointer;color:#c4b5fd;font-weight:700;font-size:12px}.resend-btn:hover:not(:disabled){color:#22d3ee}.resend-btn:disabled{opacity:.45;cursor:not-allowed}.cdiv{height:1px;background:rgba(255,255,255,.06);margin:20px 0}.card-footer{text-align:center;font-size:13px;color:#64748b}.link-acc{color:#8b5cf6;text-decoration:none;font-weight:700;position:relative;display:inline-flex;align-items:center;gap:4px}.link-acc::after{content:'';position:absolute;left:0;bottom:-3px;width:100%;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left}.link-acc:hover{color:#22d3ee;text-shadow:0 0 18px rgba(34,211,238,.28)}.link-acc:hover::after{transform:scaleX(1)}.spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.38);border-top-color:#fff;animation:spin .7s linear infinite;flex-shrink:0}@keyframes floatA{from{transform:translateY(0) rotate(0deg)}to{transform:translateY(-28px) rotate(6deg)}}@keyframes floatB{from{transform:translateY(0) rotate(0deg)}to{transform:translateY(-20px) rotate(-5deg)}}@keyframes floatC{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(18px,-24px,0) scale(1.06)}}@keyframes fadeUpSoft{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes blobPulse{0%,100%{opacity:.4}50%{opacity:.72}}@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.75)}}@keyframes iconPulse{0%,100%{box-shadow:0 0 0 rgba(139,92,246,0);transform:scale(1)}50%{box-shadow:0 0 16px rgba(139,92,246,.18);transform:scale(1.03)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}@media(max-width:920px){.left{display:none}.right{width:100%;min-width:unset;border-left:none;padding:32px 20px;min-height:100vh;background:linear-gradient(135deg,#0f172a 0%,#020617 100%)}.mob-head{display:flex}.card{padding:30px 22px}}@media(max-width:460px){.otp-grid{gap:8px}.otp-box{height:54px;font-size:22px}}.material-symbols-outlined{font-size:18px;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20}
 </style>
 </head>
-
-<body class="text-[#0f172a] min-h-screen flex items-center justify-center px-4 py-10">
-<div class="w-full max-w-[390px]">
-
-<!-- ══════════════════ FORM CARD ══════════════════ -->
-<div id="formState" class="card p-8 fade-up">
-
-  <!-- Header -->
-  <div class="text-center mb-7">
-    <p class="text-3xl font-bold tracking-[0.2em] text-[#2563eb]">GETXH</p>
-    <h1 class="mt-3 text-2xl font-semibold text-[#111827]">Create Account</h1>
-    <p class="mt-1 text-sm text-slate-500">Fill in your details to get started</p>
-  </div>
-
-  <!-- Error box -->
-  <div id="errorBox"
-    class="hidden rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-600 text-center mb-5">
-  </div>
-
-  <!-- Fields -->
-  <div class="flex flex-col gap-4">
-
-    <!-- Name -->
-    <div class="flex flex-col">
-      <label class="text-sm font-medium text-[#111827] mb-2">Full Name</label>
-      <div class="fi">
-        <input id="name" type="text" autocomplete="off" autocapitalize="words"
-          class="form-input" placeholder="Your full name"
-          readonly onfocus="this.removeAttribute('readonly')"
-          onkeydown="if(event.key==='Enter')document.getElementById('email').focus()"/>
-        <span class="material-symbols-outlined">person</span>
+<body>
+<div class="page">
+  <div class="left">
+    <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="orb orb-4"></div>
+    <div class="left-content">
+      <div class="logo"><div class="logo-icon">G</div><span class="logo-name">GETXH</span></div>
+      <h1 class="left-heading">Start Your Growth<br/>Journey with <span class="grad-text">GETXH</span></h1>
+      <p class="left-sub">Create your account and start scaling instantly with a premium SMM workflow built for speed, security, and real-time control.</p>
+      <div class="features">
+        <div class="feat"><div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><span class="feat-label">Fast Orders - Instant delivery, zero delays</span></div>
+        <div class="feat"><div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span class="feat-label">Secure System - Protected signup and account access</span></div>
+        <div class="feat"><div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="feat-label">Real-Time Tracking - Monitor every order as it moves</span></div>
       </div>
     </div>
-
-    <!-- Email -->
-    <div class="flex flex-col">
-      <label class="text-sm font-medium text-[#111827] mb-2">Email Address</label>
-      <div class="fi">
-        <input id="email" type="email" autocomplete="off" autocapitalize="none"
-          class="form-input" placeholder="you@example.com"
-          readonly onfocus="this.removeAttribute('readonly')"
-          onkeydown="if(event.key==='Enter')document.getElementById('password').focus()"/>
-        <span class="material-symbols-outlined">mail</span>
+  </div>
+  <div class="right">
+    <div class="card">
+      <div class="mob-head"><div class="mob-logo"><div class="mob-logo-icon">G</div><span class="mob-logo-name">GETXH</span></div><span class="mob-tag">Premium SMM Panel</span></div>
+      <div class="step-shell">
+        <section id="formState" class="step-panel is-active">
+          <div class="card-head"><div class="card-badge"><span class="badge-dot"></span>Verified Onboarding</div><div class="card-title">Create Account</div><div class="card-sub">Set up your profile to continue with GETXH</div></div>
+          <div id="errorBox" class="message error"></div>
+          <div class="fgroup"><label class="flabel" for="username">Username</label><div class="iwrap"><span class="iicon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg></span><input id="username" class="finput" type="text" autocomplete="username" placeholder="Choose a username"/></div></div>
+          <div class="fgroup"><label class="flabel" for="email">Email Address</label><div class="iwrap"><span class="iicon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span><input id="email" class="finput" type="email" autocomplete="email" placeholder="you@example.com"/></div></div>
+          <div class="fgroup"><label class="flabel" for="password">Password</label><div class="iwrap"><span class="iicon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><input id="password" class="finput has-toggle" type="password" autocomplete="new-password" placeholder="Minimum 6 characters"/><button class="toggle-pwd" type="button" onclick="togglePass('password', this)"><span class="material-symbols-outlined">visibility</span></button></div></div>
+          <label class="terms"><input id="terms" type="checkbox"/><span>I agree to the <a href="terms.html">Terms &amp; Conditions</a> and <a href="privacy.html">Privacy Policy</a>.</span></label>
+          <button id="registerBtn" class="btn" onclick="doRegister()">Create Account</button>
+          <div class="cdiv"></div>
+          <div class="card-footer">Already have an account? <a class="link-acc" href="index.html">Sign In <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a></div>
+        </section>
+        <section id="otpState" class="step-panel">
+          <div class="card-head"><div class="card-badge"><span class="badge-dot"></span>OTP Verification</div><div class="otp-icon"><span class="material-symbols-outlined" style="font-size:32px;color:#a78bfa">verified_user</span></div><div class="card-title">Verify Your Code</div><div class="card-sub">Enter the 6-digit code sent to<br/><span id="otpEmailDisplay" class="otp-email"></span></div></div>
+          <div id="otpErrorBox" class="message error"></div><div id="otpInfoBox" class="message info"></div>
+          <div class="otp-grid"><input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="0"/><input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="1"/><input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="2"/><input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="3"/><input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="4"/><input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="5"/></div>
+          <div class="otp-actions"><button id="verifyBtn" class="btn" onclick="verifyOtp()" disabled>Verify Code</button><button class="secondary-btn" type="button" onclick="goBackToForm()">Use a different email</button></div>
+          <div class="otp-meta">Didn't receive it? <button id="resendBtn" class="resend-btn" onclick="resendOtp()" disabled>Resend code</button> <span id="resendTimer"></span></div>
+        </section>
       </div>
     </div>
-
-    <!-- Password -->
-    <div class="flex flex-col">
-      <label class="text-sm font-medium text-[#111827] mb-2">Password</label>
-      <div class="fi" style="position:relative">
-        <input id="password" type="password" autocomplete="new-password"
-          class="form-input" style="padding-right:3rem" placeholder="Min. 6 characters"
-          readonly onfocus="this.removeAttribute('readonly')"
-          onkeydown="if(event.key==='Enter')document.getElementById('confirmPassword').focus()"/>
-        <span class="material-symbols-outlined">lock</span>
-        <button type="button" class="toggle-password" onclick="togglePass('password',this)">
-          <span class="material-symbols-outlined">visibility</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Confirm Password -->
-    <div class="flex flex-col">
-      <label class="text-sm font-medium text-[#111827] mb-2">Confirm Password</label>
-      <div class="fi" style="position:relative">
-        <input id="confirmPassword" type="password" autocomplete="new-password"
-          class="form-input" style="padding-right:3rem" placeholder="Re-enter password"
-          readonly onfocus="this.removeAttribute('readonly')"
-          onkeydown="if(event.key==='Enter')doRegister()"/>
-        <span class="material-symbols-outlined">lock</span>
-        <button type="button" class="toggle-password" onclick="togglePass('confirmPassword',this)">
-          <span class="material-symbols-outlined">visibility</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Terms -->
-    <label class="flex items-start gap-3 cursor-pointer mt-1">
-      <input id="terms" type="checkbox"
-        class="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#2563eb] focus:ring-[#2563eb]"/>
-      <span class="text-xs leading-5 text-slate-500">
-        I agree to the
-        <a href="#" class="text-[#2563eb] font-semibold hover:underline">Terms &amp; Conditions</a>
-        and
-        <a href="#" class="text-[#2563eb] font-semibold hover:underline">Privacy Policy</a>
-      </span>
-    </label>
   </div>
-
-  <!-- Register Button -->
-  <button id="registerBtn" class="primary-btn mt-6" onclick="doRegister()">
-    Create Account
-  </button>
-
-  <div class="text-center mt-5">
-    <a href="index.html" class="text-sm text-slate-500">
-      Already have an account?
-      <span class="text-[#2563eb] font-semibold">Sign In</span>
-    </a>
-  </div>
-
-</div><!-- /formState -->
-
-
-<!-- ══════════════════ OTP CARD ══════════════════ -->
-<div id="otpState" class="card p-8 text-center" style="display:none">
-
-  <!-- Header -->
-  <p class="text-3xl font-bold tracking-[0.2em] text-[#2563eb]">GETXH</p>
-
-  <!-- Icon -->
-  <div class="mt-6 mx-auto w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center"
-       style="border:1px solid rgba(37,99,235,0.15)">
-    <span class="material-symbols-outlined text-[#2563eb]" style="font-size:32px">verified_user</span>
-  </div>
-
-  <h2 class="mt-5 text-xl font-semibold text-[#111827]">Enter Verification Code</h2>
-  <p class="mt-2 text-sm text-slate-500 leading-6">
-    We sent a 6-digit code to<br/>
-    <span id="otpEmailDisplay" class="font-semibold text-[#111827]"></span>
-  </p>
-
-  <!-- OTP error -->
-  <div id="otpErrorBox"
-    class="hidden rounded-xl border border-red-100 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 text-center mt-4">
-  </div>
-
-  <!-- OTP boxes -->
-  <div id="otpBoxes" class="flex justify-center gap-2.5 mt-6">
-    <input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="0"/>
-    <input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="1"/>
-    <input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="2"/>
-    <input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="3"/>
-    <input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="4"/>
-    <input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="5"/>
-  </div>
-
-  <!-- Verify button -->
-  <button id="verifyBtn" class="primary-btn mt-6" onclick="verifyOtp()" disabled>
-    Verify Code
-  </button>
-
-  <!-- Resend -->
-  <p class="mt-4 text-xs text-slate-400">
-    Didn't receive it?
-    <button id="resendBtn" onclick="resendOtp()"
-      class="text-[#2563eb] font-semibold disabled:opacity-40"
-      style="background:none;border:none;cursor:pointer" disabled>
-      Resend code
-    </button>
-    <span id="resendTimer" class="text-slate-400 font-medium"></span>
-  </p>
-
-  <!-- Back -->
-  <button onclick="goBackToForm()"
-    class="mt-3 text-xs text-slate-400 hover:text-slate-600 transition-colors"
-    style="background:none;border:none;cursor:pointer">
-    ← Use a different email
-  </button>
-
-</div><!-- /otpState -->
-
-</div><!-- /wrapper -->
-
-<!-- ══════════════════ FIREBASE ══════════════════ -->
+</div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  updateProfile
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import {
-  getFirestore, doc, setDoc
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey:            "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
-  authDomain:        "getxh-42588.firebaseapp.com",
-  projectId:         "getxh-42588",
-  storageBucket:     "getxh-42588.firebasestorage.app",
-  messagingSenderId: "170770122888",
-  appId:             "1:170770122888:web:7adcf91077d5695b06b73d"
-};
-
-const app  = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db   = getFirestore(app);
-
-// ── Shared state ─────────────────────────────────────────────
-let _pendingName  = '';
-let _pendingEmail = '';
-let _pendingPass  = '';
-let _resendInterval = null;
-
-// ── Expose createAccount for verifyOtp to call ────────────────
-window._createFirebaseAccount = async function() {
-  // STEP 1: Create Firebase Auth user — only this throws to the caller
-  const cred = await createUserWithEmailAndPassword(auth, _pendingEmail, _pendingPass);
-  const user  = cred.user;
-
-  // STEP 2: Set localStorage immediately — redirect will work even if writes below fail
-  localStorage.setItem('getxh_current_user',     user.email);
-  localStorage.setItem('getxh_user_name',        _pendingName);
-  localStorage.setItem('getxh_user_logged_in',   'yes');
-  localStorage.setItem('getxh_current_user_uid', user.uid);
-
-  // STEP 3: Update display name (non-blocking — don't let it block redirect)
-  updateProfile(user, { displayName: _pendingName }).catch(e =>
-    console.error('[Auth] updateProfile failed:', e.code, e.message)
-  );
-
-  // STEP 4: Write Firestore doc — document ID = user.uid (required by security rules)
-  // Awaited so we know if it succeeded, but error is caught here and NOT rethrown
-  try {
-    await setDoc(doc(db, "Users", user.uid), {
-      Name:        _pendingName,
-      email:       user.email,
-      Balance:     0,
-      TotalOrders: 0,
-      TotalSpent:  0,
-      createdAt:   Date.now()
-    });
-    console.log('[Firestore] Users doc created for uid:', user.uid);
-  } catch (e) {
-    // Log clearly — doc ID mismatch or rules issue will show the exact code here
-    console.error('[Firestore] setDoc failed — uid:', user.uid, '| code:', e.code, '| message:', e.message);
-    // Do NOT rethrow — Firebase user is already created, redirect must proceed
-  }
-};
-
-// ── Form helpers ──────────────────────────────────────────────
-function showFormError(msg) {
-  const b = document.getElementById("errorBox");
-  b.textContent = msg; b.classList.remove("hidden");
-}
-function hideFormError() { document.getElementById("errorBox").classList.add("hidden"); }
-
-function setRegisterLoading(on) {
-  const btn = document.getElementById("registerBtn");
-  btn.disabled = on;
-  btn.innerHTML = on
-    ? `<span class="spinner"></span>Sending Code...`
-    : `Create Account`;
-}
-
-// ── Resend timer ──────────────────────────────────────────────
-function startResendTimer(sec = 60) {
-  const btn = document.getElementById("resendBtn");
-  const tmr = document.getElementById("resendTimer");
-  btn.disabled = true;
-  let left = sec;
-  tmr.textContent = ` (${left}s)`;
-  clearInterval(_resendInterval);
-  _resendInterval = setInterval(() => {
-    left--;
-    if (left <= 0) {
-      clearInterval(_resendInterval);
-      btn.disabled = false;
-      tmr.textContent = "";
-    } else {
-      tmr.textContent = ` (${left}s)`;
-    }
-  }, 1000);
-}
-
-// ── Step 1: Validate form + send OTP ─────────────────────────
-window.doRegister = async function() {
-  hideFormError();
-
-  const name  = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim().toLowerCase();
-  const pass  = document.getElementById("password").value;
-  const cpass = document.getElementById("confirmPassword").value;
-  const terms = document.getElementById("terms").checked;
-
-  if (!name)                          return showFormError("Name cannot be empty.");
-  if (!email || !email.includes("@")) return showFormError("Enter a valid email address.");
-  if (pass.length < 6)               return showFormError("Password must be at least 6 characters.");
-  if (pass !== cpass)                return showFormError("Passwords do not match.");
-  if (!terms)                        return showFormError("Please accept the Terms & Conditions.");
-
-  setRegisterLoading(true);
-
-  try {
-    const res = await fetch("http://localhost:3000/send-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email })
-    });
-    const data = await res.json();
-
-    if (!res.ok) {
-      showFormError(data.message || "Failed to send OTP. Try again.");
-      setRegisterLoading(false);
-      return;
-    }
-
-    // Save pending data — used by _createFirebaseAccount after OTP success
-    _pendingName  = name;
-    _pendingEmail = email;
-    _pendingPass  = pass;
-
-    // Switch to OTP screen
-    document.getElementById("otpEmailDisplay").textContent = email;
-    document.getElementById("formState").style.display = "none";
-    const otpState = document.getElementById("otpState");
-    otpState.style.display = "block";
-    otpState.classList.add("fade-up");
-    startResendTimer(60);
-
-    // Auto-focus first OTP box
-    setTimeout(() => document.querySelector(".otp-box").focus(), 80);
-
-  } catch(_) {
-    showFormError("Network error. Check your connection and try again.");
-    setRegisterLoading(false);
-  }
-};
-
-// ── Resend OTP ────────────────────────────────────────────────
-window.resendOtp = async function() {
-  if (!_pendingEmail) return;
-  clearOtpBoxes();
-  hideOtpError();
-  const btn = document.getElementById("resendBtn");
-  btn.disabled = true;
-  try {
-    await fetch("http://localhost:3000/send-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: _pendingEmail })
-    });
-    startResendTimer(60);
-    document.querySelector(".otp-box").focus();
-  } catch(_) {
-    showOtpError("Failed to resend. Try again.");
-    btn.disabled = false;
-  }
-};
-
-// ── Step 3: Verify OTP → create account ──────────────────────
-window.verifyOtp = async function() {
-  const otp = getOtpValue();
-  if (otp.length < 6) return;
-
-  setVerifyLoading(true);
-  hideOtpError();
-
-  try {
-    const res = await fetch("http://localhost:3000/verify-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: _pendingEmail, otp })
-    });
-    const data = await res.json();
-    console.log("OTP verify response:", data);
-
-    if (data.success) {
-      // OTP valid — create Firebase account
-      try {
-        await window._createFirebaseAccount();
-      } catch (err) {
-        let errMsg = "Account creation failed. Please try again.";
-        if (err.code === "auth/email-already-in-use") errMsg = "This email is already registered. Try signing in.";
-        showOtpError(errMsg);
-        setVerifyLoading(false);
-        return;
-      }
-      // All good — redirect
-      window.location.href = "Dashboard.html";
-    } else {
-      const msg = data.message || "";
-      if (msg.toLowerCase().includes("expir")) {
-        showOtpError("Code expired. Please request a new one.");
-      } else {
-        showOtpError("Invalid code. Please check and try again.");
-      }
-      markOtpError();
-      setVerifyLoading(false);
-    }
-
-  } catch(_) {
-    showOtpError("Network error. Check your connection and try again.");
-    setVerifyLoading(false);
-  }
-};
-
-function setVerifyLoading(on) {
-  const btn = document.getElementById("verifyBtn");
-  btn.disabled = on;
-  btn.innerHTML = on
-    ? `<span class="spinner"></span>Verifying...`
-    : `Verify Code`;
-}
-
-// ── Back to form ──────────────────────────────────────────────
-window.goBackToForm = function() {
-  clearInterval(_resendInterval);
-  document.getElementById("otpState").style.display = "none";
-  const f = document.getElementById("formState");
-  f.style.display = "block";
-  f.classList.add("fade-up");
-  document.getElementById("registerBtn").disabled = false;
-  document.getElementById("registerBtn").textContent = "Create Account";
-  hideFormError();
-  clearOtpBoxes();
-  hideOtpError();
-};
-
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+const firebaseConfig = { apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE", authDomain: "getxh-42588.firebaseapp.com", projectId: "getxh-42588", storageBucket: "getxh-42588.firebasestorage.app", messagingSenderId: "170770122888", appId: "1:170770122888:web:7adcf91077d5695b06b73d" };
+const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+let pendingName = "", pendingEmail = "", pendingPass = "", resendInterval = null;
+const formState = document.getElementById("formState"); const otpState = document.getElementById("otpState"); const registerBtn = document.getElementById("registerBtn"); const verifyBtn = document.getElementById("verifyBtn"); const resendBtn = document.getElementById("resendBtn"); const resendTimer = document.getElementById("resendTimer");
+function setStep(nextStep){ const current = nextStep === "otp" ? formState : otpState; const next = nextStep === "otp" ? otpState : formState; current.classList.remove("is-active"); current.classList.add("is-exit-left"); next.classList.remove("is-exit-left"); requestAnimationFrame(() => next.classList.add("is-active")); }
+function showMessage(id, text, type = "error"){ const el = document.getElementById(id); if (!el) return; el.className = `message ${type} is-visible`; el.textContent = text; }
+function hideMessage(id, type = "error"){ const el = document.getElementById(id); if (!el) return; el.className = `message ${type}`; el.textContent = ""; }
+function setRegisterLoading(on){ registerBtn.disabled = on; registerBtn.innerHTML = on ? `<span class="spinner"></span>Sending Code...` : `Create Account`; }
+function setVerifyLoading(on){ verifyBtn.disabled = on || getOtpValue().length < 6; verifyBtn.innerHTML = on ? `<span class="spinner"></span>Verifying...` : `Verify Code`; }
+function startResendTimer(seconds = 60){ clearInterval(resendInterval); let left = seconds; resendBtn.disabled = true; resendTimer.textContent = ` (${left}s)`; resendInterval = setInterval(() => { left -= 1; if (left <= 0) { clearInterval(resendInterval); resendBtn.disabled = false; resendTimer.textContent = ""; return; } resendTimer.textContent = ` (${left}s)`; }, 1000); }
+async function createFirebaseAccount(){ const cred = await createUserWithEmailAndPassword(auth, pendingEmail, pendingPass); const user = cred.user; localStorage.setItem("getxh_current_user", user.email || pendingEmail); localStorage.setItem("getxh_user_name", pendingName); localStorage.setItem("getxh_user_logged_in", "yes"); localStorage.setItem("getxh_current_user_uid", user.uid); updateProfile(user, { displayName: pendingName }).catch(() => {}); try { await setDoc(doc(db, "users", user.uid), { uid: user.uid, name: pendingName, email: user.email || pendingEmail, createdAt: serverTimestamp() }, { merge: true }); } catch (_) {} }
+async function postJson(url, payload){ const response = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }); let data = {}; try { data = await response.json(); } catch (_) {} return { ok: response.ok, data }; }
+window.doRegister = async function(){ hideMessage("errorBox"); const username = document.getElementById("username").value.trim(); const email = document.getElementById("email").value.trim().toLowerCase(); const password = document.getElementById("password").value; const termsAccepted = document.getElementById("terms").checked; if (!username) return showMessage("errorBox", "Please enter a username."); if (!email) return showMessage("errorBox", "Please enter your email address."); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showMessage("errorBox", "Enter a valid email address."); if (!password || password.length < 6) return showMessage("errorBox", "Password must be at least 6 characters."); if (!termsAccepted) return showMessage("errorBox", "Please accept the Terms & Conditions."); setRegisterLoading(true); try { const { ok, data } = await postJson("/send-otp", { email }); if (!ok || !data.success) { showMessage("errorBox", data.message || "Failed to send OTP. Please try again."); setRegisterLoading(false); return; } pendingName = username; pendingEmail = email; pendingPass = password; document.getElementById("otpEmailDisplay").textContent = email; hideMessage("otpErrorBox"); hideMessage("otpInfoBox", "info"); clearOtpBoxes(); setStep("otp"); setRegisterLoading(false); startResendTimer(60); setTimeout(() => { const firstBox = document.querySelector(".otp-box"); if (firstBox) firstBox.focus(); }, 140); } catch (_) { showMessage("errorBox", "Network error. Check your connection and try again."); setRegisterLoading(false); } };
+window.resendOtp = async function(){ if (!pendingEmail) return; clearOtpBoxes(); hideMessage("otpErrorBox"); hideMessage("otpInfoBox", "info"); resendBtn.disabled = true; try { const { ok, data } = await postJson("/send-otp", { email: pendingEmail }); if (!ok || !data.success) { showMessage("otpErrorBox", data.message || "Failed to resend code."); resendBtn.disabled = false; return; } showMessage("otpInfoBox", "A fresh code has been sent to your email.", "info"); startResendTimer(60); const firstBox = document.querySelector(".otp-box"); if (firstBox) firstBox.focus(); } catch (_) { showMessage("otpErrorBox", "Network error. Try again."); resendBtn.disabled = false; } };
+window.verifyOtp = async function(){ const otp = getOtpValue(); if (otp.length < 6) return; hideMessage("otpErrorBox"); hideMessage("otpInfoBox", "info"); setVerifyLoading(true); try { const { ok, data } = await postJson("/verify-otp", { email: pendingEmail, otp }); if (!ok || !data.success) { const rawMessage = String(data.message || ""); const isExpired = rawMessage.toLowerCase().includes("expir"); showMessage("otpErrorBox", isExpired ? "Code expired. Please request a new one." : "Invalid code. Please check and try again."); markOtpError(); setVerifyLoading(false); return; } try { await createFirebaseAccount(); } catch (err) { let message = "Account creation failed. Please try again."; if (err && err.code === "auth/email-already-in-use") message = "This email is already registered. Try signing in."; showMessage("otpErrorBox", message); setVerifyLoading(false); return; } showMessage("otpInfoBox", "Verification successful. Redirecting...", "info"); window.location.href = "Dashboard.html"; } catch (_) { showMessage("otpErrorBox", "Network error. Check your connection and try again."); setVerifyLoading(false); } };
+window.goBackToForm = function(){ clearInterval(resendInterval); resendTimer.textContent = ""; hideMessage("otpErrorBox"); hideMessage("otpInfoBox", "info"); clearOtpBoxes(); setVerifyLoading(false); setStep("form"); };
+window.togglePass = function(id, button){ const input = document.getElementById(id); const icon = button.querySelector(".material-symbols-outlined"); const show = input.type === "password"; input.type = show ? "text" : "password"; icon.textContent = show ? "visibility_off" : "visibility"; };
+function otpBoxes(){ return Array.from(document.querySelectorAll(".otp-box")); }
+window.getOtpValue = function(){ return otpBoxes().map((box) => box.value).join(""); };
+function updateVerifyState(){ verifyBtn.disabled = getOtpValue().length < 6; }
+window.clearOtpBoxes = function(){ otpBoxes().forEach((box) => { box.value = ""; box.classList.remove("filled", "error"); }); updateVerifyState(); };
+window.markOtpError = function(){ otpBoxes().forEach((box) => { box.classList.remove("filled"); box.classList.add("error"); }); setTimeout(() => otpBoxes().forEach((box) => box.classList.remove("error")), 600); };
+document.addEventListener("DOMContentLoaded", () => { otpBoxes().forEach((box, index, list) => { box.addEventListener("input", () => { box.value = box.value.replace(/\D/g, "").slice(0, 1); box.classList.toggle("filled", Boolean(box.value)); box.classList.remove("error"); hideMessage("otpErrorBox"); hideMessage("otpInfoBox", "info"); if (box.value && index < list.length - 1) list[index + 1].focus(); updateVerifyState(); }); box.addEventListener("keydown", (event) => { if (event.key === "Backspace") { if (box.value) { box.value = ""; box.classList.remove("filled"); } else if (index > 0) { list[index - 1].focus(); list[index - 1].value = ""; list[index - 1].classList.remove("filled"); } updateVerifyState(); event.preventDefault(); } if (event.key === "ArrowLeft" && index > 0) list[index - 1].focus(); if (event.key === "ArrowRight" && index < list.length - 1) list[index + 1].focus(); if (event.key === "Enter" && getOtpValue().length === 6) window.verifyOtp(); }); box.addEventListener("paste", (event) => { event.preventDefault(); const text = (event.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "").slice(0, 6); if (!text) return; text.split("").forEach((digit, digitIndex) => { if (list[digitIndex]) { list[digitIndex].value = digit; list[digitIndex].classList.add("filled"); list[digitIndex].classList.remove("error"); } }); const targetIndex = Math.min(text.length, list.length) - 1; if (targetIndex >= 0) list[targetIndex].focus(); hideMessage("otpErrorBox"); hideMessage("otpInfoBox", "info"); updateVerifyState(); }); }); document.getElementById("username").addEventListener("keydown", (event) => { if (event.key === "Enter") document.getElementById("email").focus(); }); document.getElementById("email").addEventListener("keydown", (event) => { if (event.key === "Enter") document.getElementById("password").focus(); }); document.getElementById("password").addEventListener("keydown", (event) => { if (event.key === "Enter") window.doRegister(); }); });
 </script>
-
-<!-- ══════════════════ OTP BOX LOGIC ══════════════════ -->
-<script>
-(function() {
-  const boxes = () => Array.from(document.querySelectorAll(".otp-box"));
-
-  function getOtpValue() {
-    return boxes().map(b => b.value).join('');
-  }
-  window.getOtpValue = getOtpValue;
-
-  function updateVerifyBtn() {
-    const btn = document.getElementById("verifyBtn");
-    if (btn) btn.disabled = getOtpValue().length < 6;
-  }
-
-  function clearOtpBoxes() {
-    boxes().forEach(b => { b.value = ''; b.classList.remove('filled','error'); });
-    updateVerifyBtn();
-  }
-  window.clearOtpBoxes = clearOtpBoxes;
-
-  function markOtpError() {
-    boxes().forEach(b => { b.classList.add('error'); b.classList.remove('filled'); });
-    setTimeout(() => boxes().forEach(b => b.classList.remove('error')), 600);
-  }
-  window.markOtpError = markOtpError;
-
-  function showOtpError(msg) {
-    const el = document.getElementById("otpErrorBox");
-    el.textContent = msg; el.classList.remove("hidden");
-  }
-  window.showOtpError = showOtpError;
-
-  function hideOtpError() {
-    document.getElementById("otpErrorBox")?.classList.add("hidden");
-  }
-  window.hideOtpError = hideOtpError;
-
-  document.addEventListener("DOMContentLoaded", () => {
-    boxes().forEach((box, i, arr) => {
-
-      box.addEventListener("input", (e) => {
-        // Allow only digits
-        box.value = box.value.replace(/\D/g, '').slice(-1);
-        box.classList.toggle('filled', box.value !== '');
-        hideOtpError();
-
-        if (box.value && i < arr.length - 1) arr[i + 1].focus();
-        updateVerifyBtn();
-      });
-
-      box.addEventListener("keydown", (e) => {
-        if (e.key === "Backspace") {
-          if (box.value) {
-            box.value = '';
-            box.classList.remove('filled');
-            updateVerifyBtn();
-          } else if (i > 0) {
-            arr[i - 1].focus();
-            arr[i - 1].value = '';
-            arr[i - 1].classList.remove('filled');
-            updateVerifyBtn();
-          }
-          e.preventDefault();
-        }
-        if (e.key === "ArrowLeft"  && i > 0)              arr[i - 1].focus();
-        if (e.key === "ArrowRight" && i < arr.length - 1) arr[i + 1].focus();
-        if (e.key === "Enter" && getOtpValue().length === 6) window.verifyOtp();
-      });
-
-      box.addEventListener("paste", (e) => {
-        e.preventDefault();
-        const text = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, '').slice(0, 6);
-        arr.forEach((b, j) => {
-          b.value = text[j] || '';
-          b.classList.toggle('filled', !!b.value);
-        });
-        const focusIdx = Math.min(text.length, arr.length - 1);
-        arr[focusIdx].focus();
-        updateVerifyBtn();
-      });
-    });
-  });
-})();
-
-function togglePass(id, el) {
-  const input = document.getElementById(id);
-  const icon  = el.querySelector(".material-symbols-outlined");
-  const show  = input.type === "password";
-  input.type  = show ? "text" : "password";
-  icon.textContent = show ? "visibility_off" : "visibility";
-}
-</script>
-
 </body>
 </html>

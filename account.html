@@ -183,9 +183,7 @@ window._logoutUser = async function() {
 
 onAuthStateChanged(auth, (user) => {
   if(!user) {
-    if(localStorage.getItem('getxh_user_logged_in') !== 'yes') {
-      window.location.href = 'index.html';
-    }
+    window.location.href = 'index.html';
     return;
   }
 
