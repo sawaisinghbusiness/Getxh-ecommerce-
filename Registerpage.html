@@ -445,8 +445,22 @@ window.verifyOtp = async function() {
       body: JSON.stringify({ email: _pendingEmail, otp })
     });
     const data = await res.json();
+    console.log("OTP verify response:", data);
 
-    if (!res.ok) {
+    if (data.success) {
+      // OTP valid — create Firebase account
+      try {
+        await window._createFirebaseAccount();
+      } catch (err) {
+        let errMsg = "Account creation failed. Please try again.";
+        if (err.code === "auth/email-already-in-use") errMsg = "This email is already registered. Try signing in.";
+        showOtpError(errMsg);
+        setVerifyLoading(false);
+        return;
+      }
+      // All good — redirect
+      window.location.href = "Dashboard.html";
+    } else {
       const msg = data.message || "";
       if (msg.toLowerCase().includes("expir")) {
         showOtpError("Code expired. Please request a new one.");
@@ -455,22 +469,7 @@ window.verifyOtp = async function() {
       }
       markOtpError();
       setVerifyLoading(false);
-      return;
     }
-
-    // OTP valid — create Firebase account
-    try {
-      await window._createFirebaseAccount();
-    } catch(err) {
-      let msg = "Account creation failed. Please try again.";
-      if (err.code === "auth/email-already-in-use") msg = "This email is already registered. Try signing in.";
-      showOtpError(msg);
-      setVerifyLoading(false);
-      return;
-    }
-
-    // All good — redirect
-    window.location.href = "Dashboard.html";
 
   } catch(_) {
     showOtpError("Network error. Check your connection and try again.");
