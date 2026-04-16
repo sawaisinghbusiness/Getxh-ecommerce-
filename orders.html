@@ -526,7 +526,7 @@ function renderOrders(orders) {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -547,9 +547,9 @@ let _unsubWallet = null;
 // Expose Firestore writer so polling JS (non-module) can persist status back
 window._currentUid = null;
 window._updateOrderInFirestore = async function(docId, status) {
-  if (!window._currentUid || !docId) return;
+  if (!docId) return;
   try {
-    await updateDoc(doc(db, 'orders', window._currentUid, 'user_orders', docId), { status: status });
+    await updateDoc(doc(db, 'orders', docId), { status });
   } catch(_) {}
 };
 
@@ -590,21 +590,27 @@ onAuthStateChanged(auth, (user) => {
     document.getElementById('walletBalanceTop').textContent = `₹${balance.toFixed(2)}`;
   });
 
-  // Real-time orders
+  // ── Real-time orders — flat collection, filtered by userId ──
   if (_unsubOrders) _unsubOrders();
+  const ordersQuery = query(
+    collection(db, 'orders'),
+    where('userId', '==', user.uid)
+  );
   _unsubOrders = onSnapshot(
-    collection(db, 'orders', user.uid, 'user_orders'),
+    ordersQuery,
     (snap) => {
       const orders = [];
       snap.forEach(d => {
         const data = d.data();
         orders.push({
           ...data,
-          orderId: data.orderId || ('ORD' + d.id.slice(-5).toUpperCase()),
-          docId: d.id
+          serviceName: data.serviceName || data.service || '—',
+          orderId:     data.orderId || ('ORD' + d.id.slice(-5).toUpperCase()),
+          docId:       d.id
         });
       });
-      orders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      // Sort newest first client-side (avoids composite index requirement)
+      orders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       _allOrders = orders;
       filterOrders();
     },

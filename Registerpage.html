@@ -8,11 +8,11 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
 <style>
-* { font-family: 'Inter', sans-serif; }
+* { font-family: 'Inter', sans-serif; box-sizing: border-box; }
 body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
 
 .material-symbols-outlined {
@@ -20,7 +20,7 @@ body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
   font-size: 20px;
 }
 
-.signup-card {
+.card {
   border: 1px solid #e5e7eb;
   border-radius: 1rem;
   background: rgba(255,255,255,0.97);
@@ -52,7 +52,7 @@ body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
   position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
   color: #94a3b8; cursor: pointer; width: 28px; height: 28px;
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s;
+  transition: all 0.15s; background: none; border: none;
 }
 .toggle-password:hover { color: #475569; background: #f1f5f9; }
 
@@ -60,12 +60,12 @@ body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
   width: 100%; height: 48px; border-radius: 12px;
   background: #2563eb; color: #fff; font-weight: 600; font-size: 0.875rem;
   border: none; cursor: pointer;
-  box-shadow: 0 8px 24px rgba(37,99,235,0.25);
+  box-shadow: 0 8px 24px rgba(37,99,235,0.22);
   transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .primary-btn:hover:not(:disabled) { background: #1d4ed8; transform: scale(1.01); }
 .primary-btn:active:not(:disabled) { transform: scale(0.99); }
-.primary-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+.primary-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none !important; box-shadow: none; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinner {
@@ -75,13 +75,39 @@ body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.fade-up { animation: fadeUp 0.3s ease forwards; }
+.fade-up { animation: fadeUp 0.32s ease forwards; }
 
-#successState { display: none; }
-#successState.active { display: block; animation: fadeUp 0.35s ease forwards; }
+/* OTP digit boxes */
+.otp-box {
+  width: 48px; height: 56px;
+  border: 2px solid #d1d5db; border-radius: 12px;
+  background: #f9fafb; font-size: 1.5rem; font-weight: 800;
+  text-align: center; color: #0f172a; outline: none;
+  transition: all 0.18s; caret-color: #2563eb;
+}
+.otp-box:focus {
+  border-color: #2563eb; background: #fff;
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+}
+.otp-box.filled {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+.otp-box.error {
+  border-color: #ef4444;
+  background: #fef2f2;
+  animation: shake 0.35s ease;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%      { transform: translateX(-5px); }
+  40%      { transform: translateX(5px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(4px); }
+}
 </style>
 </head>
 
@@ -89,7 +115,7 @@ body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
 <div class="w-full max-w-[390px]">
 
 <!-- ══════════════════ FORM CARD ══════════════════ -->
-<div id="formState" class="signup-card p-8 fade-up">
+<div id="formState" class="card p-8 fade-up">
 
   <!-- Header -->
   <div class="text-center mb-7">
@@ -139,9 +165,9 @@ body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
           readonly onfocus="this.removeAttribute('readonly')"
           onkeydown="if(event.key==='Enter')document.getElementById('confirmPassword').focus()"/>
         <span class="material-symbols-outlined">lock</span>
-        <div class="toggle-password" onclick="togglePass('password',this)">
+        <button type="button" class="toggle-password" onclick="togglePass('password',this)">
           <span class="material-symbols-outlined">visibility</span>
-        </div>
+        </button>
       </div>
     </div>
 
@@ -154,9 +180,9 @@ body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
           readonly onfocus="this.removeAttribute('readonly')"
           onkeydown="if(event.key==='Enter')doRegister()"/>
         <span class="material-symbols-outlined">lock</span>
-        <div class="toggle-password" onclick="togglePass('confirmPassword',this)">
+        <button type="button" class="toggle-password" onclick="togglePass('confirmPassword',this)">
           <span class="material-symbols-outlined">visibility</span>
-        </div>
+        </button>
       </div>
     </div>
 
@@ -166,7 +192,7 @@ body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
         class="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#2563eb] focus:ring-[#2563eb]"/>
       <span class="text-xs leading-5 text-slate-500">
         I agree to the
-        <a href="#" class="text-[#2563eb] font-semibold hover:underline">Terms & Conditions</a>
+        <a href="#" class="text-[#2563eb] font-semibold hover:underline">Terms &amp; Conditions</a>
         and
         <a href="#" class="text-[#2563eb] font-semibold hover:underline">Privacy Policy</a>
       </span>
@@ -187,45 +213,64 @@ body { background: linear-gradient(180deg, #f5f7fb 0%, #eef2ff 100%); }
 
 </div><!-- /formState -->
 
-<!-- ══════════════════ SUCCESS CARD ══════════════════ -->
-<div id="successState" class="signup-card p-8 text-center">
+
+<!-- ══════════════════ OTP CARD ══════════════════ -->
+<div id="otpState" class="card p-8 text-center" style="display:none">
+
+  <!-- Header -->
   <p class="text-3xl font-bold tracking-[0.2em] text-[#2563eb]">GETXH</p>
 
-  <div class="mt-6 mx-auto w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center">
-    <span class="material-symbols-outlined text-[#2563eb]" style="font-size:32px">mark_email_read</span>
+  <!-- Icon -->
+  <div class="mt-6 mx-auto w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center"
+       style="border:1px solid rgba(37,99,235,0.15)">
+    <span class="material-symbols-outlined text-[#2563eb]" style="font-size:32px">verified_user</span>
   </div>
 
-  <h2 class="mt-5 text-xl font-semibold text-[#111827]">Verify Your Email</h2>
+  <h2 class="mt-5 text-xl font-semibold text-[#111827]">Enter Verification Code</h2>
   <p class="mt-2 text-sm text-slate-500 leading-6">
-    We've sent a verification link to<br/>
-    <span id="sentEmailDisplay" class="font-semibold text-[#111827]"></span>
+    We sent a 6-digit code to<br/>
+    <span id="otpEmailDisplay" class="font-semibold text-[#111827]"></span>
   </p>
 
-  <!-- Info box -->
-  <div class="mt-5 rounded-xl px-4 py-3 text-left text-xs text-slate-500 leading-5"
-       style="background:rgba(37,99,235,0.05);border:1px solid rgba(37,99,235,0.15)">
-    <p class="font-semibold text-[#2563eb] mb-1">Next steps</p>
-    <p>1. Open your email inbox</p>
-    <p>2. Click the verification link</p>
-    <p>3. Come back and sign in</p>
-    <p class="mt-1 text-slate-400">Not in inbox? Check your <strong>spam/junk</strong> folder.</p>
+  <!-- OTP error -->
+  <div id="otpErrorBox"
+    class="hidden rounded-xl border border-red-100 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 text-center mt-4">
   </div>
+
+  <!-- OTP boxes -->
+  <div id="otpBoxes" class="flex justify-center gap-2.5 mt-6">
+    <input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="0"/>
+    <input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="1"/>
+    <input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="2"/>
+    <input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="3"/>
+    <input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="4"/>
+    <input class="otp-box" type="text" inputmode="numeric" maxlength="1" data-idx="5"/>
+  </div>
+
+  <!-- Verify button -->
+  <button id="verifyBtn" class="primary-btn mt-6" onclick="verifyOtp()" disabled>
+    Verify Code
+  </button>
 
   <!-- Resend -->
   <p class="mt-4 text-xs text-slate-400">
     Didn't receive it?
-    <button id="resendVerifyBtn" onclick="resendVerification()"
-      class="text-[#2563eb] font-semibold" style="background:none;border:none;cursor:pointer">
-      Resend email
+    <button id="resendBtn" onclick="resendOtp()"
+      class="text-[#2563eb] font-semibold disabled:opacity-40"
+      style="background:none;border:none;cursor:pointer" disabled>
+      Resend code
     </button>
-    <span id="resendVerifyTimer" class="text-slate-400 font-medium"></span>
+    <span id="resendTimer" class="text-slate-400 font-medium"></span>
   </p>
-  <p id="resendMsg" class="hidden mt-2 text-xs text-green-600 font-medium">Verification email resent!</p>
 
-  <button onclick="window.location.href='index.html'" class="primary-btn mt-6">
-    Go to Login
+  <!-- Back -->
+  <button onclick="goBackToForm()"
+    class="mt-3 text-xs text-slate-400 hover:text-slate-600 transition-colors"
+    style="background:none;border:none;cursor:pointer">
+    ← Use a different email
   </button>
-</div>
+
+</div><!-- /otpState -->
 
 </div><!-- /wrapper -->
 
@@ -235,8 +280,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebas
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  updateProfile,
-  sendEmailVerification
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
   getFirestore, doc, setDoc
@@ -255,38 +299,54 @@ const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
-let _lastUser        = null;
-let resendInterval   = null;
+// ── Shared state ─────────────────────────────────────────────
+let _pendingName  = '';
+let _pendingEmail = '';
+let _pendingPass  = '';
+let _resendInterval = null;
 
-// ── Helpers ──────────────────────────────────────────────────
-function showError(msg) {
+// ── Expose createAccount for verifyOtp to call ────────────────
+window._createFirebaseAccount = async function() {
+  const cred = await createUserWithEmailAndPassword(auth, _pendingEmail, _pendingPass);
+  const user  = cred.user;
+  await updateProfile(user, { displayName: _pendingName });
+  await setDoc(doc(db, "Users", user.uid), {
+    Name: _pendingName, Email: _pendingEmail,
+    Balance: 0, TotalOrders: 0, TotalSpent: 0
+  });
+  localStorage.setItem('getxh_current_user',     _pendingEmail);
+  localStorage.setItem('getxh_user_name',        _pendingName);
+  localStorage.setItem('getxh_user_logged_in',   'yes');
+  localStorage.setItem('getxh_current_user_uid', user.uid);
+};
+
+// ── Form helpers ──────────────────────────────────────────────
+function showFormError(msg) {
   const b = document.getElementById("errorBox");
-  b.textContent = msg;
-  b.classList.remove("hidden");
+  b.textContent = msg; b.classList.remove("hidden");
 }
-function hideError() {
-  document.getElementById("errorBox").classList.add("hidden");
-}
+function hideFormError() { document.getElementById("errorBox").classList.add("hidden"); }
 
-function setBtnLoading(loading) {
+function setRegisterLoading(on) {
   const btn = document.getElementById("registerBtn");
-  btn.disabled = loading;
-  btn.innerHTML = loading
-    ? `<span class="spinner"></span>Creating Account...`
+  btn.disabled = on;
+  btn.innerHTML = on
+    ? `<span class="spinner"></span>Sending Code...`
     : `Create Account`;
 }
 
+// ── Resend timer ──────────────────────────────────────────────
 function startResendTimer(sec = 60) {
-  const btn = document.getElementById("resendVerifyBtn");
-  const tmr = document.getElementById("resendVerifyTimer");
+  const btn = document.getElementById("resendBtn");
+  const tmr = document.getElementById("resendTimer");
   btn.disabled = true;
   let left = sec;
   tmr.textContent = ` (${left}s)`;
-  clearInterval(resendInterval);
-  resendInterval = setInterval(() => {
+  clearInterval(_resendInterval);
+  _resendInterval = setInterval(() => {
     left--;
     if (left <= 0) {
-      clearInterval(resendInterval);
+      clearInterval(_resendInterval);
       btn.disabled = false;
       tmr.textContent = "";
     } else {
@@ -295,9 +355,9 @@ function startResendTimer(sec = 60) {
   }, 1000);
 }
 
-// ── Register ─────────────────────────────────────────────────
+// ── Step 1: Validate form + send OTP ─────────────────────────
 window.doRegister = async function() {
-  hideError();
+  hideFormError();
 
   const name  = document.getElementById("name").value.trim();
   const email = document.getElementById("email").value.trim().toLowerCase();
@@ -305,71 +365,228 @@ window.doRegister = async function() {
   const cpass = document.getElementById("confirmPassword").value;
   const terms = document.getElementById("terms").checked;
 
-  if (!name)                          return showError("Name cannot be empty.");
-  if (!email || !email.includes("@")) return showError("Enter a valid email address.");
-  if (pass.length < 6)               return showError("Password must be at least 6 characters.");
-  if (pass !== cpass)                return showError("Passwords do not match.");
-  if (!terms)                        return showError("Please accept the Terms & Conditions.");
+  if (!name)                          return showFormError("Name cannot be empty.");
+  if (!email || !email.includes("@")) return showFormError("Enter a valid email address.");
+  if (pass.length < 6)               return showFormError("Password must be at least 6 characters.");
+  if (pass !== cpass)                return showFormError("Passwords do not match.");
+  if (!terms)                        return showFormError("Please accept the Terms & Conditions.");
 
-  setBtnLoading(true);
+  setRegisterLoading(true);
 
-  // ── Step 1: Create account ────────────────────────────────
-  let user;
   try {
-    const cred = await createUserWithEmailAndPassword(auth, email, pass);
-    user = cred.user;
-  } catch(err) {
-    let msg = "Registration failed. Please try again.";
-    if (err.code === "auth/email-already-in-use") msg = "This email is already registered. Try signing in.";
-    if (err.code === "auth/weak-password")        msg = "Password too weak. Use at least 6 characters.";
-    if (err.code === "auth/invalid-email")        msg = "Invalid email address.";
-    showError(msg);
-    setBtnLoading(false);
-    return;
-  }
-
-  // ── Step 2: Save profile + Firestore ─────────────────────
-  try {
-    await updateProfile(user, { displayName: name });
-    await setDoc(doc(db, "Users", user.uid), {
-      Name: name, Email: email,
-      Balance: 0, TotalOrders: 0, TotalSpent: 0
+    const res = await fetch("http://localhost:3000/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
     });
-  } catch(_) {}
+    const data = await res.json();
 
-  // ── Step 3: Send verification email ──────────────────────
-  try {
-    await sendEmailVerification(user);
-  } catch(err) {
-    // Account was created but email failed — show exact Firebase error
-    showError("Account created but email failed: [" + (err.code || err.message) + "]");
-    setBtnLoading(false);
-    return;
+    if (!res.ok) {
+      showFormError(data.message || "Failed to send OTP. Try again.");
+      setRegisterLoading(false);
+      return;
+    }
+
+    // Save pending data — used by _createFirebaseAccount after OTP success
+    _pendingName  = name;
+    _pendingEmail = email;
+    _pendingPass  = pass;
+
+    // Switch to OTP screen
+    document.getElementById("otpEmailDisplay").textContent = email;
+    document.getElementById("formState").style.display = "none";
+    const otpState = document.getElementById("otpState");
+    otpState.style.display = "block";
+    otpState.classList.add("fade-up");
+    startResendTimer(60);
+
+    // Auto-focus first OTP box
+    setTimeout(() => document.querySelector(".otp-box").focus(), 80);
+
+  } catch(_) {
+    showFormError("Network error. Check your connection and try again.");
+    setRegisterLoading(false);
   }
-
-  // ── Step 4: Show success ──────────────────────────────────
-  _lastUser = user;
-  document.getElementById("sentEmailDisplay").textContent = email;
-  document.getElementById("formState").style.display = "none";
-  document.getElementById("successState").classList.add("active");
-  startResendTimer(60);
 };
 
-// ── Resend verification ───────────────────────────────────────
-window.resendVerification = async function() {
-  if (!_lastUser) return;
-  const msg = document.getElementById("resendMsg");
+// ── Resend OTP ────────────────────────────────────────────────
+window.resendOtp = async function() {
+  if (!_pendingEmail) return;
+  clearOtpBoxes();
+  hideOtpError();
+  const btn = document.getElementById("resendBtn");
+  btn.disabled = true;
   try {
-    await sendEmailVerification(_lastUser);
-    msg.classList.remove("hidden");
-    setTimeout(() => msg.classList.add("hidden"), 4000);
+    await fetch("http://localhost:3000/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: _pendingEmail })
+    });
     startResendTimer(60);
-  } catch(_) {}
+    document.querySelector(".otp-box").focus();
+  } catch(_) {
+    showOtpError("Failed to resend. Try again.");
+    btn.disabled = false;
+  }
+};
+
+// ── Step 3: Verify OTP → create account ──────────────────────
+window.verifyOtp = async function() {
+  const otp = getOtpValue();
+  if (otp.length < 6) return;
+
+  setVerifyLoading(true);
+  hideOtpError();
+
+  try {
+    const res = await fetch("http://localhost:3000/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: _pendingEmail, otp })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      const msg = data.message || "";
+      if (msg.toLowerCase().includes("expir")) {
+        showOtpError("Code expired. Please request a new one.");
+      } else {
+        showOtpError("Invalid code. Please check and try again.");
+      }
+      markOtpError();
+      setVerifyLoading(false);
+      return;
+    }
+
+    // OTP valid — create Firebase account
+    try {
+      await window._createFirebaseAccount();
+    } catch(err) {
+      let msg = "Account creation failed. Please try again.";
+      if (err.code === "auth/email-already-in-use") msg = "This email is already registered. Try signing in.";
+      showOtpError(msg);
+      setVerifyLoading(false);
+      return;
+    }
+
+    // All good — redirect
+    window.location.href = "Dashboard.html";
+
+  } catch(_) {
+    showOtpError("Network error. Check your connection and try again.");
+    setVerifyLoading(false);
+  }
+};
+
+function setVerifyLoading(on) {
+  const btn = document.getElementById("verifyBtn");
+  btn.disabled = on;
+  btn.innerHTML = on
+    ? `<span class="spinner"></span>Verifying...`
+    : `Verify Code`;
+}
+
+// ── Back to form ──────────────────────────────────────────────
+window.goBackToForm = function() {
+  clearInterval(_resendInterval);
+  document.getElementById("otpState").style.display = "none";
+  const f = document.getElementById("formState");
+  f.style.display = "block";
+  f.classList.add("fade-up");
+  document.getElementById("registerBtn").disabled = false;
+  document.getElementById("registerBtn").textContent = "Create Account";
+  hideFormError();
+  clearOtpBoxes();
+  hideOtpError();
 };
 
 </script>
 
+<!-- ══════════════════ OTP BOX LOGIC ══════════════════ -->
 <script>
+(function() {
+  const boxes = () => Array.from(document.querySelectorAll(".otp-box"));
+
+  function getOtpValue() {
+    return boxes().map(b => b.value).join('');
+  }
+  window.getOtpValue = getOtpValue;
+
+  function updateVerifyBtn() {
+    const btn = document.getElementById("verifyBtn");
+    if (btn) btn.disabled = getOtpValue().length < 6;
+  }
+
+  function clearOtpBoxes() {
+    boxes().forEach(b => { b.value = ''; b.classList.remove('filled','error'); });
+    updateVerifyBtn();
+  }
+  window.clearOtpBoxes = clearOtpBoxes;
+
+  function markOtpError() {
+    boxes().forEach(b => { b.classList.add('error'); b.classList.remove('filled'); });
+    setTimeout(() => boxes().forEach(b => b.classList.remove('error')), 600);
+  }
+  window.markOtpError = markOtpError;
+
+  function showOtpError(msg) {
+    const el = document.getElementById("otpErrorBox");
+    el.textContent = msg; el.classList.remove("hidden");
+  }
+  window.showOtpError = showOtpError;
+
+  function hideOtpError() {
+    document.getElementById("otpErrorBox")?.classList.add("hidden");
+  }
+  window.hideOtpError = hideOtpError;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    boxes().forEach((box, i, arr) => {
+
+      box.addEventListener("input", (e) => {
+        // Allow only digits
+        box.value = box.value.replace(/\D/g, '').slice(-1);
+        box.classList.toggle('filled', box.value !== '');
+        hideOtpError();
+
+        if (box.value && i < arr.length - 1) arr[i + 1].focus();
+        updateVerifyBtn();
+      });
+
+      box.addEventListener("keydown", (e) => {
+        if (e.key === "Backspace") {
+          if (box.value) {
+            box.value = '';
+            box.classList.remove('filled');
+            updateVerifyBtn();
+          } else if (i > 0) {
+            arr[i - 1].focus();
+            arr[i - 1].value = '';
+            arr[i - 1].classList.remove('filled');
+            updateVerifyBtn();
+          }
+          e.preventDefault();
+        }
+        if (e.key === "ArrowLeft"  && i > 0)              arr[i - 1].focus();
+        if (e.key === "ArrowRight" && i < arr.length - 1) arr[i + 1].focus();
+        if (e.key === "Enter" && getOtpValue().length === 6) window.verifyOtp();
+      });
+
+      box.addEventListener("paste", (e) => {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, '').slice(0, 6);
+        arr.forEach((b, j) => {
+          b.value = text[j] || '';
+          b.classList.toggle('filled', !!b.value);
+        });
+        const focusIdx = Math.min(text.length, arr.length - 1);
+        arr[focusIdx].focus();
+        updateVerifyBtn();
+      });
+    });
+  });
+})();
+
 function togglePass(id, el) {
   const input = document.getElementById(id);
   const icon  = el.querySelector(".material-symbols-outlined");

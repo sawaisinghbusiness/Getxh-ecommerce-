@@ -1113,6 +1113,7 @@ const SERVICES = {
     {id:12308,name:'Instagram Likes | Indian 🇮🇳 | 300K/Day | 30 Days Refill',price:10.5832,min:50,max:500000,startTime:'Instant',speed:'300K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Indian Profiles 🇮🇳',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
     {id:12312,name:'Instagram Likes | Indian 🇮🇳 | 300K/Day | Lifetime Refill',price:11.0755,min:50,max:500000,startTime:'Instant',speed:'300K/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'Indian Profiles 🇮🇳',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
     {id:11418,name:'Instagram Likes | Real Indian + Story 🇮🇳 | 10K+/Hour | Lifetime Refill',price:23.69,min:100,max:1000000,startTime:'0-1 Minute',speed:'10K+/Hour',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'100% Real Indian Profile with Story 🇮🇳',delivery:'0-1 minute',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11443,name:'Instagram Likes | 100% Real Indian Profile with Story 🇮🇳 | 10K+/Hour | Non-Drop | Lifetime Refill | 1 Min Complete',price:65.1112,min:100,max:1000000,startTime:'0-1 Minute',speed:'10K+/Hour',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'100% Real Indian Profile with Story 🇮🇳',delivery:'0-1 minute',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
   ],
   'comments': [
     {id:10389,name:'Instagram Comments | Random | 100% Real Users | Non Drop | 10K/Day',price:58.077,min:50,max:50000,startTime:'0-1 Hour',speed:'10K/Day',refill:'No Refill',cancel:'YES',drop:'Non Drop',quality:'100% Real Users',delivery:'0-1 hour',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
@@ -1712,7 +1713,7 @@ import {
   EmailAuthProvider, reauthenticateWithCredential, updatePassword
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
-  getFirestore, collection, addDoc, query, orderBy, limit,
+  getFirestore, collection, addDoc, query, where, orderBy, limit,
   doc, setDoc, increment, onSnapshot
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
@@ -1730,6 +1731,7 @@ const auth = getAuth(app);
 const db   = getFirestore(app);
 
 let currentUid     = null;
+let currentEmail   = null;
 let _unsubStats    = null;
 let _unsubOrders   = null;
 
@@ -1752,7 +1754,8 @@ onAuthStateChanged(auth, (user) => {
     document.getElementById("desktopAdminBtn")?.classList.remove("hidden");
   }
 
-  currentUid = user.uid;
+  currentUid   = user.uid;
+  currentEmail = (user.email || '').trim().toLowerCase();
 
   // Password change — wired up here, no second Firebase init needed
   window._doChangePassword = async function(currPass, newPass, callback) {
@@ -1791,8 +1794,10 @@ onAuthStateChanged(auth, (user) => {
       </div>`;
 
     const q = query(
-      collection(db, "orders", currentUid, "user_orders"),
-      orderBy("createdAt", "desc"), limit(3)
+      collection(db, "orders"),
+      where("userId", "==", currentUid),
+      orderBy("createdAt", "desc"),
+      limit(3)
     );
     _unsubOrders = onSnapshot(q, (snap) => {
       if (snap.empty) {
@@ -1811,10 +1816,11 @@ onAuthStateChanged(auth, (user) => {
         const box = document.createElement("div");
         box.className = "p-4 rounded-xl mb-3 flex items-start justify-between gap-3";
         box.style.cssText = "background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)";
-        const statusColor = o.status === "Completed" ? "#4ade80" : o.status === "Failed" ? "#f87171" : "#facc15";
+        const st = (o.status || '').toLowerCase();
+        const statusColor = st === "completed" ? "#4ade80" : st === "failed" ? "#f87171" : "#facc15";
         box.innerHTML = `
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-bold text-white truncate mb-1">${o.serviceName || "—"}</p>
+            <p class="text-sm font-bold text-white truncate mb-1">${o.serviceName || o.service || "—"}</p>
             <div class="flex flex-wrap gap-3 text-xs text-gray-400">
               <span>Qty: <b class="text-white">${(o.quantity||0).toLocaleString()}</b></span>
               <span>₹<b class="text-blue-400">${(o.price||0).toFixed(2)}</b></span>
@@ -1827,6 +1833,8 @@ onAuthStateChanged(auth, (user) => {
           </span>`;
         container.appendChild(box);
       });
+    }, () => {
+      // Index not ready or permission error — silent fail, orders page still works
     });
   }
 });
@@ -1837,24 +1845,29 @@ window._saveOrder = async function(svc, qty, link, apiOrderId) {
   try {
     const now        = new Date();
     const orderPrice = parseFloat(((qty / 1000) * svc.price).toFixed(2));
-    await addDoc(collection(db, "orders", currentUid, "user_orders"), {
+    const userEmail  = currentEmail || localStorage.getItem('getxh_current_user') || '';
+
+    await addDoc(collection(db, "orders"), {
+      userId:            currentUid,
+      service:           svc.name,
+      link:              link,
+      quantity:          qty,
+      status:            "pending",
+      createdAt:         Date.now(),
+      // ── extra fields for UI display ──
       orderId:           String(Date.now()).slice(-7),
       apiOrderId:        apiOrderId ? String(apiOrderId) : null,
       serviceName:       svc.name,
       category:          svc.id,
-      quantity:          qty,
-      link:              link,
       price:             orderPrice,
-      status:            "Pending",
-      remaining:         qty,
-      createdAt:         now.toISOString(),
-      createdAtReadable: now.toLocaleString()
+      createdAtReadable: now.toLocaleString('en-IN'),
     });
+
     await setDoc(doc(db, "Users", currentUid), {
       TotalOrders: increment(1),
       TotalSpent:  increment(orderPrice)
     }, { merge: true });
-    // onSnapshot handles UI update automatically — no manual call needed
+    // onSnapshot on orders.html handles UI update automatically
   } catch(_) {}
 };
 
