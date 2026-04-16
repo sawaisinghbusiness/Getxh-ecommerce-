@@ -406,9 +406,17 @@ textarea::placeholder {
       </div>
     </div>
     <div id="ticketMessages" class="ticket-modal-messages flex-1 overflow-y-auto px-4 py-5"></div>
-    <div class="border-t border-white/8 bg-[#0d1628]/95 px-4 py-4 backdrop-blur-sm">
+    <div class="border-t border-white/8 bg-[#0d1628]/95 px-4 py-3 backdrop-blur-sm">
+      <div id="messageComposeArea" class="mb-3 flex items-center gap-2">
+        <input id="messageInput" type="text" placeholder="Type a message..."
+          class="flex-1 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition focus:border-sky-400/60"
+          onkeydown="if(event.key==='Enter')sendMessage()"/>
+        <button onclick="sendMessage()" class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-400 text-white shadow-[0_8px_20px_rgba(14,165,233,0.28)] transition active:scale-[0.95]">
+          <span class="material-symbols-outlined text-[20px]">send</span>
+        </button>
+      </div>
       <div class="flex items-center justify-between gap-3">
-        <span id="modalStatusBadge" class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em]">Pending</span>
+        <span id="modalStatusBadge" class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em]">Open</span>
         <button id="closeTicketAction" onclick="closeCurrentTicket()" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-200 transition active:scale-[0.98]">
           Close Ticket
         </button>
@@ -706,7 +714,7 @@ function selectSubCategory(sub) {
 }
 
 function openCreatePanel() {
-  const openTickets = ticketRows.filter(ticket => String(ticket.status || '').toLowerCase() === 'pending').length;
+  const openTickets = ticketRows.filter(ticket => String(ticket.status || '').toLowerCase() === 'open').length;
   if (openTickets >= 3) {
     showNotice('pageNotice', 'You have opened maximum tickets. Please close one before creating a new ticket.');
     return;
@@ -744,7 +752,7 @@ function resetCreateForm() {
 
 function renderTicketList(tickets) {
   const list = document.getElementById('ticketList');
-  const openTickets = tickets.filter(ticket => String(ticket.status || '').toLowerCase() === 'pending').length;
+  const openTickets = tickets.filter(ticket => String(ticket.status || '').toLowerCase() === 'open').length;
   document.getElementById('openCount').textContent = String(openTickets);
 
   if (!tickets.length) {
@@ -757,8 +765,8 @@ function renderTicketList(tickets) {
   }
 
   list.innerHTML = tickets.map(ticket => {
-    const status = String(ticket.status || 'pending').toLowerCase();
-    const statusClass = status === 'solved' ? 'bg-emerald-500/12 text-emerald-300' : 'bg-sky-500/12 text-sky-400';
+    const status = String(ticket.status || 'open').toLowerCase();
+    const statusClass = status === 'closed' ? 'bg-emerald-500/12 text-emerald-300' : 'bg-sky-500/12 text-sky-400';
     return `
       <button onclick="openTicketModal('${ticket.id}')" class="ticket-row w-full rounded-[20px] px-4 py-4 text-left">
         <div class="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
@@ -818,16 +826,18 @@ function renderTicketModal(ticket) {
   document.getElementById('modalTitle').textContent = `${ticket.category || 'Orders'} - ${ticket.subcategory || 'Refill'}`;
   document.getElementById('modalOrderId').textContent = `Order ID: ${ticket.orderId || 'GENERAL'}`;
 
-  const status = String(ticket.status || 'pending').toLowerCase();
+  const status = String(ticket.status || 'open').toLowerCase();
   const badge = document.getElementById('modalStatusBadge');
   badge.textContent = status;
-  badge.className = 'rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] ' + (status === 'solved' ? 'bg-emerald-500/12 text-emerald-300' : 'bg-sky-500/12 text-sky-400');
+  badge.className = 'rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] ' + (status === 'closed' ? 'bg-emerald-500/12 text-emerald-300' : 'bg-sky-500/12 text-sky-400');
 
-  const closeBtn = document.getElementById('closeTicketAction');
-  const isClosed = status === 'solved';
-  closeBtn.classList.toggle('hidden', isClosed);
+  const isClosed = status === 'closed';
+  document.getElementById('closeTicketAction').classList.toggle('hidden', isClosed);
+  const composeArea = document.getElementById('messageComposeArea');
+  if (composeArea) composeArea.classList.toggle('hidden', isClosed);
+}
 
-  const messages = Array.isArray(ticket.messages) ? ticket.messages : [];
+function renderMessages(messages) {
   const root = document.getElementById('ticketMessages');
   const availabilityNote = `
     <div class="mb-4 rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-xs text-slate-300">
@@ -846,7 +856,7 @@ function renderTicketModal(ticket) {
         <div class="mb-4 flex flex-col ${wrapperClass}">
           <p class="mb-1 px-1 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">${label}</p>
           <div class="max-w-[75%] rounded-[22px] px-4 py-3 ${bubbleClass}">
-            <p class="text-sm leading-6">${escapeHtml(message.text || '')}</p>
+            <p class="text-sm leading-6">${escapeHtml(message.text || message.message || '')}</p>
           </div>
           <p class="mt-1 px-1 text-[11px] text-slate-500">${formatDateTime(message.createdAt)}</p>
         </div>`;
@@ -879,7 +889,6 @@ import {
   orderBy,
   query,
   serverTimestamp,
-  Timestamp,
   updateDoc,
   where
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -910,7 +919,7 @@ window.createTicket = async function () {
     return;
   }
 
-  const openTickets = ticketRows.filter(ticket => String(ticket.status || '').toLowerCase() === 'pending').length;
+  const openTickets = ticketRows.filter(ticket => String(ticket.status || '').toLowerCase() === 'open').length;
   if (openTickets >= 3) {
     showNotice('formNotice', 'You have opened maximum tickets. Please close one before creating a new ticket.');
     return;
@@ -933,7 +942,7 @@ window.createTicket = async function () {
   if (needsOrder) {
     const duplicateOpenTicket = ticketRows.some(ticket =>
       String(ticket.orderId || '').toUpperCase() === orderIdValue &&
-      String(ticket.status || '').toLowerCase() !== 'solved'
+      String(ticket.status || '').toLowerCase() !== 'closed'
     );
     if (duplicateOpenTicket) {
       showNotice('formNotice', 'Ticket already submitted for this Order ID. Please close the current ticket or enter another ID.');
@@ -952,22 +961,24 @@ window.createTicket = async function () {
   submitBtn.textContent = 'Submitting...';
 
   try {
-    await addDoc(collection(db, 'tickets'), {
-      uid: currentUser.uid,
+    const ticketRef = await addDoc(collection(db, 'tickets'), {
+      userId: currentUser.uid,
       userEmail: currentUser.email || '',
       userName: currentUser.displayName || 'User',
       orderId: needsOrder ? orderIdValue : '',
-      status: 'pending',
+      status: 'open',
       category: currentCategory,
       subcategory: currentSubCategory,
       createdAt: serverTimestamp(),
-      messages: [
-        {
-          sender: 'user',
-          text: message,
-          createdAt: Timestamp.now()
-        }
-      ]
+    });
+
+    await addDoc(collection(db, 'messages'), {
+      ticketId: ticketRef.id,
+      senderId: currentUser.uid,
+      sender: 'user',
+      text: message,
+      message: message,
+      createdAt: Date.now(),
     });
 
     resetCreateForm();
@@ -994,13 +1005,33 @@ window.closeCurrentTicket = async function () {
   closeBtn.textContent = 'Closing...';
   try {
     await updateDoc(doc(db, 'tickets', activeTicketDoc), {
-      status: 'solved'
+      status: 'closed'
     });
   } catch (_) {
     showNotice('pageNotice', 'Unable to close ticket right now.');
   } finally {
     closeBtn.disabled = false;
     closeBtn.textContent = 'Close Ticket';
+  }
+};
+
+window.sendMessage = async function () {
+  if (!activeTicketDoc || !currentUser) return;
+  const input = document.getElementById('messageInput');
+  const text = (input.value || '').trim();
+  if (!text) return;
+  input.value = '';
+  try {
+    await addDoc(collection(db, 'messages'), {
+      ticketId: activeTicketDoc,
+      senderId: currentUser.uid,
+      sender: 'user',
+      text: text,
+      message: text,
+      createdAt: Date.now(),
+    });
+  } catch (_) {
+    input.value = text;
   }
 };
 
@@ -1014,7 +1045,9 @@ onAuthStateChanged(auth, user => {
 
   window.startActiveTicketListener = function(ticketId) {
     if (typeof unsubscribeActiveTicket === 'function') unsubscribeActiveTicket();
-    unsubscribeActiveTicket = onSnapshot(doc(db, 'tickets', ticketId), docSnap => {
+
+    // Listen to ticket doc for status/header updates
+    const unsubTicket = onSnapshot(doc(db, 'tickets', ticketId), docSnap => {
       if (!docSnap.exists()) {
         closeTicketModal();
         return;
@@ -1030,9 +1063,27 @@ onAuthStateChanged(auth, user => {
       renderTicketList(ticketRows);
       if (activeTicketDoc === ticketId) renderTicketModal(current);
     });
+
+    // Listen to messages collection for real-time chat
+    const msgsQuery = query(
+      collection(db, 'messages'),
+      where('ticketId', '==', ticketId),
+      orderBy('createdAt', 'asc')
+    );
+    const unsubMsgs = onSnapshot(msgsQuery, snapshot => {
+      const msgs = snapshot.docs.map(d => d.data());
+      if (activeTicketDoc === ticketId) renderMessages(msgs);
+    });
+
+    unsubscribeActiveTicket = () => { unsubTicket(); unsubMsgs(); };
   };
 
-  const _unsubOrders = onSnapshot(collection(db, 'orders', user.uid, 'user_orders'), snapshot => {
+  // Orders — flat collection with userId
+  const ordersQuery = query(
+    collection(db, 'orders'),
+    where('userId', '==', user.uid)
+  );
+  const _unsubOrders = onSnapshot(ordersQuery, snapshot => {
     const ids = new Set();
     snapshot.forEach(item => {
       const data = item.data();
@@ -1044,7 +1095,7 @@ onAuthStateChanged(auth, user => {
 
   const ticketQuery = query(
     collection(db, 'tickets'),
-    where('uid', '==', user.uid)
+    where('userId', '==', user.uid)
   );
 
   const _unsubTickets = onSnapshot(ticketQuery, snapshot => {
