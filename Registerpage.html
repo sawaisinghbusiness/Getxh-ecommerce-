@@ -307,17 +307,38 @@ let _resendInterval = null;
 
 // ── Expose createAccount for verifyOtp to call ────────────────
 window._createFirebaseAccount = async function() {
+  // STEP 1: Create Firebase Auth user — only this throws to the caller
   const cred = await createUserWithEmailAndPassword(auth, _pendingEmail, _pendingPass);
   const user  = cred.user;
-  await updateProfile(user, { displayName: _pendingName });
-  await setDoc(doc(db, "Users", user.uid), {
-    Name: _pendingName, Email: _pendingEmail,
-    Balance: 0, TotalOrders: 0, TotalSpent: 0
-  });
-  localStorage.setItem('getxh_current_user',     _pendingEmail);
+
+  // STEP 2: Set localStorage immediately — redirect will work even if writes below fail
+  localStorage.setItem('getxh_current_user',     user.email);
   localStorage.setItem('getxh_user_name',        _pendingName);
   localStorage.setItem('getxh_user_logged_in',   'yes');
   localStorage.setItem('getxh_current_user_uid', user.uid);
+
+  // STEP 3: Update display name (non-blocking — don't let it block redirect)
+  updateProfile(user, { displayName: _pendingName }).catch(e =>
+    console.error('[Auth] updateProfile failed:', e.code, e.message)
+  );
+
+  // STEP 4: Write Firestore doc — document ID = user.uid (required by security rules)
+  // Awaited so we know if it succeeded, but error is caught here and NOT rethrown
+  try {
+    await setDoc(doc(db, "Users", user.uid), {
+      Name:        _pendingName,
+      email:       user.email,
+      Balance:     0,
+      TotalOrders: 0,
+      TotalSpent:  0,
+      createdAt:   Date.now()
+    });
+    console.log('[Firestore] Users doc created for uid:', user.uid);
+  } catch (e) {
+    // Log clearly — doc ID mismatch or rules issue will show the exact code here
+    console.error('[Firestore] setDoc failed — uid:', user.uid, '| code:', e.code, '| message:', e.message);
+    // Do NOT rethrow — Firebase user is already created, redirect must proceed
+  }
 };
 
 // ── Form helpers ──────────────────────────────────────────────
