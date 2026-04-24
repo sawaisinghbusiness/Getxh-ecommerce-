@@ -1,0 +1,2083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>GETXH Dashboard</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+               Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* BRAND BADGE */
+.brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(120deg, #0e1a33, #121c33, #0e1a33);
+  box-shadow: 0 0 12px rgba(56,189,248,0.25);
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+.brand-icon {
+  font-size: 18px;
+  color: #38bdf8;
+}
+
+.brand-text {
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.brand-text .dot {
+  color: #38bdf8;
+}
+
+/* BRAND GLOW ANIMATION */
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 8px rgba(56,189,248,0.2);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(56,189,248,0.6);
+  }
+  100% {
+    box-shadow: 0 0 8px rgba(56,189,248,0.2);
+  }
+}
+
+/* ACCOUNT POPUP ANIMATION */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.35s ease-out;
+}
+
+.dashboard-footer-card {
+  background: linear-gradient(180deg, rgba(18, 28, 51, 0.96) 0%, rgba(10, 22, 40, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.32);
+}
+
+.dashboard-footer-link {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease;
+}
+
+.dashboard-footer-link:hover {
+  border-color: rgba(33, 150, 243, 0.35);
+  color: #67e8f9;
+  transform: translateY(-1px);
+}
+.desktop-sidebar {
+  background:
+    radial-gradient(circle at top left, rgba(56,189,248,0.08), transparent 28%),
+    linear-gradient(180deg, #0e1629 0%, #0b1220 100%);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 18px 0 42px rgba(2, 8, 23, 0.32);
+  /* Positioning — works without Tailwind */
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 288px;
+  z-index: 30;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+@media (max-width: 1023px) {
+  aside.desktop-sidebar { display: none !important; }
+}
+@media (min-width: 1024px) {
+  aside.desktop-sidebar { display: flex !important; flex-direction: column !important; }
+  .lg\:pl-72 { padding-left: 288px !important; }
+}
+.desktop-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.desktop-sidebar-link:hover {
+  background: rgba(56,189,248,0.08);
+  color: #e0f2fe;
+  box-shadow: 0 0 0 1px rgba(56,189,248,0.12), 0 14px 30px rgba(2,8,23,0.24);
+  transform: translateX(2px);
+}
+.desktop-sidebar-link.active {
+  background: linear-gradient(90deg, rgba(14,165,233,0.16), rgba(34,211,238,0.08));
+  color: #38bdf8;
+  box-shadow: inset 0 0 0 1px rgba(56,189,248,0.18), 0 18px 30px rgba(2,8,23,0.24);
+}
+.desktop-sidebar-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: inherit;
+  flex-shrink: 0;
+}
+
+/* ── LAYOUT FIX: works without Tailwind CDN ── */
+aside.desktop-sidebar > div {
+  display: flex;
+  flex-direction: column;
+}
+aside.desktop-sidebar > div:first-child {
+  flex-shrink: 0;
+}
+aside.desktop-sidebar > div:first-child > div {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+aside.desktop-sidebar > div:first-child > div > div:first-child {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+}
+aside.desktop-sidebar .flex-1 {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+aside.desktop-sidebar .flex-1 > a,
+aside.desktop-sidebar .flex-1 > button {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+}
+aside.desktop-sidebar .flex-1 > a > div:first-child,
+aside.desktop-sidebar .flex-1 > button > div:first-child {
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+aside.desktop-sidebar .flex-1 > .h-px { flex-shrink: 0; }
+aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
+
+#sideMenu {
+  display: flex;
+  flex-direction: column;
+}
+#sideMenu > div {
+  display: flex;
+  flex-direction: column;
+}
+#sideMenu > div:first-child { flex-shrink: 0; }
+#sideMenu > div:first-child > div {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+#sideMenu > div:first-child > div > div:first-child {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+}
+#sideMenu .flex-1 {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+#sideMenu .flex-1 > a,
+#sideMenu .flex-1 > button {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+}
+#sideMenu .flex-1 > a > div:first-child,
+#sideMenu .flex-1 > button > div:first-child {
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+</style>
+<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
+</head>
+
+<body class="bg-[#0b1220] text-white">
+
+<aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-72 lg:flex-col lg:overflow-hidden lg:border-r lg:border-white/10 desktop-sidebar"
+  style="background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);">
+  <div class="px-5 pt-8 pb-5 border-b border-white/10" style="background:linear-gradient(135deg,#0e1f3d,#162844);">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#2196f3,#00bcd4);width:40px;height:40px;min-width:40px;display:flex;align-items:center;justify-content:center;border-radius:12px;flex-shrink:0;">
+        <span class="material-symbols-outlined text-white" style="font-size:20px">verified_user</span>
+      </div>
+      <div>
+        <p class="font-black text-white text-base tracking-wide">GETXH<span style="color:#2196f3">.IN</span></p>
+        <div class="flex items-center gap-1 mt-0.5" style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+          <div class="h-1.5 w-1.5 rounded-full bg-green-400" style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:glowPulse 2s infinite;flex-shrink:0;"></div>
+          <p class="text-xs font-semibold" style="color:#2196f3">Online</p>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.05);border-radius:12px;padding:10px 12px;border:1px solid rgba(255,255,255,0.1);">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);width:32px;height:32px;min-width:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">person</span>
+      </div>
+      <div class="min-w-0" style="min-width:0;overflow:hidden;">
+        <p id="menuUsernameDesktop" class="text-xs font-bold text-white truncate" style="font-size:12px;font-weight:700;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">User</p>
+        <p id="menuEmailDesktop" class="text-xs text-gray-500 truncate" style="font-size:11px;color:#6b7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</p>
+      </div>
+    </div>
+  </div>
+  <div class="flex-1 overflow-y-auto py-3 px-3">
+    <a href="Dashboard.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 transition-all active:scale-[0.98]" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:22px;color:white;">dashboard</span>
+      </div>
+      <span class="font-bold text-white text-sm" style="font-weight:700;color:white;font-size:14px;">Dashboard</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <button onclick="scrollToNewOrder()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(59,130,246,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#60a5fa;">add_shopping_cart</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">New Order</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+    <a href="orders.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(234,179,8,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#facc15;">list_alt</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Orders</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <a href="support.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(168,85,247,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#c084fc;">support_agent</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Support</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <a href="wallet.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(34,197,94,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#4ade80;">account_balance_wallet</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Add Funds</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <a href="affiliates.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(234,130,8,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#fb923c;">person_add</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Affiliates</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <button onclick="scrollToNewOrder();switchOrderTab('sub')" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(6,182,212,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#22d3ee;">autorenew</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Subscriptions</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+    <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer"
+      class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(74,222,128,0.15);">
+        <span style="color:#4ade80;font-weight:900;font-size:20px;line-height:1;">W</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">WhatsApp</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <a id="desktopAdminBtn" href="admin.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 hidden" style="display:none;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(6,182,212,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#22d3ee;">admin_panel_settings</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Admin Panel</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <div class="h-px bg-white/10 my-3 mx-2" style="height:1px;background:rgba(255,255,255,0.1);margin:12px 8px;"></div>
+    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#f87171;">logout</span>
+      </div>
+      <span class="font-bold text-red-400 text-sm" style="font-weight:700;color:#f87171;font-size:14px;">Logout</span>
+    </button>
+  </div>
+  <div class="px-5 py-4 border-t border-white/10">
+    <div class="grid gap-2 text-xs">
+      <a href="privacy.html" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+      <a href="terms.html" class="text-gray-400 hover:text-white transition">Terms</a>
+      <a href="refund.html" class="text-gray-400 hover:text-white transition">Refund Policy</a>
+      <a href="cancellation.html" class="text-gray-400 hover:text-white transition">Cancellation</a>
+      <a href="about.html" class="text-gray-400 hover:text-white transition">About</a>
+      <a href="contact.html" class="text-gray-400 hover:text-white transition">Contact</a>
+    </div>
+    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
+  </div>
+</aside>
+
+<div class="lg:pl-72">
+
+<!-- MOBILE TOP HEADER -->
+<div class="flex justify-between items-center px-4 py-3 bg-[#0b1220] sticky top-0 z-[200] lg:hidden">
+    <button onclick="openMenu()" class="w-9 h-9 flex items-center justify-center rounded-xl text-gray-300 active:bg-white/10 transition-all" style="flex-shrink:0;">
+      <span class="material-symbols-outlined" style="font-size:24px;">menu</span>
+    </button>
+<div class="brand-badge">
+  <span class="material-symbols-outlined brand-icon">
+    verified_user
+  </span>
+  <span class="brand-text">
+    GETXH<span class="dot">.IN</span>
+  </span>
+</div>
+    <a href="wallet.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs active:scale-95 transition-all"
+       style="background:linear-gradient(135deg,rgba(0,200,83,0.15),rgba(0,230,118,0.08));
+              border:1px solid rgba(0,230,118,0.25);
+              color:#00e676;
+              box-shadow:0 0 12px rgba(0,230,118,0.1)">
+        <span class="material-symbols-outlined" style="font-size:15px">account_balance_wallet</span>
+        <span id="walletBalanceTop" class="font-black">₹0</span>
+    </a>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="w-full px-4 py-5 pb-[120px] lg:px-8 lg:py-8 lg:pb-10">
+<div class="lg:mx-auto lg:max-w-6xl">
+<!-- WELCOME CARD — Unique GETXH Style -->
+<div class="rounded-2xl p-5 mb-6 relative"
+     style="background: linear-gradient(135deg, #0a1628 0%, #0e1f3d 60%, #112244 100%);
+            border: 1px solid rgba(33,150,243,0.25);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(33,150,243,0.1);">
+  <!-- Glow effect top right -->
+  <div class="absolute top-0 right-0 pointer-events-none"
+       style="width:180px;height:180px;
+              background:radial-gradient(circle, rgba(33,150,243,0.15) 0%, transparent 70%);
+              transform:translate(30%,-30%)"></div>
+
+  <!-- Animated dot accent -->
+  <div class="absolute top-4 right-4 w-2 h-2 rounded-full"
+       style="background:#2196f3; box-shadow:0 0 8px #2196f3; animation:glowPulse 2s infinite"></div>
+
+  <!-- Username row -->
+  <div class="flex items-center justify-between mb-5 relative z-10">
+    <div>
+      <p class="text-gray-400 text-xs font-semibold uppercase tracking-widest mb-1">Dashboard</p>
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center"
+             style="background:linear-gradient(135deg,#2196f3,#00bcd4)">
+          <span class="material-symbols-outlined text-white" style="font-size:14px">person</span>
+        </div>
+        <p id="userName" class="text-white text-lg font-black">User</p>
+      </div>
+    </div>
+    <button onclick="window.location.href='wallet.html'"
+      class="flex items-center gap-1.5 px-4 py-2 rounded-xl font-black text-xs
+             active:scale-95 transition-all"
+      style="background:linear-gradient(135deg,#00c853,#00e676);
+             color:#003d10;
+             box-shadow:0 4px 15px rgba(0,200,83,0.3)">
+      <span class="material-symbols-outlined" style="font-size:14px">add</span>
+      Add Funds
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 gap-3 relative z-10">
+
+    <div class="rounded-xl p-4 flex items-center gap-3"
+         style="background:rgba(33,150,243,0.08);
+                border:1px solid rgba(33,150,243,0.2)">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+           style="background:linear-gradient(135deg,rgba(33,150,243,0.3),rgba(33,150,243,0.1))">
+        <span class="material-symbols-outlined" style="font-size:18px;color:#2196f3">account_balance_wallet</span>
+      </div>
+      <div>
+        <p class="text-gray-400 text-xs mb-0.5">Balance</p>
+        <p id="userBalance" class="text-white text-base font-black">₹0</p>
+      </div>
+    </div>
+
+    <div class="rounded-xl p-4 flex items-center gap-3"
+         style="background:rgba(0,230,118,0.06);
+                border:1px solid rgba(0,230,118,0.15)">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+           style="background:linear-gradient(135deg,rgba(0,230,118,0.25),rgba(0,230,118,0.08))">
+        <span class="material-symbols-outlined" style="font-size:18px;color:#00e676">shopping_bag</span>
+      </div>
+      <div>
+        <p class="text-gray-400 text-xs mb-0.5">Your Orders</p>
+        <p id="userOrders" class="text-white text-base font-black">0</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+    
+<!-- ================= NEW ORDER SECTION ================= -->
+<div class="h-px bg-white/10 my-6"></div>
+
+<div id="newOrderSection" class="w-full">
+
+  <!-- Tabs -->
+  <div class="flex rounded-xl overflow-hidden border border-white/10 mb-5">
+    <button id="tabNewOrder" onclick="switchOrderTab('new')"
+      class="flex-1 py-3 text-sm font-bold bg-[#2196f3] text-white transition-all">
+      New Order
+    </button>
+    <button id="tabSubscription" onclick="switchOrderTab('sub')"
+      class="flex-1 py-3 text-sm font-bold bg-[#0e1629] text-gray-400 transition-all">
+      Subscription
+    </button>
+  </div>
+
+  <!-- Platform Pills -->
+  <div class="flex gap-2 overflow-x-auto pb-2 mb-5" style="scrollbar-width:none">
+    <button onclick="filterPlatform(this)"
+      class="platform-pill active-pill flex items-center gap-2 px-4 py-2 rounded-full
+             text-xs font-bold whitespace-nowrap border border-white/10 bg-[#2196f3] text-white">
+      ✔ All
+    </button>
+    <button onclick="filterPlatform(this)"
+      class="platform-pill flex items-center gap-2 px-4 py-2 rounded-full
+             text-xs font-bold whitespace-nowrap border border-white/10 bg-[#0e1629] text-gray-300">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
+           class="w-4 h-4 rounded" alt=""/> Instagram Services
+    </button>
+    <button onclick="filterPlatform(this)"
+      class="platform-pill flex items-center gap-2 px-4 py-2 rounded-full
+             text-xs font-bold whitespace-nowrap border border-white/10 bg-[#0e1629] text-gray-300">
+      ▶ YouTube
+    </button>
+    <button onclick="filterPlatform(this)"
+      class="platform-pill flex items-center gap-2 px-4 py-2 rounded-full
+             text-xs font-bold whitespace-nowrap border border-white/10 bg-[#0e1629] text-gray-300">
+      ✈ Telegram
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="relative mb-5">
+    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#2196f3]" style="z-index:1">🔍</span>
+    <input type="text" id="searchService" placeholder="Search"
+      autocomplete="new-password" readonly
+      onfocus="this.removeAttribute('readonly')"
+      class="w-full pl-10 pr-10 py-3 bg-[#0e1629] border border-white/10 rounded-xl
+             text-white placeholder-gray-500 text-sm
+             focus:outline-none focus:border-[#2196f3] transition-all"/>
+    <button id="searchClearBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-all" style="font-size:18px;line-height:1">✕</button>
+    <!-- Global Search Results -->
+    <div id="globalSearchDrop"
+      class="hidden absolute left-0 right-0 top-full mt-1 rounded-xl overflow-hidden shadow-2xl"
+      style="background:#0e1629;border:1px solid rgba(33,150,243,0.3);z-index:999;max-height:300px;overflow-y:auto">
+    </div>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="rounded-2xl bg-[#0e1629] border border-white/10 shadow-xl mb-6">
+    <div class="p-4">
+
+      <!-- CATEGORY -->
+      <div class="mb-5">
+        <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Category</p>
+        <div class="relative" id="categoryWrapper">
+          <button type="button" onclick="toggleCategoryDropdown()"
+            class="w-full flex items-center justify-between bg-[#121c33]
+                   border border-white/10 rounded-xl px-4 py-3 text-left
+                   hover:border-[#2196f3]/50 transition-all">
+            <div class="flex items-center gap-3">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
+                   id="catIcon" class="w-5 h-5 rounded hidden" alt=""/>
+              <div id="catIconWelcome" style="display:none;width:20px;height:20px;border-radius:4px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);flex-shrink:0;align-items:center;justify-content:center;">
+                <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><text x="5.5" y="8.5" text-anchor="middle" font-size="9" fill="white">★</text></svg>
+              </div>
+              <span id="catLabel" class="text-gray-400 text-sm font-semibold">
+                — Select a category —
+              </span>
+            </div>
+            <span id="catArrow" class="text-gray-500 transition-transform duration-300">▼</span>
+          </button>
+          <div id="categoryDropdown"
+            class="hidden absolute left-0 right-0 top-full mt-1 bg-[#121c33]
+                   border border-white/10 rounded-xl overflow-hidden z-50 shadow-2xl">
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICE -->
+      <div class="mb-5" id="serviceWrapper" style="display:none">
+        <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Service</p>
+        <div class="relative" id="serviceDropdownWrapper">
+          <button type="button" onclick="toggleServiceDropdown()"
+            class="w-full flex items-center justify-between bg-[#121c33]
+                   border border-white/10 rounded-xl px-4 py-3 text-left
+                   hover:border-[#2196f3]/50 transition-all">
+            <div class="flex items-center gap-3 min-w-0">
+              <span id="svcNumBadge"
+                class="h-6 min-w-[44px] px-2 rounded-lg bg-[#2196f3] text-white text-xs
+                       font-black flex items-center justify-center flex-shrink-0 hidden"></span>
+              <span id="svcLabel" class="text-gray-400 text-sm font-semibold truncate">
+                — Select a service —
+              </span>
+            </div>
+            <span id="svcArrow" class="text-gray-500 transition-transform duration-300 flex-shrink-0">▼</span>
+          </button>
+          <div id="serviceDropdown"
+            class="hidden absolute left-0 right-0 top-full mt-1 bg-[#121c33]
+                   border border-white/10 rounded-xl overflow-hidden z-50 shadow-2xl
+                   max-h-64 overflow-y-auto">
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICE DETAILS -->
+      <div id="serviceDetails" class="hidden">
+
+        <!-- 6 STAT CARDS -->
+        <div class="mb-5">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Description</p>
+          <div class="bg-[#121c33] border border-white/10 rounded-xl p-4">
+            <div class="grid grid-cols-3 gap-2 mb-4">
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">schedule</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Start Time</p>
+                <p id="dStartTime" class="font-black text-xs text-white">INSTANT</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">speed</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Speed</p>
+                <p id="dSpeed" class="font-black text-xs text-white">—</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">autorenew</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Refill</p>
+                <p id="dRefill" class="font-black text-xs text-white">—</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">cancel</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Cancel</p>
+                <p id="dCancel" class="font-black text-xs text-white">—</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">water_drop</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Drop</p>
+                <p id="dDrop" class="font-black text-xs text-white">—</p>
+              </div>
+
+              <div class="bg-[#0b1220] border border-white/10 rounded-xl p-3 text-center">
+                <div class="w-8 h-8 rounded-full bg-[#1a2a3d] border border-white/10 flex items-center justify-center mx-auto mb-1">
+                  <span class="material-symbols-outlined text-gray-300" style="font-size:14px">star</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-0.5">Quality</p>
+                <p id="dQuality" class="font-black text-xs text-white">—</p>
+              </div>
+
+            </div>
+            <div class="border-t border-white/10 pt-3">
+              <p class="text-xs text-gray-400 font-bold mb-2 flex items-center gap-1">
+                <span class="material-symbols-outlined" style="font-size:13px">info</span> DETAILS:
+              </p>
+              <ul id="dDetailsList" class="space-y-1.5 text-xs text-white font-semibold"></ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- LINK -->
+        <div class="mb-4">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Link</p>
+          <input type="text" id="linkInput" placeholder="Paste your link"
+            class="w-full px-4 py-3 bg-[#121c33] border border-white/10 rounded-xl
+                   text-white placeholder-gray-500 text-sm
+                   focus:outline-none focus:border-[#2196f3] transition-all"/>
+        </div>
+
+        <!-- CUSTOM COMMENTS BOX (shown only for Custom comment services) -->
+        <div id="customCommentsWrap" class="hidden mb-4">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2 flex items-center gap-1">
+            Custom Comments
+            <span class="text-gray-500 normal-case font-normal text-xs">(1 line = 1 comment)</span>
+          </p>
+          <textarea id="customCommentsInput"
+            placeholder="Type each comment on a new line&#10;Press Enter for next comment..."
+            rows="5"
+            class="w-full px-4 py-3 bg-[#121c33] border border-white/10 rounded-xl
+                   text-white placeholder-gray-500 text-sm resize-none
+                   focus:outline-none focus:border-[#2196f3] transition-all leading-relaxed"></textarea>
+          <p id="customCommentsCount" class="text-xs text-gray-500 mt-1.5 font-semibold">0 comments entered</p>
+          <p id="customCommentsError" class="hidden text-xs text-red-400 mt-1 font-semibold">
+            ⚠ Enter at least <span id="customCommentsMin"></span> comments to place order
+          </p>
+        </div>
+
+        <!-- QUANTITY -->
+        <div class="mb-4">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Quantity</p>
+          <input type="number" id="quantityInput" placeholder="Min: 0 - Max: 0"
+            class="w-full px-4 py-3 bg-[#121c33] border border-white/10 rounded-xl
+                   text-white placeholder-gray-500 text-sm
+                   focus:outline-none focus:border-[#2196f3] transition-all"/>
+          <p id="quantityError" class="hidden text-xs text-red-400 mt-2 font-semibold">
+            ⚠ Quantity must be between Min and Max
+          </p>
+        </div>
+
+        <!-- DELIVERY TIME -->
+        <div class="mb-4">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2 flex items-center gap-1">
+            Delivery Time
+            <span class="material-symbols-outlined text-gray-500" style="font-size:13px">info</span>
+          </p>
+          <div class="bg-[#121c33] border border-white/10 rounded-xl px-4 py-3">
+            <p id="dDeliveryTime" class="text-white font-bold text-sm">—</p>
+          </div>
+        </div>
+
+        <!-- ORDER BUTTON -->
+        <button id="placeOrderBtn" disabled
+          class="w-full rounded-xl font-black text-base py-4
+                 bg-gradient-to-r from-[#2196f3] to-[#00bcd4]
+                 text-white relative overflow-hidden
+                 disabled:opacity-35 disabled:cursor-not-allowed
+                 transition-all active:scale-[0.98]">
+          <div class="flex items-center justify-between px-2">
+            <span class="text-xs font-bold uppercase tracking-widest opacity-80">TOTAL AMOUNT</span>
+            <div class="flex items-center gap-2">
+              <span id="totalPrice" class="text-lg font-black"></span>
+              <span class="font-black text-base tracking-wide order-label">ORDER</span>
+              <span class="material-symbols-outlined" style="font-size:18px">chevron_right</span>
+            </div>
+          </div>
+          <div id="rippleEl"
+            class="absolute rounded-full bg-white/20 pointer-events-none scale-0 transition-all duration-500"
+            style="width:120px;height:120px;margin-left:-60px;margin-top:-60px"></div>
+        </button>
+
+        <!-- ORDER ERROR TOAST -->
+        <div id="orderErrorToast" class="hidden mt-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-semibold"></div>
+
+
+      </div><!-- /serviceDetails -->
+    </div>
+  </div>
+  </div><!-- /newOrderSection -->
+
+<!-- ORDER TRACKING CARD -->
+<div id="orderTrackingCard" class="order-card hidden" style="max-width:480px;margin:20px auto;">
+  <h3 style="margin:0 0 12px;font-size:15px;font-weight:800;letter-spacing:.04em;">Order Tracking</h3>
+  <p style="margin:0 0 6px;font-size:13px;">Order ID: <span id="orderId" style="font-weight:700;">-</span></p>
+  <p style="margin:0 0 6px;font-size:13px;">Status:
+    <span id="orderStatus" class="status pending">Pending</span>
+  </p>
+  <div class="progress-bar">
+    <div id="orderProgress" class="progress"></div>
+  </div>
+  <p style="margin:0;font-size:13px;">Remaining: <span id="orderRemains" style="font-weight:700;">0</span></p>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div id="successModal"
+  class="fixed inset-0 bg-black/70 hidden z-50 items-center justify-center px-4">
+  <div id="successModalBox"
+    class="bg-[#0f1a30] border border-[#2196f3]/20 rounded-2xl p-6
+           w-full max-w-sm text-center shadow-2xl scale-75 opacity-0 transition-all duration-300">
+    <div class="w-16 h-16 bg-green-500/10 border border-green-500/30 rounded-full
+                flex items-center justify-center mx-auto mb-4">
+      <span class="material-symbols-outlined text-green-400" style="font-size:32px">check_circle</span>
+    </div>
+    <h3 class="text-xl font-black mb-2 text-white">Order Placed! 🎉</h3>
+    <p class="text-gray-400 text-sm mb-6">Your order has been submitted and is now being processed.</p>
+    <div class="flex gap-3">
+      <button id="closeModalBtn"
+        class="flex-1 py-3 rounded-xl bg-[#121c33] border border-white/10
+               text-gray-300 font-bold text-sm active:scale-[0.97] transition">
+        Close
+      </button>
+      <button id="viewOrdersBtn"
+        class="flex-1 py-3 rounded-xl font-black text-sm text-white
+               bg-gradient-to-r from-[#2196f3] to-[#00bcd4] active:scale-[0.97] transition">
+        View Orders
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= END NEW ORDER ================= -->
+<!-- RECENT ORDERS -->
+<div id="recentOrdersContainer" class="mt-4"></div>
+<!--
+
+
+    GETXH.IN © 2026. All rights reserved.
+-->
+  </div>
+</div>
+</main>
+
+<!-- BOTTOM NAV -->
+<div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-40 lg:hidden">
+  <div class="flex justify-around items-center py-2 text-xs">
+
+    <button onclick="openMenu()" class="flex flex-col items-center text-blue-400">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span>Menu</span>
+    </button>
+<a href="orders.html" class="flex flex-col items-center text-gray-400">
+  <span class="material-symbols-outlined">list_alt</span>
+  <span>Orders</span>
+</a>
+
+    <button onclick="scrollToNewOrder()"
+      class="bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full -mt-6">
+      <span class="material-symbols-outlined">add</span>
+    </button>
+
+    <a href="support.html" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">support_agent</span>
+      <span>Support</span>
+    </a>
+
+    <button onclick="openAccountPopup()" class="flex flex-col items-center text-gray-400">
+      <span class="material-symbols-outlined">person</span>
+      <span>Account</span>
+    </button>
+
+  </div>
+</div>
+
+<!-- SIDE MENU -->
+<div id="menuOverlay" class="fixed inset-0 bg-black/60 hidden z-40 backdrop-blur-sm" onclick="closeMenu()"></div>
+
+<div id="sideMenu"
+  class="fixed top-0 left-0 h-full w-72 z-[150]
+         transform -translate-x-full transition-transform duration-300
+         flex flex-col"
+  style="background: linear-gradient(180deg, #0a1628 0%, #0e1f3d 50%, #0a1628 100%);">
+
+  <!-- MENU HEADER -->
+<div class="px-5 pt-20 pb-5 border-b border-white/10"
+       style="background: linear-gradient(135deg, #0e1f3d, #162844);">
+    <div class="flex items-center gap-3 mb-4" style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+           style="background:linear-gradient(135deg,#2196f3,#00bcd4);width:40px;height:40px;min-width:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span class="material-symbols-outlined text-white" style="font-size:20px">verified_user</span>
+      </div>
+      <div>
+      <p class="font-black text-white text-base tracking-wide" style="font-weight:900;color:white;font-size:15px;letter-spacing:0.05em;">GETXH<span style="color:#2196f3">.IN</span></p>
+<div class="flex items-center gap-1 mt-0.5" style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+  <div class="h-1.5 w-1.5 rounded-full bg-green-400" style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:glowPulse 2s infinite;flex-shrink:0;"></div>
+  <p class="text-xs font-semibold" style="color:#2196f3;font-size:11px;font-weight:600;">Online</p>
+</div>
+      </div>
+    </div>
+    <!-- User info -->
+    <div class="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.05);border-radius:12px;padding:10px 12px;border:1px solid rgba(255,255,255,0.1);">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+           style="background:linear-gradient(135deg,#2196f3,#00bcd4);width:32px;height:32px;min-width:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">person</span>
+      </div>
+      <div class="min-w-0" style="min-width:0;overflow:hidden;">
+        <p id="menuUsername" class="text-xs font-bold text-white truncate" style="font-size:12px;font-weight:700;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">User</p>
+        <p id="menuEmail" class="text-xs text-gray-500 truncate" style="font-size:11px;color:#6b7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENU ITEMS -->
+  <div class="flex-1 overflow-y-auto py-3 px-3">
+
+    <!-- New Order -->
+    <button onclick="scrollToNewOrder();closeMenu()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left transition-all active:scale-[0.98]"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:22px;color:white;">add_shopping_cart</span>
+      </div>
+      <span class="font-bold text-white text-sm" style="font-weight:700;color:white;font-size:15px;">New Order</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+
+    <!-- Orders -->
+    <button onclick="closeMenu();window.location.href='orders.html'"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(234,179,8,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#facc15;">list_alt</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Orders</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+
+    <!-- Support -->
+    <button onclick="closeMenu();window.location.href='support.html'"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(168,85,247,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#c084fc;">support_agent</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Support</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+
+    <!-- Add Funds -->
+    <button onclick="closeMenu();window.location.href='wallet.html'"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(34,197,94,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#4ade80;">account_balance_wallet</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Add Funds</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+
+    <!-- Affiliates -->
+    <button onclick="closeMenu();window.location.href='affiliates.html'"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(234,130,8,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#fb923c;">person_add</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Affiliates</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+
+    <!-- Subscriptions -->
+    <button onclick="closeMenu();scrollToNewOrder();switchOrderTab('sub')"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(6,182,212,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#22d3ee;">autorenew</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Subscriptions</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+
+    <!-- Admin (hidden, shown for admins) -->
+    <button id="adminBtn" onclick="closeMenu();window.location.href='admin.html'"
+      class="menu-item hidden w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
+      style="display:none;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(6,182,212,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#22d3ee;">admin_panel_settings</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Admin</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+
+    <!-- Divider -->
+    <div class="h-px bg-white/10 my-3 mx-2" style="height:1px;background:rgba(255,255,255,0.1);margin:12px 8px;"></div>
+
+    <!-- WhatsApp -->
+    <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(74,222,128,0.15);">
+        <span style="color:#4ade80;font-weight:900;font-size:20px;line-height:1;">W</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">WhatsApp</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+
+    <button onclick="logout()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-red-500/10 transition-all active:scale-[0.98] border border-transparent hover:border-red-500/20"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#f87171;">logout</span>
+      </div>
+      <span class="font-bold text-red-400 text-sm" style="font-weight:700;color:#f87171;font-size:15px;">Logout</span>
+    </button>
+
+  </div>
+
+  <!-- MENU FOOTER -->
+  <div class="px-5 py-4 border-t border-white/10">
+    <div class="grid gap-2 text-xs mb-3">
+      <a href="privacy.html" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+      <a href="terms.html" class="text-gray-400 hover:text-white transition">Terms</a>
+      <a href="refund.html" class="text-gray-400 hover:text-white transition">Refund Policy</a>
+      <a href="cancellation.html" class="text-gray-400 hover:text-white transition">Cancellation</a>
+      <a href="about.html" class="text-gray-400 hover:text-white transition">About</a>
+      <a href="contact.html" class="text-gray-400 hover:text-white transition">Contact</a>
+    </div>
+    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
+  </div>
+
+</div>
+
+
+  <!-- ACCOUNT POPUP -->
+<div id="accountPopup"
+  class="fixed inset-0 z-50 hidden items-end justify-center"
+  style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)"
+  onclick="if(event.target===this)closeAccountPopup()">
+  <div class="w-full max-w-md mx-auto animate-slideUp"
+       style="background:linear-gradient(180deg,#0e1f3d 0%,#0a1628 100%);
+              border-radius:24px 24px 0 0;
+              border-top:1px solid rgba(33,150,243,0.25);
+              padding:0 0 32px;">
+    <div class="flex justify-center pt-3 pb-2">
+      <div class="w-10 h-1 rounded-full" style="background:rgba(255,255,255,0.15)"></div>
+    </div>
+    <div id="accViewHome">
+    <div class="mx-4 mb-4 rounded-2xl p-4 flex items-center gap-3"
+         style="background:rgba(33,150,243,0.08);border:1px solid rgba(33,150,243,0.2)">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-black text-lg text-white"
+           style="background:linear-gradient(135deg,#2196f3,#00bcd4)" id="popupAvatar">U</div>
+      <div class="min-w-0 flex-1">
+        <p id="popupUsername" class="text-white font-black text-base truncate">User</p>
+        <p id="popupEmail" class="text-xs truncate mt-0.5" style="color:#2196f3">—</p>
+      </div>
+    </div>
+    <div class="px-4 space-y-3">
+<button onclick="closeAccountPopup();window.location.href='account.html'"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-white text-sm active:scale-[0.98] transition-all"
+        style="background:linear-gradient(135deg,#2196f3,#00bcd4);box-shadow:0 4px 20px rgba(33,150,243,0.3)">
+        <span class="material-symbols-outlined" style="font-size:18px">manage_accounts</span>
+        My Account
+        <span class="material-symbols-outlined ml-auto" style="font-size:16px">chevron_right</span>
+      </button>
+      <button onclick="closeAccountPopup();window.location.href='wallet.html'"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all"
+        style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);color:#00e676">
+        <span class="material-symbols-outlined" style="font-size:18px">account_balance_wallet</span>
+        Add Funds
+        <span class="material-symbols-outlined ml-auto" style="font-size:16px">chevron_right</span>
+      </button>
+      <button onclick="logout()"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all"
+        style="background:rgba(244,67,54,0.08);border:1px solid rgba(244,67,54,0.2);color:#ef5350">
+        <span class="material-symbols-outlined" style="font-size:18px">logout</span>
+        Logout
+      </button>
+      </div>     
+    </div>
+     </div>
+
+<!-- VIEW 2: MY ACCOUNT -->
+<div id="accViewAccount" style="display:none">
+  <div class="flex items-center gap-3 px-4 mb-4">
+    <button onclick="showAccView('accViewHome')" class="flex items-center gap-1 font-bold text-sm" style="color:#2196f3">
+      <span class="material-symbols-outlined" style="font-size:20px">arrow_back_ios</span>Back
+    </button>
+    <p class="text-white font-black text-base">My Account</p>
+  </div>
+  <div class="mx-4 mb-4 rounded-xl p-4" style="background:#f9fafb;border:1px solid #e5e7eb">
+    <p class="text-sm text-[#6b7280]">Account</p>
+    <p id="accName" class="text-lg font-semibold text-[#111827]">-</p>
+    <p id="accEmail" class="text-sm text-[#6b7280]">-</p>
+  </div>
+  <div class="mx-4 mb-4 rounded-xl p-4 space-y-4" style="background:#121c33">
+    <div class="flex items-center gap-4">
+      <span class="material-symbols-outlined text-blue-400">person</span>
+      <div>
+        <p class="text-xs text-gray-400">Username</p>
+        <p id="accDetailUsername" class="text-white">-</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="material-symbols-outlined text-cyan-400">mail</span>
+      <div>
+        <p class="text-xs text-gray-400">Email</p>
+        <p id="accDetailEmail" class="text-white">-</p>
+      </div>
+    </div>
+  </div>
+  <div class="mx-4 mb-4 rounded-xl p-4" style="background:#f9fafb;border:1px solid #e5e7eb">
+    <p class="font-medium text-[#111827] mb-3">Reset Password</p>
+    <input id="accCurrPass" type="password" placeholder="Current password" class="w-full mb-2 px-3 py-2 rounded-lg text-[#111827] text-sm outline-none border border-[#e5e7eb]" style="background:#ffffff"/>
+    <input id="accNewPass" type="password" placeholder="New password" class="w-full mb-2 px-3 py-2 rounded-lg text-[#111827] text-sm outline-none border border-[#e5e7eb]" style="background:#ffffff"/>
+    <input id="accConfPass" type="password" placeholder="Confirm new password" class="w-full mb-3 px-3 py-2 rounded-lg text-[#111827] text-sm outline-none border border-[#e5e7eb]" style="background:#ffffff"/>
+    <p id="accPassMsg" class="text-sm mb-2 hidden"></p>
+    <button onclick="changePasswordInline()" class="w-full py-2 rounded-lg font-medium text-white text-sm" style="background:#6366f1">Change Password</button>
+  </div>
+  <div class="mx-4">
+    <button onclick="logout()" class="w-full py-3 rounded-xl flex justify-center gap-2 font-bold text-sm" style="background:rgba(244,67,54,0.1);color:#ef5350;border:1px solid rgba(244,67,54,0.2)">
+      <span class="material-symbols-outlined" style="font-size:18px">logout</span>Logout
+    </button>
+  </div>
+</div>
+<!-- STYLES -->
+<style>
+@keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.search-result-item {
+  display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s;
+}
+.search-result-item:hover { background:rgba(33,150,243,0.12) }
+.search-result-item:last-child { border-bottom:none }
+.search-cat-badge {
+  font-size:10px;font-weight:900;color:#2196f3;
+  background:rgba(33,150,243,0.12);border:1px solid rgba(33,150,243,0.25);
+  border-radius:6px;padding:2px 7px;white-space:nowrap;flex-shrink:0;
+}
+.search-no-result {
+  padding:20px;text-align:center;color:#64748b;font-size:0.8rem;font-weight:600;
+}
+@keyframes fadeUpAnim { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.platform-pill { transition:all 0.2s ease }
+.active-pill { background:#2196f3 !important;color:white !important;border-color:#2196f3 !important }
+.menu-item {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  width:100%;
+  text-align:left;
+  transition:all 0.2s ease;
+}
+.menu-item.hidden,
+.menu-item[style*="display:none"],
+.menu-item[style*="display: none"] {
+  display:none !important;
+}
+.menu-item > div:first-child {
+  width:32px;
+  height:32px;
+  min-width:32px;
+  min-height:32px;
+  flex-shrink:0;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.order-label { letter-spacing:0.08em; }
+.cat-item {
+  display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s;
+  font-size:0.875rem;font-weight:700;color:#e2e8f0;
+}
+.cat-item:hover { background:rgba(33,150,243,0.1) }
+.cat-item.selected { background:rgba(33,150,243,0.2);color:#2196f3 }
+.cat-item:last-child { border-bottom:none }
+.svc-item {
+  display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s;
+  font-size:0.8rem;font-weight:600;color:#cbd5e0;
+}
+.svc-item:hover { background:rgba(33,150,243,0.1) }
+.svc-item.selected { background:rgba(33,150,243,0.15);color:white }
+.svc-item:last-child { border-bottom:none }
+.svc-num-badge {
+  min-width:44px;height:24px;border-radius:6px;background:#2196f3;color:white;
+  font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0 6px;
+}
+/* ── ORDER TRACKING CARD ── */
+.order-card {
+  background: #111;
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+.status {
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+.pending    { background: orange; }
+.completed  { background: green; }
+.inprogress { background: blue; }
+.partial    { background: purple; }
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background: #333;
+  border-radius: 10px;
+  margin: 10px 0;
+}
+.progress {
+  height: 100%;
+  width: 0%;
+  background: green;
+  border-radius: 10px;
+  transition: width 0.3s;
+}
+/* ── TOAST ── */
+#toastContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+  width: 90%;
+  max-width: 340px;
+}
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  min-width: 260px;
+  max-width: 320px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transform: scale(0.85);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(.22,1,.36,1), opacity 0.35s ease;
+  pointer-events: auto;
+}
+.toast.show {
+  transform: scale(1);
+  opacity: 1;
+}
+.toast.hide {
+  transform: scale(0.85);
+  opacity: 0;
+}
+.toast-success {
+  background: rgba(15,30,55,0.95);
+  border: 1px solid rgba(0,200,83,0.35);
+}
+.toast-error {
+  background: rgba(15,30,55,0.95);
+  border: 1px solid rgba(244,67,54,0.35);
+}
+.toast-warn {
+  background: rgba(15,30,55,0.95);
+  border: 1px solid rgba(255,152,0,0.35);
+}
+.toast-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+.toast-success .toast-icon { background: rgba(0,200,83,0.15); color: #00c853; }
+.toast-error   .toast-icon { background: rgba(244,67,54,0.15); color: #ef5350; }
+.toast-warn    .toast-icon { background: rgba(255,152,0,0.15);  color: #ffa726; }
+.toast-body { flex: 1; min-width: 0; }
+.toast-title { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 2px; }
+.toast-msg   { font-size: 11px; color: rgba(255,255,255,0.55); line-height: 1.4; word-break: break-all; }
+.toast-bar {
+  height: 2px;
+  border-radius: 2px;
+  margin-top: 10px;
+  width: 100%;
+  animation: toastBar 3s linear forwards;
+}
+.toast-success .toast-bar { background: #00c853; }
+.toast-error   .toast-bar { background: #ef5350; }
+.toast-warn    .toast-bar { background: #ffa726; }
+@keyframes toastBar { from { width: 100%; } to { width: 0%; } }
+</style>
+
+<!-- MAIN SCRIPT -->
+<script>
+// ── SERVICES DATA ──
+const CATEGORIES = [
+  {id:'welcome-offer',   label:'Welcome Offer'},
+  {id:'cheap_followers', label:'Cheapest Instagram Followers', subtitle:'Cheapest in The World 🌍'},
+  {id:'reel-views',      label:'Instagram - Reel/Post Views'},
+  {id:'followers',  label:'Instagram - Followers'},
+  {id:'likes',      label:'Instagram - Likes'},
+  {id:'comments',   label:'Instagram - Comments'},
+  {id:'shares',     label:'Instagram - Shares/Saves'},
+  {id:'yt-likes',        label:'YouTube - Likes'},
+  {id:'yt-views',        label:'YouTube - Views'},
+  {id:'yt-subscribers',  label:'YouTube - Subscribers'},
+  {id:'yt-native-ad',    label:'YouTube - Native Ad Views'},
+  {id:'yt-adwords',      label:'YouTube - Adwords Views'},
+  {id:'yt-livestream',   label:'YouTube - Live Stream Views'},
+  {id:'fb-views',        label:'Facebook - Views'},
+  {id:'fb-reactions',    label:'Facebook - Post Reactions'},
+  {id:'fb-followers',    label:'Facebook - Followers'},
+  {id:'fb-livestream',   label:'Facebook - Live Stream Views'},
+  {id:'tg-members',      label:'Telegram - Members'},
+  {id:'wa-members',      label:'WhatsApp - Members'},
+];
+const SERVICES = {
+  'welcome-offer': [
+    {id:12278,name:'Instagram Followers',price:151.51,min:10,max:100000,startTime:'0-10 Minutes',speed:'20-50K/Day',refill:'LIFETIME ♻️',cancel:'YES',drop:'Low Drop',quality:'HQ',delivery:'0-10 minutes',details:['Kindly make sure your account is public, Not private','In case of high demand, speed and start time may change','Do not place second order on same link before completion']},
+    {id:12179,name:'Instagram Views',price:0.38,min:100,max:2147483647,startTime:'Instant',speed:'300K/Day',refill:'NO',cancel:'YES',drop:'—',quality:'—',delivery:'Instant',details:['Use reels or post link','Private accounts not accepted']},
+    {id:12305,name:'Instagram Likes',price:21.23,min:10,max:500000,startTime:'0-10 Minutes',speed:'50K-100K+/Day',refill:'365 Days',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'0-10 minutes',details:['When service is busy, start speed may change','Do not place second order on same link before completion','Contact support if any issue']},
+  ],
+  'cheap_followers': [
+    {id:12135,name:'Instagram Followers | Real Accounts | 100K/Day | 365 Days | Low Drop',price:89.23,min:10,max:100000,startTime:'0-2 Minutes',speed:'100K/Day',refill:'365 Days ♻️',cancel:'-',drop:'Low Drop',quality:'Real Accounts',delivery:'0-2 minutes',details:['Location: Global','Use profile link or username','Kindly make sure your account is public, Not private','In case of high demand, speed and start time may change','Do not place second order on same link before completion']},
+    {id:12005,name:'Instagram Followers | Real Accounts | 10K/Day | No Refill | High Drop ⚠️',price:62.88,min:10,max:50000,startTime:'0-2 Minutes',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'-',drop:'High Drop Possible',quality:'Real Accounts',delivery:'0-2 minutes',details:['Location: Global','Use profile link or username','Kindly make sure your account is public, Not private','In case of high demand, speed and start time may change','Do not place second order on same link before completion','⚠️ NOTE: It may give completed status without delivery','This is a bot service','We are not responsible']},
+    {id:12314,name:'Instagram Followers | Real Accounts | 20K-50K+/Day | 30 Days | 10-30% Drop',price:43.71,min:10,max:100000,startTime:'0-10 Minutes',speed:'20K-50K+/Day',refill:'30 Days',cancel:'-',drop:'10-30% Drop',quality:'Real Accounts',delivery:'0-10 minutes',details:['When service is busy, start time may change','Do not place second order on same link before completion','Contact support if any issue']},
+  ],
+  'reel-views': [
+    {id:12179,name:'Instagram Views',price:0.0854,min:50,max:2147483647,startTime:'Instant',speed:'300K/Day',refill:'NO',cancel:'YES',drop:'—',quality:'—',delivery:'Instant',details:['Works on Reels and Post links','Use reel or post link only','Private accounts not accepted','Wrong links are non-refundable']},
+    {id:12007,name:'Instagram Video Views',price:0.1012,min:10,max:2147483647,startTime:'Instant',speed:'100K/Day',refill:'NO',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['Make sure to make your account public. If the account is not public, the order will be marked as complete.','Use reel or post link only','Wrong links are non-refundable']},
+    {id:12008,name:'Instagram Video Views',price:0.086,min:50,max:2147483647,startTime:'Instant',speed:'500K-1M/Day',refill:'NO',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['Works on Video, Reel & IGTV links','Make sure to make your account public. If the account is not public, the order will be marked as complete.','Wrong links are non-refundable']},
+  ],
+  'post-views': [
+    {id:6,name:'Instagram Post Views – Used By Influencers',price:1.83,min:100,max:2147483647,startTime:'INSTANT',speed:'1M/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'5 minutes',details:['Works on all public posts.','Use post link.','Private accounts not accepted.']},
+    {id:7,name:'Instagram Post Views – Increase Insights',price:1.74,min:100,max:2147483647,startTime:'INSTANT',speed:'1M/HOUR',refill:'NO',cancel:'YES',drop:'NON-DROP',quality:'REAL',delivery:'5 minutes',details:['Boosts post insights.','Use post link.','Private accounts not accepted.']},
+  ],
+  'followers': [
+    {id:12282,name:'Low Quality Followers',price:50.6209,min:50,max:1000000,startTime:'0-10 Minutes',speed:'100K-200K+/Day',refill:'365 Days ♻️',cancel:'NO',drop:'Low Drop',quality:'Good',delivery:'0-10 minutes',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11977,name:'Low Quality Followers',price:79.31,min:50,max:500000,startTime:'0-10 Minutes',speed:'5K-30K+/Hour',refill:'Lifetime ♻️',cancel:'NO',drop:'Low Drop',quality:'Good',delivery:'0-10 minutes',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11965,name:'Good Quality Followers',price:83.5439,min:10,max:500000,startTime:'0-10 Minutes',speed:'5K-30K+/Hour',refill:'30 Days ♻️',cancel:'NO',drop:'Non Drop',quality:'Good',delivery:'0-10 minutes',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11969,name:'High Quality Followers',price:105.4908,min:10,max:500000,startTime:'0-10 Minutes',speed:'5K-30K+/Hour',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'0-10 minutes',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11492,name:'Premium Quality Followers',price:105.5853,min:20,max:1000000,startTime:'0-10 Minutes',speed:'50K-100K+/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'100% Real Indian 🇮🇳',delivery:'0-10 minutes',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'likes': [
+    {id:12305,name:'Instagram Likes | Real Profiles | 100K+/Day | 365 Days Refill',price:7.7725,min:10,max:500000,startTime:'Instant',speed:'100K+/Day',refill:'365 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Real Profile',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12308,name:'Instagram Likes | Indian 🇮🇳 | 300K/Day | 30 Days Refill',price:10.5832,min:50,max:500000,startTime:'Instant',speed:'300K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Indian Profiles 🇮🇳',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12312,name:'Instagram Likes | Indian 🇮🇳 | 300K/Day | Lifetime Refill',price:11.0755,min:50,max:500000,startTime:'Instant',speed:'300K/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'Indian Profiles 🇮🇳',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11418,name:'Instagram Likes | Real Indian + Story 🇮🇳 | 10K+/Hour | Lifetime Refill',price:23.69,min:100,max:1000000,startTime:'0-1 Minute',speed:'10K+/Hour',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'100% Real Indian Profile with Story 🇮🇳',delivery:'0-1 minute',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11443,name:'Instagram Likes | 100% Real Indian Profile with Story 🇮🇳 | 10K+/Hour | Non-Drop | Lifetime Refill | 1 Min Complete',price:65.1112,min:100,max:1000000,startTime:'0-1 Minute',speed:'10K+/Hour',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'100% Real Indian Profile with Story 🇮🇳',delivery:'0-1 minute',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'comments': [
+    {id:10389,name:'Instagram Comments | Random | 100% Real Users | Non Drop | 10K/Day',price:58.077,min:50,max:50000,startTime:'0-1 Hour',speed:'10K/Day',refill:'No Refill',cancel:'YES',drop:'Non Drop',quality:'100% Real Users',delivery:'0-1 hour',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:10390,name:'Instagram Comments | Custom | 100% Real Users | Non Drop | 10K/Day',price:57.68,min:50,max:50000,startTime:'0-1 Hour',speed:'10K/Day',refill:'No Refill',cancel:'YES',drop:'Non Drop',quality:'100% Real Users',delivery:'0-1 hour',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'shares': [
+    {id:8705,name:'Instagram Shares',price:4.017,min:100,max:1000000,startTime:'Instant',speed:'Ultra Fast',refill:'No Refill',cancel:'YES',drop:'—',quality:'—',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:8704,name:'Instagram Post Share Indian 🇮🇳',price:32.4185,min:10,max:10000000,startTime:'Instant',speed:'100K/Day',refill:'No Refill',cancel:'YES',drop:'Non Drop',quality:'Indian 🇮🇳',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12317,name:'Instagram Saves',price:12.3088,min:100,max:200000,startTime:'Instant',speed:'100K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'100% Real Accounts',delivery:'Instant',details:['Link: Instagram username / Profile Link','Location: Worldwide 🌍 | Quality: 100% Real Accounts | Drop Rate: 0% | No Refill','In case of high demand for the service, there may be changes in speed and start time.','Closing the 2nd order on the same link after the completion of the order system you have given.']},
+    {id:12001,name:'Instagram Saves',price:5.2456,min:10,max:400000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'—',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'yt-likes':       [
+    {id:12349,name:'YouTube Likes | HQ Profiles | 500K/Day | 365 Days',price:46.8746,min:10,max:5000000,startTime:'Instant',speed:'500K/Day',refill:'365 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'HQ Profiles',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11579,name:'YouTube Likes | High Quality | 50K+/Day | 365 Days',price:22.1578,min:10,max:500000,startTime:'Instant',speed:'50K+/Day',refill:'365 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11285,name:'YouTube Likes | 200K+/Day | 30 Days | 1 Min Complete',price:35.0831,min:10,max:500000,startTime:'0-1 Minute',speed:'200K+/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'0-1 minute',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11289,name:'YouTube Likes | 200K+/Day | Lifetime | 1 Min Complete',price:40.0071,min:10,max:500000,startTime:'0-1 Minute',speed:'200K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'0-1 minute',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'yt-views':       [
+    {id:11346,name:'YouTube Views | Non Drop | 3K-5K+/Day | Lifetime',price:96.017,min:100,max:10000000,startTime:'Instant',speed:'3K-5K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:10007,name:'YouTube Views | Social Ads | 200K+/Day | Real Users | Lifetime',price:109.53,min:10000,max:3000000,startTime:'Instant',speed:'200K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'Real Users',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12303,name:'YouTube Views | Non Drop | 5K-10K+/Day | Lifetime',price:90.9444,min:100,max:10000000,startTime:'Instant',speed:'5K-10K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11580,name:'YouTube Views | Worldwide | 20K+/Day | Lifetime',price:110.7413,min:100,max:500000,startTime:'Instant',speed:'20K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'yt-subscribers': [
+    {id:12224,name:'YouTube Subscribers | Low Quality | No Refill | 30K/Hour',price:5.1702,min:10,max:30000,startTime:'Instant',speed:'30K/Hour',refill:'No Refill ⚠️',cancel:'YES',drop:'—',quality:'Low Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11586,name:'YouTube Subscribers | Non Drop | 100/Day | Lifetime',price:1784.9313,min:100,max:100000,startTime:'Instant',speed:'100/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11589,name:'YouTube Subscribers | Non Drop | 1000/Day | Lifetime',price:2460.7432,min:100,max:100000,startTime:'Instant',speed:'1000/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'yt-native-ad':   [
+    {id:10796,name:'YouTube Native Ads Views | 500K+/Day | Lifetime | Min 1K',price:103.6302,min:1000,max:10000000,startTime:'Instant',speed:'500K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:10795,name:'YouTube Native Ads Views | 500K+/Day | Lifetime | Min 5K',price:109.0643,min:5000,max:10000000,startTime:'Instant',speed:'500K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11754,name:'YouTube Native Ads Views | 500K+/Day | Lifetime | Min 500K',price:31.534,min:500000,max:10000000,startTime:'Instant',speed:'500K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:10789,name:'YouTube Native Ads Views | 500K+/Day | Lifetime | Min 200K',price:58.7238,min:200000,max:10000000,startTime:'Instant',speed:'500K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'yt-adwords':     [
+    {id:12042,name:'YouTube Adwords Views | 100% Indian 🇮🇳 | 1M/Day | Lifetime | Min 50K',price:65.748,min:50000,max:500000,startTime:'Instant',speed:'1M/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'100% Indian 🇮🇳',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12041,name:'YouTube Adwords Views | 100% Indian 🇮🇳 | 1M/Day | Lifetime | Min 100K',price:70.6436,min:100000,max:500000,startTime:'Instant',speed:'1M/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'100% Indian 🇮🇳',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:9805,name:'YouTube Adwords Views | 500K/Day | Lifetime | Min 1M | Start 24-48H',price:37.0195,min:1000000,max:100000000,startTime:'24-48 Hours',speed:'500K/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'24-48 hours',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'yt-livestream':  [
+    {id:10248,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 15 Min',price:4.5423,min:100,max:500000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 15 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10249,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 30 Min',price:9.097,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 30 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10250,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 60 Min',price:18.2432,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 60 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10251,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 90 Min',price:27.6972,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 90 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10252,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 120 Min',price:36.5603,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 120 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10253,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 180 Min',price:72.0127,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 180 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10254,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 240 Min',price:72.5051,min:50,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 240 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10255,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 360 Min',price:108.2038,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 360 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10256,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 720 Min',price:217.8847,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 720 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10257,name:'YouTube Livestream Views | Real Views + Likes | 100% Concurrent | 1 Day',price:430.8455,min:100,max:5000000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'Real Views + Likes',delivery:'Instant',details:['100% Concurrent for 1 Day','Real Views + Likes included','Use YouTube live stream link']},
+  ],
+  'fb-views':      [
+    {id:12257,name:'Facebook Views | Non Drop | Lifetime | 50K/Day',price:1.9351,min:500,max:2147483647,startTime:'Instant',speed:'50K/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12418,name:'Facebook Views (Video/Reels) | Non Drop | Lifetime | 100K/Day',price:2.7674,min:100,max:2147483647,startTime:'Instant',speed:'100K/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12417,name:'Facebook Views (Video/Reels) | Non Drop | Lifetime | 1M/Day',price:3.7737,min:100,max:100000000,startTime:'Instant',speed:'1M/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'fb-reactions':  [
+    {id:12232,name:'Facebook Post Reactions | Like 👍 | Worldwide | 30 Days | 10K/Day',price:9.6608,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12233,name:'Facebook Post Reactions | Love ❤️ | Worldwide | 30 Days | 10K/Day',price:9.977,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12234,name:'Facebook Post Reactions | Wow 😲 | Worldwide | 30 Days | 10K/Day',price:9.7243,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12235,name:'Facebook Post Reactions | Care 🤗 | Worldwide | 30 Days | 10K/Day',price:9.1232,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12236,name:'Facebook Post Reactions | Haha 😆 | Worldwide | 30 Days | 10K/Day',price:9.1232,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12237,name:'Facebook Post Reactions | Sad 🥲 | Worldwide | 30 Days | 10K/Day',price:9.1232,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12238,name:'Facebook Post Reactions | Angry 😡 | Worldwide | 30 Days | 10K/Day',price:9.1232,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12239,name:'Facebook Post Reactions | Like 👍 | Worldwide | No Refill | 10K/Day',price:8.9188,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12240,name:'Facebook Post Reactions | Love ❤️ | Worldwide | No Refill | 10K/Day',price:8.9188,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12241,name:'Facebook Post Reactions | Care 🤗 | Worldwide | No Refill | 10K/Day',price:8.9188,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12242,name:'Facebook Post Reactions | Haha 😆 | Worldwide | No Refill | 10K/Day',price:8.9188,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12243,name:'Facebook Post Reactions | Wow 😲 | Worldwide | No Refill | 10K/Day',price:8.9188,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12244,name:'Facebook Post Reactions | Sad 🥲 | Worldwide | No Refill | 10K/Day',price:8.9188,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12245,name:'Facebook Post Reactions | Angry 😡 | Worldwide | No Refill | 10K/Day',price:8.9188,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11889,name:'Facebook Post Reactions | Like 👍 | Mix Quality | No Refill | 10K/Day',price:9.977,min:10,max:500000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Mix Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11890,name:'Facebook Post Reactions | Love ❤️ | Mix Quality | No Refill | 10K/Day',price:9.977,min:10,max:100000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Mix Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11891,name:'Facebook Post Reactions | Wow 😲 | Mix Quality | No Refill | 10K/Day',price:9.7243,min:10,max:100000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Mix Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11892,name:'Facebook Post Reactions | Care 🤗 | Mix Quality | No Refill | 10K/Day',price:9.3825,min:10,max:100000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Mix Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11893,name:'Facebook Post Reactions | Haha 😆 | Mix Quality | No Refill | 10K/Day',price:9.3825,min:10,max:100000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Mix Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11894,name:'Facebook Post Reactions | Sad 🥲 | Mix Quality | No Refill | 10K/Day',price:9.3825,min:10,max:100000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Mix Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11895,name:'Facebook Post Reactions | Angry 😡 | Mix Quality | No Refill | 10K/Day',price:9.3825,min:10,max:100000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Mix Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'fb-followers':  [
+    {id:12182,name:'Facebook Followers | All Type Profile | Non Drop | 365 Days | 100K+/Day',price:28.625,min:100,max:1000000,startTime:'Instant',speed:'100K+/Day',refill:'365 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'All Type Profile',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12210,name:'Facebook Followers | All Type Profile & Page | Non Drop | Lifetime | 200K/Day',price:28.8599,min:10,max:500000,startTime:'Instant',speed:'200K/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'All Type Profile & Page',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12198,name:'Facebook Followers | All Type Profile | Non Drop | Lifetime | 100K+/Day',price:23.318,min:10,max:100000,startTime:'Instant',speed:'100K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'All Type Profile',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'wa-members':    [
+    {id:11607,name:'WhatsApp Channel Members | Worldwide 🌏 | Non Drop | No Refill | 10K/Day',price:242.8273,min:10,max:10000,startTime:'Instant',speed:'10K/Day',refill:'No Refill ⚠️',cancel:'YES',drop:'Non Drop',quality:'Worldwide 🌏',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11608,name:'WhatsApp Channel Members | Worldwide 🌏 | Non Drop | 30 Days | 100K/Day',price:305.0598,min:10,max:10000,startTime:'Instant',speed:'100K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide 🌏',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:11609,name:'WhatsApp Channel Members | Worldwide 🌏 | Non Drop | 365 Days | 100K/Day',price:423.8239,min:10,max:10000,startTime:'Instant',speed:'100K/Day',refill:'365 Days ♻️',cancel:'YES',drop:'Non Drop',quality:'Worldwide 🌏',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'tg-members':    [
+    {id:12180,name:'Telegram Members | High Quality | Non Drop | Lifetime | 100K+/Day',price:64.4033,min:10,max:1000000,startTime:'Instant',speed:'100K+/Day',refill:'Lifetime ♻️',cancel:'YES',drop:'Non Drop',quality:'High Quality',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12366,name:'Telegram Premium Members | Premium Account | 10 Days Refill | 15-20 Days Non Drop | 30K/Day',price:300.4136,min:100,max:50000,startTime:'Instant',speed:'30K/Day',refill:'10 Days ♻️',cancel:'YES',drop:'15-20 Days Non Drop',quality:'Premium Account',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12367,name:'Telegram Premium Members | Premium Account | 20 Days Refill | 25-30 Days Non Drop | 30K/Day',price:415.4656,min:100,max:50000,startTime:'Instant',speed:'30K/Day',refill:'20 Days ♻️',cancel:'YES',drop:'25-30 Days Non Drop',quality:'Premium Account',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+    {id:12368,name:'Telegram Premium Members | Premium Account | 30 Days Refill | 30-40 Days Non Drop | 30K/Day',price:562.4765,min:100,max:50000,startTime:'Instant',speed:'30K/Day',refill:'30 Days ♻️',cancel:'YES',drop:'30-40 Days Non Drop',quality:'Premium Account',delivery:'Instant',details:['When the service is busy, the starting speed of the process changes.','Do not place the second order on the same link before your order is completed in the system.','In case of any problems with the service, please contact support.']},
+  ],
+  'fb-livestream': [
+    {id:12258,name:'Facebook Live Stream Views | 100% Concurrent | 15 Min | Max 5K',price:34.373,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 15 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+    {id:12259,name:'Facebook Live Stream Views | 100% Concurrent | 30 Min | Max 5K',price:68.7459,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 30 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+    {id:12260,name:'Facebook Live Stream Views | 100% Concurrent | 60 Min | Max 5K',price:137.4918,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 60 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+    {id:12261,name:'Facebook Live Stream Views | 100% Concurrent | 90 Min | Max 5K',price:206.2377,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 90 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+    {id:12262,name:'Facebook Live Stream Views | 100% Concurrent | 120 Min | Max 5K',price:274.9835,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 120 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+    {id:12263,name:'Facebook Live Stream Views | 100% Concurrent | 180 Min | Max 5K',price:412.4753,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 180 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+    {id:12264,name:'Facebook Live Stream Views | 100% Concurrent | 240 Min | Max 5K',price:549.9672,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 240 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+    {id:12265,name:'Facebook Live Stream Views | 100% Concurrent | 360 Min | Max 5K',price:824.9507,min:10,max:5000,startTime:'Instant',speed:'—',refill:'No Refill',cancel:'YES',drop:'—',quality:'100% Concurrent',delivery:'Instant',details:['100% Concurrent for 360 Minutes','Use Facebook live stream link','In case of any problems with the service, please contact support.']},
+  ],
+};
+
+// ── STATE ──
+let _selCat=null,_selSvc=null,_catOpen=false,_svcOpen=false;
+
+// ── MENU / ACCOUNT ──
+function openMenu() {
+  document.getElementById('sideMenu').classList.remove('-translate-x-full');
+  document.getElementById('menuOverlay').classList.remove('hidden');
+}
+function closeMenu() {
+  document.getElementById('sideMenu').classList.add('-translate-x-full');
+  document.getElementById('menuOverlay').classList.add('hidden');
+}
+function openAccountPopup() {
+  const popup = document.getElementById('accountPopup');
+  popup.classList.remove('hidden');
+  popup.style.display='flex';
+  // Set avatar letter
+  const name = document.getElementById('popupUsername').textContent || 'U';
+  const av = document.getElementById('popupAvatar');
+  if(av) av.textContent = name.charAt(0).toUpperCase();
+}
+function closeAccountPopup() {
+  const p=document.getElementById('accountPopup');
+  p.classList.add('hidden');
+  p.style.display='none';
+}
+function scrollToNewOrder() { document.getElementById('newOrderSection').scrollIntoView({behavior:'smooth'}); closeMenu(); }
+function logout() {
+  if (typeof window._logoutUser === 'function') {
+    window._logoutUser();
+    return;
+  }
+  localStorage.clear();
+  window.location.href = 'index.html';
+}
+// ── READ USER DATA ──
+let username = localStorage.getItem('getxh_user_name');
+if(!username){ const e=localStorage.getItem('getxh_current_user'); if(e) username=e.split('@')[0]; }
+const _email = localStorage.getItem('getxh_current_user');
+if(username){ 
+  document.getElementById('userName').innerText=username; 
+  document.getElementById('popupUsername').innerText=username;
+  const mu = document.getElementById('menuUsername');
+  if(mu) mu.textContent=username;
+  const muDesktop = document.getElementById('menuUsernameDesktop');
+  if(muDesktop) muDesktop.textContent=username;
+}
+if(_email){ 
+  document.getElementById('popupEmail').innerText=_email;
+  const me = document.getElementById('menuEmail');
+  if(me) me.textContent=_email;
+  const meDesktop = document.getElementById('menuEmailDesktop');
+  if(meDesktop) meDesktop.textContent=_email;
+}
+
+// ── TABS & PILLS ──
+function switchOrderTab(t) {
+
+  const isNew=t==='new';
+  document.getElementById('tabNewOrder').className='flex-1 py-3 text-sm font-bold transition-all '+(isNew?'bg-[#2196f3] text-white':'bg-[#0e1629] text-gray-400');
+  document.getElementById('tabSubscription').className='flex-1 py-3 text-sm font-bold transition-all '+(!isNew?'bg-[#2196f3] text-white':'bg-[#0e1629] text-gray-400');
+}
+function filterPlatform(el) {
+  
+  document.querySelectorAll('.platform-pill').forEach(p=>{p.classList.remove('active-pill','bg-[#2196f3]','text-white');p.classList.add('bg-[#0e1629]','text-gray-300');});
+  el.classList.add('active-pill');el.classList.remove('bg-[#0e1629]','text-gray-300');
+}
+
+  // ── CATEGORY DROPDOWN ──
+function buildCategoryDropdown() {
+  const dd=document.getElementById('categoryDropdown'); dd.innerHTML='';
+  CATEGORIES.forEach(c=>{
+    const d=document.createElement('div'); d.className='cat-item'+(c.id===_selCat?' selected':'');
+    const iconHTML = c.id==='welcome-offer'
+      ? `<svg width="20" height="20" viewBox="0 0 20 20" class="flex-shrink-0" style="border-radius:4px;flex-shrink:0"><defs><linearGradient id="woGrad" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#f09433"/><stop offset="33%" stop-color="#e6683c"/><stop offset="66%" stop-color="#cc2366"/><stop offset="100%" stop-color="#bc1888"/></linearGradient></defs><rect width="20" height="20" rx="5" fill="url(#woGrad)"/><text x="10" y="14.5" text-anchor="middle" font-size="11" fill="white">★</text></svg>`
+      : c.id.startsWith('yt-')
+      ? `<img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" class="w-5 h-5 rounded flex-shrink-0"/>`
+      : c.id.startsWith('fb-')
+      ? `<img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" class="w-5 h-5 rounded flex-shrink-0"/>`
+      : c.id.startsWith('tg-')
+      ? `<img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" class="w-5 h-5 rounded flex-shrink-0"/>`
+      : c.id.startsWith('wa-')
+      ? `<img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" class="w-5 h-5 rounded flex-shrink-0"/>`
+      : `<img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" class="w-5 h-5 rounded flex-shrink-0"/>`;
+    const labelHTML = c.subtitle
+      ? `<div style="display:flex;flex-direction:column;gap:1px"><span>${c.label}</span><span style="font-size:10px;font-weight:600;color:#94a3b8;line-height:1.2">${c.subtitle}</span></div>`
+      : `<span>${c.label}</span>`;
+    d.innerHTML=`${iconHTML}${labelHTML}`;
+    d.onclick=()=>selectCategory(c); dd.appendChild(d);
+  });
+}
+function toggleCategoryDropdown() {
+  _catOpen=!_catOpen;
+  const dd=document.getElementById('categoryDropdown'),arr=document.getElementById('catArrow');
+  if(_catOpen){buildCategoryDropdown();dd.classList.remove('hidden');dd.style.animation='slideDown 0.22s ease forwards';arr.style.transform='rotate(180deg)';closeSvcDrop();}
+  else{dd.classList.add('hidden');arr.style.transform='rotate(0deg)';}
+}
+function closeCatDrop(){document.getElementById('categoryDropdown').classList.add('hidden');document.getElementById('catArrow').style.transform='rotate(0deg)';_catOpen=false;}
+function selectCategory(cat) {
+  _selCat=cat.id;_selSvc=null;
+  const isWelcome = cat.id==='welcome-offer';
+  document.getElementById('catIcon').classList[isWelcome?'add':'remove']('hidden');
+  document.getElementById('catIconWelcome').style.display = isWelcome?'flex':'none';
+  document.getElementById('catLabel').textContent=cat.label;
+  document.getElementById('catLabel').className='text-white text-sm font-semibold';
+  closeCatDrop();
+
+  // Show service wrapper
+  document.getElementById('serviceWrapper').style.display='block';
+  document.getElementById('svcLabel').textContent='— Select a service —';
+  document.getElementById('svcLabel').className='text-gray-400 text-sm font-semibold truncate';
+  document.getElementById('svcNumBadge').classList.add('hidden');
+  document.getElementById('serviceDetails').classList.add('hidden');
+  document.getElementById('placeOrderBtn').disabled=true;
+  document.getElementById('totalPrice').textContent='';
+
+  // ⭐ AUTO SELECT FIRST SERVICE — myfame.in jaisa
+  const firstSvc = (SERVICES[cat.id]||[])[0];
+  if(firstSvc) selectService(firstSvc);
+}
+
+
+// ── SERVICE DROPDOWN ──
+function buildServiceDropdown() {
+  const dd=document.getElementById('serviceDropdown'),q=(document.getElementById('searchService').value||'').toLowerCase();
+  dd.innerHTML='';
+  (SERVICES[_selCat]||[]).filter(s=>!q||s.name.toLowerCase().includes(q)).forEach(s=>{
+    const d=document.createElement('div');d.className='svc-item'+(_selSvc&&_selSvc.id===s.id?' selected':'');
+    d.innerHTML=`<div class="svc-num-badge">${s.id}</div><span class="flex-1 leading-snug">${s.name}</span><span class="text-[#2196f3] font-black text-xs flex-shrink-0 ml-2">₹${s.price.toFixed(2)}/1K</span>`;
+    d.onclick=()=>selectService(s);dd.appendChild(d);
+  });
+}
+function toggleServiceDropdown() {
+  if(!_selCat)return;_svcOpen=!_svcOpen;
+  const dd=document.getElementById('serviceDropdown'),arr=document.getElementById('svcArrow');
+  if(_svcOpen){buildServiceDropdown();dd.classList.remove('hidden');dd.style.animation='slideDown 0.22s ease forwards';arr.style.transform='rotate(180deg)';closeCatDrop();}
+  else closeSvcDrop();
+}
+function closeSvcDrop(){document.getElementById('serviceDropdown').classList.add('hidden');document.getElementById('svcArrow').style.transform='rotate(0deg)';_svcOpen=false;}
+function selectService(svc) {
+  _selSvc=svc;
+  document.getElementById('svcNumBadge').textContent=svc.id;document.getElementById('svcNumBadge').classList.remove('hidden');
+  document.getElementById('svcLabel').textContent=svc.name;document.getElementById('svcLabel').className='text-white text-sm font-semibold truncate';
+  closeSvcDrop();
+  document.getElementById('dStartTime').textContent=svc.startTime;
+  document.getElementById('dSpeed').textContent=svc.speed;
+  document.getElementById('dRefill').textContent=svc.refill;
+  document.getElementById('dCancel').textContent=svc.cancel;
+  document.getElementById('dDrop').textContent=svc.drop;
+  document.getElementById('dQuality').textContent=svc.quality;
+  document.getElementById('dDeliveryTime').textContent=svc.delivery;
+  document.getElementById('dDetailsList').innerHTML=svc.details.map(d=>`<li class="flex items-start gap-1.5"><span class="flex-shrink-0">•</span>${d}</li>`).join('');
+  document.getElementById('quantityInput').placeholder=`Min: ${svc.min.toLocaleString()} - Max: ${svc.max.toLocaleString()}`;
+  document.getElementById('quantityInput').value='';
+  document.getElementById('linkInput').value='';
+  document.getElementById('totalPrice').textContent='';
+  document.getElementById('quantityError').classList.add('hidden');
+  document.getElementById('placeOrderBtn').disabled=true;
+  // Custom comments box logic
+  const isCustomComment = svc.name.toLowerCase().includes('custom');
+  const ccWrap = document.getElementById('customCommentsWrap');
+  const ccInput = document.getElementById('customCommentsInput');
+  const qtyInput = document.getElementById('quantityInput');
+  if(isCustomComment){
+    ccWrap.classList.remove('hidden');
+    ccInput.value='';
+    document.getElementById('customCommentsCount').textContent='0 comments entered';
+    document.getElementById('customCommentsError').classList.add('hidden');
+    document.getElementById('customCommentsMin').textContent=svc.min;
+    qtyInput.readOnly=true;
+    qtyInput.classList.add('opacity-50','cursor-not-allowed');
+  } else {
+    ccWrap.classList.add('hidden');
+    ccInput.value='';
+    qtyInput.readOnly=false;
+    qtyInput.classList.remove('opacity-50','cursor-not-allowed');
+  }
+  const det=document.getElementById('serviceDetails');
+  det.classList.remove('hidden');det.style.animation='none';det.offsetHeight;det.style.animation='fadeUpAnim 0.35s ease forwards';
+}
+
+// ── GLOBAL SEARCH ──
+function clearGlobalSearch() {
+  const inp = document.getElementById('searchService');
+  inp.value = '';
+  document.getElementById('globalSearchDrop').classList.add('hidden');
+  document.getElementById('searchClearBtn').classList.add('hidden');
+  inp.focus();
+}
+
+function buildGlobalSearch(q) {
+  const drop = document.getElementById('globalSearchDrop');
+  drop.innerHTML = '';
+  if (!q) { drop.classList.add('hidden'); document.getElementById('searchClearBtn').classList.add('hidden'); return; }
+  document.getElementById('searchClearBtn').classList.remove('hidden');
+
+  const results = [];
+  CATEGORIES.forEach(cat => {
+    (SERVICES[cat.id] || []).forEach(svc => {
+      if (svc.name.toLowerCase().includes(q) || cat.label.toLowerCase().includes(q)) {
+        results.push({ cat, svc });
+      }
+    });
+  });
+
+  if (results.length === 0) {
+    drop.innerHTML = '<div class="search-no-result">No services found for "<b style="color:#fff">' + q + '</b>"</div>';
+    drop.classList.remove('hidden');
+    drop.style.animation = 'slideDown 0.2s ease forwards';
+    return;
+  }
+
+  results.forEach(({ cat, svc }) => {
+    const d = document.createElement('div');
+    d.className = 'search-result-item';
+    d.innerHTML = `
+      <div class="svc-num-badge">${svc.id}</div>
+      <span class="flex-1 leading-snug text-xs font-semibold text-gray-200">${svc.name}</span>
+      <span class="search-cat-badge">${cat.label.split(' - ')[1] || cat.label}</span>
+      <span class="text-[#2196f3] font-black text-xs flex-shrink-0 ml-1">₹${svc.price.toFixed(2)}/1K</span>
+    `;
+    d.onclick = () => {
+      // Close dropdowns & clear search
+      closeCatDrop(); closeSvcDrop();
+      document.getElementById('globalSearchDrop').classList.add('hidden');
+      document.getElementById('searchClearBtn').classList.add('hidden');
+      document.getElementById('searchService').value = '';
+      // Select category then service
+      selectCategory(cat);
+      selectService(svc);
+      // Scroll form into view
+      document.getElementById('newOrderSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    drop.appendChild(d);
+  });
+
+  drop.classList.remove('hidden');
+  drop.style.animation = 'slideDown 0.2s ease forwards';
+}
+
+document.getElementById('searchService').addEventListener('input', function () {
+  buildGlobalSearch(this.value.trim().toLowerCase());
+});
+
+// Close global search on outside click
+document.addEventListener('click', function (e) {
+  const wrap = document.getElementById('searchService').closest('.relative');
+  if (!wrap.contains(e.target)) {
+    document.getElementById('globalSearchDrop').classList.add('hidden');
+  }
+});
+// ── VALIDATION ──
+document.getElementById('quantityInput').addEventListener('input',()=>{
+  if(!_selSvc)return;
+  if(_selSvc.name.toLowerCase().includes('custom'))return; // custom mode — qty is read-only
+  const qty=parseInt(document.getElementById('quantityInput').value);
+  const err=document.getElementById('quantityError');
+  if(!qty||qty<_selSvc.min||qty>_selSvc.max){err.classList.remove('hidden');document.getElementById('totalPrice').textContent='';document.getElementById('placeOrderBtn').disabled=true;return;}
+  err.classList.add('hidden');
+  document.getElementById('totalPrice').textContent='₹'+((qty/1000)*_selSvc.price).toFixed(2)+'  ';
+  document.getElementById('placeOrderBtn').disabled=!document.getElementById('linkInput').value.trim();
+});
+document.getElementById('linkInput').addEventListener('input',()=>{
+  if(!_selSvc)return;
+  if(_selSvc.name.toLowerCase().includes('custom')){
+    // custom mode — recheck line count
+    const lines=document.getElementById('customCommentsInput').value.split('\n').filter(l=>l.trim()!=='').length;
+    document.getElementById('placeOrderBtn').disabled=!(document.getElementById('linkInput').value.trim()&&lines>=_selSvc.min);
+    return;
+  }
+  const qty=parseInt(document.getElementById('quantityInput').value);
+  document.getElementById('placeOrderBtn').disabled=!(document.getElementById('linkInput').value.trim()&&qty&&qty>=_selSvc.min&&qty<=_selSvc.max);
+});
+// ── CUSTOM COMMENTS TEXTAREA ──
+document.getElementById('customCommentsInput').addEventListener('input',function(){
+  if(!_selSvc)return;
+  const lines=this.value.split('\n').filter(l=>l.trim()!=='').length;
+  const countEl=document.getElementById('customCommentsCount');
+  const errEl=document.getElementById('customCommentsError');
+  countEl.textContent=lines+' comment'+(lines===1?'':'s')+' entered';
+  document.getElementById('quantityInput').value=lines||'';
+  if(lines>0&&lines<_selSvc.min){
+    errEl.classList.remove('hidden');
+    document.getElementById('totalPrice').textContent='';
+    document.getElementById('placeOrderBtn').disabled=true;
+  } else if(lines>=_selSvc.min){
+    errEl.classList.add('hidden');
+    document.getElementById('totalPrice').textContent='₹'+((lines/1000)*_selSvc.price).toFixed(2)+'  ';
+    document.getElementById('placeOrderBtn').disabled=!document.getElementById('linkInput').value.trim();
+  } else {
+    errEl.classList.add('hidden');
+    document.getElementById('totalPrice').textContent='';
+    document.getElementById('placeOrderBtn').disabled=true;
+  }
+});
+
+// ── PLACE ORDER ──
+// ── PLACE ORDER API ──
+// ── TOAST ──
+function showToast(type, title, msg) {
+  const icons = { success: 'check_circle', error: 'cancel', warn: 'warning' };
+  const container = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.innerHTML = `
+    <div class="toast-icon">
+      <span class="material-symbols-outlined" style="font-size:17px">${icons[type]||'info'}</span>
+    </div>
+    <div class="toast-body">
+      <div class="toast-title">${title}</div>
+      ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+      <div class="toast-bar"></div>
+    </div>`;
+  container.appendChild(t);
+  requestAnimationFrame(() => { requestAnimationFrame(() => { t.classList.add('show'); }); });
+  setTimeout(() => {
+    t.classList.add('hide');
+    setTimeout(() => t.remove(), 380);
+  }, 3000);
+}
+
+// ── PLACE ORDER ──
+async function placeOrder(serviceId) {
+  const link     = document.getElementById('linkInput').value.trim();
+  const quantity = document.getElementById('quantityInput').value;
+
+  if (!link || !quantity) {
+    showToast('warn', 'Missing Fields', 'Please enter a link and quantity.');
+    return;
+  }
+
+  const btn       = document.getElementById('placeOrderBtn');
+  const labelSpan = btn.querySelector('.order-label');
+  const chevron   = btn.querySelector('.material-symbols-outlined');
+
+  // ── Loading state ──
+  btn.disabled = true;
+  if (labelSpan) labelSpan.textContent = 'Processing...';
+  if (chevron)   chevron.style.display = 'none';
+
+  try {
+    const res = await fetch('https://backend-for-api-connect-1.onrender.com/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ service: serviceId, link: link, quantity: quantity })
+    });
+    const data = await res.json();
+
+    if (data.order) {
+      // ── Success ──
+      showToast('success', 'Order Placed!', 'Order ID: ' + data.order);
+      localStorage.setItem('lastOrderId', data.order);
+      startTracking();
+      if (typeof _saveOrder === 'function') _saveOrder(_selSvc, parseInt(quantity), link, data.order);
+
+      // Auto scroll to order tracking card
+      setTimeout(() => {
+        const card = document.getElementById('orderTrackingCard');
+        if (card && !card.classList.contains('hidden')) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 400);
+
+    } else {
+      showToast('error', 'Unable to Place Order', 'Something went wrong. Please try again or contact support.');
+    }
+  } catch (err) {
+    showToast('error', 'Unable to Place Order', 'Service is temporarily unavailable. Please try again later.');
+  } finally {
+    // ── Restore button ──
+    if (labelSpan) labelSpan.textContent = 'ORDER';
+    if (chevron)   chevron.style.display = '';
+    btn.disabled = !(
+      document.getElementById('linkInput').value.trim() &&
+      parseInt(document.getElementById('quantityInput').value) >= (_selSvc ? _selSvc.min : 1)
+    );
+  }
+}
+
+document.getElementById('placeOrderBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  if (!_selSvc) return;
+  // Ripple
+  const rip = document.getElementById('rippleEl'), r = this.getBoundingClientRect();
+  rip.style.left = (e.clientX - r.left) + 'px';
+  rip.style.top  = (e.clientY - r.top)  + 'px';
+  rip.style.transform = 'scale(4)'; rip.style.opacity = '1';
+  setTimeout(() => { rip.style.transform = 'scale(0)'; rip.style.opacity = '0'; }, 500);
+  placeOrder(_selSvc.id);
+});
+
+document.getElementById('closeModalBtn').addEventListener('click',closeSuccessModal);
+document.getElementById('viewOrdersBtn').addEventListener('click',()=>{
+  closeSuccessModal();
+  window.location.href='orders.html';
+});
+function closeSuccessModal(){
+  const box=document.getElementById('successModalBox');
+  box.style.transform='scale(0.75)';box.style.opacity='0';
+  setTimeout(()=>{
+  const m=document.getElementById('successModal');
+  m.classList.add('hidden');
+  m.style.display='none';
+},300);
+  // Reset sirf link aur quantity — category/service same rahe
+  document.getElementById('linkInput').value='';
+  document.getElementById('quantityInput').value='';
+  document.getElementById('totalPrice').textContent='';
+  document.getElementById('placeOrderBtn').disabled=true;
+  document.getElementById('customCommentsInput').value='';
+  document.getElementById('customCommentsCount').textContent='0 comments entered';
+  document.getElementById('customCommentsError').classList.add('hidden');
+  document.getElementById('orderErrorToast').classList.add('hidden');
+}
+  
+// ⭐ AUTO SELECT DEFAULT CATEGORY + SERVICE ON PAGE LOAD
+// ── ORDER TRACKING ──
+async function checkStatus(orderId) {
+  try {
+    const res  = await fetch('https://backend-for-api-connect-1.onrender.com/status/' + orderId);
+    const data = await res.json();
+
+
+    const statusEl   = document.getElementById('orderStatus');
+    const remainsEl  = document.getElementById('orderRemains');
+    const progressEl = document.getElementById('orderProgress');
+    if (!statusEl || !remainsEl || !progressEl) return;
+
+    const status = (data.status || '').toLowerCase();
+
+    statusEl.innerText  = data.status;
+    remainsEl.innerText = data.remains;
+    statusEl.className  = 'status';
+
+    if (status === 'completed') {
+      statusEl.classList.add('completed');
+      progressEl.style.width = '100%';
+    } else if (status === 'inprogress') {
+      statusEl.classList.add('inprogress');
+      progressEl.style.width = '70%';
+    } else if (status === 'partial') {
+      statusEl.classList.add('partial');
+      progressEl.style.width = '85%';
+    } else {
+      statusEl.classList.add('pending');
+      progressEl.style.width = '20%';
+    }
+  } catch {
+    // silent fail — tracking is non-critical
+  }
+}
+
+let _trackingInterval = null;
+function startTracking() {
+  const orderId = localStorage.getItem('lastOrderId');
+  if (!orderId) return;
+
+  document.getElementById('orderId').innerText = orderId;
+  document.getElementById('orderTrackingCard').classList.remove('hidden');
+  checkStatus(orderId);
+
+  // Ensure only one interval runs at a time
+  if (_trackingInterval) clearInterval(_trackingInterval);
+  _trackingInterval = setInterval(() => {
+    const id = localStorage.getItem('lastOrderId');
+    if (id) checkStatus(id);
+  }, 5000);
+}
+
+window.addEventListener('load', () => {
+  const defaultCat = CATEGORIES[0];
+  if(defaultCat) selectCategory(defaultCat);
+  startTracking();
+});
+// Close dropdowns on outside click
+document.addEventListener('click',e=>{
+  if(!document.getElementById('categoryWrapper').contains(e.target)) closeCatDrop();
+  const sw=document.getElementById('serviceDropdownWrapper');
+  if(sw&&!sw.contains(e.target)) closeSvcDrop();
+});
+</script>
+
+<!-- FIREBASE MODULE — single init, real-time listeners, no race condition -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, signOut,
+  EmailAuthProvider, reauthenticateWithCredential, updatePassword
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import {
+  getFirestore, collection, addDoc, query, where, orderBy, limit,
+  doc, setDoc, increment, onSnapshot
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+let currentUid     = null;
+let currentEmail   = null;
+let _unsubStats    = null;
+let _unsubOrders   = null;
+
+// ── LOGOUT ──
+window._logoutUser = async function() {
+  if (_unsubStats)  _unsubStats();
+  if (_unsubOrders) _unsubOrders();
+  try { await signOut(auth); } catch(_) {}
+  localStorage.clear();
+  window.location.href = 'index.html';
+};
+
+// ── AUTH GUARD — single onAuthStateChanged, no race condition ──
+onAuthStateChanged(auth, (user) => {
+  if (!user) { window.location.href = "index.html"; return; }
+
+  // Admin button — only for agency@getxh.in
+  const adminBtn        = document.getElementById("adminBtn");
+  const desktopAdminBtn = document.getElementById("desktopAdminBtn");
+  if ((user.email || '').trim().toLowerCase() === "agency@getxh.in") {
+    if (adminBtn)        { adminBtn.style.display        = "flex"; adminBtn.classList.remove("hidden"); }
+    if (desktopAdminBtn) { desktopAdminBtn.style.display = "flex"; desktopAdminBtn.classList.remove("hidden"); }
+  } else {
+    if (adminBtn)        { adminBtn.style.display        = "none"; }
+    if (desktopAdminBtn) { desktopAdminBtn.style.display = "none"; }
+  }
+
+  currentUid   = user.uid;
+  currentEmail = (user.email || '').trim().toLowerCase();
+
+  // Password change — wired up here, no second Firebase init needed
+  window._doChangePassword = async function(currPass, newPass, callback) {
+    try {
+      const cred = EmailAuthProvider.credential(user.email, currPass);
+      await reauthenticateWithCredential(user, cred);
+      await updatePassword(user, newPass);
+      callback(null);
+    } catch(e) { callback(e); }
+  };
+
+  // ── REAL-TIME: user stats (balance, orders) ──
+  if (_unsubStats) _unsubStats();
+  _unsubStats = onSnapshot(doc(db, "Users", currentUid), (snap) => {
+    const data = snap.exists() ? snap.data() : {};
+    const balance     = Number(data.Balance || 0);
+    const totalOrders = Number(data.TotalOrders || 0);
+    document.getElementById("userBalance").textContent      = `₹${balance.toFixed(2)}`;
+    document.getElementById("walletBalanceTop").textContent = `₹${balance.toFixed(2)}`;
+    document.getElementById("userOrders").textContent       = totalOrders.toLocaleString();
+  });
+
+  // ── REAL-TIME: recent orders ──
+  if (_unsubOrders) _unsubOrders();
+  const container = document.getElementById("recentOrdersContainer");
+  if (container) {
+    container.innerHTML = `
+      <div class="space-y-3">
+        ${[1,2].map(()=>`
+        <div class="p-4 bg-[#121c33] border border-white/10 rounded-xl flex gap-3 animate-pulse">
+          <div class="flex-1 space-y-2">
+            <div class="h-3 bg-white/8 rounded w-2/3"></div>
+            <div class="h-3 bg-white/5 rounded w-1/3"></div>
+          </div>
+        </div>`).join('')}
+      </div>`;
+
+    const q = query(
+      collection(db, "orders"),
+      where("userId", "==", currentUid),
+      orderBy("createdAt", "desc"),
+      limit(3)
+    );
+    _unsubOrders = onSnapshot(q, (snap) => {
+      if (snap.empty) {
+        container.innerHTML = `
+          <div class="rounded-xl p-5 flex flex-col items-center gap-2 text-center"
+               style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1)">
+            <span class="material-symbols-outlined text-gray-600" style="font-size:32px">receipt_long</span>
+            <p class="text-sm font-bold text-gray-500">No orders yet</p>
+            <p class="text-xs text-gray-600">Your recent orders will appear here instantly.</p>
+          </div>`;
+        return;
+      }
+      container.innerHTML = "";
+      snap.forEach(d => {
+        const o   = d.data();
+        const box = document.createElement("div");
+        box.className = "p-4 rounded-xl mb-3 flex items-start justify-between gap-3";
+        box.style.cssText = "background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)";
+        const st = (o.status || '').toLowerCase();
+        const statusColor = st === "completed" ? "#4ade80" : st === "failed" ? "#f87171" : "#facc15";
+        box.innerHTML = `
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold text-white truncate mb-1">${o.serviceName || o.service || "—"}</p>
+            <div class="flex flex-wrap gap-3 text-xs text-gray-400">
+              <span>Qty: <b class="text-white">${(o.quantity||0).toLocaleString()}</b></span>
+              <span>₹<b class="text-blue-400">${(o.price||0).toFixed(2)}</b></span>
+              <span>${o.createdAtReadable || ""}</span>
+            </div>
+          </div>
+          <span class="text-xs font-black px-2 py-1 rounded-lg flex-shrink-0"
+                style="background:${statusColor}18;border:1px solid ${statusColor}40;color:${statusColor}">
+            ${o.status || "Pending"}
+          </span>`;
+        container.appendChild(box);
+      });
+    }, () => {
+      // Index not ready or permission error — silent fail, orders page still works
+    });
+  }
+});
+
+// ── SAVE ORDER ──
+window._saveOrder = async function(svc, qty, link, apiOrderId) {
+  if (!currentUid) { window.location.href = 'index.html'; return; }
+  try {
+    const now        = new Date();
+    const orderPrice = parseFloat(((qty / 1000) * svc.price).toFixed(2));
+    const userEmail  = currentEmail || localStorage.getItem('getxh_current_user') || '';
+
+    await addDoc(collection(db, "orders"), {
+      userId:            currentUid,
+      service:           svc.name,
+      link:              link,
+      quantity:          qty,
+      status:            "pending",
+      createdAt:         Date.now(),
+      // ── extra fields for UI display ──
+      orderId:           String(Date.now()).slice(-7),
+      apiOrderId:        apiOrderId ? String(apiOrderId) : null,
+      serviceName:       svc.name,
+      category:          svc.id,
+      price:             orderPrice,
+      createdAtReadable: now.toLocaleString('en-IN'),
+    });
+
+    await setDoc(doc(db, "Users", currentUid), {
+      TotalOrders: increment(1),
+      TotalSpent:  increment(orderPrice)
+    }, { merge: true });
+    // onSnapshot on orders.html handles UI update automatically
+  } catch(_) {}
+};
+
+// ── CLEANUP on page leave ──
+window.addEventListener('beforeunload', () => {
+  if (_unsubStats)  _unsubStats();
+  if (_unsubOrders) _unsubOrders();
+});
+</script>
+
+<script>
+function showAccView(viewId) {
+  document.getElementById('accViewHome').style.display = (viewId==='accViewHome') ? 'block' : 'none';
+  document.getElementById('accViewAccount').style.display = (viewId==='accViewAccount') ? 'block' : 'none';
+  if(viewId==='accViewAccount') {
+    const name  = localStorage.getItem('getxh_user_name') || '';
+    const email = localStorage.getItem('getxh_current_user') || '';
+    const n = name || (email ? email.split('@')[0] : '') || '-';
+    document.getElementById('accName').textContent = n;
+    document.getElementById('accEmail').textContent = email || '-';
+    document.getElementById('accDetailUsername').textContent = n;
+    document.getElementById('accDetailEmail').textContent = email || '-';
+    ['accCurrPass','accNewPass','accConfPass'].forEach(id => document.getElementById(id).value = '');
+    const msg = document.getElementById('accPassMsg');
+    msg.classList.add('hidden'); msg.textContent = '';
+  }
+}
+function changePasswordInline() {
+  const curr = document.getElementById('accCurrPass').value.trim();
+  const nw   = document.getElementById('accNewPass').value.trim();
+  const conf = document.getElementById('accConfPass').value.trim();
+  const msg  = document.getElementById('accPassMsg');
+  function showMsg(text, isError) {
+    msg.textContent = text;
+    msg.style.color = isError ? '#f87171' : '#4ade80';
+    msg.classList.remove('hidden');
+  }
+  if (!curr||!nw||!conf) return showMsg('⚠ All fields required', true);
+  if (nw.length < 6)     return showMsg('⚠ Min 6 characters', true);
+  if (nw !== conf)       return showMsg('⚠ Passwords do not match', true);
+  if (typeof window._doChangePassword === 'function') {
+    showMsg('Updating…', false);
+    window._doChangePassword(curr, nw, function(err) {
+      if (err) showMsg('⚠ Current password is wrong', true);
+      else { showMsg('✓ Changed! Logging out…', false); setTimeout(() => logout(), 2000); }
+    });
+  }
+}
+</script>
+
+</div>
+
+<div id="toastContainer"></div>
+</body>
+</html>
