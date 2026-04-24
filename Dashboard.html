@@ -295,14 +295,14 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Add Funds</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="affiliates.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+    <a href="coming-soon.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
       <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(234,130,8,0.15);">
         <span class="material-symbols-outlined" style="font-size:22px;color:#fb923c;">person_add</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Affiliates</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <button onclick="scrollToNewOrder();switchOrderTab('sub')" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+    <button onclick="window.location.href='coming-soon.html'" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
       <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(6,182,212,0.15);">
         <span class="material-symbols-outlined" style="font-size:22px;color:#22d3ee;">autorenew</span>
       </div>
@@ -875,7 +875,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     </button>
 
     <!-- Affiliates -->
-    <button onclick="closeMenu();window.location.href='affiliates.html'"
+    <button onclick="closeMenu();window.location.href='coming-soon.html'"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
       style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
       <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(234,130,8,0.15);">
@@ -886,7 +886,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     </button>
 
     <!-- Subscriptions -->
-    <button onclick="closeMenu();scrollToNewOrder();switchOrderTab('sub')"
+    <button onclick="closeMenu();window.location.href='coming-soon.html'"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
       style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
       <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(6,182,212,0.15);">
@@ -1072,6 +1072,9 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 .menu-item[style*="display: none"] {
   display:none !important;
 }
+/* Admin buttons — hidden by default, only shown when body.is-admin */
+#adminBtn, #desktopAdminBtn { display:none !important; }
+body.is-admin #adminBtn, body.is-admin #desktopAdminBtn { display:flex !important; }
 .menu-item > div:first-child {
   width:32px;
   height:32px;
@@ -1902,14 +1905,10 @@ onAuthStateChanged(auth, (user) => {
   if (!user) { window.location.href = "index.html"; return; }
 
   // Admin button — only for agency@getxh.in
-  const adminBtn        = document.getElementById("adminBtn");
-  const desktopAdminBtn = document.getElementById("desktopAdminBtn");
   if ((user.email || '').trim().toLowerCase() === "agency@getxh.in") {
-    if (adminBtn)        { adminBtn.style.display        = "flex"; adminBtn.classList.remove("hidden"); }
-    if (desktopAdminBtn) { desktopAdminBtn.style.display = "flex"; desktopAdminBtn.classList.remove("hidden"); }
+    document.body.classList.add("is-admin");
   } else {
-    if (adminBtn)        { adminBtn.style.display        = "none"; }
-    if (desktopAdminBtn) { desktopAdminBtn.style.display = "none"; }
+    document.body.classList.remove("is-admin");
   }
 
   currentUid   = user.uid;

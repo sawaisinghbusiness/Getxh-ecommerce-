@@ -1,5 +1,5 @@
 node_modules/
-dashboard-react/node_modules/
+dashboard-react/
 .env
 *.env
 .DS_Store
