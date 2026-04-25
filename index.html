@@ -564,7 +564,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
     signInWithEmailAndPassword(auth, email, password)
     .then(async(cred)=>{
       saveSession(cred.user, email);
-      window.location.replace("Dashboard.html");
+      window.location.replace("/dashboard");
     })
     .catch((err)=>{
       let msg="Invalid email or password";
@@ -749,8 +749,8 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
 
       <!-- Footer links -->
       <div class="cfoot">
-        <a class="link-dim" href="forgot-password.html">Forgot Password?</a>
-        <a class="link-acc" href="Registerpage.html">
+        <a class="link-dim" href="/forgot-password">Forgot Password?</a>
+        <a class="link-acc" href="/register">
           Create Account
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>

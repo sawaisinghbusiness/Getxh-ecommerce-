@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reset Password — GETXH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0d0f14;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* subtle grid bg */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .wrap {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    /* brand */
+    .brand {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .brand-logo-wrap {
+      display: inline-flex;
+      mix-blend-mode: screen;
+    }
+    .brand-logo-wrap img {
+      height: 120px;
+      width: auto;
+      display: block;
+      filter: invert(1) hue-rotate(180deg);
+    }
+
+    /* card */
+    .card {
+      background: #12161f;
+      border: 1px solid transparent;
+      border-radius: 16px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    /* shine border */
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      padding: 1px;
+      background: radial-gradient(
+        transparent, transparent,
+        #FF007F, #39FF14, #00FFFF,
+        transparent, transparent
+      );
+      background-size: 300% 300%;
+      animation: shine-pulse 6s linear infinite;
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: 0;
+    }
+    @keyframes shine-pulse {
+      0%   { background-position: 0% 0%; }
+      50%  { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+
+    /* status pill */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px 4px 8px;
+      border-radius: 6px;
+      background: rgba(34,197,94,.06);
+      border: 1px solid rgba(34,197,94,.15);
+      margin-bottom: 24px;
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      flex-shrink: 0;
+      animation: blink 2.4s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .status-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #22c55e;
+      letter-spacing: 0.04em;
+    }
+
+    /* heading */
+    .heading {
+      font-size: 24px;
+      font-weight: 800;
+      color: #f8fafc;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    /* shiny maintenance button */
+    @property --gradient-angle {
+      syntax: "<angle>";
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @property --gradient-angle-offset {
+      syntax: "<angle>";
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @property --gradient-percent {
+      syntax: "<percentage>";
+      initial-value: 5%;
+      inherits: false;
+    }
+    @property --gradient-shine {
+      syntax: "<color>";
+      initial-value: white;
+      inherits: false;
+    }
+
+    .notice {
+      --bg: #100d00;
+      --bg-subtle: #1a1600;
+      --fg: #fbbf24;
+      --highlight: #eab308;
+      --highlight-subtle: #fde68a;
+      --duration: 4s;
+      --shadow-size: 2px;
+      --transition: 800ms cubic-bezier(0.25, 1, 0.5, 1);
+
+      isolation: isolate;
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      margin: 14px 0 20px;
+      border-radius: 360px;
+      border: 1px solid transparent;
+      cursor: default;
+      color: var(--fg);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      background:
+        linear-gradient(var(--bg), var(--bg)) padding-box,
+        conic-gradient(
+          from calc(var(--gradient-angle) - var(--gradient-angle-offset)),
+          transparent,
+          var(--highlight) var(--gradient-percent),
+          var(--gradient-shine) calc(var(--gradient-percent) * 2),
+          var(--highlight) calc(var(--gradient-percent) * 3),
+          transparent calc(var(--gradient-percent) * 4)
+        ) border-box;
+      box-shadow: inset 0 0 0 1px var(--bg-subtle);
+      animation: gradient-angle var(--duration) linear infinite;
+      transition: var(--transition);
+      transition-property: --gradient-angle-offset, --gradient-percent, --gradient-shine;
+    }
+
+    .notice::before {
+      content: '';
+      pointer-events: none;
+      position: absolute;
+      inset-inline-start: 50%;
+      inset-block-start: 50%;
+      translate: -50% -50%;
+      --size: calc(100% - var(--shadow-size) * 3);
+      width: var(--size);
+      height: var(--size);
+      background: radial-gradient(circle at 2px 2px, white calc(2px / 4), transparent 0) padding-box;
+      background-size: 4px 4px;
+      background-repeat: space;
+      mask-image: conic-gradient(from calc(var(--gradient-angle) + 45deg), black, transparent 10% 90%, black);
+      border-radius: inherit;
+      opacity: 0.25;
+      z-index: -1;
+      animation: gradient-angle var(--duration) linear infinite;
+    }
+
+    .notice::after {
+      content: '';
+      pointer-events: none;
+      position: absolute;
+      inset-inline-start: 50%;
+      inset-block-start: 50%;
+      translate: -50% -50%;
+      width: 100%;
+      aspect-ratio: 1;
+      background: linear-gradient(-50deg, transparent, var(--highlight), transparent);
+      mask-image: radial-gradient(circle at bottom, transparent 40%, black);
+      opacity: 0.4;
+      z-index: -1;
+      animation: shimmer var(--duration) linear infinite;
+    }
+
+    .notice-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #eab308;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .notice-text {
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes gradient-angle { to { --gradient-angle: 360deg; } }
+    @keyframes shimmer { to { rotate: 360deg; } }
+
+    /* body text */
+    .body-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #ffffff;
+      margin-bottom: 28px;
+    }
+    .body-text strong {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    /* divider */
+    .divider {
+      height: 1px;
+      background: #1e2638;
+      margin-bottom: 24px;
+    }
+
+    /* buttons */
+    .btn-wa {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 14px 18px;
+      background: #052e10;
+      border: 1px solid #16a34a;
+      border-radius: 12px;
+      color: #fff;
+      font-family: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      transition: border-color .2s, background .2s, transform .1s;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    .btn-wa::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(34,197,94,.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .btn-wa:hover  { background: #063614; border-color: #22c55e; }
+    .btn-wa:active { transform: scale(0.99); }
+
+    .btn-wa-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-wa-icon {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      background: rgba(34,197,94,.2);
+      border: 1px solid rgba(34,197,94,.4);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: #4ade80;
+    }
+    .btn-wa-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      text-align: left;
+    }
+    .btn-wa-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #dcfce7;
+      letter-spacing: 0.01em;
+    }
+    .btn-wa-sub {
+      font-size: 11px;
+      font-weight: 400;
+      color: #86efac;
+    }
+    .btn-wa-arrow {
+      color: #4ade80;
+      opacity: 0.9;
+      flex-shrink: 0;
+    }
+
+    .btn-back {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 11px 20px;
+      background: transparent;
+      border: 1px solid #2d3a50;
+      border-radius: 10px;
+      color: #94a3b8;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+    .btn-back:hover { border-color: #3d4f68; color: #cbd5e1; }
+
+    /* footer note */
+    .footnote {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .footnote-line {
+      flex: 1;
+      height: 1px;
+      background: #1a2030;
+    }
+    .footnote-text {
+      font-size: 11px;
+      color: #ffffff;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+  </style>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())});}</script>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="brand">
+      <div class="brand-logo-wrap">
+        <img src="getxh new logo.png" alt="GETXH" />
+      </div>
+    </div>
+
+    <div class="card">
+
+      <p class="heading">Coming Soon</p>
+
+      <p style="font-size:13px;font-weight:700;color:#818cf8;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:16px;">Reset system under maintenance</p>
+
+      <p class="body-text">
+        Password reset is <strong>temporarily unavailable</strong>.<br>
+        You can request a reset manually via WhatsApp.<br>
+        Our team will assist you within minutes.
+      </p>
+
+      <div class="divider"></div>
+
+      <a class="btn-wa"
+         href="https://wa.me/918239474289?text=Hi%20GETXH%20team%2C%20I%20need%20help%20resetting%20my%20account%20password.%20Please%20assist%20me."
+         target="_blank" rel="noopener">
+        <div class="btn-wa-left">
+          <div class="btn-wa-icon">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+          </div>
+          <div class="btn-wa-text">
+            <span class="btn-wa-title">Request Reset via WhatsApp</span>
+            <span class="btn-wa-sub">Opens WhatsApp · Usually 5–10 min</span>
+          </div>
+        </div>
+        <svg class="btn-wa-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+
+      <a class="btn-back" href="/">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Back to Login
+      </a>
+
+    </div>
+  </div>
+</body>
+</html>

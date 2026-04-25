@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GETXH - Create Account</title>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#020617;
+  --bg2:#0f172a;
+  --purple:#8b5cf6;
+  --blue:#3b82f6;
+  --grad:linear-gradient(135deg,#8b5cf6 0%,#3b82f6 100%);
+  --glass:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.12);
+  --text:#f1f5f9;
+  --muted:#94a3b8;
+  --sub:#94a3b8;
+}
+
+html,body{
+  height:100%;
+  font-family:'Inter',sans-serif;
+  background:#0f172a;
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
+  transition:all 0.3s ease;
+}
+
+.page{
+  display:flex;
+  min-height:100vh;
+}
+
+/* ─── LEFT PANEL ─── */
+.left{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:60px 64px;
+  position:relative;
+  overflow:hidden;
+}
+
+/* grid overlay — full page */
+.page::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;
+  z-index:0;
+}
+
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;opacity:0.7;will-change:transform,opacity;z-index:0;}
+.orb-1{width:500px;height:500px;background:rgba(139,92,246,0.3);top:-140px;left:-120px;animation:floatA 14s ease-in-out infinite alternate,blobPulse 9s ease-in-out infinite;}
+.orb-2{width:380px;height:380px;background:rgba(59,130,246,0.22);bottom:-80px;right:-60px;animation:floatB 16s ease-in-out infinite alternate,blobPulse 11s ease-in-out infinite;}
+.orb-3{width:260px;height:260px;background:rgba(6,182,212,0.15);top:55%;left:42%;animation:floatC 18s ease-in-out infinite alternate,blobPulse 10s ease-in-out infinite alternate;}
+.orb-4{width:180px;height:180px;background:rgba(167,139,250,0.18);top:30%;right:10%;animation:floatB 15s ease-in-out infinite alternate,blobPulse 8s ease-in-out infinite;}
+
+.left-content{
+  position:relative;max-width:500px;
+  animation:fadeUpSoft 0.75s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+.logo{
+  display:flex;align-items:center;margin-bottom:60px;
+}
+.logo-blend{
+  display:inline-flex;
+  mix-blend-mode:screen;
+}
+.logo-img{
+  height:180px;width:auto;display:block;
+  filter:invert(1) hue-rotate(180deg);
+}
+
+.left-heading{
+  font-size:clamp(28px,3.2vw,46px);
+  font-weight:800;
+  line-height:1.12;
+  letter-spacing:-0.025em;
+  margin-bottom:18px;
+  color:#ffffff;
+  text-shadow:0 0 20px rgba(99,102,241,0.4);
+}
+.left-heading .grad-text{
+  background:linear-gradient(135deg,#8b5cf6 0%,#22d3ee 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-shadow:0 0 20px rgba(99,102,241,0.4);
+}
+
+.left-sub{
+  font-size:15px;
+  color:#94a3b8;
+  line-height:1.75;
+  max-width:400px;
+  margin-bottom:44px;
+}
+
+.features{display:flex;flex-direction:column;gap:18px;}
+.feat{display:flex;align-items:center;gap:14px;}
+.feat-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(139,92,246,0.1);
+  border:1px solid rgba(139,92,246,0.22);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  box-shadow:0 0 0 rgba(139,92,246,0);
+  animation:iconPulse 3.4s ease-in-out infinite;
+}
+.feat:hover .feat-icon{
+  background:rgba(139,92,246,0.18);
+  transform:translateY(-2px) scale(1.04);
+  box-shadow:0 0 20px rgba(139,92,246,0.2);
+}
+.feat-icon svg{
+  width:16px;height:16px;
+  filter:drop-shadow(0 0 10px rgba(139,92,246,0.45));
+}
+.feat-label{font-size:14px;font-weight:500;color:#e2e8f0;}
+
+.stats{
+  display:flex;gap:36px;
+  margin-top:52px;padding-top:32px;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.stat-val{font-size:22px;font-weight:800;color:#ffffff;}
+.stat-lbl{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-top:3px;}
+
+/* ─── RIGHT PANEL ─── */
+.right{
+  width:560px;
+  min-width:560px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px 32px;
+  padding-top:20px;
+  position:relative;
+}
+
+/* shine border wrapper */
+.card-shine-wrap{
+  position:relative;
+  width:100%;
+  max-width:500px;
+  border-radius:24px;
+  padding:2px;
+  animation:fadeUpSoft 0.7s cubic-bezier(0.22,1,0.36,1) both;
+}
+.card-shine-wrap::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:24px;
+  background:conic-gradient(
+    from var(--shine-angle, 0deg),
+    transparent 0deg,
+    #8b5cf6 60deg,
+    #3b82f6 120deg,
+    #06b6d4 180deg,
+    transparent 240deg
+  );
+  animation:card-spin 4s linear infinite;
+  z-index:0;
+}
+.card-shine-wrap::after{
+  content:'';
+  position:absolute;
+  inset:2px;
+  border-radius:22px;
+  background:#0f172a;
+  z-index:1;
+}
+@keyframes card-spin{
+  to{ --shine-angle:360deg; }
+}
+@property --shine-angle{
+  syntax:'<angle>';
+  initial-value:0deg;
+  inherits:false;
+}
+
+.card{
+  position:relative;
+  z-index:2;
+  width:100%;
+  background:#0f172a;
+  border:none;
+  border-radius:22px;
+  padding:56px 48px;
+  box-shadow:
+    0 32px 72px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:
+    0 40px 84px rgba(0,0,0,0.62),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.card-head{text-align:center;margin-bottom:26px;}
+.card-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 13px;border-radius:100px;
+  background:rgba(139,92,246,0.1);
+  border:1px solid rgba(139,92,246,0.22);
+  font-size:10px;font-weight:700;color:#a78bfa;
+  letter-spacing:0.08em;text-transform:uppercase;
+  margin-bottom:14px;
+}
+.badge-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#a78bfa;
+  animation:pulseDot 2s ease-in-out infinite;
+}
+.card-title{
+  font-size:25px;font-weight:800;letter-spacing:-0.02em;color:#ffffff;
+  text-shadow:0 0 20px rgba(99,102,241,0.4);
+}
+.card-sub{font-size:13px;color:#94a3b8;margin-top:6px;}
+
+#errorBox{
+  display:none;
+  align-items:center;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(239,68,68,0.08);
+  border:1px solid rgba(239,68,68,0.2);
+  color:#fca5a5;font-size:13px;font-weight:500;
+  margin-bottom:16px;
+}
+#infoBox{
+  display:none;
+  align-items:center;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(74,222,128,0.08);
+  border:1px solid rgba(74,222,128,0.2);
+  color:#86efac;font-size:13px;font-weight:500;
+  margin-bottom:16px;
+}
+
+.fgroup{margin-bottom:14px;}
+.flabel{
+  display:block;
+  font-size:11px;font-weight:700;
+  color:#7c8fa8;
+  text-transform:uppercase;letter-spacing:0.07em;
+  margin-bottom:8px;
+}
+.iwrap{position:relative;}
+.iicon{
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  color:#64748b;pointer-events:none;
+  display:flex;transition:color 0.2s;
+}
+.iwrap:focus-within .iicon{color:#8b5cf6;}
+.finput{
+  width:100%;height:48px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:12px;
+  padding:0 14px 0 40px;
+  color:#e2e8f0;
+  font-size:14px;font-family:'Inter',sans-serif;
+  outline:none;
+  transition:all 0.3s ease;
+}
+.finput::placeholder{color:#64748b;}
+.finput:hover{
+  border-color:rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.07);
+}
+.finput:focus{
+  border-color:rgba(99,102,241,0.7);
+  box-shadow:0 0 0 3px rgba(99,102,241,0.16),0 0 20px rgba(99,102,241,0.22);
+  background:rgba(255,255,255,0.07);
+}
+.finput.has-toggle{padding-right:46px;}
+
+/* OTP slide-in animation */
+#otpBox{
+  overflow:hidden;
+  max-height:0;
+  opacity:0;
+  transition:max-height 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.35s ease, margin-bottom 0.3s ease;
+  margin-bottom:0;
+}
+#otpBox.otp-visible{
+  max-height:90px;
+  opacity:1;
+  margin-bottom:14px;
+}
+
+/* OTP input — centered, larger, mono */
+.finput-otp{
+  width:100%;height:48px;
+  background:rgba(139,92,246,0.07);
+  border:1px solid rgba(139,92,246,0.3);
+  border-radius:12px;
+  padding:0 14px 0 40px;
+  color:#e2e8f0;
+  font-size:18px;font-family:'Inter',sans-serif;
+  letter-spacing:0.22em;font-weight:600;
+  outline:none;
+  transition:all 0.3s ease;
+}
+.finput-otp::placeholder{color:#475569;letter-spacing:0.04em;font-size:13px;font-weight:400;}
+.finput-otp:focus{
+  border-color:rgba(139,92,246,0.7);
+  box-shadow:0 0 0 3px rgba(139,92,246,0.16),0 0 20px rgba(139,92,246,0.22);
+  background:rgba(139,92,246,0.1);
+}
+
+.toggle-pwd{
+  position:absolute;right:11px;top:50%;transform:translateY(-50%);
+  width:28px;height:28px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:#334155;
+  transition:color 0.2s,background 0.2s;
+}
+.toggle-pwd:hover{background:rgba(255,255,255,0.07);color:#94a3b8;}
+
+.btn{
+  width:100%;height:50px;
+  border:none;border-radius:12px;
+  background:linear-gradient(135deg,#8b5cf6 0%,#3b82f6 100%);
+  background-size:200% 200%;
+  color:#fff;font-size:14px;font-weight:700;
+  font-family:'Inter',sans-serif;
+  cursor:pointer;
+  position:relative;overflow:hidden;
+  transition:all 0.3s ease;
+  box-shadow:0 8px 24px rgba(139,92,246,0.32);
+  margin-top:4px;
+}
+.btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.16) 0%,transparent 55%);
+  opacity:0;transition:opacity 0.3s ease;
+}
+.btn:hover{
+  transform:translateY(-2px) scale(1.03);
+  box-shadow:0 16px 36px rgba(139,92,246,0.5),0 0 28px rgba(59,130,246,0.28),0 0 0 1px rgba(139,92,246,0.3);
+}
+.btn:hover::before{opacity:1;}
+.btn:active{transform:translateY(0) scale(0.982);}
+.btn:disabled{opacity:0.65;cursor:not-allowed;transform:none;}
+
+.cfoot{
+  display:flex;align-items:center;justify-content:center;
+  margin-top:20px;gap:6px;
+  font-size:13px;color:#334155;
+}
+.link-acc{
+  font-size:13px;font-weight:600;
+  color:#8b5cf6;text-decoration:none;
+  display:inline-flex;align-items:center;gap:4px;
+  transition:all 0.3s ease;
+  position:relative;
+}
+.link-acc::after{
+  content:'';
+  position:absolute;
+  left:0;bottom:-3px;
+  width:100%;height:1px;
+  background:currentColor;
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 0.3s ease;
+}
+.link-acc:hover{color:#22d3ee;text-shadow:0 0 18px rgba(34,211,238,0.28);}
+.link-acc:hover::after{transform:scaleX(1);}
+
+.cdiv{height:1px;background:rgba(255,255,255,0.06);margin:20px 0;}
+
+.terms-text{
+  font-size:11px;color:#475569;text-align:center;
+  margin-top:14px;line-height:1.6;
+}
+.terms-text a{color:#7c6db3;text-decoration:none;}
+.terms-text a:hover{color:#a78bfa;}
+
+/* ─── MOBILE HEADER ─── */
+.mob-head{
+  display:none;
+  flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;
+  margin-bottom:28px;
+  background:transparent;
+}
+.mob-logo{
+  display:flex;align-items:center;justify-content:center;
+}
+.mob-logo-blend{
+  display:inline-flex;
+  mix-blend-mode:screen;
+}
+.logo-img-sm{
+  height:88px;width:auto;display:block;
+  filter:invert(1) hue-rotate(180deg);
+}
+.mob-typed{
+  font-size:11.5px;font-weight:600;letter-spacing:0.1em;
+  color:#818cf8;text-transform:uppercase;
+  overflow:hidden;white-space:nowrap;
+  border-right:2px solid #818cf8;
+  width:0;
+  animation:mobTyping 4s steps(22,end) infinite, mobBlink 0.65s step-end infinite;
+}
+@keyframes mobTyping{
+  0%,100%{width:0;}
+  18%,82%{width:14ch;}
+}
+@keyframes mobBlink{
+  50%{border-color:transparent;}
+}
+.mob-tag{font-size:12px;font-weight:500;letter-spacing:0.05em;color:#94a3b8;}
+
+/* ════════════════════════════════════════════
+   SUCCESS POPUP
+════════════════════════════════════════════ */
+#successPopup{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.4s ease;
+  background:rgba(2,6,23,0.75);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+#successPopup.popup-visible{
+  opacity:1;
+  pointer-events:all;
+}
+
+.popup-card{
+  background:rgba(13,20,40,0.96);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:28px;
+  padding:52px 44px 44px;
+  max-width:360px;
+  width:90%;
+  text-align:center;
+  box-shadow:
+    0 48px 96px rgba(0,0,0,0.65),
+    0 0 0 1px rgba(255,255,255,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.09),
+    0 0 80px rgba(139,92,246,0.07);
+  transform:scale(0.86) translateY(24px);
+  transition:transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease;
+  opacity:0;
+}
+#successPopup.popup-visible .popup-card{
+  transform:scale(1) translateY(0);
+  opacity:1;
+}
+
+/* icon ring */
+.popup-icon-ring{
+  width:76px;height:76px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(139,92,246,0.14),rgba(59,130,246,0.08));
+  border:1px solid rgba(139,92,246,0.28);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 28px;
+  box-shadow:
+    0 0 0 10px rgba(139,92,246,0.06),
+    0 0 48px rgba(139,92,246,0.18);
+  animation:ringPulse 2.4s ease-in-out infinite;
+}
+@keyframes ringPulse{
+  0%,100%{box-shadow:0 0 0 10px rgba(139,92,246,0.06),0 0 48px rgba(139,92,246,0.18);}
+  50%{box-shadow:0 0 0 16px rgba(139,92,246,0.03),0 0 64px rgba(139,92,246,0.24);}
+}
+
+/* SVG check draw animation */
+.check-svg{width:36px;height:36px;overflow:visible;}
+
+.check-bg-circle{
+  fill:none;
+  stroke:rgba(139,92,246,0.22);
+  stroke-width:1.5;
+}
+.check-arc{
+  fill:none;
+  stroke:url(#checkArcGrad);
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-dasharray:57;
+  stroke-dashoffset:57;
+  animation:drawArc 0.55s cubic-bezier(0.22,1,0.36,1) forwards 0.25s;
+}
+.check-mark{
+  fill:none;
+  stroke:url(#checkMarkGrad);
+  stroke-width:2.6;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-dasharray:22;
+  stroke-dashoffset:22;
+  animation:drawMark 0.38s cubic-bezier(0.22,1,0.36,1) forwards 0.65s;
+}
+@keyframes drawArc{to{stroke-dashoffset:0;}}
+@keyframes drawMark{to{stroke-dashoffset:0;}}
+
+.popup-title{
+  font-size:22px;font-weight:800;
+  color:#ffffff;
+  letter-spacing:-0.022em;
+  margin-bottom:9px;
+  text-shadow:0 0 24px rgba(139,92,246,0.3);
+}
+.popup-sub{
+  font-size:13.5px;
+  color:#94a3b8;
+  line-height:1.65;
+  margin-bottom:34px;
+}
+
+/* progress bar */
+.popup-track{
+  height:2px;
+  background:rgba(255,255,255,0.07);
+  border-radius:100px;
+  overflow:hidden;
+}
+.popup-bar{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#8b5cf6,#3b82f6,#22d3ee);
+  border-radius:100px;
+  box-shadow:0 0 12px rgba(139,92,246,0.55);
+  animation:barFill 1.5s cubic-bezier(0.4,0,0.2,1) forwards 0.35s;
+}
+@keyframes barFill{to{width:100%;}}
+
+/* ─── ANIMATIONS ─── */
+@keyframes floatA{from{transform:translateY(0) rotate(0deg);}to{transform:translateY(-28px) rotate(6deg);}}
+@keyframes floatB{from{transform:translateY(0) rotate(0deg);}to{transform:translateY(-20px) rotate(-5deg);}}
+@keyframes floatC{from{transform:translate3d(0,0,0) scale(1);}to{transform:translate3d(18px,-24px,0) scale(1.06);}}
+@keyframes fadeUpSoft{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes blobPulse{0%,100%{opacity:0.4;}50%{opacity:0.72;}}
+@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.75);}}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 0 rgba(139,92,246,0);transform:scale(1);}50%{box-shadow:0 0 16px rgba(139,92,246,0.18);transform:scale(1.03);}}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* deco logo behind card */
+.deco-logo{
+  display:none;
+  position:absolute;
+  right:-80px;
+  top:50%;
+  transform:translateY(-50%);
+  width:340px;
+  pointer-events:none;
+  z-index:0;
+  mix-blend-mode:screen;
+  opacity:0.07;
+  filter:invert(1) hue-rotate(180deg) blur(1px);
+  animation:decoFloat 8s ease-in-out infinite alternate;
+}
+@keyframes decoFloat{
+  from{transform:translateY(-50%) scale(1);}
+  to{transform:translateY(calc(-50% - 12px)) scale(1.04);}
+}
+
+@media(max-width:920px){
+  .left{display:none;}
+  .right{
+    width:100%;min-width:unset;
+    border-left:none;
+    padding:32px 20px;
+    min-height:100vh;
+    background:linear-gradient(135deg,#0f172a 0%,#020617 100%);
+    overflow:hidden;
+  }
+  .mob-head{display:flex;}
+  .card{padding:30px 22px;}
+  .deco-logo{display:block;}
+}
+
+.material-symbols-outlined{font-size:18px;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20;}
+
+/* ═══════════════════════════════════════
+   PREMIUM VALIDATION SYSTEM
+═══════════════════════════════════════ */
+
+/* Inline field error */
+.field-err{
+  font-size:11.5px;font-weight:500;
+  color:#f87171;
+  margin-top:5px;padding-left:3px;
+  min-height:15px;
+  display:flex;align-items:center;gap:5px;
+  opacity:0;transform:translateY(-5px);
+  transition:opacity 0.22s ease,transform 0.22s ease;
+  pointer-events:none;
+  will-change:opacity,transform;
+}
+.field-err.show{opacity:1;transform:translateY(0);}
+
+/* Red border + glow on error */
+.finput.input-error{
+  border-color:rgba(239,68,68,0.65)!important;
+  box-shadow:0 0 0 3px rgba(239,68,68,0.13),0 0 18px rgba(239,68,68,0.09)!important;
+}
+
+/* Shake animation */
+@keyframes shake{
+  0%,100%{transform:translateX(0);}
+  15%{transform:translateX(-6px);}
+  30%{transform:translateX(6px);}
+  48%{transform:translateX(-4px);}
+  64%{transform:translateX(4px);}
+  80%{transform:translateX(-2px);}
+  92%{transform:translateX(2px);}
+}
+.shake{animation:shake 0.44s cubic-bezier(0.36,0.07,0.19,0.97) both;}
+
+/* Password rules panel */
+.pwd-rules{
+  display:flex;flex-direction:column;gap:6px;
+  padding:0 12px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px;
+  overflow:hidden;
+  max-height:0;opacity:0;
+  transition:max-height 0.38s cubic-bezier(0.22,1,0.36,1),
+             opacity 0.3s ease,
+             padding 0.3s ease,
+             margin-top 0.3s ease;
+  margin-top:0;
+}
+.pwd-rules.visible{
+  max-height:110px;opacity:1;
+  padding:11px 12px;margin-top:8px;
+}
+.rule{
+  display:flex;align-items:center;gap:8px;
+  font-size:11.5px;font-weight:500;
+  color:#f87171;
+  transition:color 0.28s ease;
+}
+.rule.valid{color:#4ade80;}
+.rule-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:#f87171;flex-shrink:0;
+  transition:background 0.28s ease,transform 0.2s ease,box-shadow 0.28s ease;
+}
+.rule.valid .rule-dot{
+  background:#4ade80;
+  transform:scale(1.2);
+  box-shadow:0 0 6px rgba(74,222,128,0.45);
+}
+
+/* Confirm password match hint */
+.confirm-hint{
+  font-size:11.5px;font-weight:500;
+  display:flex;align-items:center;gap:5px;
+  margin-top:5px;padding-left:3px;
+  min-height:15px;
+  opacity:0;transform:translateY(-5px);
+  transition:opacity 0.22s ease,transform 0.22s ease,color 0.25s ease;
+  pointer-events:none;
+  will-change:opacity,transform;
+}
+.confirm-hint.show{opacity:1;transform:translateY(0);}
+.confirm-hint.match{color:#4ade80;}
+.confirm-hint.no-match{color:#f87171;}
+</style>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile }
+    from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+    authDomain: "getxh-42588.firebaseapp.com",
+    projectId: "getxh-42588",
+    storageBucket: "getxh-42588.firebasestorage.app",
+    messagingSenderId: "170770122888",
+    appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  /* ── helpers ── */
+  function normalizeEmail(v) { return String(v || "").trim().toLowerCase(); }
+  function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function showError(msg) {
+    const err  = document.getElementById("errorBox");
+    const info = document.getElementById("infoBox");
+    info.style.display = "none";
+    err.innerHTML =
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">' +
+      '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>' +
+      '<line x1="12" y1="16" x2="12.01" y2="16"/></svg> ' + msg;
+    err.style.display = "flex";
+  }
+
+  function showInfo(msg) {
+    const err  = document.getElementById("errorBox");
+    const info = document.getElementById("infoBox");
+    err.style.display = "none";
+    info.innerHTML =
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">' +
+      '<polyline points="20 6 9 17 4 12"/></svg> ' + msg;
+    info.style.display = "flex";
+  }
+
+  function clearMessages() {
+    document.getElementById("errorBox").style.display = "none";
+    document.getElementById("infoBox").style.display  = "none";
+  }
+
+  /* inline OTP field error — no alert, no top banner */
+  function showOtpError(msg) {
+    const el  = document.getElementById("err-otp");
+    const inp = document.getElementById("otp");
+    el.textContent = msg;
+    el.classList.add("show");
+    inp.classList.add("input-error");
+    /* shake the otp input wrapper */
+    const wrap = inp.closest(".iwrap");
+    wrap.classList.remove("shake");
+    void wrap.offsetWidth;
+    wrap.classList.add("shake");
+    wrap.addEventListener("animationend", () => wrap.classList.remove("shake"), { once: true });
+  }
+
+  /* expose so oninput="clearOtpError()" works from plain script */
+  window.clearOtpError = function () {
+    const el  = document.getElementById("err-otp");
+    const inp = document.getElementById("otp");
+    if (el)  { el.textContent = ""; el.classList.remove("show"); }
+    if (inp) { inp.classList.remove("input-error"); }
+  };
+
+  function setBtn(text, disabled) {
+    const btn = document.getElementById("registerBtn");
+    btn.innerHTML = text;
+    btn.disabled  = disabled;
+  }
+
+  function spinner(label) {
+    return `<span style="display:inline-flex;align-items:center;gap:9px">` +
+      `<span style="width:15px;height:15px;border-radius:50%;border:2px solid rgba(255,255,255,0.25);` +
+      `border-top-color:#fff;animation:spin 0.7s linear infinite;display:inline-block;flex-shrink:0"></span>` +
+      `${label}</span>`;
+  }
+
+  function showSuccessPopup() {
+    document.getElementById("successPopup").classList.add("popup-visible");
+  }
+
+  function hideSuccessPopup() {
+    document.getElementById("successPopup").classList.remove("popup-visible");
+  }
+
+  /* ══════════════════════════════════════════
+     STEP 1 — Send OTP
+  ══════════════════════════════════════════ */
+  window.sendOTP = async function () {
+    const email = normalizeEmail(document.getElementById("email").value);
+    if (!email) { showError("Enter your email address first"); return; }
+
+    clearMessages();
+    setBtn(spinner("Sending OTP…"), true);
+
+    try {
+      const res  = await fetch("https://backend-for-email-verification-code-1.onrender.com/send-otp", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ email, type: "signup" })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        showInfo("OTP sent — check your inbox");
+        document.getElementById("otpBox").classList.add("otp-visible");
+        document.getElementById("otp").focus();
+        setBtn("Verify OTP", false);
+        /* switch button to verify flow */
+        document.getElementById("registerBtn").onclick = window.verifyOTP;
+      } else {
+        showError("Couldn't send OTP. Please try again.");
+        setBtn("Send OTP", false);
+      }
+    } catch {
+      showError("Something went wrong. Please check your connection and try again.");
+      setBtn("Send OTP", false);
+    }
+  };
+
+  /* ══════════════════════════════════════════
+     STEP 2 — Verify OTP → popup → Firebase
+  ══════════════════════════════════════════ */
+  window.verifyOTP = async function () {
+    const username = document.getElementById("username").value.trim();
+    const email    = normalizeEmail(document.getElementById("email").value);
+    const password = document.getElementById("password").value;
+    const confirm  = document.getElementById("confirmPassword").value;
+    const otp      = document.getElementById("otp").value.trim();
+
+    /* guard: these should already be valid but double-check */
+    if (!username || username.length < 3) { showError("Invalid username"); return; }
+    if (!email)                           { showError("Invalid email"); return; }
+    if (!password || password !== confirm){ showError("Password error — please re-check"); return; }
+
+    /* OTP-specific inline error */
+    if (!otp) { showOtpError("Enter the OTP from your email"); return; }
+
+    clearMessages();
+    window.clearOtpError();
+    setBtn(spinner("Verifying OTP…"), true);
+
+    /* ── 2a: hit backend to verify OTP ── */
+    let verifyData;
+    try {
+      const res = await fetch("https://backend-for-email-verification-code-1.onrender.com/verify-otp", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ email, otp, type: "signup" })
+      });
+      verifyData = await res.json();
+    } catch {
+      showOtpError("Something went wrong. Please try again.");
+      setBtn("Verify OTP", false);
+      return;
+    }
+
+    if (!verifyData.success) {
+      /* inline error — no alert, no top banner */
+      showOtpError("Incorrect OTP. Please check and try again.");
+      setBtn("Verify OTP", false);
+      return;
+    }
+
+    /* ── 2b: OTP is correct — show popup FIRST ── */
+    showSuccessPopup();
+
+    /* ── 2c: wait 1.3 s while popup animates ── */
+    await delay(1300);
+
+    /* ── 2d: NOW create Firebase user ── */
+    try {
+      setBtn(spinner("Creating account…"), true);
+
+      let cred;
+      try {
+        cred = await createUserWithEmailAndPassword(auth, email, password);
+      } catch (signUpErr) {
+        if (signUpErr.code === "auth/email-already-in-use") {
+          cred = await signInWithEmailAndPassword(auth, email, password);
+        } else {
+          throw signUpErr;
+        }
+      }
+
+      /* ── Auth success — persist session & redirect immediately ── */
+      localStorage.setItem("getxh_user_name",        username);
+      localStorage.setItem("getxh_current_user_uid", cred.user.uid);
+      localStorage.setItem("getxh_user_logged_in",   "yes");
+      localStorage.setItem("getxh_current_user",     email);
+
+      /* Save to MongoDB in background */
+      fetch("https://backend-for-email-verification-code-1.onrender.com/save-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, mobile: document.getElementById("mobile").value.trim(), username })
+      }).catch(() => {});
+
+      /* Firestore + profile update in background — don't block redirect */
+      updateProfile(cred.user, { displayName: username }).catch(() => {});
+      setDoc(doc(db, "users", cred.user.uid), {
+        username,
+        email,
+        uid:       cred.user.uid,
+        createdAt: serverTimestamp(),
+        balance:   0
+      }, { merge: true }).catch(() => {});
+
+      /* ── 2e: redirect ── */
+      window.location.replace("/dashboard");
+
+    } catch (err) {
+      hideSuccessPopup();
+      const map = {
+        "auth/invalid-email":           "Please enter a valid email address.",
+        "auth/weak-password":           "Password must be at least 6 characters.",
+        "auth/network-request-failed":  "No internet connection. Please check and try again.",
+        "auth/wrong-password":          "Incorrect password. Please try again.",
+        "auth/invalid-credential":      "Incorrect email or password. Please try again.",
+        "auth/email-already-in-use":    "An account with this email already exists.",
+        "auth/too-many-requests":       "Too many attempts. Please wait a moment and try again.",
+        "auth/user-disabled":           "This account has been disabled. Please contact support.",
+        "auth/operation-not-allowed":   "Sign up is currently unavailable. Please try again later.",
+        "auth/internal-error":          "Something went wrong. Please try again.",
+      };
+      showError(map[err.code] || "Something went wrong. Please try again.");
+      setBtn("Verify OTP", false);
+    }
+  };
+</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
+</head>
+
+<body>
+
+<!-- ════════════════════════════════════════════
+     SUCCESS POPUP
+════════════════════════════════════════════ -->
+<div id="successPopup" role="dialog" aria-modal="true" aria-label="Account created">
+  <div class="popup-card">
+
+    <div class="popup-icon-ring">
+      <!-- Animated SVG checkmark -->
+      <svg class="check-svg" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="checkArcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#8b5cf6"/>
+            <stop offset="100%" stop-color="#3b82f6"/>
+          </linearGradient>
+          <linearGradient id="checkMarkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#a78bfa"/>
+            <stop offset="100%" stop-color="#60a5fa"/>
+          </linearGradient>
+        </defs>
+        <!-- background circle -->
+        <circle class="check-bg-circle" cx="18" cy="18" r="16"/>
+        <!-- animated arc -->
+        <circle class="check-arc" cx="18" cy="18" r="16"
+          transform="rotate(-90 18 18)"
+          stroke-dasharray="57" stroke-dashoffset="57"/>
+        <!-- animated tick -->
+        <polyline class="check-mark" points="11,18.5 16,23.5 25,13"/>
+      </svg>
+    </div>
+
+    <div class="popup-title">OTP Verified</div>
+    <div class="popup-sub">Identity confirmed.<br/>Creating your account&hellip;</div>
+
+    <div class="popup-track">
+      <div class="popup-bar"></div>
+    </div>
+
+  </div>
+</div>
+
+
+<div class="page">
+
+  <!-- Background orbs — full page -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+
+  <!-- ════ LEFT PANEL ════ -->
+  <div class="left">
+    <div class="left-content" onanimationend="this.style.animation='none'">
+
+      <div class="logo">
+        <div class="logo-blend">
+          <img src="getxh new logo.png" alt="getXh.in" class="logo-img"/>
+        </div>
+      </div>
+
+      <h1 class="left-heading">
+        Join Thousands<br/>
+        Growing with <span class="grad-text">GETXH</span>
+      </h1>
+
+      <p class="left-sub">
+        Create your free account and start boosting your social media presence with our smart SMM panel. Fast, secure, and reliable.
+      </p>
+
+      <div class="features">
+
+        <div class="feat">
+          <div class="feat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+          <span class="feat-label">Fast Orders — Instant delivery, zero delays</span>
+        </div>
+
+        <div class="feat">
+          <div class="feat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <span class="feat-label">Secure System — Encrypted &amp; protected</span>
+        </div>
+
+        <div class="feat">
+          <div class="feat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <span class="feat-label">Live Tracking — Monitor every order in real time</span>
+        </div>
+
+      </div>
+
+      <div class="stats">
+        <div>
+          <div class="stat-val">50K+</div>
+          <div class="stat-lbl">Orders Served</div>
+        </div>
+        <div>
+          <div class="stat-val">99.9%</div>
+          <div class="stat-lbl">Uptime</div>
+        </div>
+        <div>
+          <div class="stat-val">24/7</div>
+          <div class="stat-lbl">Support</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════ RIGHT PANEL ════ -->
+  <div class="right">
+    <div class="card-shine-wrap">
+    <div class="card">
+
+      <!-- Mobile logo -->
+      <div class="mob-head">
+        <div class="mob-logo">
+          <div class="mob-logo-blend">
+            <img src="getxh new logo.png" alt="getXh.in" class="logo-img-sm"/>
+          </div>
+        </div>
+        <span class="mob-typed">Fast · Secure · Trusted</span>
+      </div>
+
+      <!-- Card header -->
+      <div class="card-head">
+        <div class="card-badge">
+          <span class="badge-dot"></span>
+          New Account
+        </div>
+        <div class="card-title">Create Account</div>
+        <div class="card-sub">Join GETXH and start growing today</div>
+      </div>
+
+      <!-- Feedback boxes -->
+      <div id="errorBox"></div>
+      <div id="infoBox"></div>
+
+      <!-- Username -->
+      <div class="fgroup">
+        <label class="flabel" for="username">Username</label>
+        <div class="iwrap">
+          <span class="iicon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </span>
+          <input id="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false"
+            class="finput" placeholder="Choose a username"
+            oninput="clearErr('username','err-username')"
+            onkeydown="if(event.key==='Enter')document.getElementById('email').focus()"/>
+        </div>
+        <div class="field-err" id="err-username"></div>
+      </div>
+
+      <!-- Email -->
+      <div class="fgroup">
+        <label class="flabel" for="email">Email Address</label>
+        <div class="iwrap">
+          <span class="iicon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </span>
+          <input id="email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false"
+            class="finput" placeholder="you@example.com"
+            oninput="clearErr('email','err-email')"
+            onkeydown="if(event.key==='Enter')document.getElementById('password').focus()"/>
+        </div>
+        <div class="field-err" id="err-email"></div>
+      </div>
+
+      <!-- Mobile Number -->
+      <div class="fgroup">
+        <label class="flabel" for="mobile">Mobile Number</label>
+        <div class="iwrap">
+          <span class="iicon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+              <line x1="12" y1="18" x2="12.01" y2="18"/>
+            </svg>
+          </span>
+          <input id="mobile" type="tel" autocomplete="tel" inputmode="numeric"
+            class="finput" placeholder="+91 00000 00000"
+            oninput="clearErr('mobile','err-mobile')"
+            onkeydown="if(event.key==='Enter')document.getElementById('password').focus()"/>
+        </div>
+        <div class="field-err" id="err-mobile"></div>
+      </div>
+
+      <!-- Password -->
+      <div class="fgroup">
+        <label class="flabel" for="password">Password</label>
+        <div class="iwrap">
+          <span class="iicon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </span>
+          <input id="password" type="password" autocomplete="new-password" autocapitalize="none" spellcheck="false"
+            class="finput has-toggle" placeholder="Min. 8 characters"
+            oninput="onPasswordInput(this.value)"
+            onkeydown="if(event.key==='Enter')document.getElementById('confirmPassword').focus()"/>
+          <div class="toggle-pwd" onclick="togglePwd('password','eyeIcon1')" title="Show/hide password">
+            <svg id="eyeIcon1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </div>
+        </div>
+        <div class="field-err" id="err-password"></div>
+        <!-- Live password rules -->
+        <div class="pwd-rules" id="pwdRules">
+          <div class="rule" id="rule-minlen">
+            <span class="rule-dot"></span>At least 8 characters
+          </div>
+          <div class="rule" id="rule-maxlen">
+            <span class="rule-dot"></span>Maximum 20 characters
+          </div>
+          <div class="rule" id="rule-upper">
+            <span class="rule-dot"></span>First letter must be uppercase
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="fgroup">
+        <label class="flabel" for="confirmPassword">Confirm Password</label>
+        <div class="iwrap">
+          <span class="iicon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </span>
+          <input id="confirmPassword" type="password" autocomplete="new-password" autocapitalize="none" spellcheck="false"
+            class="finput has-toggle" placeholder="Re-enter your password"
+            oninput="onConfirmInput(this.value)"
+            onkeydown="if(event.key==='Enter')validateAndSendOTP()"/>
+          <div class="toggle-pwd" onclick="togglePwd('confirmPassword','eyeIcon2')" title="Show/hide password">
+            <svg id="eyeIcon2" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </div>
+        </div>
+        <div class="field-err" id="err-confirmPassword"></div>
+        <div class="confirm-hint" id="confirmHint"></div>
+      </div>
+
+      <!-- OTP Input — slides in after Send OTP -->
+      <div id="otpBox">
+        <label class="flabel" for="otp">OTP Code</label>
+        <div class="iwrap">
+          <span class="iicon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </span>
+          <input id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" spellcheck="false"
+            class="finput-otp" placeholder="Enter OTP from email" maxlength="8"
+            oninput="clearOtpError()"
+            onkeydown="if(event.key==='Enter')verifyOTP()"/>
+        </div>
+        <div class="field-err" id="err-otp"></div>
+      </div>
+
+      <!-- Primary Button -->
+      <button id="registerBtn" class="btn" onclick="validateAndSendOTP()">Send OTP</button>
+
+      <!-- Terms -->
+      <p class="terms-text">
+        By creating an account you agree to our
+        <a href="/terms">Terms of Service</a> and
+        <a href="/privacy">Privacy Policy</a>
+      </p>
+
+      <div class="cdiv"></div>
+
+      <div class="cfoot">
+        <span style="color:#475569;">Already have an account?</span>
+        <a class="link-acc" href="/">
+          Sign In
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </a>
+      </div>
+
+    </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ─── password toggle ─── */
+function togglePwd(inputId, iconId) {
+  const p      = document.getElementById(inputId);
+  const icon   = document.getElementById(iconId);
+  const hidden = p.type === "password";
+  p.type       = hidden ? "text" : "password";
+  icon.innerHTML = hidden
+    ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+}
+
+/* ─── error helpers ─── */
+function setErr(inputId, errId, msg) {
+  const inp = document.getElementById(inputId);
+  const err = document.getElementById(errId);
+  inp.classList.add("input-error");
+  err.textContent = msg;
+  err.classList.add("show");
+}
+
+function clearErr(inputId, errId) {
+  const inp = document.getElementById(inputId);
+  const err = document.getElementById(errId);
+  inp.classList.remove("input-error");
+  err.textContent = "";
+  err.classList.remove("show");
+}
+
+/* ─── shake ─── */
+function shake(inputId) {
+  const wrap = document.getElementById(inputId).closest(".iwrap");
+  wrap.classList.remove("shake");
+  void wrap.offsetWidth;
+  wrap.classList.add("shake");
+  wrap.addEventListener("animationend", () => wrap.classList.remove("shake"), { once: true });
+}
+
+/* ─── password rules (real-time) ─── */
+function evalRules(pwd) {
+  const minLen = pwd.length >= 8;
+  const maxLen = pwd.length > 0 && pwd.length <= 20;
+  const upper  = /^[A-Z]/.test(pwd);
+
+  setRule("rule-minlen", minLen);
+  setRule("rule-maxlen", maxLen);
+  setRule("rule-upper",  upper);
+
+  return minLen && maxLen && upper;
+}
+
+function setRule(id, valid) {
+  document.getElementById(id).classList.toggle("valid", valid);
+}
+
+function onPasswordInput(val) {
+  const panel = document.getElementById("pwdRules");
+  val.length > 0 ? panel.classList.add("visible") : panel.classList.remove("visible");
+  evalRules(val);
+  clearErr("password", "err-password");
+  /* re-check confirm if user already typed there */
+  const confirmVal = document.getElementById("confirmPassword").value;
+  if (confirmVal) onConfirmInput(confirmVal);
+}
+
+/* ─── confirm password (real-time) ─── */
+function onConfirmInput(val) {
+  const pwd   = document.getElementById("password").value;
+  const hint  = document.getElementById("confirmHint");
+  clearErr("confirmPassword", "err-confirmPassword");
+
+  if (!val) {
+    hint.classList.remove("show", "match", "no-match");
+    return;
+  }
+
+  hint.classList.add("show");
+  const matched = pwd === val;
+  hint.classList.toggle("match",    matched);
+  hint.classList.toggle("no-match", !matched);
+
+  /* SVG tick / cross prefix */
+  hint.innerHTML = matched
+    ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Passwords match'
+    : '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Passwords do not match';
+}
+
+/* ─── main validate-then-send ─── */
+function validateMobile(raw) {
+  const val = raw.trim();
+  if (!val) return { ok: false, msg: "Fill the number" };
+  if (val.startsWith("+91")) {
+    const digits = val.slice(3).replace(/\s/g, "");
+    if (digits.length !== 10 || !/^\d{10}$/.test(digits))
+      return { ok: false, msg: "Enter valid number" };
+  } else {
+    const digits = val.replace(/\s/g, "");
+    if (digits.length !== 10 || !/^\d{10}$/.test(digits))
+      return { ok: false, msg: "Enter valid number" };
+  }
+  return { ok: true };
+}
+
+function validateAndSendOTP() {
+  const username = document.getElementById("username").value.trim();
+  const email    = document.getElementById("email").value.trim();
+  const mobile   = document.getElementById("mobile").value;
+  const password = document.getElementById("password").value;
+  const confirm  = document.getElementById("confirmPassword").value;
+
+  /* reset all */
+  ["username","email","mobile","password","confirmPassword"].forEach(id => {
+    clearErr(id, "err-" + id);
+  });
+
+  let firstInvalid = null;
+
+  if (!username) {
+    setErr("username", "err-username", "Enter username to continue");
+    shake("username");
+    firstInvalid = "username";
+  }
+
+  if (!email) {
+    setErr("email", "err-email", "Enter email to continue");
+    if (!firstInvalid) shake("email");
+    firstInvalid = firstInvalid || "email";
+  }
+
+  const mobileCheck = validateMobile(mobile);
+  if (!mobileCheck.ok) {
+    setErr("mobile", "err-mobile", mobileCheck.msg);
+    if (!firstInvalid) shake("mobile");
+    firstInvalid = firstInvalid || "mobile";
+  }
+
+  if (!password) {
+    setErr("password", "err-password", "Enter password to continue");
+    if (!firstInvalid) shake("password");
+    firstInvalid = firstInvalid || "password";
+  } else if (!evalRules(password)) {
+    document.getElementById("pwdRules").classList.add("visible");
+    setErr("password", "err-password", "Password doesn’t meet all requirements");
+    if (!firstInvalid) shake("password");
+    firstInvalid = firstInvalid || "password";
+  }
+
+  if (!confirm) {
+    setErr("confirmPassword", "err-confirmPassword", "Enter password to continue");
+    if (!firstInvalid) shake("confirmPassword");
+    firstInvalid = firstInvalid || "confirmPassword";
+  } else if (password !== confirm) {
+    setErr("confirmPassword", "err-confirmPassword", "Passwords do not match");
+    if (!firstInvalid) shake("confirmPassword");
+    firstInvalid = firstInvalid || "confirmPassword";
+  }
+
+  if (firstInvalid) {
+    const el = document.getElementById(firstInvalid);
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => el.focus(), 120);
+    return;
+  }
+
+  /* all good — hand off to Firebase flow */
+  window.sendOTP();
+}
+</script>
+
+<script>
+// Wake up backend on page load so OTP sends instantly
+fetch("https://backend-for-email-verification-code-1.onrender.com/ping", { method: "GET" }).catch(() => {});
+</script>
+
+</body>
+</html>

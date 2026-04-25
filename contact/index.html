@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | GETXH</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(34, 211, 238, 0.08), transparent 28%),
+        linear-gradient(180deg, #0b1220 0%, #09101d 100%);
+      color: #fff;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 24px 60px rgba(2, 8, 23, 0.42);
+      backdrop-filter: blur(14px);
+    }
+    .section-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
+</head>
+<body>
+  <main class="min-h-screen px-4 py-8 sm:px-6">
+    <div class="mx-auto max-w-[800px]">
+      <div class="glass-card rounded-[28px] p-6 sm:p-8">
+        <button onclick="history.back()" class="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-cyan-400/40 hover:text-cyan-300">
+          &larr; Back
+        </button>
+
+        <header class="mt-6">
+          <p class="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300/80">Support</p>
+          <h1 class="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">Contact Us</h1>
+          <p class="mt-4 text-sm leading-7 text-slate-300 sm:text-base">
+            For platform assistance, payment-related communication, or general support requests, users may contact GETXH through the details below.
+          </p>
+        </header>
+
+        <section class="mt-8 grid gap-4 sm:grid-cols-2">
+          <div class="section-card rounded-2xl p-5">
+            <h2 class="text-lg font-semibold">Email Support</h2>
+            <p class="mt-3 text-sm leading-7 text-slate-300">For account, order, or payment communication, users may contact us by email.</p>
+            <p class="mt-4 text-lg font-semibold text-white">agency@getxh.in</p>
+          </div>
+
+          <div class="section-card rounded-2xl p-5">
+            <h2 class="text-lg font-semibold">WhatsApp</h2>
+            <p class="mt-3 text-sm leading-7 text-slate-300">For direct support communication and quick assistance, users may contact us on WhatsApp.</p>
+            <p class="mt-4 text-lg font-semibold text-white">+91 8239474289</p>
+          </div>
+        </section>
+
+        <section class="section-card mt-6 rounded-2xl p-5">
+          <h2 class="text-lg font-semibold">Support Note</h2>
+          <p class="mt-3 text-sm leading-7 text-slate-300">
+            When contacting support, users should provide accurate order or payment details so that their request can be reviewed more efficiently. Support response times may vary depending on request type and verification requirements.
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
