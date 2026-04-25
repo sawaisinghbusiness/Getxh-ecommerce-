@@ -7,329 +7,136 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
   <style>
-    :root {
-      color-scheme: dark;
-    }
+    :root { color-scheme: dark; }
+    body { background: #0f172a; font-family: 'Inter', sans-serif; }
 
-    body {
-      background:
-        radial-gradient(circle at top, rgba(34, 211, 238, 0.12), transparent 30%),
-        radial-gradient(circle at 85% 15%, rgba(59, 130, 246, 0.18), transparent 28%),
-        linear-gradient(180deg, #08101d 0%, #0b1220 45%, #060b14 100%);
+    .balance-card {
+      background: linear-gradient(135deg, #1e3a5f 0%, #1a2744 60%, #0f1f3d 100%);
+      border: 1px solid rgba(99,102,241,0.2);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4);
     }
-
-    .premium-card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 24px 60px rgba(3, 8, 20, 0.45);
-      backdrop-filter: blur(16px);
-    }
-
     .section-card {
-      background: #121a2b;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 24px 50px rgba(2, 8, 23, 0.45);
+      background: #12161f;
+      border: 1px solid rgba(255,255,255,0.07);
     }
-
     .dark-field {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(148, 163, 184, 0.18);
-      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease, transform 180ms ease;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(148,163,184,0.15);
+      transition: border-color 180ms, box-shadow 180ms;
     }
-
     .dark-field:focus {
-      border-color: rgba(56, 189, 248, 0.85);
-      box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.12), 0 10px 30px rgba(14, 165, 233, 0.12);
-      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(99,102,241,0.7);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+      outline: none;
+      background: rgba(255,255,255,0.06);
     }
-
-    .gradient-btn {
-      background: linear-gradient(135deg, #1d4ed8 0%, #22d3ee 100%);
-      box-shadow: 0 16px 34px rgba(14, 165, 233, 0.24);
-      transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease, opacity 180ms ease;
+    .pay-btn {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+      transition: transform 150ms, box-shadow 150ms, opacity 150ms;
     }
+    .pay-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(99,102,241,0.4); }
+    .pay-btn:active:not(:disabled) { transform: scale(0.99); }
+    .pay-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    .gradient-btn:hover {
-      transform: translateY(-1px) scale(1.01);
-      box-shadow: 0 22px 40px rgba(14, 165, 233, 0.28);
-      filter: saturate(1.08);
+    .chip {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: border-color 150ms, background 150ms, transform 150ms;
     }
+    .chip:hover { border-color: rgba(99,102,241,0.5); background: rgba(99,102,241,0.1); transform: translateY(-1px); }
+    .chip.selected { border-color: #6366f1; background: rgba(99,102,241,0.15); }
 
-    .gradient-btn:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none;
-      filter: none;
+    @keyframes shimmer {
+      0% { background-position: -400px 0 }
+      100% { background-position: 400px 0 }
     }
-
-    .amount-chip {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.4s infinite linear;
+      border-radius: 8px;
     }
-
-    .amount-chip:hover {
-      transform: translateY(-1px);
-      border-color: rgba(34, 211, 238, 0.42);
-      background: rgba(34, 211, 238, 0.1);
-      box-shadow: 0 10px 20px rgba(14, 165, 233, 0.12);
-    }
-
-    .qr-image {
-      width: min(220px, 100%);
-      border-radius: 26px;
-      box-shadow: 0 18px 36px rgba(15, 23, 42, 0.28);
-      display: block;
-      transform: scale(1.13);
-      transform-origin: center;
-    }
-
-    .instruction-step {
-      display: grid;
-      grid-template-columns: 44px minmax(0, 1fr);
-      align-items: center;
-      gap: 0.9rem;
-      padding: 0.8rem 0.9rem;
-      border-radius: 1rem;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .instruction-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 0.82fr) minmax(220px, 1.18fr);
-      align-items: center;
-      gap: 1.5rem;
-      padding: 0.25rem 0;
-    }
-
-    .steps-column {
-      display: flex;
-      flex-direction: column;
-      gap: 0.85rem;
-      min-width: 0;
-    }
-
-    .qr-column {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100%;
-      padding: 0.5rem 0.25rem;
-    }
-
-    @media (max-width: 640px) {
-      .instruction-step {
-        grid-template-columns: 40px minmax(0, 1fr);
-        gap: 0.75rem;
-        padding: 0.85rem 0.9rem;
-      }
-
-      .instruction-layout {
-        grid-template-columns: 1fr;
-        gap: 1.25rem;
-      }
-
-      .steps-column {
-        order: 2;
-      }
-
-      .qr-column {
-        order: 1;
-        padding: 0;
-      }
-    }
-
-  /* Skeleton loader */
-  @keyframes shimmer {
-    0% { background-position: -400px 0 }
-    100% { background-position: 400px 0 }
-  }
-  .skeleton {
-    background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
-    background-size: 800px 100%;
-    animation: shimmer 1.4s infinite linear;
-    border-radius: 10px;
-  }
-
-  /* Live dot */
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.75); }
-  }
-  .live-dot {
-    width: 7px; height: 7px; border-radius: 50%; background: #22c55e;
-    display: inline-block; animation: pulse-dot 1.6s ease-in-out infinite;
-    box-shadow: 0 0 6px rgba(34,197,94,0.6);
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Payment card hover */
-  .payment-card {
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-  }
-  .payment-card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 16px 32px rgba(2,8,23,0.4);
-  }
   </style>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
+  <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
 </head>
 
-<body class="bg-[#0b1220] text-white min-h-screen">
+<body class="text-white min-h-screen">
 
-<div class="sticky top-0 z-40 flex items-center gap-3 px-4 py-4 border-b border-white/10 bg-[#0b1220]">
+<!-- Header -->
+<div class="sticky top-0 z-40 flex items-center gap-3 px-4 py-4 border-b border-white/8 bg-[#0f172a]">
   <button onclick="window.location.href='Dashboard.html'"
-    class="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5">
-    <span class="material-symbols-outlined">arrow_back_ios_new</span>
+    class="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 hover:bg-white/10 transition-colors">
+    <span class="material-symbols-outlined text-xl">arrow_back_ios_new</span>
   </button>
   <div>
     <h1 class="text-lg font-black">Wallet</h1>
-    <p class="text-xs text-[#2196f3]">GETXH.IN</p>
+    <p class="text-xs text-indigo-400">GETXH.IN</p>
   </div>
 </div>
 
-<main class="mx-auto w-full max-w-3xl px-4 py-5 pb-24 sm:px-5">
-  <section class="premium-card rounded-[30px] p-5 mb-5"
-    style="background:linear-gradient(135deg,#10203d 0%, #163260 55%, #0b1730 100%);">
-    <p class="text-xs uppercase tracking-[0.25em] text-blue-200/70 mb-2">Available Balance</p>
-    <h2 id="walletBalance" class="text-5xl font-black tracking-tight sm:text-6xl">&#8377;0.00</h2>
-    <p id="walletUser" class="text-sm text-blue-100/80 mt-2">Loading account...</p>
+<main class="mx-auto w-full max-w-lg px-4 py-5 pb-24">
 
-    <div class="grid grid-cols-2 gap-3 mt-5">
-      <div class="rounded-2xl p-4 bg-white/5 border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
-        <p class="text-xs text-gray-400 mb-1">Total Orders</p>
-        <p id="walletOrders" class="text-xl font-black">0</p>
-      </div>
-      <div class="rounded-2xl p-4 bg-white/5 border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
-        <p class="text-xs text-gray-400 mb-1">Total Spent</p>
-        <p id="walletSpent" class="text-xl font-black">&#8377;0.00</p>
-      </div>
-    </div>
+  <!-- Balance Card -->
+  <section class="balance-card rounded-3xl p-6 mb-5">
+    <p class="text-xs uppercase tracking-widest text-indigo-300/70 mb-2">Available Balance</p>
+    <h2 id="walletBalance" class="text-5xl font-black tracking-tight">
+      <span class="skeleton inline-block w-36 h-12 rounded-xl">&nbsp;</span>
+    </h2>
+    <p id="walletEmail" class="text-sm text-indigo-200/60 mt-2">Loading...</p>
 
-    <button onclick="document.getElementById('addFundsSection').scrollIntoView({ behavior: 'smooth', block: 'start' })"
-      class="gradient-btn mt-5 w-full rounded-2xl py-3.5 font-black text-sm text-white active:scale-[0.985]">
-      Add Funds
+    <button onclick="document.getElementById('addFundsSection').scrollIntoView({behavior:'smooth'})"
+      class="pay-btn mt-5 w-full rounded-2xl py-3.5 font-black text-sm text-white">
+      + Add Funds
     </button>
   </section>
 
-  <section id="addFundsSection" class="section-card rounded-[30px] p-5 mb-5 sm:p-6">
-    <div class="flex flex-col gap-4 mb-5 sm:flex-row sm:items-start sm:justify-between">
-      <div>
-        <h3 class="text-lg font-black text-white">Add Funds</h3>
-        <p class="text-sm text-gray-400 mt-1">Scan the QR, complete the UPI transfer, and submit your details for verification.</p>
-      </div>
-      <div class="self-start px-3 py-2 rounded-2xl text-right border border-[#2196f3]/20 bg-[#2196f3]/10">
-        <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400">Status</p>
-        <p class="text-sm font-black text-[#38bdf8]">Live</p>
-      </div>
-    </div>
+  <!-- Add Funds -->
+  <section id="addFundsSection" class="section-card rounded-3xl p-6 mb-5">
+    <h3 class="text-lg font-black mb-1">Add Funds</h3>
+    <p class="text-sm text-gray-400 mb-5">Enter amount and pay via UPI. Balance will be credited automatically after verification.</p>
 
-    <div id="walletNotice" class="hidden mb-5 rounded-2xl px-4 py-3 text-sm font-semibold"></div>
+    <!-- Notice -->
+    <div id="walletNotice" class="hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold"></div>
 
-    <div class="mb-5">
-      <label class="text-xs font-black uppercase tracking-[0.18em] text-gray-500 mb-2 block">Payment Method</label>
-      <div class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm font-bold">
-        UPI
-      </div>
-    </div>
-
-    <div class="premium-card mb-5 rounded-[28px] p-4 sm:p-5">
-      <div class="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <label class="text-xs font-black uppercase tracking-[0.18em] text-gray-500 mb-2 block">Instructions</label>
-          <p class="text-sm text-gray-300">Follow the steps below, then submit the UPI reference and amount.</p>
-        </div>
-        <div class="text-xs text-cyan-300/80 uppercase tracking-[0.2em] font-bold">Secure UPI Transfer</div>
-      </div>
-      <div class="instruction-layout">
-        <div class="steps-column">
-          <div class="instruction-step">
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 text-lg font-black text-white">1</div>
-            <p class="text-sm font-semibold text-right text-gray-200">Scan QR</p>
-          </div>
-          <div class="instruction-step">
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 text-lg font-black text-white">2</div>
-            <p class="text-sm font-semibold text-right text-gray-200">Copy Txn ID</p>
-          </div>
-          <div class="instruction-step">
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 text-lg font-black text-white">3</div>
-            <p class="text-sm font-semibold text-right text-gray-200">Enter details</p>
-          </div>
-          <div class="instruction-step">
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 text-lg font-black text-white">4</div>
-            <p class="text-sm font-semibold text-right text-gray-200">Click Pay</p>
-          </div>
-        </div>
-        <div class="qr-column">
-          <img src="./payment-qr.png" alt="GETXH payment QR code" class="qr-image object-contain"/>
-        </div>
-      </div>
-    </div>
-
-    <div class="mb-4">
-      <label class="text-xs font-black uppercase tracking-[0.18em] text-gray-500 mb-2 block">Transaction ID</label>
-      <input id="paymentRefInput" type="text" placeholder="Enter transaction ID"
-        class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm outline-none placeholder-gray-500"/>
-    </div>
-
+    <!-- Amount -->
     <div class="mb-3">
-      <label class="text-xs font-black uppercase tracking-[0.18em] text-gray-500 mb-2 block">Amount</label>
-      <input id="amount" type="number" min="10" step="1" placeholder="Enter amount"
-        class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm outline-none placeholder-gray-500"/>
+      <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">Amount (₹)</label>
+      <input id="amountInput" type="number" min="10" max="100000" placeholder="Enter amount"
+        class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm"
+        oninput="clearChips()"/>
     </div>
 
-    <div class="mb-5 flex flex-wrap gap-2.5">
-      <button type="button" onclick="pickAmount(100)" class="amount-chip rounded-2xl px-4 py-2.5 text-sm font-bold text-white">&#8377;100</button>
-      <button type="button" onclick="pickAmount(500)" class="amount-chip rounded-2xl px-4 py-2.5 text-sm font-bold text-white">&#8377;500</button>
-      <button type="button" onclick="pickAmount(1000)" class="amount-chip rounded-2xl px-4 py-2.5 text-sm font-bold text-white">&#8377;1000</button>
+    <!-- Quick chips -->
+    <div class="flex flex-wrap gap-2 mb-5">
+      <button type="button" onclick="pickAmount(100)"  class="chip rounded-xl px-4 py-2 text-sm font-bold">₹100</button>
+      <button type="button" onclick="pickAmount(200)"  class="chip rounded-xl px-4 py-2 text-sm font-bold">₹200</button>
+      <button type="button" onclick="pickAmount(500)"  class="chip rounded-xl px-4 py-2 text-sm font-bold">₹500</button>
+      <button type="button" onclick="pickAmount(1000)" class="chip rounded-xl px-4 py-2 text-sm font-bold">₹1000</button>
+      <button type="button" onclick="pickAmount(2000)" class="chip rounded-xl px-4 py-2 text-sm font-bold">₹2000</button>
     </div>
 
-    <button id="submitPaymentBtn" onclick="payNow()"
-      class="gradient-btn w-full rounded-2xl py-3.5 font-black text-sm text-white active:scale-[0.985]">
-      Pay
+    <!-- Pay button -->
+    <button id="payBtn" onclick="payNow()"
+      class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white">
+      Pay Now
     </button>
   </section>
 
-  <section class="section-card rounded-[30px] p-5 sm:p-6">
-    <div class="flex items-center justify-between mb-5">
-      <div>
-        <h3 class="text-base font-black tracking-wide text-white">Recent Payments</h3>
-        <p class="text-xs text-gray-500 mt-0.5">Last 5 transactions</p>
-      </div>
-      <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl" style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2)">
-        <span class="live-dot"></span>
-        <span class="text-xs font-bold text-green-400">Live</span>
-      </div>
-    </div>
-
-    <div id="transactionsList" class="space-y-3">
-      <!-- Skeleton loaders -->
-      <div class="rounded-2xl border border-white/8 bg-[#121c33] p-4 flex items-center justify-between gap-3">
-        <div class="flex-1 space-y-2">
-          <div class="skeleton h-4 w-2/3"></div>
-          <div class="skeleton h-3 w-1/2"></div>
-          <div class="skeleton h-3 w-1/3"></div>
-        </div>
-        <div class="skeleton h-5 w-16 rounded-lg"></div>
-      </div>
-      <div class="rounded-2xl border border-white/8 bg-[#121c33] p-4 flex items-center justify-between gap-3">
-        <div class="flex-1 space-y-2">
-          <div class="skeleton h-4 w-3/5"></div>
-          <div class="skeleton h-3 w-2/5"></div>
-          <div class="skeleton h-3 w-1/4"></div>
-        </div>
-        <div class="skeleton h-5 w-16 rounded-lg"></div>
-      </div>
+  <!-- Transaction History -->
+  <section class="section-card rounded-3xl p-6">
+    <h3 class="text-base font-black mb-4">Recent Transactions</h3>
+    <div id="txList">
+      <div class="skeleton h-14 w-full mb-3 rounded-2xl"></div>
+      <div class="skeleton h-14 w-full rounded-2xl"></div>
     </div>
   </section>
+
 </main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, query, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -337,248 +144,120 @@ const firebaseConfig = {
   projectId: "getxh-42588",
   storageBucket: "getxh-42588.firebasestorage.app",
   messagingSenderId: "170770122888",
-  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+  appId: "1:170770122888:web:c76e847e4d19a565ea7c77"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const RUPEE = '\u20B9';
-let stopUserListener = null;
-let stopPaymentsListener = null;
+const BACKEND = "https://backend-for-email-verification-code-1.onrender.com";
+
+initializeApp(firebaseConfig);
+const auth = getAuth();
+
 let currentUser = null;
 
-window.pickAmount = function(amount) {
-  document.getElementById("amount").value = amount;
-};
-
-function showWalletNotice(message, type = "error") {
-  const el = document.getElementById("walletNotice");
-  el.textContent = message;
-  el.className = "mb-5 rounded-2xl px-4 py-3 text-sm font-semibold";
-  if (type === "error") {
-    el.style.background = "rgba(239,68,68,0.12)";
-    el.style.border = "1px solid rgba(239,68,68,0.2)";
-    el.style.color = "#fca5a5";
-  } else {
-    el.style.background = "rgba(34,197,94,0.12)";
-    el.style.border = "1px solid rgba(34,197,94,0.2)";
-    el.style.color = "#86efac";
-  }
-  el.classList.remove("hidden");
-}
-
-function hideWalletNotice() {
-  document.getElementById("walletNotice").classList.add("hidden");
-}
-
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "index.html";
-    return;
-  }
-
+onAuthStateChanged(auth, user => {
+  if (!user) { window.location.replace("index.html"); return; }
   currentUser = user;
-  document.getElementById("walletUser").textContent = user.email || "Logged in user";
-
-  if (typeof stopUserListener === "function") stopUserListener();
-  if (typeof stopPaymentsListener === "function") stopPaymentsListener();
-
-  stopUserListener = subscribeWalletSummary(user.uid);
-  stopPaymentsListener = subscribeRecentPayments(user.uid);
+  document.getElementById("walletEmail").textContent = user.email;
+  loadBalance(user.email);
+  loadTransactions(user.email);
 });
 
+async function loadBalance(email) {
+  try {
+    const res  = await fetch(`${BACKEND}/get-balance?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    document.getElementById("walletBalance").textContent = "₹" + (data.balance || 0).toFixed(2);
+  } catch {
+    document.getElementById("walletBalance").textContent = "₹0.00";
+  }
+}
+
+async function loadTransactions(email) {
+  const el = document.getElementById("txList");
+  try {
+    const res  = await fetch(`${BACKEND}/get-transactions?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    const txs  = data.transactions || [];
+    if (!txs.length) {
+      el.innerHTML = '<p class="text-sm text-gray-500 text-center py-6">No transactions yet.</p>';
+      return;
+    }
+    el.innerHTML = txs.map(t => {
+      const date   = t.createdAt ? new Date(t.createdAt).toLocaleDateString("en-IN", {day:"2-digit",month:"short",year:"numeric"}) : "—";
+      const color  = t.status === "success" ? "text-green-400" : t.status === "failed" ? "text-red-400" : "text-yellow-400";
+      const badge  = t.status === "success" ? "bg-green-500/10 border-green-500/20" : t.status === "failed" ? "bg-red-500/10 border-red-500/20" : "bg-yellow-500/10 border-yellow-500/20";
+      return `<div class="flex items-center justify-between bg-white/3 border border-white/6 rounded-2xl px-4 py-3 mb-3">
+        <div>
+          <p class="text-sm font-bold">Wallet Recharge</p>
+          <p class="text-xs text-gray-500">${date}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-sm font-black">₹${t.amount.toFixed(2)}</p>
+          <span class="text-xs font-bold px-2 py-0.5 rounded-lg border ${badge} ${color}">${t.status}</span>
+        </div>
+      </div>`;
+    }).join("");
+  } catch {
+    el.innerHTML = '<p class="text-sm text-gray-500 text-center py-6">Failed to load transactions.</p>';
+  }
+}
+
+window.pickAmount = function(val) {
+  document.getElementById("amountInput").value = val;
+  document.querySelectorAll(".chip").forEach(c => c.classList.remove("selected"));
+  event.target.classList.add("selected");
+};
+
+window.clearChips = function() {
+  document.querySelectorAll(".chip").forEach(c => c.classList.remove("selected"));
+};
+
 window.payNow = async function() {
-  hideWalletNotice();
+  if (!currentUser) return;
+  const amount = parseFloat(document.getElementById("amountInput").value);
+  const notice = document.getElementById("walletNotice");
+  const btn    = document.getElementById("payBtn");
 
-  const txnInput    = document.getElementById("paymentRefInput");
-  const amountInput = document.getElementById("amount");
-  const btn         = document.getElementById("submitPaymentBtn");
+  notice.className = "hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold";
 
-  const txnId        = txnInput.value.trim();
-  const enteredAmount = Number(amountInput.value || 0);
-
-  if (!txnId) {
-    showWalletNotice("Please enter your UPI Transaction ID.", "error");
-    txnInput.focus();
-    return;
-  }
-  if (!enteredAmount || enteredAmount <= 0) {
-    showWalletNotice("Please enter a valid amount.", "error");
-    amountInput.focus();
-    return;
-  }
-  if (enteredAmount < 10) {
-    showWalletNotice("Minimum top-up amount is ₹10.", "error");
-    amountInput.focus();
-    return;
-  }
-  if (!currentUser) {
-    showWalletNotice("Session expired. Please login again.", "error");
+  if (!amount || amount < 10) {
+    notice.className = "flex mb-4 rounded-2xl px-4 py-3 text-sm font-semibold bg-red-500/10 border border-red-500/20 text-red-400";
+    notice.textContent = "Minimum amount is ₹10.";
     return;
   }
 
   btn.disabled = true;
-  btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px;vertical-align:-3px;animation:spin 1s linear infinite">progress_activity</span> Submitting...`;
+  btn.textContent = "Creating payment...";
 
   try {
-    const paymentRef = doc(db, "payments", currentUser.uid, "user_payments", txnId);
+    const res  = await fetch(`${BACKEND}/create-payment`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount,
+        email: currentUser.email,
+        name:  currentUser.displayName || ""
+      })
+    });
+    const data = await res.json();
 
-    // Duplicate check
-    const existing = await getDoc(paymentRef);
-    if (existing.exists()) {
-      showWalletNotice("This Transaction ID has already been submitted.", "error");
-      btn.disabled = false;
-      btn.textContent = "Pay";
-      return;
+    if (!data.success || !data.payment_url) {
+      throw new Error(data.message || "Failed to create payment.");
     }
 
-    // Save to Firestore — onSnapshot will instantly reflect in UI
-    await setDoc(paymentRef, {
-      title:        "Wallet Top-up",
-      amount:       enteredAmount,
-      status:       "Pending",
-      paymentId:    txnId,
-      method:       "UPI",
-      paymentMethod:"UPI",
-      createdAt:    serverTimestamp(),
-      updatedAt:    serverTimestamp(),
-      uid:          currentUser.uid,
-      email:        currentUser.email || "",
-      type:         "add_funds"
-    });
+    // Save payment_id locally for success page polling
+    localStorage.setItem("gxpay_pending_id", data.payment_id);
+    localStorage.setItem("gxpay_pending_email", currentUser.email);
 
-    txnInput.value    = "";
-    amountInput.value = "";
-    showWalletNotice("Payment submitted! Our team will verify and credit your wallet shortly.", "success");
+    window.location.href = data.payment_url;
 
-  } catch (err) {
-    console.error("Payment submit error:", err);
-    showWalletNotice("Something went wrong. Please try again.", "error");
-  } finally {
-    btn.disabled   = false;
-    btn.textContent = "Pay";
+  } catch (e) {
+    notice.className = "flex mb-4 rounded-2xl px-4 py-3 text-sm font-semibold bg-red-500/10 border border-red-500/20 text-red-400";
+    notice.textContent = e.message || "Something went wrong. Try again.";
+    btn.disabled = false;
+    btn.textContent = "Pay Now";
   }
 };
-
-function formatDateTime(value) {
-  if (!value) return "";
-  let date = null;
-  if (value.toDate) {
-    date = value.toDate();
-  } else if (value.seconds) {
-    date = new Date(value.seconds * 1000);
-  } else {
-    date = new Date(value);
-  }
-  if (!date || Number.isNaN(date.getTime())) return "";
-  return date.toLocaleString("en-IN", {
-    day: "numeric",
-    month: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit"
-  });
-}
-
-function subscribeWalletSummary(uid) {
-  return onSnapshot(doc(db, "Users", uid), (snap) => {
-    const data = snap.exists() ? snap.data() : {};
-    const balance = Number(data.Balance || 0);
-    const totalOrders = Number(data.TotalOrders || 0);
-    const totalSpent = Number(data.TotalSpent || 0);
-
-    document.getElementById("walletBalance").textContent = `${RUPEE}${balance.toFixed(2)}`;
-    document.getElementById("walletOrders").textContent = totalOrders.toLocaleString();
-    document.getElementById("walletSpent").textContent = `${RUPEE}${totalSpent.toFixed(2)}`;
-  }, (err) => {
-    console.error("Wallet summary load error:", err);
-  });
-}
-
-function subscribeRecentPayments(uid) {
-  const container = document.getElementById("transactionsList");
-
-  return onSnapshot(
-    query(
-      collection(db, "payments", uid, "user_payments"),
-      orderBy("createdAt", "desc"),
-      limit(5)
-    ),
-    (snap) => {
-      if (snap.empty) {
-        container.innerHTML = `
-          <div class="rounded-2xl p-6 flex flex-col items-center gap-3 text-center"
-               style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1)">
-            <span class="material-symbols-outlined text-gray-600" style="font-size:36px">receipt_long</span>
-            <div>
-              <p class="text-sm font-bold text-gray-400">No transactions yet</p>
-              <p class="text-xs text-gray-600 mt-1">Your payment history will appear here after your first top-up.</p>
-            </div>
-          </div>`;
-        return;
-      }
-
-      container.innerHTML = "";
-      snap.forEach((docSnap) => {
-        const payment = docSnap.data();
-        const amount = Number(payment.amount || 0);
-        const status = String(payment.status || "pending").toLowerCase();
-        const method = payment.paymentMethod || payment.method || "UPI";
-        const paymentId = payment.paymentId || payment.transactionId || payment.referenceId || docSnap.id.slice(-8).toUpperCase();
-        const createdAt = formatDateTime(payment.createdAt || payment.updatedAt);
-        const isSuccess = status === "success" || status === "successful" || status === "completed";
-        const isFailed = status === "failed";
-        const title = payment.title || "Wallet Top-up";
-
-        const statusBg    = isSuccess ? "rgba(34,197,94,0.1)"   : isFailed ? "rgba(239,68,68,0.1)"   : "rgba(234,179,8,0.1)";
-        const statusBorder = isSuccess ? "rgba(34,197,94,0.25)"  : isFailed ? "rgba(239,68,68,0.25)"  : "rgba(234,179,8,0.25)";
-        const statusText  = isSuccess ? "#4ade80"               : isFailed ? "#f87171"               : "#facc15";
-        const statusLabel = isSuccess ? "Success"               : isFailed ? "Failed"                : "Pending";
-        const iconBg      = isSuccess ? "rgba(34,197,94,0.12)"  : isFailed ? "rgba(239,68,68,0.12)"  : "rgba(234,179,8,0.12)";
-        const iconColor   = isSuccess ? "#4ade80"               : isFailed ? "#f87171"               : "#facc15";
-        const iconName    = isSuccess ? "check_circle"          : isFailed ? "cancel"                : "schedule";
-        const amountColor = isSuccess ? "#4ade80"               : isFailed ? "#f87171"               : "#facc15";
-
-        const item = document.createElement("div");
-        item.className = "payment-card rounded-2xl p-4 flex items-center gap-3";
-        item.style.cssText = "background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);box-shadow:0 8px 24px rgba(2,8,23,0.2)";
-        item.innerHTML = `
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-               style="background:${iconBg}">
-            <span class="material-symbols-outlined" style="font-size:20px;color:${iconColor}">${iconName}</span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between gap-2">
-              <p class="text-sm font-bold text-white truncate">${title}</p>
-              <p class="text-sm font-black whitespace-nowrap" style="color:${amountColor}">${isSuccess ? '+' : ''}${RUPEE}${amount.toFixed(2)}</p>
-            </div>
-            <div class="flex items-center justify-between gap-2 mt-1.5">
-              <p class="text-xs text-gray-500 truncate">ID: ${paymentId} · ${method}</p>
-              <span class="text-[10px] font-black px-2 py-0.5 rounded-lg flex-shrink-0"
-                    style="background:${statusBg};border:1px solid ${statusBorder};color:${statusText}">${statusLabel}</span>
-            </div>
-            ${createdAt ? `<p class="text-xs text-gray-600 mt-1">${createdAt}</p>` : ''}
-          </div>`;
-        container.appendChild(item);
-      });
-    },
-    (err) => {
-      console.error("Payment load error:", err);
-      container.innerHTML = `
-        <div class="rounded-2xl p-6 flex flex-col items-center gap-3 text-center"
-             style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1)">
-          <span class="material-symbols-outlined text-gray-600" style="font-size:36px">receipt_long</span>
-          <div>
-            <p class="text-sm font-bold text-gray-400">No recent payments</p>
-            <p class="text-xs text-gray-600 mt-1">Your payment history will appear here after your first top-up.</p>
-          </div>
-        </div>`;
-    }
-  );
-}
 </script>
-
 </body>
 </html>
