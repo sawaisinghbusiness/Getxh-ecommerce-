@@ -10,6 +10,24 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #0e1a33;
+  border: 1px solid rgba(56,189,248,0.35);
+  box-shadow: 0 0 10px rgba(56,189,248,0.2);
+  white-space: nowrap;
+}
+.brand-text {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  font-size: 15px;
+  color: #fff;
+}
+.brand-text .dot { color: #38bdf8; }
 .scrollbar-hidden::-webkit-scrollbar {
   display: none;
 }
@@ -45,6 +63,9 @@ textarea {
   min-height: 138px;
   padding: 14px 16px;
   resize: none;
+  box-sizing: border-box;
+  overflow: hidden;
+  word-break: break-word;
 }
 .field:focus,
 .select-btn.open,
@@ -236,13 +257,6 @@ textarea::placeholder {
   <div class="flex-1 overflow-y-auto py-3 px-3">
     <a href="Dashboard.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
       <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-500/15">
-        <span class="material-symbols-outlined text-blue-400" style="font-size:16px">dashboard</span>
-      </div>
-      <span class="font-bold text-gray-300 text-sm">Dashboard</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
-    </a>
-    <a href="Dashboard.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-500/15">
         <span class="material-symbols-outlined text-blue-400" style="font-size:16px">add_shopping_cart</span>
       </div>
       <span class="font-bold text-gray-300 text-sm">New Order</span>
@@ -300,15 +314,12 @@ textarea::placeholder {
 
 <div class="lg:pl-72">
 <div class="fixed inset-x-0 top-0 z-40 border-b border-white/5 bg-[#0b1220] lg:left-72">
-  <div class="flex items-center gap-3 px-4 py-4">
-    <button onclick="history.back()" class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5">
-      <span class="material-symbols-outlined text-[20px]">arrow_back_ios</span>
-    </button>
-    <div>
-      <p class="text-base font-black leading-tight">Support</p>
-      <p class="text-xs text-sky-400">GETXH.IN</p>
+  <div class="flex items-center justify-between px-4 py-4">
+    <div class="w-9"></div>
+    <div class="brand-badge">
+      <span class="brand-text">get<span style="color:#38bdf8">X</span>h<span class="dot">.in</span></span>
     </div>
-    <button id="newTicketBtn" onclick="openCreatePanel()" class="ml-auto rounded-xl bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-2 text-xs font-black text-white shadow-[0_12px_28px_rgba(14,165,233,0.28)] transition active:scale-[0.98]">
+    <button id="newTicketBtn" onclick="openCreatePanel()" class="rounded-xl bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-2 text-xs font-black text-white shadow-[0_12px_28px_rgba(14,165,233,0.28)] transition active:scale-[0.98]">
       New Ticket
     </button>
   </div>
@@ -322,8 +333,8 @@ textarea::placeholder {
     <div class="flex items-start justify-between gap-4">
       <div>
         <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Tickets</p>
-        <h1 class="mt-2 text-lg font-black text-white">Professional support inbox</h1>
-        <p class="mt-1 text-xs text-slate-400">Clean ticket tracking with full conversation history.</p>
+        <h1 class="mt-2 text-lg font-black text-white">Support Center</h1>
+        <p class="mt-1 text-xs text-slate-400">Raise a ticket and our team will get back to you shortly.</p>
       </div>
       <div class="rounded-2xl border border-sky-400/20 bg-sky-400/10 px-3 py-2 text-right">
         <p class="text-[10px] uppercase tracking-[0.14em] text-slate-400">Open</p>
@@ -456,42 +467,23 @@ textarea::placeholder {
 <div id="sideMenu"
   class="fixed top-0 left-0 h-full w-72 z-[110] transform -translate-x-full transition-transform duration-300 flex flex-col"
   style="background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);">
-  <div class="px-5 pt-8 pb-5 border-b border-white/10" style="background:linear-gradient(135deg,#0e1f3d,#162844);">
-    <div class="flex items-center gap-3 mb-4">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
-        <span class="material-symbols-outlined text-white" style="font-size:20px">verified_user</span>
+  <div class="px-5 pt-20 pb-4" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div style="width:46px;height:46px;min-width:46px;border-radius:14px;background:linear-gradient(135deg,#2196f3,#00bcd4);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span class="material-symbols-outlined text-white" style="font-size:22px">person</span>
       </div>
-      <div>
-        <p class="font-black text-white text-base tracking-wide">GETXH<span style="color:#2196f3">.IN</span></p>
-        <div class="flex items-center gap-1 mt-0.5">
-          <div class="h-1.5 w-1.5 rounded-full bg-green-400" style="animation:glowPulse 2s infinite"></div>
-          <p class="text-xs font-semibold" style="color:#2196f3">Online</p>
-        </div>
-      </div>
-    </div>
-    <div class="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
-      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
-        <span class="material-symbols-outlined text-white" style="font-size:16px">person</span>
-      </div>
-      <div class="min-w-0">
-        <p id="menuUsernameMobile" class="text-xs font-bold text-white truncate">User</p>
-        <p id="menuEmailMobile" class="text-xs text-gray-500 truncate">—</p>
+      <div style="min-width:0;overflow:hidden;">
+        <p id="menuUsernameMobile" style="font-size:15px;font-weight:800;color:#ffffff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;">User</p>
+        <p id="menuEmailMobile" style="font-size:12px;color:#475569;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</p>
       </div>
     </div>
   </div>
   <div class="flex-1 overflow-y-auto py-3 px-3">
     <a href="Dashboard.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
       <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-500/15">
-        <span class="material-symbols-outlined text-blue-400" style="font-size:16px">dashboard</span>
+        <span class="material-symbols-outlined text-blue-400" style="font-size:16px">add_shopping_cart</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm">Dashboard</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
-    </a>
-    <a href="Dashboard.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 transition-all active:scale-[0.98]" style="background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
-        <span class="material-symbols-outlined text-white" style="font-size:16px">add_shopping_cart</span>
-      </div>
-      <span class="font-bold text-white text-sm">New Order</span>
+      <span class="font-bold text-gray-300 text-sm">New Order</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
     </a>
     <a href="orders.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
@@ -501,11 +493,11 @@ textarea::placeholder {
       <span class="font-bold text-gray-300 text-sm">Orders</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
     </a>
-    <a href="support.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-500/15">
-        <span class="material-symbols-outlined text-purple-400" style="font-size:16px">support_agent</span>
+    <a href="support.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 transition-all active:scale-[0.98]" style="background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">support_agent</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm">Support</span>
+      <span class="font-bold text-white text-sm">Support</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
     </a>
     <a href="wallet.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
