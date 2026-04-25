@@ -29,7 +29,7 @@
 html,body{
   height:100%;
   font-family:'Inter',sans-serif;
-  background:linear-gradient(135deg,#0f172a 0%,#020617 100%);
+  background:#0f172a;
   color:var(--text);
   overflow-x:hidden;
 }
@@ -54,18 +54,20 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
   overflow:hidden;
 }
 
-.left::after{
+/* grid overlay — full page */
+.page::before{
   content:'';
-  position:absolute;
+  position:fixed;
   inset:0;
   background-image:
     linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),
     linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
   background-size:48px 48px;
   pointer-events:none;
+  z-index:0;
 }
 
-.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;opacity:0.7;will-change:transform,opacity;}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;opacity:0.7;will-change:transform,opacity;z-index:0;}
 .orb-1{width:500px;height:500px;background:rgba(139,92,246,0.3);top:-140px;left:-120px;animation:floatA 14s ease-in-out infinite alternate,blobPulse 9s ease-in-out infinite;}
 .orb-2{width:380px;height:380px;background:rgba(59,130,246,0.22);bottom:-80px;right:-60px;animation:floatB 16s ease-in-out infinite alternate,blobPulse 11s ease-in-out infinite;}
 .orb-3{width:260px;height:260px;background:rgba(6,182,212,0.15);top:55%;left:42%;animation:floatC 18s ease-in-out infinite alternate,blobPulse 10s ease-in-out infinite alternate;}
@@ -143,14 +145,13 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
 
 /* ─── RIGHT PANEL ─── */
 .right{
-  width:460px;
-  min-width:460px;
+  width:560px;
+  min-width:560px;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:40px 32px;
-  background:rgba(255,255,255,0.014);
-  border-left:1px solid rgba(255,255,255,0.05);
+  padding-top:20px;
   position:relative;
 }
 
@@ -158,7 +159,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
 .card-shine-wrap{
   position:relative;
   width:100%;
-  max-width:390px;
+  max-width:500px;
   border-radius:24px;
   padding:2px;
   animation:fadeUpSoft 0.7s cubic-bezier(0.22,1,0.36,1) both;
@@ -184,7 +185,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
   position:absolute;
   inset:2px;
   border-radius:22px;
-  background:rgba(15,23,42,0.85);
+  background:#0f172a;
   z-index:1;
 }
 @keyframes card-spin{
@@ -200,12 +201,10 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
   position:relative;
   z-index:2;
   width:100%;
-  background:rgba(15,23,42,0.85);
+  background:#0f172a;
   border:none;
   border-radius:22px;
-  padding:40px 34px;
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
+  padding:56px 48px;
   box-shadow:
     0 32px 72px rgba(0,0,0,0.55),
     inset 0 1px 0 rgba(255,255,255,0.1);
@@ -897,7 +896,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
       fetch("https://backend-for-email-verification-code-1.onrender.com/save-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, mobile: document.getElementById("mobile").value.trim(), username })
       }).catch(() => {});
 
       /* Firestore + profile update in background — don't block redirect */
@@ -980,13 +979,14 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
 
 <div class="page">
 
+  <!-- Background orbs — full page -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+
   <!-- ════ LEFT PANEL ════ -->
   <div class="left">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-    <div class="orb orb-4"></div>
-
     <div class="left-content" onanimationend="this.style.animation='none'">
 
       <div class="logo">
@@ -1117,6 +1117,24 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
             onkeydown="if(event.key==='Enter')document.getElementById('password').focus()"/>
         </div>
         <div class="field-err" id="err-email"></div>
+      </div>
+
+      <!-- Mobile Number -->
+      <div class="fgroup">
+        <label class="flabel" for="mobile">Mobile Number</label>
+        <div class="iwrap">
+          <span class="iicon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+              <line x1="12" y1="18" x2="12.01" y2="18"/>
+            </svg>
+          </span>
+          <input id="mobile" type="tel" autocomplete="tel" inputmode="numeric"
+            class="finput" placeholder="+91 00000 00000"
+            oninput="clearErr('mobile','err-mobile')"
+            onkeydown="if(event.key==='Enter')document.getElementById('password').focus()"/>
+        </div>
+        <div class="field-err" id="err-mobile"></div>
       </div>
 
       <!-- Password -->
@@ -1314,14 +1332,30 @@ function onConfirmInput(val) {
 }
 
 /* ─── main validate-then-send ─── */
+function validateMobile(raw) {
+  const val = raw.trim();
+  if (!val) return { ok: false, msg: "Fill the number" };
+  if (val.startsWith("+91")) {
+    const digits = val.slice(3).replace(/\s/g, "");
+    if (digits.length !== 10 || !/^\d{10}$/.test(digits))
+      return { ok: false, msg: "Enter valid number" };
+  } else {
+    const digits = val.replace(/\s/g, "");
+    if (digits.length !== 10 || !/^\d{10}$/.test(digits))
+      return { ok: false, msg: "Enter valid number" };
+  }
+  return { ok: true };
+}
+
 function validateAndSendOTP() {
   const username = document.getElementById("username").value.trim();
   const email    = document.getElementById("email").value.trim();
+  const mobile   = document.getElementById("mobile").value;
   const password = document.getElementById("password").value;
   const confirm  = document.getElementById("confirmPassword").value;
 
   /* reset all */
-  ["username","email","password","confirmPassword"].forEach(id => {
+  ["username","email","mobile","password","confirmPassword"].forEach(id => {
     clearErr(id, "err-" + id);
   });
 
@@ -1337,6 +1371,13 @@ function validateAndSendOTP() {
     setErr("email", "err-email", "Enter email to continue");
     if (!firstInvalid) shake("email");
     firstInvalid = firstInvalid || "email";
+  }
+
+  const mobileCheck = validateMobile(mobile);
+  if (!mobileCheck.ok) {
+    setErr("mobile", "err-mobile", mobileCheck.msg);
+    if (!firstInvalid) shake("mobile");
+    firstInvalid = firstInvalid || "mobile";
   }
 
   if (!password) {

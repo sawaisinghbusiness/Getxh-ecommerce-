@@ -29,74 +29,9 @@
 html,body{
   height:100%;
   font-family:'Inter',sans-serif;
-  background:#0b1120;
+  background:#0f172a;
   color:var(--text);
   overflow-x:hidden;
-}
-
-/* ── Wave background ── */
-body::before,body::after{
-  content:'';
-  position:fixed;
-  pointer-events:none;
-  z-index:0;
-}
-
-/* Wave layer 1 — deepest */
-body::before{
-  width:75vw;
-  height:75vw;
-  max-width:900px;
-  max-height:900px;
-  bottom:-30vw;
-  right:-20vw;
-  background:radial-gradient(ellipse at 60% 60%, #1e3a5f 0%, transparent 70%);
-  border-radius:60% 40% 55% 45% / 50% 60% 40% 50%;
-  filter:blur(60px);
-  opacity:0.85;
-}
-
-/* Wave layer 2 — mid */
-body::after{
-  width:60vw;
-  height:60vw;
-  max-width:750px;
-  max-height:750px;
-  bottom:-15vw;
-  right:-10vw;
-  background:radial-gradient(ellipse at 55% 65%, #2c5364 0%, transparent 65%);
-  border-radius:45% 55% 40% 60% / 60% 45% 55% 40%;
-  filter:blur(45px);
-  opacity:0.7;
-}
-
-/* Wave layer 3 — top accent */
-.page::before{
-  content:'';
-  position:fixed;
-  pointer-events:none;
-  z-index:0;
-  width:45vw;
-  height:45vw;
-  max-width:580px;
-  max-height:580px;
-  bottom:-5vw;
-  right:5vw;
-  background:radial-gradient(ellipse at 50% 70%, #1a4a6e 0%, transparent 60%);
-  border-radius:55% 45% 60% 40% / 45% 55% 45% 55%;
-  filter:blur(35px);
-  opacity:0.55;
-  box-shadow:0 -20px 60px rgba(44,83,100,0.3);
-}
-
-/* Vignette */
-.page::after{
-  content:'';
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:0;
-  background:radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(4,8,20,0.7) 100%);
 }
 
 a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
@@ -120,20 +55,21 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
   overflow:hidden;
 }
 
-/* grid overlay */
-.left::after{
+/* grid overlay — full page */
+.page::before{
   content:'';
-  position:absolute;
+  position:fixed;
   inset:0;
   background-image:
     linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),
     linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
   background-size:48px 48px;
   pointer-events:none;
+  z-index:0;
 }
 
 /* orbs */
-.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;opacity:0.7;will-change:transform,opacity;}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;opacity:0.7;will-change:transform,opacity;z-index:0;}
 .orb-1{width:500px;height:500px;background:rgba(139,92,246,0.3);top:-140px;left:-120px;animation:floatA 14s ease-in-out infinite alternate,blobPulse 9s ease-in-out infinite;}
 .orb-2{width:380px;height:380px;background:rgba(59,130,246,0.22);bottom:-80px;right:-60px;animation:floatB 16s ease-in-out infinite alternate,blobPulse 11s ease-in-out infinite;}
 .orb-3{width:260px;height:260px;background:rgba(6,182,212,0.15);top:55%;left:42%;animation:floatC 18s ease-in-out infinite alternate,blobPulse 10s ease-in-out infinite alternate;}
@@ -218,32 +154,70 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
 
 /* ─── RIGHT PANEL ─── */
 .right{
-  width:460px;
-  min-width:460px;
+  width:560px;
+  min-width:560px;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:40px 32px;
-  background:rgba(255,255,255,0.014);
-  border-left:1px solid rgba(255,255,255,0.05);
+  padding-top:20px;
   position:relative;
+}
+
+/* shine border wrapper */
+.card-shine-wrap{
+  position:relative;
+  width:100%;
+  max-width:500px;
+  border-radius:24px;
+  padding:2px;
+  animation:fadeUpSoft 0.7s cubic-bezier(0.22,1,0.36,1) both;
+}
+.card-shine-wrap::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:24px;
+  background:conic-gradient(
+    from var(--shine-angle, 0deg),
+    transparent 0deg,
+    #8b5cf6 60deg,
+    #3b82f6 120deg,
+    #06b6d4 180deg,
+    transparent 240deg
+  );
+  animation:card-spin 4s linear infinite;
+  z-index:0;
+}
+.card-shine-wrap::after{
+  content:'';
+  position:absolute;
+  inset:2px;
+  border-radius:22px;
+  background:#0f172a;
+  z-index:1;
+}
+@keyframes card-spin{
+  to{ --shine-angle:360deg; }
+}
+@property --shine-angle{
+  syntax:'<angle>';
+  initial-value:0deg;
+  inherits:false;
 }
 
 /* card */
 .card{
+  position:relative;
+  z-index:2;
   width:100%;
-  max-width:390px;
-  background:rgba(17,26,50,0.92);
-  border:1px solid rgba(255,255,255,0.2);
-  border-radius:24px;
-  padding:40px 34px;
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
+  background:#0f172a;
+  border:none;
+  border-radius:22px;
+  padding:56px 48px;
   box-shadow:
     0 32px 72px rgba(0,0,0,0.55),
-    0 0 0 1px rgba(255,255,255,0.07),
-    inset 0 1px 0 rgba(255,255,255,0.13);
-  animation:fadeUpSoft 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    inset 0 1px 0 rgba(255,255,255,0.1);
   will-change:transform,box-shadow;
 }
 .card:hover{
@@ -615,13 +589,14 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
 
 <div class="page">
 
+  <!-- Background orbs — full page -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+
   <!-- ════ LEFT PANEL ════ -->
   <div class="left">
-    <!-- Background orbs -->
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-    <div class="orb orb-4"></div>
 
     <div class="left-content" onanimationend="this.style.animation='none'">
 
@@ -697,6 +672,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
 
   <!-- ════ RIGHT PANEL ════ -->
   <div class="right">
+    <div class="card-shine-wrap">
     <div class="card">
 
       <!-- Mobile logo (shown only on mobile) -->
@@ -783,6 +759,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
       </div>
 
     </div>
+    </div><!-- /.card-shine-wrap -->
   </div>
 
 </div>
