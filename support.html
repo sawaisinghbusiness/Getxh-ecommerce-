@@ -759,7 +759,7 @@ function renderTicketList(tickets) {
 
   list.innerHTML = tickets.map(ticket => {
     const status = String(ticket.status || 'open').toLowerCase();
-    const statusClass = status === 'closed' ? 'bg-emerald-500/12 text-emerald-300' : 'bg-sky-500/12 text-sky-400';
+    const statusClass = (status === 'closed' || status === 'resolved') ? 'bg-emerald-500/12 text-emerald-300' : 'bg-sky-500/12 text-sky-400';
     return `
       <button onclick="openTicketModal('${ticket.id}')" class="ticket-row w-full rounded-[20px] px-4 py-4 text-left">
         <div class="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
@@ -822,9 +822,10 @@ function renderTicketModal(ticket) {
   const status = String(ticket.status || 'open').toLowerCase();
   const badge = document.getElementById('modalStatusBadge');
   badge.textContent = status;
-  badge.className = 'rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] ' + (status === 'closed' ? 'bg-emerald-500/12 text-emerald-300' : 'bg-sky-500/12 text-sky-400');
+  const isDone = status === 'closed' || status === 'resolved';
+  badge.className = 'rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] ' + (isDone ? 'bg-emerald-500/12 text-emerald-300' : 'bg-sky-500/12 text-sky-400');
 
-  const isClosed = status === 'closed';
+  const isClosed = isDone;
   document.getElementById('closeTicketAction').classList.toggle('hidden', isClosed);
   const composeArea = document.getElementById('messageComposeArea');
   if (composeArea) composeArea.classList.toggle('hidden', isClosed);
@@ -936,7 +937,7 @@ window.createTicket = async function () {
   if (needsOrder) {
     const duplicateOpenTicket = ticketRows.some(ticket =>
       String(ticket.orderId || '').toUpperCase() === orderIdValue &&
-      String(ticket.status || '').toLowerCase() !== 'closed'
+      !['closed','resolved'].includes(String(ticket.status || '').toLowerCase())
     );
     if (duplicateOpenTicket) {
       showNotice('formNotice', 'Ticket already submitted for this Order ID. Please close the current ticket or enter another ID.');
@@ -1066,11 +1067,11 @@ onAuthStateChanged(auth, user => {
     // Listen to messages collection for real-time chat
     const msgsQuery = query(
       collection(db, 'messages'),
-      where('ticketId', '==', ticketId),
-      orderBy('createdAt', 'asc')
+      where('ticketId', '==', ticketId)
     );
     const unsubMsgs = onSnapshot(msgsQuery, snapshot => {
-      const msgs = snapshot.docs.map(d => d.data());
+      const msgs = snapshot.docs.map(d => d.data())
+        .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
       if (activeTicketDoc === ticketId) renderMessages(msgs);
     });
 
