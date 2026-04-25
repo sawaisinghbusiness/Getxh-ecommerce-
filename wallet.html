@@ -154,10 +154,41 @@ const auth = getAuth();
 
 let currentUser = null;
 
+// Wake up backend immediately
+fetch(`${BACKEND}/ping`).catch(()=>{});
+
+function renderTxList(txs) {
+  const el = document.getElementById("txList");
+  if (!txs.length) {
+    el.innerHTML = '<p class="text-sm text-gray-500 text-center py-6">No transactions yet.</p>';
+    return;
+  }
+  el.innerHTML = txs.map(t => {
+    const date  = t.createdAt ? new Date(t.createdAt).toLocaleDateString("en-IN", {day:"2-digit",month:"short",year:"numeric"}) : "—";
+    const color = t.status === "success" ? "text-green-400" : t.status === "failed" ? "text-red-400" : "text-yellow-400";
+    const badge = t.status === "success" ? "bg-green-500/10 border-green-500/20" : t.status === "failed" ? "bg-red-500/10 border-red-500/20" : "bg-yellow-500/10 border-yellow-500/20";
+    return `<div class="flex items-center justify-between bg-white/3 border border-white/6 rounded-2xl px-4 py-3 mb-3">
+      <div><p class="text-sm font-bold">Wallet Recharge</p><p class="text-xs text-gray-500">${date}</p></div>
+      <div class="text-right">
+        <p class="text-sm font-black">₹${t.amount.toFixed(2)}</p>
+        <span class="text-xs font-bold px-2 py-0.5 rounded-lg border ${badge} ${color}">${t.status}</span>
+      </div>
+    </div>`;
+  }).join("");
+}
+
 onAuthStateChanged(auth, user => {
   if (!user) { window.location.replace("index.html"); return; }
   currentUser = user;
   document.getElementById("walletEmail").textContent = user.email;
+
+  // Show cached data instantly
+  const cachedBal = localStorage.getItem("gx_wallet_bal");
+  const cachedTxs = localStorage.getItem("gx_wallet_txs_" + user.email);
+  if (cachedBal) document.getElementById("walletBalance").textContent = cachedBal;
+  if (cachedTxs) { try { renderTxList(JSON.parse(cachedTxs)); } catch {} }
+
+  // Fetch fresh in background
   loadBalance(user.email);
   loadTransactions(user.email);
 });
@@ -166,39 +197,25 @@ async function loadBalance(email) {
   try {
     const res  = await fetch(`${BACKEND}/get-balance?email=${encodeURIComponent(email)}`);
     const data = await res.json();
-    document.getElementById("walletBalance").textContent = "₹" + (data.balance || 0).toFixed(2);
+    const val  = "₹" + (data.balance || 0).toFixed(2);
+    document.getElementById("walletBalance").textContent = val;
+    localStorage.setItem("gx_wallet_bal", val);
   } catch {
-    document.getElementById("walletBalance").textContent = "₹0.00";
+    if (!localStorage.getItem("gx_wallet_bal"))
+      document.getElementById("walletBalance").textContent = "₹0.00";
   }
 }
 
 async function loadTransactions(email) {
-  const el = document.getElementById("txList");
   try {
     const res  = await fetch(`${BACKEND}/get-transactions?email=${encodeURIComponent(email)}`);
     const data = await res.json();
     const txs  = data.transactions || [];
-    if (!txs.length) {
-      el.innerHTML = '<p class="text-sm text-gray-500 text-center py-6">No transactions yet.</p>';
-      return;
-    }
-    el.innerHTML = txs.map(t => {
-      const date   = t.createdAt ? new Date(t.createdAt).toLocaleDateString("en-IN", {day:"2-digit",month:"short",year:"numeric"}) : "—";
-      const color  = t.status === "success" ? "text-green-400" : t.status === "failed" ? "text-red-400" : "text-yellow-400";
-      const badge  = t.status === "success" ? "bg-green-500/10 border-green-500/20" : t.status === "failed" ? "bg-red-500/10 border-red-500/20" : "bg-yellow-500/10 border-yellow-500/20";
-      return `<div class="flex items-center justify-between bg-white/3 border border-white/6 rounded-2xl px-4 py-3 mb-3">
-        <div>
-          <p class="text-sm font-bold">Wallet Recharge</p>
-          <p class="text-xs text-gray-500">${date}</p>
-        </div>
-        <div class="text-right">
-          <p class="text-sm font-black">₹${t.amount.toFixed(2)}</p>
-          <span class="text-xs font-bold px-2 py-0.5 rounded-lg border ${badge} ${color}">${t.status}</span>
-        </div>
-      </div>`;
-    }).join("");
+    renderTxList(txs);
+    localStorage.setItem("gx_wallet_txs_" + email, JSON.stringify(txs));
   } catch {
-    el.innerHTML = '<p class="text-sm text-gray-500 text-center py-6">Failed to load transactions.</p>';
+    if (!localStorage.getItem("gx_wallet_txs_" + email))
+      document.getElementById("txList").innerHTML = '<p class="text-sm text-gray-500 text-center py-6">Failed to load transactions.</p>';
   }
 }
 

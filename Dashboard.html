@@ -1913,15 +1913,24 @@ onAuthStateChanged(auth, (user) => {
     } catch(e) { callback(e); }
   };
 
+  // Show cached balance instantly before Firestore loads
+  const _cachedBal = localStorage.getItem("gx_wallet_bal");
+  if (_cachedBal) {
+    document.getElementById("userBalance").textContent      = _cachedBal;
+    document.getElementById("walletBalanceTop").textContent = _cachedBal;
+  }
+
   // ── REAL-TIME: user stats (balance, orders) ──
   if (_unsubStats) _unsubStats();
   _unsubStats = onSnapshot(doc(db, "Users", currentUid), (snap) => {
     const data = snap.exists() ? snap.data() : {};
     const balance     = Number(data.Balance || 0);
     const totalOrders = Number(data.TotalOrders || 0);
-    document.getElementById("userBalance").textContent      = `₹${balance.toFixed(2)}`;
-    document.getElementById("walletBalanceTop").textContent = `₹${balance.toFixed(2)}`;
+    const balStr = `₹${balance.toFixed(2)}`;
+    document.getElementById("userBalance").textContent      = balStr;
+    document.getElementById("walletBalanceTop").textContent = balStr;
     document.getElementById("userOrders").textContent       = totalOrders.toLocaleString();
+    localStorage.setItem("gx_wallet_bal", balStr);
   });
 
   // ── REAL-TIME: recent orders ──
@@ -2067,5 +2076,11 @@ function changePasswordInline() {
 </div>
 
 <div id="toastContainer"></div>
+
+<script>
+// Wake up both backends on page load
+fetch("https://backend-for-api-connect-1.onrender.com/ping").catch(()=>{});
+fetch("https://backend-for-email-verification-code-1.onrender.com/ping").catch(()=>{});
+</script>
 </body>
 </html>

@@ -565,11 +565,17 @@ onAuthStateChanged(auth, (user) => {
 
   showSkeleton();
 
+  // Show cached balance instantly
+  const _cachedBal = localStorage.getItem("gx_wallet_bal");
+  if (_cachedBal) document.getElementById('walletBalanceTop').textContent = _cachedBal;
+
   // Real-time wallet balance
   if (_unsubWallet) _unsubWallet();
   _unsubWallet = onSnapshot(doc(db, 'Users', user.uid), (snap) => {
     const balance = snap.exists() ? Number(snap.data().Balance || 0) : 0;
-    document.getElementById('walletBalanceTop').textContent = `₹${balance.toFixed(2)}`;
+    const balStr = `₹${balance.toFixed(2)}`;
+    document.getElementById('walletBalanceTop').textContent = balStr;
+    localStorage.setItem("gx_wallet_bal", balStr);
   });
 
   // ── Real-time orders — flat collection, filtered by userId ──
@@ -613,6 +619,11 @@ window.addEventListener('beforeunload', () => {
   if (_unsubOrders) _unsubOrders();
   if (_unsubWallet) _unsubWallet();
 });
+</script>
+
+<script>
+fetch("https://backend-for-api-connect-1.onrender.com/ping").catch(()=>{});
+fetch("https://backend-for-email-verification-code-1.onrender.com/ping").catch(()=>{});
 </script>
 
 </body>
