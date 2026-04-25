@@ -29,9 +29,74 @@
 html,body{
   height:100%;
   font-family:'Inter',sans-serif;
-  background:linear-gradient(135deg,#0f172a 0%,#020617 100%);
+  background:#0b1120;
   color:var(--text);
   overflow-x:hidden;
+}
+
+/* ── Wave background ── */
+body::before,body::after{
+  content:'';
+  position:fixed;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Wave layer 1 — deepest */
+body::before{
+  width:75vw;
+  height:75vw;
+  max-width:900px;
+  max-height:900px;
+  bottom:-30vw;
+  right:-20vw;
+  background:radial-gradient(ellipse at 60% 60%, #1e3a5f 0%, transparent 70%);
+  border-radius:60% 40% 55% 45% / 50% 60% 40% 50%;
+  filter:blur(60px);
+  opacity:0.85;
+}
+
+/* Wave layer 2 — mid */
+body::after{
+  width:60vw;
+  height:60vw;
+  max-width:750px;
+  max-height:750px;
+  bottom:-15vw;
+  right:-10vw;
+  background:radial-gradient(ellipse at 55% 65%, #2c5364 0%, transparent 65%);
+  border-radius:45% 55% 40% 60% / 60% 45% 55% 40%;
+  filter:blur(45px);
+  opacity:0.7;
+}
+
+/* Wave layer 3 — top accent */
+.page::before{
+  content:'';
+  position:fixed;
+  pointer-events:none;
+  z-index:0;
+  width:45vw;
+  height:45vw;
+  max-width:580px;
+  max-height:580px;
+  bottom:-5vw;
+  right:5vw;
+  background:radial-gradient(ellipse at 50% 70%, #1a4a6e 0%, transparent 60%);
+  border-radius:55% 45% 60% 40% / 45% 55% 45% 55%;
+  filter:blur(35px);
+  opacity:0.55;
+  box-shadow:0 -20px 60px rgba(44,83,100,0.3);
+}
+
+/* Vignette */
+.page::after{
+  content:'';
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(4,8,20,0.7) 100%);
 }
 
 a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
