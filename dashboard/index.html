@@ -1997,11 +1997,20 @@ onAuthStateChanged(auth, (user) => {
 // ── SAVE ORDER ──
 window._saveOrder = async function(svc, qty, link, apiOrderId) {
   if (!currentUid) { window.location.href = '/'; return; }
-  try {
-    const now        = new Date();
-    const orderPrice = parseFloat(((qty / 1000) * svc.price).toFixed(2));
-    const userEmail  = currentEmail || localStorage.getItem('getxh_current_user') || '';
+  const now        = new Date();
+  const orderPrice = parseFloat(((qty / 1000) * svc.price).toFixed(2));
+  const userEmail  = currentEmail || localStorage.getItem('getxh_current_user') || '';
 
+  // Increment stats first — runs independently so count always updates
+  try {
+    await setDoc(doc(db, "Users", currentUid), {
+      TotalOrders: increment(1),
+      TotalSpent:  increment(orderPrice)
+    }, { merge: true });
+  } catch(_) {}
+
+  // Save order record separately
+  try {
     await addDoc(collection(db, "orders"), {
       userId:            currentUid,
       service:           svc.name,
@@ -2009,20 +2018,14 @@ window._saveOrder = async function(svc, qty, link, apiOrderId) {
       quantity:          qty,
       status:            "pending",
       createdAt:         Date.now(),
-      // ── extra fields for UI display ──
       orderId:           String(Date.now()).slice(-7),
       apiOrderId:        apiOrderId ? String(apiOrderId) : null,
       serviceName:       svc.name,
       category:          svc.id,
       price:             orderPrice,
       createdAtReadable: now.toLocaleString('en-IN'),
+      userEmail:         userEmail,
     });
-
-    await setDoc(doc(db, "Users", currentUid), {
-      TotalOrders: increment(1),
-      TotalSpent:  increment(orderPrice)
-    }, { merge: true });
-    // onSnapshot on /orders handles UI update automatically
   } catch(_) {}
 };
 

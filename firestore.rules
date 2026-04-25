@@ -17,8 +17,16 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
 
-    match /orders/{userId}/user_orders/{orderId} {
-      allow read, write: if isOwner(userId);
+    match /orders/{orderId} {
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow read:   if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow update: if isAdmin();
+    }
+
+    match /messages/{messageId} {
+      allow create: if isSignedIn();
+      allow read:   if isSignedIn();
+      allow update: if isAdmin();
     }
 
     match /tickets/{ticketId} {
