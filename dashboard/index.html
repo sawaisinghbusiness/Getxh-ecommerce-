@@ -2081,9 +2081,15 @@ function changePasswordInline() {
 <div id="toastContainer"></div>
 
 <script>
-// Wake up both backends on page load
-fetch("https://backend-for-api-connect-1.onrender.com/ping").catch(()=>{});
-fetch("https://backend-for-email-verification-code-1.onrender.com/ping").catch(()=>{});
+const _API  = "https://backend-for-api-connect-1.onrender.com";
+const _OTP  = "https://backend-for-email-verification-code-1.onrender.com";
+
+// Wake up both backends immediately on page load
+fetch(_API + "/ping").catch(()=>{});
+fetch(_OTP + "/ping").catch(()=>{});
+
+// Keep-alive: ping every 4 min so backend never sleeps during session
+setInterval(() => { fetch(_API + "/ping").catch(()=>{}); }, 240000);
 </script>
 </body>
 </html>
