@@ -174,7 +174,7 @@
     box-shadow: 0 16px 32px rgba(2,8,23,0.4);
   }
   </style>
-<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
 </head>
 
 <body class="bg-[#0b1220] text-white min-h-screen">

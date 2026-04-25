@@ -543,7 +543,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
   };
 
 </script>
-<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
 </head>
 
 <body>
