@@ -525,7 +525,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
     signInWithEmailAndPassword(auth, email, password)
     .then(async(cred)=>{
       saveSession(cred.user, email);
-      window.location.href="Dashboard.html";
+      window.location.replace("Dashboard.html");
     })
     .catch((err)=>{
       let msg="Invalid email or password";
