@@ -1,40 +1,49 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
     function isSignedIn() {
       return request.auth != null;
     }
 
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
     function isAdmin() {
-      return isSignedIn() && request.auth.token.email == "agency@getxh.in";
+      return isSignedIn() && request.auth.uid == "XVQ4WNIRyKbJz7HCDUmU0Lv9squ2";
     }
 
+    // ✅ USERS (balance, order count, stats)
     match /Users/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
+    // ✅ ORDERS
     match /orders/{orderId} {
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow read:   if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow update: if isAdmin();
-    }
-
-    match /messages/{messageId} {
-      allow create: if isSignedIn();
-      allow read:   if isSignedIn();
-      allow update: if isAdmin();
-    }
-
-    match /tickets/{ticketId} {
       allow create: if isSignedIn() &&
-        (request.resource.data.uid == request.auth.uid || isAdmin());
+        request.resource.data.userId == request.auth.uid;
 
       allow read, update, delete: if isAdmin() ||
-        (isSignedIn() && resource.data.uid == request.auth.uid);
+        (isSignedIn() && resource.data.userId == request.auth.uid);
     }
+
+    // ✅ TICKETS
+    match /tickets/{ticketId} {
+      allow create: if isSignedIn() &&
+        request.resource.data.userId == request.auth.uid;
+
+      allow read, update, delete: if isAdmin() ||
+        (isSignedIn() && resource.data.userId == request.auth.uid);
+    }
+
+    // 🔥 MESSAGES (IMPORTANT)
+    match /messages/{messageId} {
+      allow create: if isSignedIn() &&
+        request.resource.data.senderId == request.auth.uid;
+
+      allow read: if isAdmin() ||
+        (isSignedIn() &&
+          exists(/databases/$(database)/documents/tickets/$(resource.data.ticketId)) &&
+          get(/databases/$(database)/documents/tickets/$(resource.data.ticketId)).data.userId == request.auth.uid
+        );
+    }
+
   }
 }
