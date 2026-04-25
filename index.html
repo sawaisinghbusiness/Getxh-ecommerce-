@@ -829,5 +829,11 @@ function validateAndLogin() {
 }
 </script>
 
+<script>
+// Wake up both backends on page load
+fetch("https://backend-for-email-verification-code-1.onrender.com/ping", { method: "GET" }).catch(() => {});
+fetch("https://backend-for-api-connect-1.onrender.com/ping", { method: "GET" }).catch(() => {});
+</script>
+
 </body>
 </html>
