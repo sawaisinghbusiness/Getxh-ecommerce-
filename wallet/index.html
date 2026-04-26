@@ -91,35 +91,44 @@
     </button>
   </section>
 
-  <!-- Add Funds -->
+  <!-- Add Funds via UPI -->
   <section id="addFundsSection" class="section-card rounded-3xl p-6 mb-5">
-    <h3 class="text-lg font-black mb-1">Add Funds</h3>
-    <p class="text-sm text-gray-400 mb-5">Enter amount and pay via UPI. Balance will be credited automatically after verification.</p>
+    <h3 class="text-lg font-black mb-1">Add Funds via UPI</h3>
+    <p class="text-sm text-gray-400 mb-5">Scan the QR code and complete payment. Then enter UTR and amount to verify.</p>
 
     <!-- Notice -->
     <div id="walletNotice" class="hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold"></div>
 
-    <!-- Amount -->
+    <!-- QR Code -->
+    <div class="flex flex-col items-center mb-6">
+      <div class="rounded-2xl p-3 mb-2" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1)">
+        <img src="/payment-qr.png" alt="UPI QR Code"
+          class="w-44 h-44 rounded-xl object-contain"
+          style="image-rendering:crisp-edges"/>
+      </div>
+      <p class="text-xs font-bold text-indigo-300 tracking-widest uppercase mt-1">Scan &amp; Pay</p>
+    </div>
+
+    <!-- UTR Input -->
     <div class="mb-3">
-      <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">Amount (₹)</label>
-      <input id="amountInput" type="number" min="10" max="100000" placeholder="Enter amount"
+      <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">UTR / Transaction ID</label>
+      <input id="utrInput" type="text" placeholder="Enter 12-digit UTR number"
         class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm"
-        oninput="clearChips()"/>
+        oninput="checkVerifyBtn()"/>
     </div>
 
-    <!-- Quick chips -->
-    <div class="flex flex-wrap gap-2 mb-5">
-      <button type="button" onclick="pickAmount(100)"  class="chip rounded-xl px-4 py-2 text-sm font-bold">₹100</button>
-      <button type="button" onclick="pickAmount(200)"  class="chip rounded-xl px-4 py-2 text-sm font-bold">₹200</button>
-      <button type="button" onclick="pickAmount(500)"  class="chip rounded-xl px-4 py-2 text-sm font-bold">₹500</button>
-      <button type="button" onclick="pickAmount(1000)" class="chip rounded-xl px-4 py-2 text-sm font-bold">₹1000</button>
-      <button type="button" onclick="pickAmount(2000)" class="chip rounded-xl px-4 py-2 text-sm font-bold">₹2000</button>
+    <!-- Amount Input -->
+    <div class="mb-5">
+      <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">Amount Paid (₹)</label>
+      <input id="amountInput" type="number" min="1" placeholder="Enter amount you paid"
+        class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm"
+        oninput="checkVerifyBtn()"/>
     </div>
 
-    <!-- Pay button -->
-    <button id="payBtn" onclick="payNow()"
+    <!-- Verify Button -->
+    <button id="verifyBtn" onclick="verifyPayment()" disabled
       class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white">
-      Pay Now
+      Verify Payment
     </button>
   </section>
 
@@ -219,60 +228,59 @@ async function loadTransactions(email) {
   }
 }
 
-window.pickAmount = function(val) {
-  document.getElementById("amountInput").value = val;
-  document.querySelectorAll(".chip").forEach(c => c.classList.remove("selected"));
-  event.target.classList.add("selected");
+window.checkVerifyBtn = function() {
+  const utr    = document.getElementById("utrInput").value.trim();
+  const amount = document.getElementById("amountInput").value.trim();
+  document.getElementById("verifyBtn").disabled = !(utr && amount);
 };
 
-window.clearChips = function() {
-  document.querySelectorAll(".chip").forEach(c => c.classList.remove("selected"));
-};
-
-window.payNow = async function() {
+window.verifyPayment = async function() {
   if (!currentUser) return;
+  const utr    = document.getElementById("utrInput").value.trim();
   const amount = parseFloat(document.getElementById("amountInput").value);
   const notice = document.getElementById("walletNotice");
-  const btn    = document.getElementById("payBtn");
+  const btn    = document.getElementById("verifyBtn");
 
   notice.className = "hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold";
 
-  if (!amount || amount < 10) {
+  if (!utr) {
     notice.className = "flex mb-4 rounded-2xl px-4 py-3 text-sm font-semibold bg-red-500/10 border border-red-500/20 text-red-400";
-    notice.textContent = "Minimum amount is ₹10.";
+    notice.textContent = "Please enter your UTR / Transaction ID.";
+    return;
+  }
+  if (!amount || amount < 1) {
+    notice.className = "flex mb-4 rounded-2xl px-4 py-3 text-sm font-semibold bg-red-500/10 border border-red-500/20 text-red-400";
+    notice.textContent = "Please enter the amount you paid.";
     return;
   }
 
   btn.disabled = true;
-  btn.textContent = "Creating payment...";
+  btn.textContent = "Verifying...";
 
   try {
-    const res  = await fetch(`${BACKEND}/create-payment`, {
+    const res  = await fetch(`${BACKEND}/verify-payment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        amount,
-        email: currentUser.email,
-        name:  currentUser.displayName || ""
-      })
+      body: JSON.stringify({ utr, amount, email: currentUser.email })
     });
     const data = await res.json();
 
-    if (!data.success || !data.payment_url) {
-      throw new Error(data.message || "Failed to create payment.");
+    if (data.success) {
+      notice.className = "flex mb-4 rounded-2xl px-4 py-3 text-sm font-semibold bg-green-500/10 border border-green-500/20 text-green-400";
+      notice.textContent = "Payment verified! Balance will be credited shortly.";
+      document.getElementById("utrInput").value = "";
+      document.getElementById("amountInput").value = "";
+      loadBalance(currentUser.email);
+    } else {
+      throw new Error(data.message || "Could not verify payment. Please try again or contact support.");
     }
-
-    // Save payment_id locally for success page polling
-    localStorage.setItem("gxpay_pending_id", data.payment_id);
-    localStorage.setItem("gxpay_pending_email", currentUser.email);
-
-    window.location.href = data.payment_url;
-
   } catch (e) {
     notice.className = "flex mb-4 rounded-2xl px-4 py-3 text-sm font-semibold bg-red-500/10 border border-red-500/20 text-red-400";
     notice.textContent = e.message || "Something went wrong. Try again.";
+  } finally {
     btn.disabled = false;
-    btn.textContent = "Pay Now";
+    btn.textContent = "Verify Payment";
+    checkVerifyBtn();
   }
 };
 </script>
