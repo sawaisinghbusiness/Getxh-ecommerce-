@@ -1653,6 +1653,14 @@ async function placeOrder(serviceId) {
     return;
   }
 
+  // ── Balance check ──
+  const orderPrice = parseFloat(((parseInt(quantity) / 1000) * (_selSvc ? _selSvc.price : 0)).toFixed(2));
+  if (_currentBalance < orderPrice) {
+    showToast('error', 'Insufficient Balance',
+      `Need ₹${orderPrice.toFixed(2)}, you have ₹${_currentBalance.toFixed(2)}. Please add funds.`);
+    return;
+  }
+
   const btn       = document.getElementById('placeOrderBtn');
   const labelSpan = btn.querySelector('.order-label');
   const chevron   = btn.querySelector('.material-symbols-outlined');
@@ -1879,6 +1887,7 @@ let currentUid     = null;
 let currentEmail   = null;
 let _unsubStats    = null;
 let _unsubOrders   = null;
+let _currentBalance = 0;
 
 // ── LOGOUT ──
 window._logoutUser = async function() {
@@ -1926,6 +1935,7 @@ onAuthStateChanged(auth, (user) => {
     const data = snap.exists() ? snap.data() : {};
     const balance     = Number(data.Balance || 0);
     const totalOrders = Number(data.TotalOrders || 0);
+    _currentBalance = balance;
     const balStr = `₹${balance.toFixed(2)}`;
     document.getElementById("userBalance").textContent      = balStr;
     document.getElementById("walletBalanceTop").textContent = balStr;
@@ -2001,9 +2011,10 @@ window._saveOrder = async function(svc, qty, link, apiOrderId) {
   const orderPrice = parseFloat(((qty / 1000) * svc.price).toFixed(2));
   const userEmail  = currentEmail || localStorage.getItem('getxh_current_user') || '';
 
-  // Increment stats first — runs independently so count always updates
+  // Deduct balance + increment stats — runs independently so always updates
   try {
     await setDoc(doc(db, "Users", currentUid), {
+      Balance:     increment(-orderPrice),
       TotalOrders: increment(1),
       TotalSpent:  increment(orderPrice)
     }, { merge: true });

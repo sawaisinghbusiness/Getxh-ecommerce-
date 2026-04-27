@@ -222,6 +222,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, onSnapshot, setDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -235,10 +236,12 @@ const firebaseConfig = {
 const BACKEND         = "https://backend-for-email-verification-code-1.onrender.com";
 const PAYMENT_BACKEND = "https://backend-for-payment-system-getxh.onrender.com";
 
-initializeApp(firebaseConfig);
+const app  = initializeApp(firebaseConfig);
 const auth = getAuth();
+const db   = getFirestore(app);
 
 let currentUser = null;
+let _unsubBalance = null;
 
 // Wake up backend immediately
 fetch(`${BACKEND}/ping`).catch(()=>{});
@@ -268,14 +271,22 @@ onAuthStateChanged(auth, user => {
   currentUser = user;
   document.getElementById("walletEmail").textContent = user.email;
 
-  // Show cached data instantly
+  // Show cached balance instantly
   const cachedBal = localStorage.getItem("gx_wallet_bal");
   const cachedTxs = localStorage.getItem("gx_wallet_txs_" + user.email);
   if (cachedBal) document.getElementById("walletBalance").textContent = cachedBal;
   if (cachedTxs) { try { renderTxList(JSON.parse(cachedTxs)); } catch {} }
 
-  // Fetch fresh in background
-  loadBalance(user.email);
+  // Real-time balance from Firestore
+  if (_unsubBalance) _unsubBalance();
+  _unsubBalance = onSnapshot(doc(db, "Users", user.uid), (snap) => {
+    const balance = Number(snap.exists() ? (snap.data().Balance || 0) : 0);
+    const balStr  = "₹" + balance.toFixed(2);
+    document.getElementById("walletBalance").textContent = balStr;
+    localStorage.setItem("gx_wallet_bal", balStr);
+  });
+
+  // Load transaction history
   loadTransactions(user.email);
 });
 
@@ -358,10 +369,15 @@ window.verifyPayment = async function() {
     const data = await res.json();
 
     if (data.status === "success") {
+      // Credit balance in Firestore instantly
+      try {
+        await setDoc(doc(db, "Users", currentUser.uid), {
+          Balance: increment(amount)
+        }, { merge: true });
+      } catch(_) {}
       showPopupState("success");
       document.getElementById("utrInput").value  = "";
       document.getElementById("amountInput").value = "";
-      loadBalance(currentUser.email);
       loadTransactions(currentUser.email);
     } else {
       showPopupState("failed", data.message || "Check your UTR & amount, then try again.");
