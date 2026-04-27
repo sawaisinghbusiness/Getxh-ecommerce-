@@ -289,15 +289,15 @@ let _unsubBalance = null;
 
 // Wake up both backends immediately
 fetch(`${BACKEND}/ping`).catch(()=>{});
-fetch(`${PAYMENT_BACKEND}/ping`).catch(()=>{});
+fetch(`${PAYMENT_BACKEND}/ping.php`).catch(()=>{});
 
 // Keep both backends alive every 4 min
 setInterval(() => { fetch(`${BACKEND}/ping`).catch(()=>{}); }, 240000);
-setInterval(() => { fetch(`${PAYMENT_BACKEND}/ping`).catch(()=>{}); }, 240000);
+setInterval(() => { fetch(`${PAYMENT_BACKEND}/ping.php`).catch(()=>{}); }, 240000);
 
 // Early warm-up when user focuses UTR field
 document.getElementById("utrInput").addEventListener("focus", () => {
-  fetch(`${PAYMENT_BACKEND}/ping`).catch(()=>{});
+  fetch(`${PAYMENT_BACKEND}/ping.php`).catch(()=>{});
 }, { once: true });
 
 function renderTxList(txs) {
