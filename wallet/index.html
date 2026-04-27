@@ -166,25 +166,41 @@
       Verify Payment
     </button>
 
-    <!-- Divider with instructions -->
-    <div class="rounded-2xl p-4 mb-5" style="background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(139,92,246,0.08));border:1px solid rgba(99,102,241,0.2)">
-      <div class="flex items-center gap-2 mb-3">
-        <span class="material-symbols-outlined text-indigo-400" style="font-size:18px">info</span>
-        <p class="text-sm font-black text-indigo-300 tracking-wide">How to Add Funds</p>
-      </div>
-      <div class="space-y-2.5">
-        <div class="flex items-start gap-3">
-          <span class="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-xs font-black text-indigo-400">1</span>
-          <p class="text-xs text-gray-300 leading-relaxed">Scan the QR code below using <span class="text-white font-bold">PhonePe, GPay, Paytm</span> or any UPI app</p>
+    <!-- Steps -->
+    <div class="mb-5">
+      <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">How it works</p>
+      <div class="flex flex-col gap-0">
+
+        <div class="flex gap-4 items-stretch">
+          <div class="flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">1</div>
+            <div class="w-px flex-1 mt-1" style="background:rgba(99,102,241,0.25)"></div>
+          </div>
+          <div class="pb-4">
+            <p class="text-sm font-bold text-white">Scan QR & Pay</p>
+            <p class="text-xs text-gray-500 mt-0.5">Open PhonePe, GPay or any UPI app and scan the code below</p>
+          </div>
         </div>
-        <div class="flex items-start gap-3">
-          <span class="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-xs font-black text-indigo-400">2</span>
-          <p class="text-xs text-gray-300 leading-relaxed">Complete the payment and note your <span class="text-white font-bold">UTR / Transaction ID</span></p>
+
+        <div class="flex gap-4 items-stretch">
+          <div class="flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">2</div>
+            <div class="w-px flex-1 mt-1" style="background:rgba(99,102,241,0.25)"></div>
+          </div>
+          <div class="pb-4">
+            <p class="text-sm font-bold text-white">Copy your UTR</p>
+            <p class="text-xs text-gray-500 mt-0.5">Find the 12-digit UTR / Transaction ID in your payment app receipt</p>
+          </div>
         </div>
-        <div class="flex items-start gap-3">
-          <span class="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-xs font-black text-indigo-400">3</span>
-          <p class="text-xs text-gray-300 leading-relaxed">Enter UTR and amount above, then tap <span class="text-white font-bold">Verify Payment</span> — balance updates instantly</p>
+
+        <div class="flex gap-4 items-start">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">3</div>
+          <div>
+            <p class="text-sm font-bold text-white">Verify above</p>
+            <p class="text-xs text-gray-500 mt-0.5">Enter UTR & amount, hit Verify — balance reflects instantly</p>
+          </div>
         </div>
+
       </div>
     </div>
 
