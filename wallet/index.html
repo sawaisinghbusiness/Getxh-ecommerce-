@@ -211,8 +211,8 @@
     <!-- State: Failed -->
     <div id="popupFailed" style="display:none">
       <div class="popup-icon failed">✕</div>
-      <p class="text-red-400 font-black text-base mb-1">Payment Not Found</p>
-      <p class="text-gray-400 text-xs">Check your UTR &amp; amount, then try again.</p>
+      <p class="text-red-400 font-black text-base mb-1">Verification Failed</p>
+      <p id="popupFailedMsg" class="text-gray-400 text-xs">Check your UTR &amp; amount, then try again.</p>
       <button class="popup-close-btn failed" onclick="closeVerifyPopup()">Try Again</button>
     </div>
 
@@ -311,10 +311,13 @@ window.checkVerifyBtn = function() {
   document.getElementById("verifyBtn").disabled = !(utr && amount);
 };
 
-function showPopupState(state) {
+function showPopupState(state, msg) {
   document.getElementById("popupLoading").style.display = state === "loading" ? "block" : "none";
   document.getElementById("popupSuccess").style.display = state === "success" ? "block" : "none";
   document.getElementById("popupFailed").style.display  = state === "failed"  ? "block" : "none";
+  if (state === "failed" && msg) {
+    document.getElementById("popupFailedMsg").textContent = msg;
+  }
 }
 
 window.closeVerifyPopup = function() {
@@ -361,10 +364,10 @@ window.verifyPayment = async function() {
       loadBalance(currentUser.email);
       loadTransactions(currentUser.email);
     } else {
-      showPopupState("failed");
+      showPopupState("failed", data.message || "Check your UTR & amount, then try again.");
     }
   } catch {
-    showPopupState("failed");
+    showPopupState("failed", "Could not connect to server. Try again.");
   } finally {
     btn.disabled = false;
     checkVerifyBtn();
