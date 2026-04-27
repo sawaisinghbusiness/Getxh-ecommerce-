@@ -139,25 +139,10 @@
 
   <!-- Add Funds via UPI -->
   <section id="addFundsSection" class="section-card rounded-3xl p-6 mb-5">
-    <h3 class="text-lg font-black mb-1">Add Funds via UPI</h3>
-    <p class="text-sm text-gray-400 mb-5">Scan the QR code and complete payment. Then enter UTR and amount to verify.</p>
+    <h3 class="text-lg font-black mb-4">Add Funds via UPI</h3>
 
     <!-- Notice -->
     <div id="walletNotice" class="hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold"></div>
-
-    <!-- QR Code -->
-    <div class="flex flex-col items-center mb-6">
-      <div class="rounded-3xl p-4 mb-3" style="background:#ffffff;box-shadow:0 8px 32px rgba(0,0,0,0.35);border:3px solid rgba(99,102,241,0.3)">
-        <img src="/payment-qr-bharatpe.jpg" alt="UPI QR Code"
-          class="rounded-2xl object-contain"
-          style="width:200px;height:200px;image-rendering:crisp-edges;display:block"/>
-      </div>
-      <div class="flex items-center gap-2 mt-1">
-        <span class="material-symbols-outlined text-indigo-400" style="font-size:16px">qr_code_scanner</span>
-        <p class="text-sm font-black text-indigo-300 tracking-wide">Scan &amp; Pay via UPI</p>
-      </div>
-      <p class="text-xs text-gray-500 mt-1">PhonePe · GPay · Paytm · Any UPI app</p>
-    </div>
 
     <!-- UTR Input -->
     <div class="mb-3">
@@ -177,9 +162,45 @@
 
     <!-- Verify Button -->
     <button id="verifyBtn" onclick="verifyPayment()" disabled
-      class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white">
+      class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white mb-7">
       Verify Payment
     </button>
+
+    <!-- Divider with instructions -->
+    <div class="rounded-2xl p-4 mb-5" style="background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(139,92,246,0.08));border:1px solid rgba(99,102,241,0.2)">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="material-symbols-outlined text-indigo-400" style="font-size:18px">info</span>
+        <p class="text-sm font-black text-indigo-300 tracking-wide">How to Add Funds</p>
+      </div>
+      <div class="space-y-2.5">
+        <div class="flex items-start gap-3">
+          <span class="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-xs font-black text-indigo-400">1</span>
+          <p class="text-xs text-gray-300 leading-relaxed">Scan the QR code below using <span class="text-white font-bold">PhonePe, GPay, Paytm</span> or any UPI app</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-xs font-black text-indigo-400">2</span>
+          <p class="text-xs text-gray-300 leading-relaxed">Complete the payment and note your <span class="text-white font-bold">UTR / Transaction ID</span></p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-xs font-black text-indigo-400">3</span>
+          <p class="text-xs text-gray-300 leading-relaxed">Enter UTR and amount above, then tap <span class="text-white font-bold">Verify Payment</span> — balance updates instantly</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- QR Code -->
+    <div class="flex flex-col items-center">
+      <div class="rounded-3xl p-4 mb-3" style="background:#ffffff;box-shadow:0 8px 32px rgba(0,0,0,0.35);border:3px solid rgba(99,102,241,0.3)">
+        <img src="/payment-qr-bharatpe.jpg" alt="UPI QR Code"
+          class="rounded-2xl object-contain"
+          style="width:200px;height:200px;image-rendering:crisp-edges;display:block"/>
+      </div>
+      <div class="flex items-center gap-2 mt-1">
+        <span class="material-symbols-outlined text-indigo-400" style="font-size:16px">qr_code_scanner</span>
+        <p class="text-sm font-black text-indigo-300 tracking-wide">Scan &amp; Pay via UPI</p>
+      </div>
+      <p class="text-xs text-gray-500 mt-1">PhonePe · GPay · Paytm · Any UPI app</p>
+    </div>
   </section>
 
   <!-- Transaction History -->
