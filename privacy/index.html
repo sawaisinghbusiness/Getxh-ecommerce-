@@ -28,6 +28,7 @@
     }
   </style>
 <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
+  <style>body{opacity:0;transition:opacity .18s ease}</style>
 </head>
 <body>
   <main class="min-h-screen px-4 py-8 sm:px-6">
@@ -123,5 +124,6 @@
       </div>
     </div>
   </main>
+<script>requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.style.opacity=1))</script>
 </body>
 </html>

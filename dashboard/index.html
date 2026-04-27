@@ -223,6 +223,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     history.pushState(null, '', location.href);
   });
 </script>
+  <style>body{opacity:0;transition:opacity .18s ease}</style>
 </head>
 
 <body class="bg-[#0b1220] text-white">
@@ -2145,5 +2146,6 @@ fetch(_OTP + "/ping").catch(()=>{});
 // Keep-alive: ping every 4 min so backend never sleeps during session
 setInterval(() => { fetch(_API + "/ping").catch(()=>{}); }, 240000);
 </script>
+<script>requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.style.opacity=1))</script>
 </body>
 </html>
