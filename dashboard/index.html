@@ -704,6 +704,33 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   </div>
 </div>
 
+<!-- Insufficient Balance Popup -->
+<div id="insufficientModal"
+  class="fixed inset-0 bg-black/70 hidden z-50 items-center justify-center px-4">
+  <div class="bg-[#0f1a30] border border-red-500/20 rounded-2xl p-6
+               w-full max-w-sm text-center shadow-2xl scale-75 opacity-0 transition-all duration-300"
+       id="insufficientModalBox">
+    <div class="w-16 h-16 bg-red-500/10 border border-red-500/30 rounded-full
+                flex items-center justify-center mx-auto mb-4">
+      <span class="material-symbols-outlined text-red-400" style="font-size:32px">account_balance_wallet</span>
+    </div>
+    <h3 class="text-xl font-black mb-2 text-white">Insufficient Balance</h3>
+    <p id="insufficientMsg" class="text-gray-400 text-sm mb-6">Please add funds to continue.</p>
+    <div class="flex gap-3">
+      <button onclick="closeInsufficientModal()"
+        class="flex-1 py-3 rounded-xl bg-[#121c33] border border-white/10
+               text-gray-300 font-bold text-sm active:scale-[0.97] transition">
+        Cancel
+      </button>
+      <button onclick="window.location.href='/wallet'"
+        class="flex-1 py-3 rounded-xl font-black text-sm text-white
+               bg-gradient-to-r from-red-500 to-orange-500 active:scale-[0.97] transition">
+        Add Funds
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ================= END NEW ORDER ================= -->
 <!-- RECENT ORDERS -->
 <div id="recentOrdersContainer" class="mt-4"></div>
@@ -1620,6 +1647,23 @@ document.getElementById('customCommentsInput').addEventListener('input',function
 
 // ── PLACE ORDER ──
 // ── PLACE ORDER API ──
+// ── INSUFFICIENT BALANCE MODAL ──
+function showInsufficientModal(orderPrice) {
+  const msg = `You need ₹${orderPrice.toFixed(2)} but only have ₹${_currentBalance.toFixed(2)}. Add funds to place this order.`;
+  document.getElementById("insufficientMsg").textContent = msg;
+  const modal = document.getElementById("insufficientModal");
+  const box   = document.getElementById("insufficientModalBox");
+  modal.classList.remove("hidden");
+  modal.style.display = "flex";
+  setTimeout(() => { box.style.transform = "scale(1)"; box.style.opacity = "1"; }, 10);
+}
+function closeInsufficientModal() {
+  const modal = document.getElementById("insufficientModal");
+  const box   = document.getElementById("insufficientModalBox");
+  box.style.transform = "scale(0.75)"; box.style.opacity = "0";
+  setTimeout(() => { modal.style.display = "none"; modal.classList.add("hidden"); }, 250);
+}
+
 // ── TOAST ──
 function showToast(type, title, msg) {
   const icons = { success: 'check_circle', error: 'cancel', warn: 'warning' };
@@ -1656,8 +1700,7 @@ async function placeOrder(serviceId) {
   // ── Balance check ──
   const orderPrice = parseFloat(((parseInt(quantity) / 1000) * (_selSvc ? _selSvc.price : 0)).toFixed(2));
   if (_currentBalance < orderPrice) {
-    showToast('error', 'Insufficient Balance',
-      `Need ₹${orderPrice.toFixed(2)}, you have ₹${_currentBalance.toFixed(2)}. Please add funds.`);
+    showInsufficientModal(orderPrice);
     return;
   }
 
