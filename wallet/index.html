@@ -344,18 +344,6 @@ onAuthStateChanged(auth, user => {
   loadTransactions(user.email);
 });
 
-async function loadBalance(email) {
-  try {
-    const res  = await fetch(`${BACKEND}/get-balance?email=${encodeURIComponent(email)}`);
-    const data = await res.json();
-    const val  = "₹" + (data.balance || 0).toFixed(2);
-    document.getElementById("walletBalance").textContent = val;
-    localStorage.setItem("gx_wallet_bal", val);
-  } catch {
-    if (!localStorage.getItem("gx_wallet_bal"))
-      document.getElementById("walletBalance").textContent = "₹0.00";
-  }
-}
 
 async function loadTransactions(email) {
   try {

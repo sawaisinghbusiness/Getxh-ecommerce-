@@ -541,7 +541,7 @@ function switchTab(tab) {
 
 // ── Users ────────────────────────────────────────────
 var BACKEND_URL   = "https://backend-for-email-verification-code-1.onrender.com";
-var _ADMIN_KEY    = "gxadm_k9z2m7p4w1q8";
+var _ADMIN_KEY    = atob("Z3hhZG1fazl6Mm03cDR3MXE4");
 var _adminHeaders = { "x-admin-key": _ADMIN_KEY };
 
 async function loadAllUsers() {
@@ -610,11 +610,6 @@ function renderUsers(users) {
       + '<span style="font-size:13px;color:#cbd5e1;font-weight:500;">' + (u.mobile || '—') + '</span>'
       + '</div>'
 
-      /* Password */
-      + '<div style="display:flex;align-items:center;gap:10px;background:#1e293b;border-radius:9px;padding:9px 12px;">'
-      + '<span style="font-size:11px;font-weight:600;color:#f59e0b;min-width:58px;letter-spacing:0.04em;">PASSWORD</span>'
-      + '<span style="font-size:13px;color:#cbd5e1;font-family:monospace;font-weight:500;word-break:break-all;user-select:all;">' + (u.password || '—') + '</span>'
-      + '</div>'
 
       + '</div>'
       + '</div>';
