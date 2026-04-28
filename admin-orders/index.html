@@ -484,8 +484,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 // ── Admin identity ────────────────────────────────
-// To use UID: const ADMIN_UID = 'YOUR_UID_HERE'; and check user.uid === ADMIN_UID
-const ADMIN_EMAIL = 'agency@getxh.in';
+const ADMIN_UID = 'XVQ4WNIRyKbJz7HCDUmU0Lv9squ2';
 
 const firebaseConfig = {
   apiKey:            "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -508,9 +507,8 @@ onAuthStateChanged(auth, user => {
     return;
   }
 
-  // Admin check
-  const isAdmin = user.email === ADMIN_EMAIL;
-  // const isAdmin = user.uid === ADMIN_UID;
+  // Admin check — UID only (server-verified, cannot be faked)
+  const isAdmin = user.uid === ADMIN_UID;
 
   if (!isAdmin) {
     window.location.replace('/dashboard');

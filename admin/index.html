@@ -893,7 +893,7 @@ let unsubTickets = null;
 let unsubMsgs    = null;
 
 // ── Security Config ──────────────────────────────────
-const ADMIN_EMAIL    = 'agency@getxh.in';
+const ADMIN_UID      = 'XVQ4WNIRyKbJz7HCDUmU0Lv9squ2';
 const ADMIN_PWD_HASH = '293eb1d8c34e37ba440073ce3c81e30969c74633f05b160b193174d5c03c6532';
 const MAX_ATTEMPTS   = 3;
 const LOCKOUT_MS     = 5 * 60 * 1000; // 5 minutes
@@ -1066,9 +1066,8 @@ onAuthStateChanged(auth, user => {
     return;
   }
 
-  // STRICT check — only agency@getxh.in
-  const email = (user.email || '').trim().toLowerCase();
-  if (email !== ADMIN_EMAIL) {
+  // STRICT check — only admin UID allowed
+  if (user.uid !== ADMIN_UID) {
     window.location.replace('/dashboard');
     return;
   }
@@ -1087,7 +1086,7 @@ onAuthStateChanged(auth, user => {
   // Lock page if window regains focus and password not entered
   window.addEventListener('focus', () => {
     const cu = auth.currentUser;
-    if (!cu || (cu.email || '').trim().toLowerCase() !== ADMIN_EMAIL) {
+    if (!cu || cu.uid !== ADMIN_UID) {
       window.location.replace('/');
       return;
     }
