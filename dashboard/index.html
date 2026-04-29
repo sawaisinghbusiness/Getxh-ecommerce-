@@ -2041,8 +2041,8 @@ window._logoutUser = async function() {
 onAuthStateChanged(auth, (user) => {
   if (!user) { window.location.href = "/"; return; }
 
-  // Admin button — only for agency@getxh.in
-  if ((user.email || '').trim().toLowerCase() === "agency@getxh.in") {
+  // Admin button — only for admin UID
+  if (user.uid === "XVQ4WNIRyKbJz7HCDUmU0Lv9squ2") {
     document.body.classList.add("is-admin");
   } else {
     document.body.classList.remove("is-admin");
