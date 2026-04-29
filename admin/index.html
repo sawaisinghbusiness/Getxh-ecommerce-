@@ -87,14 +87,54 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
           style="transition:border-color .2s;"/>
       </div>
       <p id="gateError" class="mb-3 hidden text-center text-xs font-semibold text-red-400"></p>
-      <button onclick="checkAdminPassword()"
+      <button id="gateUnlockBtn" onclick="checkAdminPassword()"
         class="w-full rounded-xl py-3 text-sm font-black text-white transition active:scale-[0.98]"
         style="background:linear-gradient(135deg,#ef4444,#dc2626);">
-        Unlock Admin Panel
+        Continue
       </button>
       <button onclick="window._gateSignOut()"
         class="mt-3 w-full rounded-xl border border-white/8 py-2.5 text-xs font-semibold text-slate-500 transition hover:text-slate-300">
         Sign Out
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── OTP GATE ───────────────────────────────────── -->
+<div id="otpGate" style="display:none;position:fixed;inset:0;z-index:199;align-items:center;justify-content:center;background:#0b1220;">
+  <div class="mx-4 w-full max-w-sm">
+    <div class="rounded-2xl border border-white/8 bg-[#12161f] p-8"
+         style="box-shadow:0 32px 64px rgba(0,0,0,0.6);">
+
+      <div class="mb-6 text-center">
+        <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl"
+             style="background:linear-gradient(135deg,#2196f3,#0ea5e9);">
+          <span class="material-symbols-outlined text-white" style="font-size:22px">mark_email_read</span>
+        </div>
+        <h2 class="text-lg font-black text-white">Email Verification</h2>
+        <p class="mt-1 text-xs text-slate-500">OTP sent to <span class="text-sky-400 font-bold">agency@getxh.in</span></p>
+        <p class="mt-0.5 text-[11px] text-slate-600">Enter the 6-digit code from your email</p>
+      </div>
+
+      <div class="relative mb-3">
+        <input id="otpInput" type="number"
+          placeholder="Enter 6-digit OTP"
+          maxlength="6"
+          onkeydown="if(event.key==='Enter')verifyAdminOTP()"
+          oninput="this.value=this.value.slice(0,6)"
+          class="w-full rounded-xl border border-white/8 bg-[#0d1220] px-4 py-3 text-sm font-bold text-white outline-none placeholder:text-slate-600 focus:border-sky-500/60 tracking-widest text-center"
+          style="transition:border-color .2s;letter-spacing:6px;font-size:18px;"/>
+      </div>
+      <p id="otpError" class="mb-3 hidden text-center text-xs font-semibold text-red-400"></p>
+      <button id="otpVerifyBtn" onclick="verifyAdminOTP()"
+        class="w-full rounded-xl py-3 text-sm font-black text-white transition active:scale-[0.98]"
+        style="background:linear-gradient(135deg,#2196f3,#0ea5e9);">
+        Verify &amp; Enter
+      </button>
+      <button onclick="resendAdminOTP()"
+        class="mt-3 w-full rounded-xl border border-white/8 py-2.5 text-xs font-semibold text-slate-500 transition hover:text-slate-300">
+        Resend OTP
       </button>
 
     </div>
@@ -540,17 +580,24 @@ function switchTab(tab) {
 }
 
 // ── Users ────────────────────────────────────────────
-var BACKEND_URL   = "https://backend-for-email-verification-code-production.up.railway.app";
+var BACKEND_URL   = "https://backend-for-email-verification-code-production-61a3.up.railway.app";
 
 async function loadAllUsers() {
   var el = document.getElementById('usersList');
   el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Loading users…</p></div>';
   try {
-    var res  = await fetch(BACKEND_URL + '/get-users', { headers: await window.getAdminHeaders() });
+    var headers = { 'Content-Type': 'application/json' };
+    // attach firebase token if available
+    var cu = auth.currentUser || _currentUser;
+    if (cu) {
+      try { headers['Authorization'] = 'Bearer ' + (await cu.getIdToken()); } catch(_) {}
+    }
+    var res  = await fetch(BACKEND_URL + '/get-users', { headers });
     var data = await res.json();
+    if (!res.ok) throw new Error(data.message || data.error || ('HTTP ' + res.status));
     renderUsers(data.users || []);
   } catch(e) {
-    el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Failed to load users</p></div>';
+    el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Failed to load users</p><p class="text-xs mt-1 text-red-400">' + (e.message || 'Unknown error') + '</p></div>';
   }
 }
 
@@ -563,11 +610,17 @@ function searchUsers() {
     var el = document.getElementById('usersList');
     el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Searching…</p></div>';
     try {
-      var res  = await fetch(BACKEND_URL + '/search-user?q=' + encodeURIComponent(q), { headers: await window.getAdminHeaders() });
+      var headers = { 'Content-Type': 'application/json' };
+      var cu = auth.currentUser || _currentUser;
+      if (cu) {
+        try { headers['Authorization'] = 'Bearer ' + (await cu.getIdToken()); } catch(_) {}
+      }
+      var res  = await fetch(BACKEND_URL + '/search-user?q=' + encodeURIComponent(q), { headers });
       var data = await res.json();
+      if (!res.ok) throw new Error(data.message || data.error || ('HTTP ' + res.status));
       renderUsers(data.users || []);
     } catch(e) {
-      el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Search failed</p></div>';
+      el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Search failed: ' + (e.message||'') + '</p></div>';
     }
   }, 350);
 }
@@ -860,7 +913,7 @@ function escHtml(v) {
      ════════════════════════════════════════════════════ -->
 <script type="module">
 import { initializeApp }                          from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, getIdTokenResult, onAuthStateChanged, signOut }   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut }   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
   addDoc, collection, doc, getFirestore,
   onSnapshot, orderBy, query, updateDoc, where
@@ -883,11 +936,10 @@ const db   = getFirestore(app);
 
 window.getAdminHeaders = async function() {
   const user = auth.currentUser;
-  if (!user || user.uid !== ADMIN_UID) throw new Error('Admin auth required');
-  const tokenResult = await getIdTokenResult(user, true);
-  if (tokenResult.claims.admin !== true) throw new Error('Admin claim required');
+  if (!user || user.uid !== ADMIN_UID || user.email !== ADMIN_EMAIL) throw new Error('Admin auth required');
+  const token = await user.getIdToken(true);
   return {
-    "Authorization": "Bearer " + tokenResult.token
+    "Authorization": "Bearer " + token
   };
 };
 
@@ -914,9 +966,12 @@ function _isLockedOut() {
   return Date.now() < until;
 }
 
+const ADMIN_EMAIL = 'agency@getxh.in';
+
 window.checkAdminPassword = async function checkAdminPassword() {
   const errEl = document.getElementById('gateError');
   const input = document.getElementById('gatePasswordInput');
+  const btn   = document.getElementById('gateUnlockBtn');
 
   function showGateErr(msg) {
     errEl.textContent = msg;
@@ -943,10 +998,29 @@ window.checkAdminPassword = async function checkAdminPassword() {
 
   if (hash === ADMIN_PWD_HASH) {
     _failedAttempts = 0;
-    _adminUnlocked  = true;
-    document.getElementById('passwordGate').style.display = 'none';
-    document.getElementById('adminPanel').style.display   = 'block';
-    initAdminData();
+    // Password correct — now send OTP
+    btn.disabled = true;
+    btn.textContent = 'Sending OTP…';
+    try {
+      const res = await fetch(BACKEND_URL + '/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: ADMIN_EMAIL })
+      });
+      const data = await res.json();
+      if (res.ok || data.success) {
+        document.getElementById('passwordGate').style.display = 'none';
+        document.getElementById('otpGate').style.display = 'flex';
+        setTimeout(() => document.getElementById('otpInput').focus(), 150);
+      } else {
+        showGateErr(data.message || 'Failed to send OTP. Try again.');
+      }
+    } catch (e) {
+      showGateErr('Network error. Check connection and try again.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Continue';
+    }
   } else {
     _failedAttempts++;
     if (_failedAttempts >= MAX_ATTEMPTS) {
@@ -960,6 +1034,88 @@ window.checkAdminPassword = async function checkAdminPassword() {
       input.focus();
       setTimeout(() => hideGateErr(), 3000);
     }
+  }
+}
+
+window.verifyAdminOTP = async function verifyAdminOTP() {
+  const errEl = document.getElementById('otpError');
+  const input = document.getElementById('otpInput');
+  const btn   = document.getElementById('otpVerifyBtn');
+
+  function showOtpErr(msg) {
+    errEl.textContent = msg;
+    errEl.classList.remove('hidden');
+    errEl.style.display = 'block';
+  }
+  function hideOtpErr() {
+    errEl.classList.add('hidden');
+    errEl.style.display = '';
+  }
+
+  const otp = input.value.trim();
+  if (!otp || otp.length < 4) { showOtpErr('Please enter the OTP.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Verifying…';
+  hideOtpErr();
+
+  try {
+    const res  = await fetch(BACKEND_URL + '/verify-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: ADMIN_EMAIL, otp })
+    });
+    const data = await res.json();
+    if (res.ok || data.success) {
+      _adminUnlocked = true;
+      document.getElementById('otpGate').style.display   = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      initAdminData();
+    } else {
+      showOtpErr(data.message || 'Invalid OTP. Try again.');
+      input.value = '';
+      input.focus();
+    }
+  } catch (e) {
+    showOtpErr('Network error. Check connection and try again.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Verify & Enter';
+  }
+}
+
+window.resendAdminOTP = async function resendAdminOTP() {
+  const errEl = document.getElementById('otpError');
+  const btn   = document.querySelector('#otpGate button:last-of-type');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  errEl.classList.add('hidden');
+  try {
+    const res  = await fetch(BACKEND_URL + '/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: ADMIN_EMAIL })
+    });
+    const data = await res.json();
+    if (res.ok || data.success) {
+      errEl.textContent = 'OTP resent to agency@getxh.in';
+      errEl.style.color = '#34d399';
+      errEl.classList.remove('hidden');
+      errEl.style.display = 'block';
+      setTimeout(() => { errEl.classList.add('hidden'); errEl.style.color=''; }, 3000);
+    } else {
+      errEl.textContent = data.message || 'Failed to resend. Try again.';
+      errEl.style.color = '';
+      errEl.classList.remove('hidden');
+      errEl.style.display = 'block';
+    }
+  } catch (e) {
+    errEl.textContent = 'Network error.';
+    errEl.classList.remove('hidden');
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Resend OTP';
   }
 }
 
@@ -1069,9 +1225,8 @@ onAuthStateChanged(auth, async user => {
     return;
   }
 
-  // STRICT check — only admin UID allowed
-  const tokenResult = await getIdTokenResult(user, true);
-  if (user.uid !== ADMIN_UID || tokenResult.claims.admin !== true) {
+  // STRICT check — only admin UID + email allowed
+  if (user.uid !== ADMIN_UID || user.email !== ADMIN_EMAIL) {
     window.location.replace('/dashboard');
     return;
   }
@@ -1094,13 +1249,13 @@ onAuthStateChanged(auth, async user => {
       window.location.replace('/');
       return;
     }
-    const freshToken = await getIdTokenResult(cu, true);
-    if (freshToken.claims.admin !== true) {
+    if (cu.email !== ADMIN_EMAIL) {
       window.location.replace('/');
       return;
     }
     if (!_adminUnlocked) {
-      document.getElementById('adminPanel').style.display = 'none';
+      document.getElementById('adminPanel').style.display  = 'none';
+      document.getElementById('otpGate').style.display     = 'none';
       document.getElementById('passwordGate').style.display = 'flex';
       document.getElementById('gatePasswordInput').focus();
     }

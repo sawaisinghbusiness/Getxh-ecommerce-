@@ -435,7 +435,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 <span id="walletBalanceTop" class="hidden"></span>
 
 <!-- MAIN CONTENT -->
-<main class="w-full px-4 py-5 pb-[120px] lg:px-8 lg:py-8 lg:pb-10">
+<main class="w-full px-4 py-3 pb-[120px] lg:px-8 lg:py-8 lg:pb-10">
 <div class="lg:mx-auto lg:max-w-6xl">
 <!-- WELCOME CARD — Glass Navy -->
 <style>
@@ -446,8 +446,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 .welcome-card {
   position: relative;
   border-radius: 22px;
-  padding: 22px 20px 20px;
-  margin-bottom: 24px;
+  padding: 14px 16px 14px;
+  margin-bottom: 14px;
   overflow: hidden;
   background: #0F172A;
   border: 1px solid rgba(255,255,255,0.1);
@@ -473,8 +473,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 }
 .wc-stat {
   flex: 1;
-  border-radius: 16px;
-  padding: 14px 14px;
+  border-radius: 14px;
+  padding: 10px 12px;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.1);
   backdrop-filter: blur(10px);
@@ -490,21 +490,21 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
               top:-80px;right:-60px;pointer-events:none"></div>
 
   <!-- Top row: avatar + username + Add Funds btn -->
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;position:relative;z-index:1;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;position:relative;z-index:1;">
     <div style="display:flex;align-items:center;gap:13px;">
-      <div style="width:44px;height:44px;border-radius:14px;flex-shrink:0;
+      <div style="width:38px;height:38px;border-radius:12px;flex-shrink:0;
                   background:rgba(34,197,94,0.12);border:1.5px solid rgba(34,197,94,0.3);
                   display:flex;align-items:center;justify-content:center;">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#22C55E">person</span>
+        <span class="material-symbols-outlined" style="font-size:20px;color:#22C55E">person</span>
       </div>
       <div>
         <p style="color:rgba(255,255,255,0.4);font-size:10px;font-weight:700;
-                  letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;">Welcome back</p>
-        <p id="userName" style="color:#ffffff;font-size:17px;font-weight:800;line-height:1.1;">User</p>
+                  letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">Welcome back</p>
+        <p id="userName" style="color:#ffffff;font-size:15px;font-weight:800;line-height:1.1;">User</p>
       </div>
     </div>
     <button onclick="window.location.href='/wallet'"
-      style="display:flex;align-items:center;gap:7px;padding:10px 17px;
+      style="display:flex;align-items:center;gap:6px;padding:8px 14px;
              border-radius:12px;cursor:pointer;
              background:linear-gradient(135deg,#22C55E,#16a34a);
              border:1px solid rgba(34,197,94,0.4);
@@ -522,8 +522,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   <div style="display:flex;gap:12px;position:relative;z-index:1;">
 
     <div class="wc-stat">
-      <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px;">
-        <div style="width:34px;height:34px;border-radius:10px;
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <div style="width:30px;height:30px;border-radius:8px;
                     background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.2);
                     display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <span class="material-symbols-outlined" style="font-size:18px;color:#22C55E">account_balance_wallet</span>
@@ -531,12 +531,12 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;
                   text-transform:uppercase;letter-spacing:1px;">Balance</p>
       </div>
-      <p id="userBalance" style="color:#22C55E;font-size:22px;font-weight:900;letter-spacing:-0.5px;">₹0</p>
+      <p id="userBalance" style="color:#22C55E;font-size:18px;font-weight:900;letter-spacing:-0.5px;">₹0</p>
     </div>
 
     <div class="wc-stat">
-      <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px;">
-        <div style="width:34px;height:34px;border-radius:10px;
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <div style="width:30px;height:30px;border-radius:8px;
                     background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.2);
                     display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <span class="material-symbols-outlined" style="font-size:18px;color:#22C55E">shopping_bag</span>
@@ -544,7 +544,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;
                   text-transform:uppercase;letter-spacing:1px;">Orders</p>
       </div>
-      <p id="userOrders" style="color:#22C55E;font-size:22px;font-weight:900;letter-spacing:-0.5px;">0</p>
+      <p id="userOrders" style="color:#22C55E;font-size:18px;font-weight:900;letter-spacing:-0.5px;">0</p>
     </div>
 
   </div>
@@ -552,29 +552,29 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 
     
 <!-- ================= NEW ORDER SECTION ================= -->
-<div class="h-px bg-white/10 my-6"></div>
+<div class="h-px bg-white/10 my-3"></div>
 
-<div id="newOrderSection" class="w-full rounded-2xl p-4"
+<div id="newOrderSection" class="w-full rounded-2xl p-3"
   style="background:rgba(255,255,255,0.04);
          border:1px solid rgba(255,255,255,0.08);
          box-shadow:0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);">
 
   <!-- Tabs -->
-  <div class="flex rounded-xl overflow-hidden border border-white/10 mb-5">
+  <div class="flex rounded-xl overflow-hidden border border-white/10 mb-3">
     <button id="tabNewOrder" onclick="switchOrderTab('new')"
-      class="flex-1 py-3 text-sm font-bold bg-[#2196f3] text-white transition-all">
+      class="flex-1 py-2.5 text-sm font-bold bg-[#2196f3] text-white transition-all">
       New Order
     </button>
   </div>
 
 
   <!-- Search -->
-  <div class="relative mb-5">
+  <div class="relative mb-3">
     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#2196f3]" style="z-index:1">🔍</span>
     <input type="text" id="searchService" placeholder="Search"
       autocomplete="new-password" readonly
       onfocus="this.removeAttribute('readonly')"
-      class="w-full pl-10 pr-10 py-3 bg-[#0e1629] border border-white/10 rounded-xl
+      class="w-full pl-10 pr-10 py-2.5 bg-[#0e1629] border border-white/10 rounded-xl
              text-white placeholder-gray-500 text-sm
              focus:outline-none focus:border-[#2196f3] transition-all"/>
     <button id="searchClearBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-all" style="font-size:18px;line-height:1">✕</button>
@@ -586,16 +586,16 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   </div>
 
   <!-- FORM CARD -->
-  <div class="rounded-2xl border shadow-xl mb-6" style="background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.08);">
-    <div class="p-4">
+  <div class="rounded-2xl border shadow-xl mb-4" style="background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.08);">
+    <div class="p-3">
 
       <!-- CATEGORY -->
-      <div class="mb-5">
-        <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Category</p>
+      <div class="mb-3">
+        <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5">Category</p>
         <div class="relative" id="categoryWrapper">
           <button type="button" onclick="toggleCategoryDropdown()"
             class="w-full flex items-center justify-between bg-[#121c33]
-                   border border-white/10 rounded-xl px-4 py-3 text-left
+                   border border-white/10 rounded-xl px-4 py-2.5 text-left
                    hover:border-[#2196f3]/50 transition-all">
             <div class="flex items-center gap-3">
               <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
@@ -617,12 +617,12 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       </div>
 
       <!-- SERVICE -->
-      <div class="mb-5" id="serviceWrapper" style="display:none">
-        <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Service</p>
+      <div class="mb-3" id="serviceWrapper" style="display:none">
+        <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5">Service</p>
         <div class="relative" id="serviceDropdownWrapper">
           <button type="button" onclick="toggleServiceDropdown()"
             class="w-full flex items-center justify-between bg-[#121c33]
-                   border border-white/10 rounded-xl px-4 py-3 text-left
+                   border border-white/10 rounded-xl px-4 py-2.5 text-left
                    hover:border-[#2196f3]/50 transition-all">
             <div class="flex items-center gap-3 min-w-0">
               <span id="svcNumBadge"
@@ -646,43 +646,43 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       <div id="serviceDetails" class="hidden">
 
         <!-- 6 STAT CARDS -->
-        <div class="mb-5">
-          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Description</p>
-          <div class="rounded-xl p-4" style="background:rgba(96,165,250,0.03);border:1px solid rgba(96,165,250,0.1);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 4px 24px rgba(96,165,250,0.03),inset 0 1px 0 rgba(255,255,255,0.04);">
-            <div class="grid grid-cols-3 gap-2 mb-4">
+        <div class="mb-3">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5">Description</p>
+          <div class="rounded-xl p-3" style="background:rgba(96,165,250,0.03);border:1px solid rgba(96,165,250,0.1);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 4px 24px rgba(96,165,250,0.03),inset 0 1px 0 rgba(255,255,255,0.04);">
+            <div class="grid grid-cols-3 gap-1.5 mb-2.5">
 
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px 8px;text-align:center;">
+              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:6px 6px;text-align:center;">
                 <p style="color:rgba(255,255,255,0.6);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Start Time</p>
                 <p id="dStartTime" style="color:#ffffff;font-size:11px;font-weight:800;line-height:1.2;">INSTANT</p>
               </div>
 
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px 8px;text-align:center;">
+              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:6px 6px;text-align:center;">
                 <p style="color:rgba(255,255,255,0.6);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Speed</p>
                 <p id="dSpeed" style="color:#ffffff;font-size:11px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px 8px;text-align:center;">
+              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:6px 6px;text-align:center;">
                 <p style="color:rgba(255,255,255,0.6);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Refill</p>
                 <p id="dRefill" style="color:#ffffff;font-size:11px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px 8px;text-align:center;">
+              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:6px 6px;text-align:center;">
                 <p style="color:rgba(255,255,255,0.6);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Cancel</p>
                 <p id="dCancel" style="color:#ffffff;font-size:11px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px 8px;text-align:center;">
+              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:6px 6px;text-align:center;">
                 <p style="color:rgba(255,255,255,0.6);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Drop</p>
                 <p id="dDrop" style="color:#ffffff;font-size:11px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px 8px;text-align:center;">
+              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:6px 6px;text-align:center;">
                 <p style="color:rgba(255,255,255,0.6);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Quality</p>
                 <p id="dQuality" style="color:#ffffff;font-size:11px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
             </div>
-            <div class="border-t border-white/10 pt-3">
+            <div class="border-t border-white/10 pt-2">
               <p class="text-xs text-gray-400 font-bold mb-2 flex items-center gap-1">
                 <span class="material-symbols-outlined" style="font-size:13px">info</span> DETAILS:
               </p>
@@ -692,10 +692,10 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         </div>
 
         <!-- LINK -->
-        <div class="mb-4">
-          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Link</p>
+        <div class="mb-3">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5">Link</p>
           <input type="text" id="linkInput" placeholder="Paste your link"
-            class="w-full px-4 py-3 bg-[#121c33] border border-white/10 rounded-xl
+            class="w-full px-4 py-2.5 bg-[#121c33] border border-white/10 rounded-xl
                    text-white placeholder-gray-500 text-sm
                    focus:outline-none focus:border-[#2196f3] transition-all"/>
         </div>
@@ -719,10 +719,10 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         </div>
 
         <!-- QUANTITY -->
-        <div class="mb-4">
-          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Quantity</p>
+        <div class="mb-3">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5">Quantity</p>
           <input type="number" id="quantityInput" placeholder="Min: 0 - Max: 0"
-            class="w-full px-4 py-3 bg-[#121c33] border border-white/10 rounded-xl
+            class="w-full px-4 py-2.5 bg-[#121c33] border border-white/10 rounded-xl
                    text-white placeholder-gray-500 text-sm
                    focus:outline-none focus:border-[#2196f3] transition-all"/>
           <p id="quantityError" class="hidden text-xs text-red-400 mt-2 font-semibold">
@@ -731,19 +731,19 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         </div>
 
         <!-- DELIVERY TIME -->
-        <div class="mb-4">
-          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2 flex items-center gap-1">
+        <div class="mb-3">
+          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5 flex items-center gap-1">
             Delivery Time
             <span class="material-symbols-outlined text-gray-500" style="font-size:13px">info</span>
           </p>
-          <div class="bg-[#121c33] border border-white/10 rounded-xl px-4 py-3">
+          <div class="bg-[#121c33] border border-white/10 rounded-xl px-4 py-2.5">
             <p id="dDeliveryTime" class="text-white font-bold text-sm">—</p>
           </div>
         </div>
 
         <!-- ORDER BUTTON -->
         <button id="placeOrderBtn" disabled
-          class="w-full rounded-xl font-black text-base py-4
+          class="w-full rounded-xl font-black text-base py-3.5
                  bg-gradient-to-r from-[#2196f3] to-[#00bcd4]
                  text-white relative overflow-hidden
                  disabled:opacity-35 disabled:cursor-not-allowed
@@ -2353,7 +2353,7 @@ function changePasswordInline() {
 
 <script>
 const _API  = "https://backend-for-api-connect-production.up.railway.app";
-const _OTP  = "https://backend-for-email-verification-code-production.up.railway.app";
+const _OTP  = "https://backend-for-email-verification-code-production-61a3.up.railway.app";
 
 </script>
 <script>requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.style.opacity=1))</script>

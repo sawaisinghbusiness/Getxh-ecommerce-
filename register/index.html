@@ -799,7 +799,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
     try {
       const _ctrl = new AbortController();
       const _t = setTimeout(() => _ctrl.abort(), 15000);
-      const res  = await fetch("https://backend-for-email-verification-code-production.up.railway.app/send-otp", {
+      const res  = await fetch("https://backend-for-email-verification-code-production-61a3.up.railway.app/send-otp", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ email, type: "signup" }),
@@ -850,7 +850,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
     /* ── 2a: hit backend to verify OTP ── */
     let verifyData;
     try {
-      const res = await fetch("https://backend-for-email-verification-code-production.up.railway.app/verify-otp", {
+      const res = await fetch("https://backend-for-email-verification-code-production-61a3.up.railway.app/verify-otp", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ email, otp, type: "signup" })
@@ -897,7 +897,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
       localStorage.setItem("getxh_current_user",     email);
 
       /* Save to MongoDB in background */
-      fetch("https://backend-for-email-verification-code-production.up.railway.app/save-user", {
+      fetch("https://backend-for-email-verification-code-production-61a3.up.railway.app/save-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, mobile: document.getElementById("mobile").value.trim(), username })
