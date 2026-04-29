@@ -2139,12 +2139,6 @@ function changePasswordInline() {
 const _API  = "https://backend-for-api-connect-production.up.railway.app";
 const _OTP  = "https://backend-for-email-verification-code-production.up.railway.app";
 
-// Wake up both backends immediately on page load
-fetch(_API + "/ping").catch(()=>{});
-fetch(_OTP + "/ping").catch(()=>{});
-
-// Keep-alive: ping every 4 min so backend never sleeps during session
-setInterval(() => { fetch(_API + "/ping").catch(()=>{}); }, 240000);
 </script>
 <script>requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.style.opacity=1))</script>
 </body>

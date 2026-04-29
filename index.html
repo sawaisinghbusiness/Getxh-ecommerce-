@@ -833,22 +833,6 @@ function validateAndLogin() {
 const OTP_BACKEND  = "https://backend-for-email-verification-code-production.up.railway.app";
 const API_BACKEND  = "https://backend-for-api-connect-production.up.railway.app";
 
-// Wake up both backends immediately on page load
-fetch(OTP_BACKEND + "/ping").catch(() => {});
-fetch(API_BACKEND + "/ping").catch(() => {});
-
-// Keep-alive: ping every 4 min so backend never sleeps during session
-setInterval(() => { fetch(OTP_BACKEND + "/ping").catch(() => {}); }, 240000);
-
-// Extra: ping again when user focuses email — gives max head start before Send OTP
-document.addEventListener('DOMContentLoaded', () => {
-  const emailEl = document.getElementById('email');
-  if (emailEl) {
-    emailEl.addEventListener('focus', () => {
-      fetch(OTP_BACKEND + "/ping").catch(() => {});
-    }, { once: true });
-  }
-});
 </script>
 
 </body>

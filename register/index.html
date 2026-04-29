@@ -1413,10 +1413,6 @@ function validateAndSendOTP() {
 }
 </script>
 
-<script>
-// Wake up backend on page load so OTP sends instantly
-fetch("https://backend-for-email-verification-code-production.up.railway.app/ping", { method: "GET" }).catch(() => {});
-</script>
 
 </body>
 </html>
