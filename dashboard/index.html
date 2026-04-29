@@ -1931,7 +1931,7 @@ let currentUid     = null;
 let currentEmail   = null;
 let _unsubStats    = null;
 let _unsubOrders   = null;
-let _currentBalance = 0;
+window._currentBalance = 0;
 
 // ── LOGOUT ──
 window._logoutUser = async function() {
@@ -1979,7 +1979,7 @@ onAuthStateChanged(auth, (user) => {
     const data = snap.exists() ? snap.data() : {};
     const balance     = Number(data.Balance || 0);
     const totalOrders = Number(data.TotalOrders || 0);
-    _currentBalance = balance;
+    window._currentBalance = balance;
     const balStr = `₹${balance.toFixed(2)}`;
     document.getElementById("userBalance").textContent      = balStr;
     document.getElementById("walletBalanceTop").textContent = balStr;
