@@ -797,11 +797,15 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
     setBtn(spinner("Sending OTP…"), true);
 
     try {
+      const _ctrl = new AbortController();
+      const _t = setTimeout(() => _ctrl.abort(), 15000);
       const res  = await fetch("https://backend-for-email-verification-code-production.up.railway.app/send-otp", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ email, type: "signup" })
+        body:    JSON.stringify({ email, type: "signup" }),
+        signal:  _ctrl.signal
       });
+      clearTimeout(_t);
       const data = await res.json();
 
       if (data.success) {
