@@ -289,7 +289,7 @@ let _ordersInterval = null;
 
 async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
   try {
-    const res  = await fetch('https://backend-for-api-connect-1.onrender.com/status/' + apiOrderId);
+    const res  = await fetch('https://backend-for-api-connect-production.up.railway.app/status/' + apiOrderId);
     const data = await res.json();
 
     const status = (data.status || '').toLowerCase();
@@ -623,7 +623,7 @@ window.addEventListener('beforeunload', () => {
 </script>
 
 <script>
-fetch("https://backend-for-api-connect-1.onrender.com/ping").catch(()=>{});
+fetch("https://backend-for-api-connect-production.up.railway.app/ping").catch(()=>{});
 fetch("https://backend-for-email-verification-code-1.onrender.com/ping").catch(()=>{});
 </script>
 

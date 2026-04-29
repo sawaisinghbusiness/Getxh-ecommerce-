@@ -1715,7 +1715,7 @@ async function placeOrder(serviceId) {
   if (chevron)   chevron.style.display = 'none';
 
   try {
-    const res = await fetch('https://backend-for-api-connect-1.onrender.com/order', {
+    const res = await fetch('https://backend-for-api-connect-production.up.railway.app/order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ service: serviceId, link: link, quantity: quantity })
@@ -1839,7 +1839,7 @@ window.logout = function() { sessionStorage.removeItem('gx_cat'); sessionStorage
 // ── ORDER TRACKING ──
 async function checkStatus(orderId) {
   try {
-    const res  = await fetch('https://backend-for-api-connect-1.onrender.com/status/' + orderId);
+    const res  = await fetch('https://backend-for-api-connect-production.up.railway.app/status/' + orderId);
     const data = await res.json();
 
 
@@ -2136,7 +2136,7 @@ function changePasswordInline() {
 <div id="toastContainer"></div>
 
 <script>
-const _API  = "https://backend-for-api-connect-1.onrender.com";
+const _API  = "https://backend-for-api-connect-production.up.railway.app";
 const _OTP  = "https://backend-for-email-verification-code-1.onrender.com";
 
 // Wake up both backends immediately on page load
