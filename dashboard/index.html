@@ -679,29 +679,83 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 </div>
 
 <!-- SUCCESS MODAL -->
+<style>
+.order-check-ring { width:80px;height:80px;margin:0 auto 18px;display:block; }
+.order-check-ring svg { width:80px;height:80px; }
+.o-circle {
+  fill:none;stroke:#22c55e;stroke-width:2.2;
+  stroke-dasharray:220;stroke-dashoffset:220;
+  animation:oCircle .55s ease forwards .1s;
+  transform-origin:center;transform:rotate(-90deg);
+}
+.o-tick {
+  fill:none;stroke:#22c55e;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:44;stroke-dashoffset:44;
+  animation:oTick .35s ease forwards .6s;
+}
+@keyframes oCircle{to{stroke-dashoffset:0}}
+@keyframes oTick  {to{stroke-dashoffset:0}}
+.om-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.78rem;}
+.om-row:last-child{border-bottom:none;}
+.om-label{color:#6b7280;font-weight:600;letter-spacing:.02em;}
+.om-val{color:#e5e7eb;font-weight:700;text-align:right;max-width:55%;word-break:break-all;}
+</style>
 <div id="successModal"
-  class="fixed inset-0 bg-black/70 hidden z-50 items-center justify-center px-4">
+  class="fixed inset-0 bg-black/80 hidden z-50 items-center justify-center px-4"
+  style="backdrop-filter:blur(6px)">
   <div id="successModalBox"
-    class="bg-[#0f1a30] border border-[#2196f3]/20 rounded-2xl p-6
-           w-full max-w-sm text-center shadow-2xl scale-75 opacity-0 transition-all duration-300">
-    <div class="w-16 h-16 bg-green-500/10 border border-green-500/30 rounded-full
-                flex items-center justify-center mx-auto mb-4">
-      <span class="material-symbols-outlined text-green-400" style="font-size:32px">check_circle</span>
+    class="w-full text-center shadow-2xl scale-75 opacity-0 transition-all duration-300"
+    style="max-width:380px;background:linear-gradient(160deg,#0d1525 0%,#111d33 100%);border:1px solid rgba(255,255,255,0.08);border-radius:28px;padding:32px 24px 24px;box-shadow:0 40px 100px rgba(0,0,0,0.7)">
+
+    <!-- Animated check -->
+    <div class="order-check-ring">
+      <svg viewBox="0 0 80 80">
+        <circle class="o-circle" cx="40" cy="40" r="34"/>
+        <polyline class="o-tick" points="25,40 35,50 55,28"/>
+      </svg>
     </div>
-    <h3 class="text-xl font-black mb-2 text-white">Order Placed! 🎉</h3>
-    <p class="text-gray-400 text-sm mb-6">Your order has been submitted and is now being processed.</p>
-    <div class="flex gap-3">
-      <button id="closeModalBtn"
-        class="flex-1 py-3 rounded-xl bg-[#121c33] border border-white/10
-               text-gray-300 font-bold text-sm active:scale-[0.97] transition">
-        Close
-      </button>
-      <button id="viewOrdersBtn"
-        class="flex-1 py-3 rounded-xl font-black text-sm text-white
-               bg-gradient-to-r from-[#2196f3] to-[#00bcd4] active:scale-[0.97] transition">
-        View Orders
-      </button>
+
+    <p style="font-size:.65rem;color:#22c55e;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px">Order Confirmed</p>
+    <h3 style="font-size:1.4rem;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:4px">Your order is live!</h3>
+    <p style="font-size:.78rem;color:#6b7280;margin-bottom:22px">Delivery has started. Track progress below.</p>
+
+    <!-- Order details rows -->
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:4px 16px;margin-bottom:20px;text-align:left">
+      <div class="om-row">
+        <span class="om-label">Order ID</span>
+        <span class="om-val" id="smOrderId" style="color:#60a5fa;font-family:monospace">—</span>
+      </div>
+      <div class="om-row">
+        <span class="om-label">Service</span>
+        <span class="om-val" id="smService">—</span>
+      </div>
+      <div class="om-row">
+        <span class="om-label">Quantity</span>
+        <span class="om-val" id="smQty">—</span>
+      </div>
+      <div class="om-row">
+        <span class="om-label">Amount</span>
+        <span class="om-val" id="smAmount" style="color:#4ade80">—</span>
+      </div>
+      <div class="om-row">
+        <span class="om-label">Status</span>
+        <span class="om-val"><span style="color:#facc15">● Processing</span></span>
+      </div>
     </div>
+
+    <!-- Buttons -->
+    <button id="viewOrdersBtn"
+      style="width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;font-weight:800;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#2196f3,#00bcd4);box-shadow:0 4px 18px rgba(33,150,243,0.3);margin-bottom:10px;transition:opacity .15s,transform .15s"
+      onmouseover="this.style.opacity='.88';this.style.transform='translateY(-1px)'"
+      onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">
+      View Orders
+    </button>
+    <button id="closeModalBtn"
+      style="width:100%;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,0.08);cursor:pointer;font-weight:700;font-size:.8rem;color:#9ca3af;background:transparent;transition:background .15s"
+      onmouseover="this.style.background='rgba(255,255,255,0.05)'"
+      onmouseout="this.style.background='transparent'">
+      Continue Ordering
+    </button>
   </div>
 </div>
 
@@ -1723,19 +1777,24 @@ async function placeOrder(serviceId) {
     const data = await res.json();
 
     if (data.order) {
-      // ── Success ──
-      showToast('success', 'Order Placed!', 'Order ID: ' + data.order);
+      // ── Success — populate & show modal ──
+      const orderPrice = parseFloat(((parseInt(quantity) / 1000) * (_selSvc ? _selSvc.price : 0)).toFixed(2));
+      document.getElementById('smOrderId').textContent  = '#' + data.order;
+      document.getElementById('smService').textContent  = _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—';
+      document.getElementById('smQty').textContent      = parseInt(quantity).toLocaleString();
+      document.getElementById('smAmount').textContent   = '₹' + orderPrice.toFixed(2);
+      const modal = document.getElementById('successModal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+      setTimeout(() => {
+        const box = document.getElementById('successModalBox');
+        box.style.transform = 'scale(1)';
+        box.style.opacity   = '1';
+      }, 10);
+
       localStorage.setItem('lastOrderId', data.order);
       startTracking();
       if (typeof _saveOrder === 'function') _saveOrder(_selSvc, parseInt(quantity), link, data.order);
-
-      // Auto scroll to order tracking card
-      setTimeout(() => {
-        const card = document.getElementById('orderTrackingCard');
-        if (card && !card.classList.contains('hidden')) {
-          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 400);
 
     } else {
       showToast('error', 'Unable to Place Order', 'Something went wrong. Please try again or contact support.');
