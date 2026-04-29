@@ -360,71 +360,114 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 <!-- MAIN CONTENT -->
 <main class="w-full px-4 py-5 pb-[120px] lg:px-8 lg:py-8 lg:pb-10">
 <div class="lg:mx-auto lg:max-w-6xl">
-<!-- WELCOME CARD — Unique GETXH Style -->
-<div class="rounded-2xl p-5 mb-6 relative"
-     style="background: linear-gradient(135deg, #0a1628 0%, #0e1f3d 60%, #112244 100%);
-            border: 1px solid rgba(33,150,243,0.25);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(33,150,243,0.1);">
-  <!-- Glow effect top right -->
-  <div class="absolute top-0 right-0 pointer-events-none"
-       style="width:180px;height:180px;
-              background:radial-gradient(circle, rgba(33,150,243,0.15) 0%, transparent 70%);
-              transform:translate(30%,-30%)"></div>
+<!-- WELCOME CARD — Glass Navy -->
+<style>
+@keyframes glassShimmer {
+  0%   { transform: translateX(-100%) skewX(-12deg); }
+  100% { transform: translateX(260%) skewX(-12deg); }
+}
+.welcome-card {
+  position: relative;
+  border-radius: 22px;
+  padding: 22px 20px 20px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  background: #0F172A;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.welcome-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 80% 0%, rgba(34,197,94,0.1) 0%, transparent 55%),
+    radial-gradient(ellipse at 10% 100%, rgba(34,197,94,0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+.welcome-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -60%;
+  width: 32%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  animation: glassShimmer 6s ease-in-out infinite;
+  pointer-events: none;
+}
+.wc-stat {
+  flex: 1;
+  border-radius: 16px;
+  padding: 14px 14px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+}
+</style>
 
-  <!-- Animated dot accent -->
-  <div class="absolute top-4 right-4 w-2 h-2 rounded-full"
-       style="background:#2196f3; box-shadow:0 0 8px #2196f3; animation:glowPulse 2s infinite"></div>
+<div class="welcome-card">
+  <!-- subtle green glow top right -->
+  <div style="position:absolute;width:200px;height:200px;border-radius:50%;
+              background:radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%);
+              top:-80px;right:-60px;pointer-events:none"></div>
 
-  <!-- Username row -->
-  <div class="flex items-center justify-between mb-5 relative z-10">
-    <div>
-      <p class="text-gray-400 text-xs font-semibold uppercase tracking-widest mb-1">Dashboard</p>
-      <div class="flex items-center gap-2">
-        <div class="w-7 h-7 rounded-lg flex items-center justify-center"
-             style="background:linear-gradient(135deg,#2196f3,#00bcd4)">
-          <span class="material-symbols-outlined text-white" style="font-size:14px">person</span>
-        </div>
-        <p id="userName" class="text-white text-lg font-black">User</p>
+  <!-- Top row: avatar + username + Add Funds btn -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;position:relative;z-index:1;">
+    <div style="display:flex;align-items:center;gap:13px;">
+      <div style="width:44px;height:44px;border-radius:14px;flex-shrink:0;
+                  background:rgba(34,197,94,0.12);border:1.5px solid rgba(34,197,94,0.3);
+                  display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#22C55E">person</span>
+      </div>
+      <div>
+        <p style="color:rgba(255,255,255,0.4);font-size:10px;font-weight:700;
+                  letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;">Welcome back</p>
+        <p id="userName" style="color:#ffffff;font-size:17px;font-weight:800;line-height:1.1;">User</p>
       </div>
     </div>
     <button onclick="window.location.href='/wallet'"
-      class="flex items-center gap-1.5 px-4 py-2 rounded-xl font-black text-xs
-             active:scale-95 transition-all"
-      style="background:linear-gradient(135deg,#00c853,#00e676);
-             color:#003d10;
-             box-shadow:0 4px 15px rgba(0,200,83,0.3)">
-      <span class="material-symbols-outlined" style="font-size:14px">add</span>
+      style="display:flex;align-items:center;gap:7px;padding:10px 17px;
+             border-radius:12px;cursor:pointer;
+             background:linear-gradient(135deg,#22C55E,#16a34a);
+             border:1px solid rgba(34,197,94,0.4);
+             color:#fff;font-size:13px;font-weight:800;
+             box-shadow:0 4px 16px rgba(34,197,94,0.3);
+             transition:all 0.2s ease;"
+      onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'"
+      ontouchstart="this.style.transform='scale(0.95)'" ontouchend="this.style.transform='scale(1)'">
+      <span class="material-symbols-outlined" style="font-size:16px">add</span>
       Add Funds
     </button>
   </div>
 
-  <!-- Stats -->
-  <div class="grid grid-cols-2 gap-3 relative z-10">
+  <!-- Stats row -->
+  <div style="display:flex;gap:12px;position:relative;z-index:1;">
 
-    <div class="rounded-xl p-4 flex items-center gap-3"
-         style="background:rgba(33,150,243,0.08);
-                border:1px solid rgba(33,150,243,0.2)">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-           style="background:linear-gradient(135deg,rgba(33,150,243,0.3),rgba(33,150,243,0.1))">
-        <span class="material-symbols-outlined" style="font-size:18px;color:#2196f3">account_balance_wallet</span>
+    <div class="wc-stat">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px;">
+        <div style="width:34px;height:34px;border-radius:10px;
+                    background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.2);
+                    display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span class="material-symbols-outlined" style="font-size:18px;color:#22C55E">account_balance_wallet</span>
+        </div>
+        <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;
+                  text-transform:uppercase;letter-spacing:1px;">Balance</p>
       </div>
-      <div>
-        <p class="text-gray-400 text-xs mb-0.5">Balance</p>
-        <p id="userBalance" class="text-white text-base font-black">₹0</p>
-      </div>
+      <p id="userBalance" style="color:#22C55E;font-size:22px;font-weight:900;letter-spacing:-0.5px;">₹0</p>
     </div>
 
-    <div class="rounded-xl p-4 flex items-center gap-3"
-         style="background:rgba(0,230,118,0.06);
-                border:1px solid rgba(0,230,118,0.15)">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-           style="background:linear-gradient(135deg,rgba(0,230,118,0.25),rgba(0,230,118,0.08))">
-        <span class="material-symbols-outlined" style="font-size:18px;color:#00e676">shopping_bag</span>
+    <div class="wc-stat">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px;">
+        <div style="width:34px;height:34px;border-radius:10px;
+                    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+                    display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span class="material-symbols-outlined" style="font-size:18px;color:rgba(255,255,255,0.7)">shopping_bag</span>
+        </div>
+        <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;
+                  text-transform:uppercase;letter-spacing:1px;">Orders</p>
       </div>
-      <div>
-        <p class="text-gray-400 text-xs mb-0.5">Your Orders</p>
-        <p id="userOrders" class="text-white text-base font-black">0</p>
-      </div>
+      <p id="userOrders" style="color:#ffffff;font-size:22px;font-weight:900;letter-spacing:-0.5px;">0</p>
     </div>
 
   </div>
@@ -434,7 +477,10 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 <!-- ================= NEW ORDER SECTION ================= -->
 <div class="h-px bg-white/10 my-6"></div>
 
-<div id="newOrderSection" class="w-full">
+<div id="newOrderSection" class="w-full rounded-2xl p-4"
+  style="background:rgba(255,255,255,0.04);
+         border:1px solid rgba(255,255,255,0.08);
+         box-shadow:0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);">
 
   <!-- Tabs -->
   <div class="flex rounded-xl overflow-hidden border border-white/10 mb-5">
@@ -463,7 +509,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   </div>
 
   <!-- FORM CARD -->
-  <div class="rounded-2xl bg-[#0e1629] border border-white/10 shadow-xl mb-6">
+  <div class="rounded-2xl border shadow-xl mb-6" style="background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.08);">
     <div class="p-4">
 
       <!-- CATEGORY -->
@@ -477,8 +523,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
             <div class="flex items-center gap-3">
               <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
                    id="catIcon" class="w-5 h-5 rounded hidden" alt=""/>
-              <div id="catIconWelcome" style="display:none;width:20px;height:20px;border-radius:4px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);flex-shrink:0;align-items:center;justify-content:center;">
-                <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><text x="5.5" y="8.5" text-anchor="middle" font-size="9" fill="white">★</text></svg>
+              <div id="catIconWelcome" style="display:none;width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#f97316,#ec4899);flex-shrink:0;align-items:center;justify-content:center;">
+                <span class="material-symbols-outlined" style="font-size:14px;color:#fff;line-height:22px;text-align:center;display:block;">redeem</span>
               </div>
               <span id="catLabel" class="text-gray-400 text-sm font-semibold">
                 — Select a category —
@@ -1514,7 +1560,7 @@ function buildCategoryDropdown() {
   CATEGORIES.forEach(c=>{
     const d=document.createElement('div'); d.className='cat-item'+(c.id===_selCat?' selected':'');
     const iconHTML = c.id==='welcome-offer'
-      ? `<svg width="20" height="20" viewBox="0 0 20 20" class="flex-shrink-0" style="border-radius:4px;flex-shrink:0"><defs><linearGradient id="woGrad" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#f09433"/><stop offset="33%" stop-color="#e6683c"/><stop offset="66%" stop-color="#cc2366"/><stop offset="100%" stop-color="#bc1888"/></linearGradient></defs><rect width="20" height="20" rx="5" fill="url(#woGrad)"/><text x="10" y="14.5" text-anchor="middle" font-size="11" fill="white">★</text></svg>`
+      ? `<div style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#f97316,#ec4899);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="material-symbols-outlined" style="font-size:14px;color:#fff;">redeem</span></div>`
       : c.id.startsWith('yt-')
       ? `<img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" class="w-5 h-5 rounded flex-shrink-0"/>`
       : c.id.startsWith('fb-')

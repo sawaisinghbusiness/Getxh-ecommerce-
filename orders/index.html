@@ -107,29 +107,38 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 </div>
 
 <!-- BOTTOM NAV -->
-<div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-40">
-  <div class="flex justify-around items-center py-2 text-xs">
-    <button onclick="openMenu()" class="flex flex-col items-center text-gray-400">
-      <span class="material-symbols-outlined">dashboard</span>
-      <span>Menu</span>
-    </button>
-    <a href="/orders" class="flex flex-col items-center text-blue-400">
-      <span class="material-symbols-outlined">list_alt</span>
-      <span>Orders</span>
-    </a>
-    <a href="/dashboard"
-      class="bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full -mt-6">
-      <span class="material-symbols-outlined">add</span>
-    </a>
-    <a href="/support" class="flex flex-col items-center text-gray-400">
-      <span class="material-symbols-outlined">support_agent</span>
-      <span>Support</span>
-    </a>
-    <button onclick="openAccountPopup()" class="flex flex-col items-center text-gray-400">
-      <span class="material-symbols-outlined">person</span>
-      <span>Account</span>
-    </button>
-  </div>
+<style>
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(9,14,26,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.06);padding:8px 16px 12px;display:flex;align-items:center;justify-content:space-around;}
+@media(min-width:1024px){.bnav{display:none}}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:#4b5563;text-decoration:none;padding:6px 10px;border-radius:12px;transition:color .2s,background .2s;min-width:48px;}
+.bnav-item:hover,.bnav-item.active{color:#fff;}
+.bnav-item.active{background:rgba(33,150,243,0.12);color:#60a5fa;}
+.bnav-icon{width:22px;height:22px;font-size:20px;line-height:1;}
+.bnav-label{font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1;}
+.bnav-fab{width:52px;height:52px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#2196f3,#00bcd4);box-shadow:0 4px 20px rgba(33,150,243,0.4);display:flex;align-items:center;justify-content:center;margin-top:-18px;transition:transform .2s,box-shadow .2s;flex-shrink:0;text-decoration:none;}
+.bnav-fab:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(33,150,243,0.5);}
+.bnav-fab:active{transform:scale(.95);}
+</style>
+<div class="bnav">
+  <button onclick="openMenu()" class="bnav-item">
+    <span class="material-symbols-outlined bnav-icon">grid_view</span>
+    <span class="bnav-label">Menu</span>
+  </button>
+  <a href="/orders" class="bnav-item active">
+    <span class="material-symbols-outlined bnav-icon">receipt_long</span>
+    <span class="bnav-label">Orders</span>
+  </a>
+  <a href="/dashboard" class="bnav-fab" aria-label="New Order">
+    <span class="material-symbols-outlined" style="font-size:24px;color:#fff">add</span>
+  </a>
+  <a href="/support" class="bnav-item">
+    <span class="material-symbols-outlined bnav-icon">headset_mic</span>
+    <span class="bnav-label">Support</span>
+  </a>
+  <button onclick="openAccountPopup()" class="bnav-item">
+    <span class="material-symbols-outlined bnav-icon">person</span>
+    <span class="bnav-label">Account</span>
+  </button>
 </div>
 
 <!-- ACCOUNT POPUP -->
@@ -180,13 +189,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 </div>
 
 <!-- SIDE MENU -->
-<div id="menuOverlay" class="fixed inset-0 bg-black/60 hidden z-[105] backdrop-blur-sm" onclick="closeMenu()"></div>
+<div id="menuOverlay" class="fixed inset-0 bg-black/60 hidden z-40 backdrop-blur-sm" onclick="closeMenu()"></div>
 <div id="sideMenu"
-  class="fixed top-0 left-0 h-full w-72 z-[110] transform -translate-x-full transition-transform duration-300 flex flex-col"
-  style="background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);">
+  class="fixed top-0 left-0 h-full w-72 z-[150] transform -translate-x-full transition-transform duration-300 flex flex-col"
+  style="background: linear-gradient(180deg, #0a1628 0%, #0e1f3d 50%, #0a1628 100%);">
   <div class="px-5 pt-20 pb-4" style="border-bottom:1px solid rgba(255,255,255,0.06);">
     <div style="display:flex;align-items:center;gap:14px;">
-      <div style="width:46px;height:46px;min-width:46px;border-radius:14px;background:linear-gradient(135deg,#2196f3,#00bcd4);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <div id="menuAvatarCircle" style="width:46px;height:46px;min-width:46px;border-radius:14px;background:linear-gradient(135deg,#2196f3,#00bcd4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;font-weight:900;color:white;">
         <span class="material-symbols-outlined text-white" style="font-size:22px">person</span>
       </div>
       <div style="min-width:0;overflow:hidden;">
@@ -196,44 +205,99 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
   </div>
   <div class="flex-1 overflow-y-auto py-3 px-3">
-    <a href="/dashboard" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-500/15">
-        <span class="material-symbols-outlined text-blue-400" style="font-size:16px">add_shopping_cart</span>
+    <!-- New Order -->
+    <button onclick="closeMenu();window.location.href='/dashboard'"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:22px;color:white;">add_shopping_cart</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm">New Order</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">New Order</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+    <!-- Orders — ACTIVE -->
+    <button onclick="closeMenu();window.location.href='/orders'"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left transition-all active:scale-[0.98]"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(234,179,8,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#facc15;">list_alt</span>
+      </div>
+      <span class="font-bold text-white text-sm" style="font-weight:700;color:#fff;font-size:15px;">Orders</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+    <!-- Support -->
+    <button onclick="closeMenu();window.location.href='/support'"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(168,85,247,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#c084fc;">support_agent</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Support</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+    <!-- Add Funds -->
+    <button onclick="closeMenu();window.location.href='/wallet'"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(34,197,94,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#4ade80;">account_balance_wallet</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Add Funds</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+    <!-- Affiliates -->
+    <button onclick="closeMenu();window.location.href='/coming-soon'"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(234,130,8,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#fb923c;">person_add</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Affiliates</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+    <!-- Subscriptions -->
+    <button onclick="closeMenu();window.location.href='/coming-soon'"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(6,182,212,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#22d3ee;">autorenew</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Subscriptions</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+    <!-- Admin (hidden by default, shown for admin UID only) -->
+    <button id="adminBtn" onclick="closeMenu();window.location.href='/admin'"
+      class="menu-item hidden w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
+      style="display:none;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(6,182,212,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#22d3ee;">admin_panel_settings</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Admin</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </button>
+    <div class="h-px bg-white/10 my-3 mx-2" style="height:1px;background:rgba(255,255,255,0.1);margin:12px 8px;"></div>
+    <!-- WhatsApp -->
+    <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(74,222,128,0.15);">
+        <span style="color:#4ade80;font-weight:900;font-size:20px;line-height:1;">W</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">WhatsApp</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="/orders" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 transition-all active:scale-[0.98]" style="background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
-        <span class="material-symbols-outlined text-white" style="font-size:16px">list_alt</span>
+    <!-- Logout -->
+    <button onclick="logout()"
+      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-red-500/10 transition-all active:scale-[0.98] border border-transparent hover:border-red-500/20"
+      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#f87171;">logout</span>
       </div>
-      <span class="font-bold text-white text-sm">Orders</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
-    </a>
-    <a href="/wallet" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-500/15">
-        <span class="material-symbols-outlined text-green-400" style="font-size:16px">account_balance_wallet</span>
-      </div>
-      <span class="font-bold text-gray-300 text-sm">Add Funds</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
-    </a>
-    <a href="/support" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-500/15">
-        <span class="material-symbols-outlined text-purple-400" style="font-size:16px">support_agent</span>
-      </div>
-      <span class="font-bold text-gray-300 text-sm">Support</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
-    </a>
-    <div class="h-px bg-white/10 my-3 mx-2"></div>
-    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-500/15">
-        <span class="material-symbols-outlined text-red-400" style="font-size:16px">logout</span>
-      </div>
-      <span class="font-bold text-red-400 text-sm">Logout</span>
+      <span class="font-bold text-red-400 text-sm" style="font-weight:700;color:#f87171;font-size:15px;">Logout</span>
     </button>
   </div>
   <div class="px-5 py-4 border-t border-white/10">
-    <div class="mt-3 grid gap-2 text-xs">
+    <div class="grid gap-2 text-xs mb-3">
       <a href="/privacy" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
       <a href="/terms" class="text-gray-400 hover:text-white transition">Terms</a>
       <a href="/refund" class="text-gray-400 hover:text-white transition">Refund Policy</a>
@@ -563,6 +627,16 @@ function showSkeleton() {
 onAuthStateChanged(auth, (user) => {
   if (!user) { window._currentUid = null; window.location.href = '/'; return; }
   window._currentUid = user.uid;
+
+  // Update menu with real Firebase user data
+  const _name = user.displayName || user.email.split('@')[0] || 'User';
+  const _mail = user.email || '';
+  localStorage.setItem('getxh_user_name', _name);
+  localStorage.setItem('getxh_current_user', _mail);
+  const muEl = document.getElementById('menuUsername');
+  const meEl = document.getElementById('menuEmail');
+  if (muEl) muEl.textContent = _name;
+  if (meEl) meEl.textContent = _mail;
 
   showSkeleton();
 
