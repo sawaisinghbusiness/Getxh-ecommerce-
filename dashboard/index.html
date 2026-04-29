@@ -799,34 +799,70 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 </main>
 
 <!-- BOTTOM NAV -->
-<div class="fixed bottom-0 left-0 right-0 bg-[#0e1629] border-t border-[#1e2a4a] z-40 lg:hidden">
-  <div class="flex justify-around items-center py-2 text-xs">
+<style>
+.bnav {
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  background:rgba(9,14,26,0.92);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(255,255,255,0.06);
+  padding:8px 16px 12px;
+  display:flex;align-items:center;justify-content:space-around;
+}
+@media(min-width:1024px){.bnav{display:none}}
+.bnav-item {
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:none;border:none;cursor:pointer;
+  color:#4b5563;text-decoration:none;
+  padding:6px 10px;border-radius:12px;
+  transition:color .2s,background .2s;
+  min-width:48px;
+}
+.bnav-item:hover,.bnav-item.active { color:#fff; }
+.bnav-item.active { background:rgba(33,150,243,0.12); color:#60a5fa; }
+.bnav-item .bnav-icon {
+  width:22px;height:22px;
+  font-size:20px;line-height:1;
+}
+.bnav-item .bnav-label {
+  font-size:0.62rem;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;line-height:1;
+}
+.bnav-fab {
+  width:52px;height:52px;border-radius:16px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#2196f3,#00bcd4);
+  box-shadow:0 4px 20px rgba(33,150,243,0.4);
+  display:flex;align-items:center;justify-content:center;
+  margin-top:-18px;
+  transition:transform .2s,box-shadow .2s;
+  flex-shrink:0;
+}
+.bnav-fab:hover { transform:translateY(-2px);box-shadow:0 8px 28px rgba(33,150,243,0.5); }
+.bnav-fab:active { transform:scale(.95); }
+</style>
+<div class="bnav">
+  <button onclick="openMenu()" class="bnav-item active">
+    <span class="material-symbols-outlined bnav-icon">grid_view</span>
+    <span class="bnav-label">Menu</span>
+  </button>
 
-    <button onclick="openMenu()" class="flex flex-col items-center text-blue-400">
-      <span class="material-symbols-outlined">dashboard</span>
-      <span>Menu</span>
-    </button>
-<a href="/orders" class="flex flex-col items-center text-gray-400">
-  <span class="material-symbols-outlined">list_alt</span>
-  <span>Orders</span>
-</a>
+  <a href="/orders" class="bnav-item">
+    <span class="material-symbols-outlined bnav-icon">receipt_long</span>
+    <span class="bnav-label">Orders</span>
+  </a>
 
-    <button onclick="scrollToNewOrder()"
-      class="bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full -mt-6">
-      <span class="material-symbols-outlined">add</span>
-    </button>
+  <button onclick="scrollToNewOrder()" class="bnav-fab" aria-label="New Order">
+    <span class="material-symbols-outlined" style="font-size:24px;color:#fff">add</span>
+  </button>
 
-    <a href="/support" class="flex flex-col items-center text-gray-400">
-      <span class="material-symbols-outlined">support_agent</span>
-      <span>Support</span>
-    </a>
+  <a href="/support" class="bnav-item">
+    <span class="material-symbols-outlined bnav-icon">headset_mic</span>
+    <span class="bnav-label">Support</span>
+  </a>
 
-    <button onclick="openAccountPopup()" class="flex flex-col items-center text-gray-400">
-      <span class="material-symbols-outlined">person</span>
-      <span>Account</span>
-    </button>
-
-  </div>
+  <button onclick="openAccountPopup()" class="bnav-item">
+    <span class="material-symbols-outlined bnav-icon">person</span>
+    <span class="bnav-label">Account</span>
+  </button>
 </div>
 
 <!-- SIDE MENU -->
