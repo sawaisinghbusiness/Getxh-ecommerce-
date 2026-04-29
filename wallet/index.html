@@ -266,7 +266,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, onSnapshot, setDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot, setDoc, increment, collection, addDoc, query, where, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -329,20 +329,23 @@ onAuthStateChanged(auth, user => {
   });
 
   // Load transaction history
-  loadTransactions(user.email);
+  loadTransactions(user.uid);
 });
 
 
-async function loadTransactions(email) {
+async function loadTransactions(uid) {
   try {
-    const res  = await fetch(`${BACKEND}/get-transactions?email=${encodeURIComponent(email)}`);
-    const data = await res.json();
-    const txs  = data.transactions || [];
+    const q = query(
+      collection(db, "walletTxns"),
+      where("uid", "==", uid),
+      orderBy("createdAt", "desc"),
+      limit(20)
+    );
+    const snap = await getDocs(q);
+    const txs = snap.docs.map(d => d.data());
     renderTxList(txs);
-    localStorage.setItem("gx_wallet_txs_" + email, JSON.stringify(txs));
   } catch {
-    if (!localStorage.getItem("gx_wallet_txs_" + email))
-      document.getElementById("txList").innerHTML = '<p class="text-sm text-gray-500 text-center py-6">Failed to load transactions.</p>';
+    document.getElementById("txList").innerHTML = '<p class="text-sm text-gray-500 text-center py-6">No transactions yet.</p>';
   }
 }
 
@@ -404,11 +407,19 @@ window.verifyPayment = async function() {
         await setDoc(doc(db, "Users", currentUser.uid), {
           Balance: increment(amount)
         }, { merge: true });
+        // Save transaction record
+        await addDoc(collection(db, "walletTxns"), {
+          uid: currentUser.uid,
+          utr,
+          amount,
+          status: "success",
+          createdAt: serverTimestamp()
+        });
       } catch(_) {}
       showPopupState("success");
       document.getElementById("utrInput").value  = "";
       document.getElementById("amountInput").value = "";
-      loadTransactions(currentUser.email);
+      loadTransactions(currentUser.uid);
     } else {
       showPopupState("failed", data.message || "Check your UTR & amount, then try again.");
     }
