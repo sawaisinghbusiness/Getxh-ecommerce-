@@ -900,7 +900,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
       fetch("https://backend-for-email-verification-code-production.up.railway.app/save-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, mobile: document.getElementById("mobile").value.trim(), username })
+        body: JSON.stringify({ email, mobile: document.getElementById("mobile").value.trim(), username })
       }).catch(() => {});
 
       /* Firestore + profile update in background — don't block redirect */

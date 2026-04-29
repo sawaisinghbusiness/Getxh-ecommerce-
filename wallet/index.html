@@ -165,10 +165,6 @@
     class="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 hover:bg-white/10 transition-colors">
     <span class="material-symbols-outlined text-xl">arrow_back_ios_new</span>
   </button>
-  <div>
-    <h1 class="text-lg font-black">Wallet</h1>
-    <p class="text-xs text-indigo-400">GETXH.IN</p>
-  </div>
 </div>
 
 <main class="mx-auto w-full max-w-lg px-4 py-5 pb-24">
@@ -188,33 +184,8 @@
   <section id="addFundsSection" class="section-card rounded-3xl p-6 mb-5">
     <h3 class="text-lg font-black mb-4">Add Funds via UPI</h3>
 
-    <!-- Notice -->
-    <div id="walletNotice" class="hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold"></div>
-
-    <!-- UTR Input -->
-    <div class="mb-3">
-      <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">UTR Number</label>
-      <input id="utrInput" type="text" placeholder="Enter your UTR number"
-        class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm"
-        oninput="checkVerifyBtn()"/>
-    </div>
-
-    <!-- Amount Input -->
-    <div class="mb-5">
-      <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">Amount Paid (₹)</label>
-      <input id="amountInput" type="number" min="1" placeholder="Enter amount you paid"
-        class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm"
-        oninput="checkVerifyBtn()"/>
-    </div>
-
-    <!-- Verify Button -->
-    <button id="verifyBtn" onclick="verifyPayment()" disabled
-      class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white mb-7">
-      Verify Payment
-    </button>
-
-    <!-- Steps -->
-    <div class="mb-5">
+    <!-- Steps / Instructions -->
+    <div class="mb-6">
       <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">How it works</p>
       <div class="flex flex-col gap-0">
 
@@ -243,13 +214,42 @@
         <div class="flex gap-4 items-start">
           <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">3</div>
           <div>
-            <p class="text-sm font-bold text-white">Verify above</p>
+            <p class="text-sm font-bold text-white">Verify below</p>
             <p class="text-xs text-gray-500 mt-0.5">Enter UTR & amount, hit Verify — balance reflects instantly</p>
           </div>
         </div>
 
       </div>
     </div>
+
+    <div class="border-t border-white/6 mb-6"></div>
+
+    <!-- Notice -->
+    <div id="walletNotice" class="hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold"></div>
+
+    <!-- UTR Input -->
+    <div class="mb-3">
+      <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">UTR Number</label>
+      <input id="utrInput" type="text" placeholder="Enter your UTR number"
+        class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm"
+        oninput="checkVerifyBtn()"/>
+    </div>
+
+    <!-- Amount Input -->
+    <div class="mb-5">
+      <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">Amount Paid (₹)</label>
+      <input id="amountInput" type="number" min="1" placeholder="Enter amount you paid"
+        class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm"
+        oninput="checkVerifyBtn()"/>
+    </div>
+
+    <!-- Verify Button -->
+    <button id="verifyBtn" onclick="verifyPayment()" disabled
+      class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white mb-6">
+      Verify Payment
+    </button>
+
+    <div class="border-t border-white/6 mb-6"></div>
 
     <!-- QR Code -->
     <div class="flex flex-col items-center">
@@ -326,7 +326,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, onSnapshot, setDoc, increment, collection, addDoc, query, where, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -454,26 +454,25 @@ window.verifyPayment = async function() {
   document.getElementById("verifyPopup").classList.add("active");
 
   try {
+    const idToken = await currentUser.getIdToken();
+    const requestId = (crypto.randomUUID && crypto.randomUUID()) || String(Date.now()) + "-" + Math.random().toString(36).slice(2);
     const res  = await fetch(`${PAYMENT_BACKEND}/verify-payment.php`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ utr, amount })
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + idToken
+      },
+      body: JSON.stringify({
+        utr,
+        amount,
+        requestId,
+        uid: currentUser.uid,
+        email: currentUser.email || ""
+      })
     });
     const data = await res.json();
 
     if (data.status === "success") {
-      try {
-        await setDoc(doc(db, "Users", currentUser.uid), {
-          Balance: increment(amount)
-        }, { merge: true });
-        await addDoc(collection(db, "walletTxns"), {
-          uid: currentUser.uid,
-          utr,
-          amount,
-          status: "success",
-          createdAt: serverTimestamp()
-        });
-      } catch(_) {}
       // Populate success popup
       const curBalText = document.getElementById("walletBalance").textContent || "";
       document.getElementById("popupAmount").textContent = "₹" + amount.toFixed(2);

@@ -7,43 +7,147 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && request.auth.uid == "XVQ4WNIRyKbJz7HCDUmU0Lv9squ2";
+      return isSignedIn() &&
+        request.auth.uid == "XVQ4WNIRyKbJz7HCDUmU0Lv9squ2" &&
+        request.auth.token.admin == true;
     }
 
-    // ✅ USERS (balance, order count, stats)
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function ticketPath(ticketId) {
+      return /databases/$(database)/documents/tickets/$(ticketId);
+    }
+
+    function ownsExistingTicket(ticketId) {
+      return isSignedIn() &&
+        exists(ticketPath(ticketId)) &&
+        get(ticketPath(ticketId)).data.userId == request.auth.uid;
+    }
+
+    function ownsTicketAfterWrite(ticketId) {
+      return isSignedIn() &&
+        existsAfter(ticketPath(ticketId)) &&
+        getAfter(ticketPath(ticketId)).data.userId == request.auth.uid;
+    }
+
+    function onlyChanged(keys) {
+      return request.resource.data.diff(resource.data).changedKeys().hasOnly(keys);
+    }
+
+    function validShortText(value, maxLen) {
+      return value is string && value.size() > 0 && value.size() <= maxLen;
+    }
+
+    function validOptionalShortText(fieldName, maxLen) {
+      return !(fieldName in request.resource.data) ||
+        (request.resource.data[fieldName] is string && request.resource.data[fieldName].size() <= maxLen);
+    }
+
+    function validTicketCreate() {
+      return request.resource.data.keys().hasOnly([
+          'userId', 'userEmail', 'userName', 'orderId', 'status',
+          'category', 'subcategory', 'createdAt'
+        ]) &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.status == 'open' &&
+        validOptionalShortText('userEmail', 120) &&
+        validOptionalShortText('userName', 80) &&
+        validOptionalShortText('orderId', 40) &&
+        validShortText(request.resource.data.category, 40) &&
+        validShortText(request.resource.data.subcategory, 60);
+    }
+
+    function validMessageCreate(senderRole) {
+      return request.resource.data.keys().hasOnly([
+          'ticketId', 'senderId', 'sender', 'text', 'message', 'createdAt'
+        ]) &&
+        request.resource.data.senderId == request.auth.uid &&
+        request.resource.data.sender == senderRole &&
+        validShortText(request.resource.data.ticketId, 80) &&
+        validShortText(request.resource.data.text, 300) &&
+        validOptionalShortText('message', 300);
+    }
+
+    // Wallet/user financial data. Users can read their own balance,
+    // but only admin/backend can change Balance, TotalOrders, TotalSpent, etc.
     match /Users/{userId} {
-      allow read, write: if isSignedIn() && request.auth.uid == userId;
+      allow read: if isAdmin() || isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+        request.resource.data.keys().hasOnly(['Balance', 'TotalOrders', 'TotalSpent']) &&
+        (!('Balance' in request.resource.data) || request.resource.data.Balance == 0) &&
+        (!('TotalOrders' in request.resource.data) || request.resource.data.TotalOrders == 0) &&
+        (!('TotalSpent' in request.resource.data) || request.resource.data.TotalSpent == 0);
+
+      allow update, delete: if isAdmin();
     }
 
-    // ✅ ORDERS
+    // Lowercase profile collection used by signup. Never store passwords here.
+    match /users/{userId} {
+      allow read: if isAdmin() || isOwner(userId);
+      allow create: if isOwner(userId) &&
+        request.resource.data.uid == request.auth.uid &&
+        !('password' in request.resource.data) &&
+        (!('balance' in request.resource.data) || request.resource.data.balance == 0);
+      allow update: if isOwner(userId) &&
+        !('password' in request.resource.data) &&
+        onlyChanged(['username', 'mobile']);
+      allow delete: if isAdmin();
+    }
+
+    // Orders are created/updated by trusted server/admin only.
+    // Users may only read their own orders.
     match /orders/{orderId} {
-      allow create: if isSignedIn() &&
-        request.resource.data.userId == request.auth.uid;
-
-      allow read, update, delete: if isAdmin() ||
+      allow read: if isAdmin() ||
         (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create, update, delete: if isAdmin();
     }
 
-    // ✅ TICKETS
+    // Tickets can be created by users for themselves. Users can only close
+    // their own ticket; admin can manage all tickets.
     match /tickets/{ticketId} {
-      allow create: if isSignedIn() &&
-        request.resource.data.userId == request.auth.uid;
-
-      allow read, update, delete: if isAdmin() ||
-        (isSignedIn() && resource.data.userId == request.auth.uid);
-    }
-
-    // 🔥 MESSAGES (IMPORTANT)
-    match /messages/{messageId} {
-      allow create: if isSignedIn() &&
-        request.resource.data.senderId == request.auth.uid;
+      allow create: if isSignedIn() && validTicketCreate();
 
       allow read: if isAdmin() ||
+        (isSignedIn() && resource.data.userId == request.auth.uid);
+
+      allow update: if isAdmin() ||
         (isSignedIn() &&
-          exists(/databases/$(database)/documents/tickets/$(resource.data.ticketId)) &&
-          get(/databases/$(database)/documents/tickets/$(resource.data.ticketId)).data.userId == request.auth.uid
+          resource.data.userId == request.auth.uid &&
+          request.resource.data.userId == resource.data.userId &&
+          request.resource.data.status == 'closed' &&
+          onlyChanged(['status'])
         );
+
+      allow delete: if isAdmin();
     }
 
+    // Messages cannot be injected into another user's ticket, and users cannot
+    // spoof admin replies.
+    match /messages/{messageId} {
+      allow create: if isAdmin() &&
+        validMessageCreate('admin') &&
+        existsAfter(ticketPath(request.resource.data.ticketId));
+
+      allow create: if !isAdmin() &&
+        validMessageCreate('user') &&
+        ownsTicketAfterWrite(request.resource.data.ticketId);
+
+      allow read: if isAdmin() || ownsExistingTicket(resource.data.ticketId);
+      allow update, delete: if isAdmin();
+    }
+
+    // Wallet transactions are server/admin-written. Users can only read their own.
+    match /walletTxns/{txnId} {
+      allow read: if isAdmin() ||
+        (isSignedIn() && resource.data.uid == request.auth.uid);
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }

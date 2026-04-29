@@ -224,6 +224,25 @@ textarea::placeholder {
   border: 1px solid rgba(255,255,255,0.06);
   color: inherit;
 }
+.logout-confirm-popup{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(2,6,23,.72);backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0);opacity:0;pointer-events:none;transition:opacity .24s ease,backdrop-filter .24s ease,-webkit-backdrop-filter .24s ease;}
+.logout-confirm-popup.is-visible{opacity:1;pointer-events:auto;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+.logout-confirm-card{width:100%;max-width:340px;overflow:hidden;position:relative;text-align:center;border-radius:24px;padding:30px 24px 24px;background:radial-gradient(circle at 50% -20%,rgba(248,113,113,.20),transparent 38%),linear-gradient(160deg,#0d1525 0%,#111d33 100%);border:1px solid rgba(255,255,255,.10);box-shadow:0 34px 90px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.06);opacity:0;transform:translateY(18px) scale(.94);transition:transform .34s cubic-bezier(.16,1,.3,1),opacity .24s ease;}
+.logout-confirm-popup.is-visible .logout-confirm-card{opacity:1;transform:translateY(0) scale(1);}
+.logout-confirm-popup.is-closing .logout-confirm-card{opacity:0;transform:translateY(10px) scale(.96);}
+.logout-confirm-icon{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 17px;position:relative;background:rgba(239,68,68,.12);border:1px solid rgba(248,113,113,.34);box-shadow:0 14px 34px rgba(239,68,68,.18);}
+.logout-confirm-icon::after{content:"";position:absolute;inset:-7px;border-radius:inherit;border:1px solid rgba(248,113,113,.18);opacity:0;}
+.logout-confirm-popup.is-visible .logout-confirm-icon{animation:logoutIconPop .48s cubic-bezier(.16,1,.3,1) .06s both;}
+.logout-confirm-popup.is-visible .logout-confirm-icon::after{animation:logoutRing .72s ease .14s both;}
+.logout-confirm-title{color:#fff;font-size:17px;font-weight:900;margin:0 0 7px;}
+.logout-confirm-text{color:rgba(226,232,240,.62);font-size:13px;font-weight:600;line-height:1.5;margin:0 0 24px;}
+.logout-confirm-actions{display:flex;gap:12px;}
+.logout-confirm-btn{flex:1;min-height:45px;padding:0 14px;border-radius:14px;border:0;cursor:pointer;color:#fff;font-size:13px;font-weight:900;letter-spacing:.03em;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
+.logout-confirm-btn:hover{transform:translateY(-1px);filter:brightness(1.06);}
+.logout-confirm-btn:active{transform:translateY(0) scale(.98);}
+.logout-confirm-stay{background:linear-gradient(135deg,#16a34a,#15803d);box-shadow:0 10px 24px rgba(22,163,74,.26);}
+.logout-confirm-leave{background:linear-gradient(135deg,#ef4444,#b91c1c);box-shadow:0 10px 24px rgba(220,38,38,.28);}
+@keyframes logoutIconPop{0%{opacity:0;transform:scale(.72) rotate(-8deg);}70%{opacity:1;transform:scale(1.08) rotate(2deg);}100%{opacity:1;transform:scale(1) rotate(0);}}
+@keyframes logoutRing{0%{opacity:.7;transform:scale(.82);}100%{opacity:0;transform:scale(1.35);}}
 </style>
 <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
   <style>body{opacity:0;transition:opacity .18s ease}</style>
@@ -293,7 +312,7 @@ textarea::placeholder {
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
     </a>
     <div class="h-px bg-white/10 my-3 mx-2"></div>
-    <button onclick="window.location.href='/'" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20">
+    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20">
       <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-500/15">
         <span class="material-symbols-outlined text-red-400" style="font-size:16px">logout</span>
       </div>
@@ -309,37 +328,50 @@ textarea::placeholder {
       <a href="/about" class="text-gray-400 hover:text-white transition">About</a>
       <a href="/contact" class="text-gray-400 hover:text-white transition">Contact</a>
     </div>
-    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
+    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2026 · All rights reserved</p>
   </div>
 </aside>
 
 <div class="lg:pl-72">
-<div class="fixed inset-x-0 top-0 z-40 border-b border-white/5 bg-[#0b1220] lg:left-72">
-  <div class="flex items-center justify-between px-4 py-4">
-    <div class="w-9"></div>
-    <div class="brand-badge">
-      <span class="brand-text">get<span style="color:#38bdf8">X</span>h<span class="dot">.in</span></span>
-    </div>
-    <button id="newTicketBtn" onclick="openCreatePanel()" class="rounded-xl bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-2 text-xs font-black text-white shadow-[0_12px_28px_rgba(14,165,233,0.28)] transition active:scale-[0.98]">
-      New Ticket
-    </button>
-  </div>
-</div>
-
-<main class="px-4 pt-[76px] pb-4 lg:px-8 lg:pt-[88px] lg:pb-8">
+<main class="px-4 pt-4 pb-4 lg:px-8 lg:pt-8 lg:pb-8">
   <div class="lg:mx-auto lg:max-w-6xl">
   <div id="pageNotice" class="mb-4 hidden rounded-2xl px-4 py-3 text-sm font-semibold"></div>
 
-  <section class="mb-4 rounded-[20px] border border-white/5 bg-[#11192d] p-4 shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
-    <div class="flex items-start justify-between gap-4">
-      <div>
-        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Tickets</p>
-        <h1 class="mt-2 text-lg font-black text-white">Support Center</h1>
-        <p class="mt-1 text-xs text-slate-400">Raise a ticket and our team will get back to you shortly.</p>
+  <section style="margin-bottom:16px;border-radius:20px;padding:18px 18px 16px;
+                  background:#0F172A;border:1px solid rgba(255,255,255,0.08);
+                  box-shadow:0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <!-- Left: icon + text -->
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:46px;height:46px;border-radius:14px;flex-shrink:0;
+                    background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.25);
+                    display:flex;align-items:center;justify-content:center;">
+          <span class="material-symbols-outlined" style="font-size:24px;color:#c084fc;">support_agent</span>
+        </div>
+        <div>
+          <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);
+                    letter-spacing:1.4px;text-transform:uppercase;margin-bottom:4px;">Support Center</p>
+          <p style="font-size:17px;font-weight:800;color:#ffffff;line-height:1.1;margin-bottom:3px;">My Tickets</p>
+          <p style="font-size:12px;color:rgba(255,255,255,0.4);font-weight:400;">Raise a ticket, we'll get back to you shortly.</p>
+        </div>
       </div>
-      <div class="rounded-2xl border border-sky-400/20 bg-sky-400/10 px-3 py-2 text-right">
-        <p class="text-[10px] uppercase tracking-[0.14em] text-slate-400">Open</p>
-        <p id="openCount" class="text-xl font-black text-sky-400">0</p>
+      <!-- Right: open count + new ticket -->
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;">
+        <button id="newTicketBtn" onclick="openCreatePanel()"
+          style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:12px;
+                 border:none;cursor:pointer;font-size:12px;font-weight:800;color:#fff;
+                 background:linear-gradient(135deg,#0ea5e9,#22d3ee);
+                 box-shadow:0 4px 16px rgba(14,165,233,0.35);transition:transform .15s;"
+          onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform=''"
+          ontouchstart="this.style.transform='scale(0.95)'" ontouchend="this.style.transform=''">
+          <span class="material-symbols-outlined" style="font-size:15px">add</span>
+          New Ticket
+        </button>
+        <div style="border-radius:12px;padding:8px 14px;text-align:center;
+                    background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);min-width:60px;">
+          <p id="openCount" style="font-size:22px;font-weight:900;color:#22C55E;line-height:1;margin-bottom:2px;">0</p>
+          <p style="font-size:10px;font-weight:700;color:rgba(34,197,94,0.7);text-transform:uppercase;letter-spacing:1px;">Open</p>
+        </div>
       </div>
     </div>
   </section>
@@ -389,7 +421,7 @@ textarea::placeholder {
 
     <div class="mb-4">
       <p class="mb-2 text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Message</p>
-      <textarea id="ticketMessageInput" placeholder="Describe your issue clearly"></textarea>
+      <textarea id="ticketMessageInput" maxlength="300" placeholder="Describe your issue clearly"></textarea>
     </div>
 
     <button id="submitTicketBtn" onclick="createTicket()" class="w-full rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-4 text-sm font-black text-white shadow-[0_16px_32px_rgba(14,165,233,0.28)] transition active:scale-[0.985]">
@@ -421,7 +453,7 @@ textarea::placeholder {
     <div id="ticketMessages" class="ticket-modal-messages flex-1 overflow-y-auto px-4 py-5"></div>
     <div class="border-t border-white/8 bg-[#0d1628]/95 px-4 py-3 backdrop-blur-sm">
       <div id="messageComposeArea" class="mb-3 flex items-center gap-2">
-        <input id="messageInput" type="text" placeholder="Type a message..."
+        <input id="messageInput" type="text" maxlength="300" placeholder="Type a message..."
           class="flex-1 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition focus:border-sky-400/60"
           onkeydown="if(event.key==='Enter')sendMessage()"/>
         <button onclick="sendMessage()" class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-400 text-white shadow-[0_8px_20px_rgba(14,165,233,0.28)] transition active:scale-[0.95]">
@@ -473,12 +505,63 @@ textarea::placeholder {
 </div>
 </div>
 
+<!-- ACCOUNT POPUP -->
+<div id="accountPopup"
+  class="fixed inset-0 z-50 hidden items-end justify-center"
+  style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)"
+  onclick="if(event.target===this)closeAccountPopup()">
+  <div class="w-full max-w-md mx-auto animate-slideUp"
+       style="background:linear-gradient(180deg,#0e1f3d 0%,#0a1628 100%);
+              border-radius:24px 24px 0 0;
+              border-top:1px solid rgba(33,150,243,0.25);
+              padding:16px 0 32px;
+              touch-action:none;overscroll-behavior:none;"
+       ontouchmove="event.preventDefault();event.stopPropagation();"
+       onclick="event.stopPropagation()">
+    <div class="mx-4 mb-4 rounded-2xl p-4 flex items-center gap-3"
+         style="background:rgba(33,150,243,0.08);border:1px solid rgba(33,150,243,0.2)">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-black text-lg text-white"
+           style="background:linear-gradient(135deg,#2196f3,#00bcd4)" id="popupAvatar">U</div>
+      <div class="min-w-0 flex-1">
+        <p id="popupUsername" class="text-white font-black text-base truncate">User</p>
+        <p id="popupEmail" class="text-xs truncate mt-0.5" style="color:#2196f3">—</p>
+      </div>
+    </div>
+    <div class="px-4 flex flex-col gap-3">
+      <button onclick="closeAccountPopup();window.location.href='/account'"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-white text-sm active:scale-[0.98] transition-all"
+        style="background:linear-gradient(135deg,#2196f3,#00bcd4);box-shadow:0 4px 20px rgba(33,150,243,0.3)">
+        <span class="material-symbols-outlined" style="font-size:18px">manage_accounts</span>
+        My Account
+        <span class="material-symbols-outlined ml-auto" style="font-size:16px">chevron_right</span>
+      </button>
+      <button onclick="closeAccountPopup();window.location.href='/wallet'"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all"
+        style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);color:#00e676">
+        <span class="material-symbols-outlined" style="font-size:18px">account_balance_wallet</span>
+        Add Funds
+        <span class="material-symbols-outlined ml-auto" style="font-size:16px">chevron_right</span>
+      </button>
+      <button onclick="logout()"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all"
+        style="background:rgba(244,67,54,0.08);border:1px solid rgba(244,67,54,0.2);color:#ef5350">
+        <span class="material-symbols-outlined" style="font-size:18px">logout</span>
+        Logout
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- SIDE MENU -->
 <div id="menuOverlay" class="fixed inset-0 bg-black/60 hidden z-40 backdrop-blur-sm" onclick="closeMenu()"></div>
 <div id="sideMenu"
   class="fixed top-0 left-0 h-full w-72 z-[150] transform -translate-x-full transition-transform duration-300 flex flex-col"
   style="background: linear-gradient(180deg, #0a1628 0%, #0e1f3d 50%, #0a1628 100%);">
-  <div class="px-5 pt-20 pb-4" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+  <!-- LOGO -->
+  <div style="padding:18px 20px 14px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(255,255,255,0.05);">
+    <img src="/GETXH WEB NEW LOGO.png" alt="GETXH" style="height:44px;width:auto;object-fit:contain;"/>
+  </div>
+  <div class="px-5 pt-4 pb-4" style="border-bottom:1px solid rgba(255,255,255,0.06);">
     <div style="display:flex;align-items:center;gap:14px;">
       <div id="menuAvatarCircle" style="width:46px;height:46px;min-width:46px;border-radius:14px;background:linear-gradient(135deg,#2196f3,#00bcd4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;font-weight:900;color:white;">
         <span class="material-symbols-outlined text-white" style="font-size:22px">person</span>
@@ -590,7 +673,7 @@ textarea::placeholder {
       <a href="/about" class="text-gray-400 hover:text-white transition">About</a>
       <a href="/contact" class="text-gray-400 hover:text-white transition">Contact</a>
     </div>
-    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
+    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2026 · All rights reserved</p>
   </div>
 </div>
 
@@ -606,6 +689,9 @@ let ticketRows = [];
 let validOrderIds = new Set();
 let activeTicketDoc = null;
 let unsubscribeActiveTicket = null;
+let lastTicketSubmitAt = 0;
+let lastMessageSubmitAt = 0;
+const MESSAGE_MAX_LENGTH = 300;
 
 const _menuName = localStorage.getItem('getxh_user_name') || '';
 const _menuEmail = localStorage.getItem('getxh_current_user') || '';
@@ -626,6 +712,42 @@ function openMenu() {
 function closeMenu() {
   document.getElementById('sideMenu').classList.add('-translate-x-full');
   document.getElementById('menuOverlay').classList.add('hidden');
+}
+function logout() {
+  closeMenu();
+  const p = document.getElementById('logoutConfirmPopup');
+  clearTimeout(p._logoutTimer);
+  p.classList.remove('hidden', 'is-closing');
+  p.style.display='flex';
+  requestAnimationFrame(() => p.classList.add('is-visible'));
+}
+function _doLogout() {
+  if (typeof window._logoutUser === 'function') { window._logoutUser(); return; }
+  localStorage.clear(); window.location.href='/';
+}
+function cancelLogout() {
+  const p = document.getElementById('logoutConfirmPopup');
+  clearTimeout(p._logoutTimer);
+  p.classList.remove('is-visible');
+  p.classList.add('is-closing');
+  p._logoutTimer = setTimeout(() => {
+    p.classList.add('hidden');
+    p.classList.remove('is-closing');
+    p.style.display='none';
+  }, 240);
+}
+function openAccountPopup() {
+  const popup = document.getElementById('accountPopup');
+  popup.classList.remove('hidden');
+  popup.style.display = 'flex';
+  const name = document.getElementById('popupUsername').textContent || 'U';
+  const av = document.getElementById('popupAvatar');
+  if (av) av.textContent = name.charAt(0).toUpperCase();
+}
+function closeAccountPopup() {
+  const p = document.getElementById('accountPopup');
+  p.classList.add('hidden');
+  p.style.display = 'none';
 }
 
 function showNotice(id, message, type = 'error') {
@@ -1008,12 +1130,22 @@ window.createTicket = async function () {
     markInvalid('ticketMessageInput');
     return;
   }
+  if (message.length > MESSAGE_MAX_LENGTH) {
+    showNotice('formNotice', 'Message must be 300 characters or less.');
+    markInvalid('ticketMessageInput');
+    return;
+  }
+  if (Date.now() - lastTicketSubmitAt < 10000) {
+    showNotice('formNotice', 'Please wait a few seconds before creating another ticket.');
+    return;
+  }
 
   const submitBtn = document.getElementById('submitTicketBtn');
   submitBtn.disabled = true;
   submitBtn.textContent = 'Submitting...';
 
   try {
+    lastTicketSubmitAt = Date.now();
     const batch = writeBatch(db);
 
     const ticketRef = doc(collection(db, 'tickets'));
@@ -1078,6 +1210,12 @@ window.sendMessage = async function () {
   const input = document.getElementById('messageInput');
   const text = (input.value || '').trim();
   if (!text) return;
+  if (text.length > MESSAGE_MAX_LENGTH) {
+    showNotice('pageNotice', 'Message must be 300 characters or less.');
+    return;
+  }
+  if (Date.now() - lastMessageSubmitAt < 1500) return;
+  lastMessageSubmitAt = Date.now();
   input.value = '';
   try {
     await addDoc(collection(db, 'messages'), {
@@ -1101,7 +1239,7 @@ onAuthStateChanged(auth, user => {
 
   currentUser = user;
 
-  // Update menu with real Firebase user data
+  // Update menu + account popup with real Firebase user data
   const _name = user.displayName || user.email.split('@')[0] || 'User';
   const _mail = user.email || '';
   localStorage.setItem('getxh_user_name', _name);
@@ -1110,6 +1248,10 @@ onAuthStateChanged(auth, user => {
   const meEl = document.getElementById('menuEmail');
   if (muEl) muEl.textContent = _name;
   if (meEl) meEl.textContent = _mail;
+  const puEl = document.getElementById('popupUsername');
+  const peEl = document.getElementById('popupEmail');
+  if (puEl) puEl.textContent = _name;
+  if (peEl) peEl.textContent = _mail;
 
   window.startActiveTicketListener = function(ticketId) {
     if (typeof unsubscribeActiveTicket === 'function') unsubscribeActiveTicket();
@@ -1198,5 +1340,24 @@ onAuthStateChanged(auth, user => {
 });
 </script>
 <script>requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.style.opacity=1))</script>
+
+<!-- Logout Confirm Popup -->
+<div id="logoutConfirmPopup" class="logout-confirm-popup hidden" role="dialog" aria-modal="true" aria-labelledby="logoutConfirmTitle" onclick="if(event.target===this)cancelLogout()">
+  <div class="logout-confirm-card">
+    <div class="logout-confirm-icon">
+      <span class="material-symbols-outlined" style="font-size:26px;color:#f87171;">logout</span>
+    </div>
+    <p id="logoutConfirmTitle" class="logout-confirm-title">Log Out?</p>
+    <p class="logout-confirm-text">Are you sure you want to end this session?</p>
+    <div class="logout-confirm-actions">
+      <button class="logout-confirm-btn logout-confirm-stay" onclick="cancelLogout()">
+        Stay
+      </button>
+      <button class="logout-confirm-btn logout-confirm-leave" onclick="_doLogout()">
+        Log Out
+      </button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

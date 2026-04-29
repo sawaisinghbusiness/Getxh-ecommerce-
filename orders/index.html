@@ -19,6 +19,25 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 }
 .brand-text { font-weight:700; letter-spacing:0.5px; font-size:15px; color:#fff; }
 .brand-text .dot { color:#38bdf8; }
+.logout-confirm-popup{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(2,6,23,.72);backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0);opacity:0;pointer-events:none;transition:opacity .24s ease,backdrop-filter .24s ease,-webkit-backdrop-filter .24s ease;}
+.logout-confirm-popup.is-visible{opacity:1;pointer-events:auto;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+.logout-confirm-card{width:100%;max-width:340px;overflow:hidden;position:relative;text-align:center;border-radius:24px;padding:30px 24px 24px;background:radial-gradient(circle at 50% -20%,rgba(248,113,113,.20),transparent 38%),linear-gradient(160deg,#0d1525 0%,#111d33 100%);border:1px solid rgba(255,255,255,.10);box-shadow:0 34px 90px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.06);opacity:0;transform:translateY(18px) scale(.94);transition:transform .34s cubic-bezier(.16,1,.3,1),opacity .24s ease;}
+.logout-confirm-popup.is-visible .logout-confirm-card{opacity:1;transform:translateY(0) scale(1);}
+.logout-confirm-popup.is-closing .logout-confirm-card{opacity:0;transform:translateY(10px) scale(.96);}
+.logout-confirm-icon{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 17px;position:relative;background:rgba(239,68,68,.12);border:1px solid rgba(248,113,113,.34);box-shadow:0 14px 34px rgba(239,68,68,.18);}
+.logout-confirm-icon::after{content:"";position:absolute;inset:-7px;border-radius:inherit;border:1px solid rgba(248,113,113,.18);opacity:0;}
+.logout-confirm-popup.is-visible .logout-confirm-icon{animation:logoutIconPop .48s cubic-bezier(.16,1,.3,1) .06s both;}
+.logout-confirm-popup.is-visible .logout-confirm-icon::after{animation:logoutRing .72s ease .14s both;}
+.logout-confirm-title{color:#fff;font-size:17px;font-weight:900;margin:0 0 7px;}
+.logout-confirm-text{color:rgba(226,232,240,.62);font-size:13px;font-weight:600;line-height:1.5;margin:0 0 24px;}
+.logout-confirm-actions{display:flex;gap:12px;}
+.logout-confirm-btn{flex:1;min-height:45px;padding:0 14px;border-radius:14px;border:0;cursor:pointer;color:#fff;font-size:13px;font-weight:900;letter-spacing:.03em;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
+.logout-confirm-btn:hover{transform:translateY(-1px);filter:brightness(1.06);}
+.logout-confirm-btn:active{transform:translateY(0) scale(.98);}
+.logout-confirm-stay{background:linear-gradient(135deg,#16a34a,#15803d);box-shadow:0 10px 24px rgba(22,163,74,.26);}
+.logout-confirm-leave{background:linear-gradient(135deg,#ef4444,#b91c1c);box-shadow:0 10px 24px rgba(220,38,38,.28);}
+@keyframes logoutIconPop{0%{opacity:0;transform:scale(.72) rotate(-8deg);}70%{opacity:1;transform:scale(1.08) rotate(2deg);}100%{opacity:1;transform:scale(1) rotate(0);}}
+@keyframes logoutRing{0%{opacity:.7;transform:scale(.82);}100%{opacity:0;transform:scale(1.35);}}
 @keyframes slideUp {
   from { transform:translateY(100%); opacity:0; }
   to   { transform:translateY(0); opacity:1; }
@@ -37,21 +56,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
 <body class="bg-[#0b1220] text-white min-h-screen">
 
-<!-- TOP HEADER -->
-<div class="flex justify-between items-center px-4 py-3 bg-[#0b1220] sticky top-0 z-50">
-  <div class="w-9"></div>
-  <div class="brand-badge">
-    <span class="brand-text">get<span style="color:#38bdf8">X</span>h<span class="dot">.in</span></span>
-  </div>
-  <a href="/wallet" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs active:scale-95 transition-all"
-     style="background:linear-gradient(135deg,rgba(0,200,83,0.15),rgba(0,230,118,0.08));
-            border:1px solid rgba(0,230,118,0.25);
-            color:#00e676;
-            box-shadow:0 0 12px rgba(0,230,118,0.1)">
-    <span class="material-symbols-outlined" style="font-size:15px">account_balance_wallet</span>
-    <span id="walletBalanceTop" class="font-black">₹0</span>
-  </a>
-</div>
+<span id="walletBalanceTop" class="hidden"></span>
 
 <!-- MAIN CONTENT -->
 <div class="w-full px-4 py-4 pb-[120px]">
@@ -193,7 +198,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <div id="sideMenu"
   class="fixed top-0 left-0 h-full w-72 z-[150] transform -translate-x-full transition-transform duration-300 flex flex-col"
   style="background: linear-gradient(180deg, #0a1628 0%, #0e1f3d 50%, #0a1628 100%);">
-  <div class="px-5 pt-20 pb-4" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+  <!-- LOGO -->
+  <div style="padding:18px 20px 14px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(255,255,255,0.05);">
+    <img src="/GETXH WEB NEW LOGO.png" alt="GETXH" style="height:44px;width:auto;object-fit:contain;"/>
+  </div>
+  <div class="px-5 pt-4 pb-4" style="border-bottom:1px solid rgba(255,255,255,0.06);">
     <div style="display:flex;align-items:center;gap:14px;">
       <div id="menuAvatarCircle" style="width:46px;height:46px;min-width:46px;border-radius:14px;background:linear-gradient(135deg,#2196f3,#00bcd4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;font-weight:900;color:white;">
         <span class="material-symbols-outlined text-white" style="font-size:22px">person</span>
@@ -305,7 +314,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       <a href="/about" class="text-gray-400 hover:text-white transition">About</a>
       <a href="/contact" class="text-gray-400 hover:text-white transition">Contact</a>
     </div>
-    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2025 · All rights reserved</p>
+    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2026 · All rights reserved</p>
   </div>
 </div>
 
@@ -340,12 +349,26 @@ function closeAccountPopup() {
   p.classList.add('hidden'); p.style.display='none';
 }
 function logout() {
-  if (typeof window._logoutUser === 'function') {
-    window._logoutUser();
-    return;
-  }
-  localStorage.clear();
-  window.location.href='/';
+  const p = document.getElementById('logoutConfirmPopup');
+  clearTimeout(p._logoutTimer);
+  p.classList.remove('hidden', 'is-closing');
+  p.style.display='flex';
+  requestAnimationFrame(() => p.classList.add('is-visible'));
+}
+function _doLogout() {
+  if (typeof window._logoutUser === 'function') { window._logoutUser(); return; }
+  localStorage.clear(); window.location.href='/';
+}
+function cancelLogout() {
+  const p = document.getElementById('logoutConfirmPopup');
+  clearTimeout(p._logoutTimer);
+  p.classList.remove('is-visible');
+  p.classList.add('is-closing');
+  p._logoutTimer = setTimeout(() => {
+    p.classList.add('hidden');
+    p.classList.remove('is-closing');
+    p.style.display='none';
+  }, 240);
 }
 
 // ── REAL-TIME ORDER STATUS POLLING ──
@@ -698,5 +721,24 @@ window.addEventListener('beforeunload', () => {
 
 
 <script>requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.style.opacity=1))</script>
+
+<!-- Logout Confirm Popup -->
+<div id="logoutConfirmPopup" class="logout-confirm-popup hidden" role="dialog" aria-modal="true" aria-labelledby="logoutConfirmTitle" onclick="if(event.target===this)cancelLogout()">
+  <div class="logout-confirm-card">
+    <div class="logout-confirm-icon">
+      <span class="material-symbols-outlined" style="font-size:26px;color:#f87171;">logout</span>
+    </div>
+    <p id="logoutConfirmTitle" class="logout-confirm-title">Log Out?</p>
+    <p class="logout-confirm-text">Are you sure you want to end this session?</p>
+    <div class="logout-confirm-actions">
+      <button class="logout-confirm-btn logout-confirm-stay" onclick="cancelLogout()">
+        Stay
+      </button>
+      <button class="logout-confirm-btn logout-confirm-leave" onclick="_doLogout()">
+        Log Out
+      </button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
