@@ -71,42 +71,87 @@
     }
     .verify-popup.active { display: flex; }
     .verify-popup-box {
-      background: #12161f;
-      border: 1px solid rgba(99,102,241,0.25);
-      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
-      border-radius: 24px;
-      padding: 32px 28px;
+      background: linear-gradient(160deg, #0f1623 0%, #131c2e 100%);
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset;
+      border-radius: 28px;
+      padding: 36px 28px 28px;
       text-align: center;
-      width: 260px;
+      width: 300px;
     }
     .verify-spinner {
-      border: 3px solid rgba(255,255,255,0.08);
-      border-top: 3px solid #6366f1;
+      border: 2.5px solid rgba(255,255,255,0.06);
+      border-top: 2.5px solid #6366f1;
       border-radius: 50%;
-      width: 44px; height: 44px;
-      animation: spin 0.9s linear infinite;
+      width: 42px; height: 42px;
+      animation: spin 0.85s linear infinite;
       margin: 0 auto 18px;
     }
-    @keyframes spin {
-      0%   { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Animated checkmark */
+    .check-ring {
+      width: 72px; height: 72px; margin: 0 auto 20px;
+      position: relative;
     }
-    .popup-icon {
+    .check-ring svg { width: 72px; height: 72px; }
+    .check-circle {
+      fill: none; stroke: #22c55e; stroke-width: 2.5;
+      stroke-dasharray: 200; stroke-dashoffset: 200;
+      animation: drawCircle 0.5s ease forwards 0.1s;
+      transform-origin: center; transform: rotate(-90deg);
+    }
+    .check-tick {
+      fill: none; stroke: #22c55e; stroke-width: 3;
+      stroke-linecap: round; stroke-linejoin: round;
+      stroke-dasharray: 40; stroke-dashoffset: 40;
+      animation: drawTick 0.35s ease forwards 0.55s;
+    }
+    @keyframes drawCircle { to { stroke-dashoffset: 0; } }
+    @keyframes drawTick   { to { stroke-dashoffset: 0; } }
+
+    .success-amount {
+      font-size: 2rem; font-weight: 900; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #4ade80, #22c55e);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 4px;
+    }
+    .success-utr {
+      font-size: 0.7rem; color: #4b5563; letter-spacing: 0.08em;
+      text-transform: uppercase; font-weight: 600; margin-bottom: 20px;
+    }
+    .success-divider {
+      height: 1px; background: rgba(255,255,255,0.06); margin: 18px 0;
+    }
+    .success-meta {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.75rem; color: #6b7280;
+    }
+    .success-meta span:last-child { color: #9ca3af; font-weight: 600; }
+
+    .popup-close-btn {
+      margin-top: 22px; width: 100%; padding: 13px;
+      border-radius: 14px; border: none;
+      font-weight: 800; font-size: 0.85rem; cursor: pointer;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .popup-close-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .popup-close-btn:active { transform: translateY(0); }
+    .popup-close-btn.success {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: #fff; box-shadow: 0 4px 16px rgba(34,197,94,0.25);
+    }
+    .popup-close-btn.failed {
+      background: rgba(239,68,68,0.1); color: #ef4444;
+      border: 1px solid rgba(239,68,68,0.25);
+    }
+    .popup-icon.failed {
       width: 62px; height: 62px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 30px; margin: 0 auto 16px;
+      font-size: 26px; margin: 0 auto 16px;
+      background: rgba(239,68,68,0.1); border: 2px solid rgba(239,68,68,0.25);
     }
-    .popup-icon.success { background: rgba(34,197,94,0.12); border: 2px solid rgba(34,197,94,0.3); }
-    .popup-icon.failed  { background: rgba(239,68,68,0.12);  border: 2px solid rgba(239,68,68,0.3); }
-    .popup-close-btn {
-      margin-top: 20px; width: 100%; padding: 12px;
-      border-radius: 14px; border: none;
-      font-weight: 700; font-size: 0.9rem; cursor: pointer;
-      transition: opacity 0.15s;
-    }
-    .popup-close-btn:hover { opacity: 0.82; }
-    .popup-close-btn.success { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
-    .popup-close-btn.failed  { background: rgba(239,68,68,0.12);  color: #ef4444;  border: 1px solid rgba(239,68,68,0.3); }
   </style>
   <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
   <style>body{opacity:0;transition:opacity .18s ease}</style>
@@ -246,10 +291,25 @@
 
     <!-- State: Success -->
     <div id="popupSuccess" style="display:none">
-      <div class="popup-icon success">✓</div>
-      <p class="text-green-400 font-black text-base mb-1">Payment Successful!</p>
-      <p class="text-gray-400 text-xs">Your balance will be updated shortly.</p>
-      <button class="popup-close-btn success" onclick="closeVerifyPopup()">Done</button>
+      <div class="check-ring">
+        <svg viewBox="0 0 72 72">
+          <circle class="check-circle" cx="36" cy="36" r="30"/>
+          <polyline class="check-tick" points="22,36 31,45 50,26"/>
+        </svg>
+      </div>
+      <p style="font-size:0.7rem;color:#22c55e;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">Funds Added</p>
+      <div class="success-amount" id="popupAmount">₹0.00</div>
+      <div class="success-utr" id="popupUtr">UTR: —</div>
+      <div class="success-divider"></div>
+      <div class="success-meta">
+        <span>Status</span>
+        <span style="color:#22c55e">● Credited</span>
+      </div>
+      <div class="success-meta" style="margin-top:8px">
+        <span>Wallet</span>
+        <span id="popupNewBal">—</span>
+      </div>
+      <button class="popup-close-btn success" onclick="closeVerifyPopup()">Continue</button>
     </div>
 
     <!-- State: Failed -->
@@ -402,12 +462,10 @@ window.verifyPayment = async function() {
     const data = await res.json();
 
     if (data.status === "success") {
-      // Credit balance in Firestore instantly
       try {
         await setDoc(doc(db, "Users", currentUser.uid), {
           Balance: increment(amount)
         }, { merge: true });
-        // Save transaction record
         await addDoc(collection(db, "walletTxns"), {
           uid: currentUser.uid,
           utr,
@@ -416,6 +474,11 @@ window.verifyPayment = async function() {
           createdAt: serverTimestamp()
         });
       } catch(_) {}
+      // Populate success popup
+      const curBalText = document.getElementById("walletBalance").textContent || "";
+      document.getElementById("popupAmount").textContent = "₹" + amount.toFixed(2);
+      document.getElementById("popupUtr").textContent = "UTR: " + utr;
+      document.getElementById("popupNewBal").textContent = curBalText || "Updated ✓";
       showPopupState("success");
       document.getElementById("utrInput").value  = "";
       document.getElementById("amountInput").value = "";
