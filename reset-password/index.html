@@ -256,7 +256,7 @@
     btn.textContent = "Updating…";
 
     try {
-      const res  = await fetch("https://backend-for-email-verification-code-1.onrender.com/reset-password", {
+      const res  = await fetch("https://backend-for-email-verification-code-production.up.railway.app/reset-password", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ email, newPassword: password })

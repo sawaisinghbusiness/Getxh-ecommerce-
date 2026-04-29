@@ -119,7 +119,7 @@
     btn.textContent = "Verifying…";
 
     try {
-      const res = await fetch("https://backend-for-email-verification-code-1.onrender.com/verify-otp", {
+      const res = await fetch("https://backend-for-email-verification-code-production.up.railway.app/verify-otp", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ email, otp, type })
