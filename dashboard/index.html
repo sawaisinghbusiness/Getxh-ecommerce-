@@ -1908,18 +1908,23 @@ async function placeOrder(serviceId) {
       }
       // Save order to Firestore so it appears in orders tab
       if (window.currentUid && window._addDoc && window.db) {
+        const _now = Date.now();
+        const _readableDate = new Date(_now).toLocaleString('en-IN');
         window._addDoc(window._collection(window.db, 'orders'), {
-          userId:      window.currentUid,
-          email:       window.currentEmail || '',
-          orderId:     orderId ? String(orderId) : null,
-          serviceName: _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—',
-          serviceId:   _selSvc ? String(_selSvc.id) : '',
-          quantity:    parseInt(quantity),
-          charge:      orderPrice,
-          status:      'Pending',
-          remains:     parseInt(quantity),
-          createdAt:   Date.now(),
-          timestamp:   window._serverTimestamp ? window._serverTimestamp() : null
+          userId:           window.currentUid,
+          email:            window.currentEmail || '',
+          orderId:          orderId ? String(orderId) : null,
+          apiOrderId:       orderId ? String(orderId) : null,
+          serviceName:      _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—',
+          service:          _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—',
+          serviceId:        _selSvc ? String(_selSvc.id) : '',
+          link:             document.getElementById('linkInput') ? document.getElementById('linkInput').value.trim() : '',
+          quantity:         parseInt(quantity),
+          price:            orderPrice,
+          status:           'Pending',
+          remains:          parseInt(quantity),
+          createdAt:        _now,
+          createdAtReadable: _readableDate
         }).catch(e => console.error('Order save error:', e));
       }
       document.getElementById('smOrderId').textContent  = orderId ? '#' + orderId : 'Confirmed';
