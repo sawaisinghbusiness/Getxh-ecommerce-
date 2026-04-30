@@ -1900,7 +1900,34 @@ async function placeOrder(serviceId) {
       showToast('error', 'Unable to Place Order', 'Something went wrong. Please try again or contact support.');
     }
   } catch (err) {
-    showToast('error', 'Unable to Place Order', 'Service is temporarily unavailable. Please try again later.');
+    // Retry once in case of Railway cold-start timeout
+    try {
+      if (labelSpan) labelSpan.textContent = 'Retrying...';
+      await new Promise(r => setTimeout(r, 3000));
+      const idToken2 = await auth.currentUser.getIdToken();
+      const res2 = await fetch('https://backend-for-api-connect-production.up.railway.app/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken2 },
+        body: JSON.stringify({ service: serviceId, link: document.getElementById('linkInput').value.trim(), quantity: document.getElementById('quantityInput').value, requestId: String(Date.now()), uid: currentUid, email: currentEmail })
+      });
+      const data2 = await res2.json();
+      if (data2.order) {
+        const orderPrice2 = parseFloat(((parseInt(document.getElementById('quantityInput').value) / 1000) * (_selSvc ? _selSvc.price : 0)).toFixed(2));
+        document.getElementById('smOrderId').textContent = '#' + data2.order;
+        document.getElementById('smService').textContent = _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—';
+        document.getElementById('smQty').textContent     = parseInt(document.getElementById('quantityInput').value).toLocaleString();
+        document.getElementById('smAmount').textContent  = '₹' + orderPrice2.toFixed(2);
+        const modal = document.getElementById('successModal');
+        modal.classList.remove('hidden'); modal.style.display = 'flex';
+        setTimeout(() => { const box = document.getElementById('successModalBox'); box.style.transform='scale(1)'; box.style.opacity='1'; }, 10);
+        localStorage.setItem('lastOrderId', data2.order);
+        startTracking();
+      } else {
+        showToast('error', 'Unable to Place Order', 'Something went wrong. Please try again or contact support.');
+      }
+    } catch {
+      showToast('error', 'Unable to Place Order', 'Could not reach server. Please check your connection and try again.');
+    }
   } finally {
     // ── Restore button ──
     if (labelSpan) labelSpan.textContent = 'ORDER';
@@ -2116,18 +2143,22 @@ window._logoutUser = async function() {
 onAuthStateChanged(auth, async (user) => {
   if (!user) { window.location.href = "/"; return; }
 
-  // Admin button — only for admin UID
-  const tokenResult = await getIdTokenResult(user, true);
-  if (user.uid === "XVQ4WNIRyKbJz7HCDUmU0Lv9squ2" && tokenResult.claims.admin === true) {
-    document.body.classList.add("is-admin");
-  } else {
-    document.body.classList.remove("is-admin");
-  }
-
   currentUid   = user.uid;
   currentEmail = (user.email || '').trim().toLowerCase();
   window._formUid = user.uid;
   if (typeof window._restoreFormForUser === 'function') window._restoreFormForUser(user.uid);
+
+  // Admin check — non-blocking (uses cached token, doesn't delay UI)
+  getIdTokenResult(user, false).then(tokenResult => {
+    if (user.uid === "XVQ4WNIRyKbJz7HCDUmU0Lv9squ2" && tokenResult.claims.admin === true) {
+      document.body.classList.add("is-admin");
+    } else {
+      document.body.classList.remove("is-admin");
+    }
+  }).catch(() => document.body.classList.remove("is-admin"));
+
+  // Warm up Railway order backend (prevents cold-start failure on first order)
+  fetch('https://backend-for-api-connect-production.up.railway.app/ping').catch(() => {});
 
   // Password change — wired up here, no second Firebase init needed
   window._doChangePassword = async function(currPass, newPass, callback) {
@@ -2139,13 +2170,16 @@ onAuthStateChanged(auth, async (user) => {
     } catch(e) { callback(e); }
   };
 
-  // Show cached balance instantly before Firestore loads (UID-specific cache)
+  // Show cached values instantly before Firestore loads
   const _balCacheKey = "gx_wallet_bal_" + currentUid;
+  const _ordCacheKey = "gx_orders_count_" + currentUid;
   const _cachedBal = localStorage.getItem(_balCacheKey);
+  const _cachedOrd = localStorage.getItem(_ordCacheKey);
   if (_cachedBal) {
     document.getElementById("userBalance").textContent      = _cachedBal;
     document.getElementById("walletBalanceTop").textContent = _cachedBal;
   }
+  if (_cachedOrd) document.getElementById("userOrders").textContent = _cachedOrd;
 
   // ── REAL-TIME: user stats (balance, orders) ──
   if (_unsubStats) _unsubStats();
@@ -2159,6 +2193,7 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById("walletBalanceTop").textContent = balStr;
     document.getElementById("userOrders").textContent       = totalOrders.toLocaleString();
     localStorage.setItem(_balCacheKey, balStr);
+    localStorage.setItem(_ordCacheKey, totalOrders.toLocaleString());
   });
 
   // ── REAL-TIME: recent orders ──
