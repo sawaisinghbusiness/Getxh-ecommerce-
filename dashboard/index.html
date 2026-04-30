@@ -1899,12 +1899,28 @@ async function placeOrder(serviceId) {
     if (orderId || smmSuccess) {
       // ── Success — deduct balance & show modal ──
       const orderPrice = parseFloat(((parseInt(quantity) / 1000) * (_selSvc ? _selSvc.price : 0)).toFixed(2));
-      // Deduct balance from Firestore immediately
+      // Deduct balance and increment order count
       if (window.currentUid && window._updateDoc && window.db && orderPrice > 0) {
         window._updateDoc(window._doc(window.db, 'Users', window.currentUid), {
           Balance: window._increment(-orderPrice),
           TotalOrders: window._increment(1)
         }).catch(e => console.error('Balance deduct error:', e));
+      }
+      // Save order to Firestore so it appears in orders tab
+      if (window.currentUid && window._addDoc && window.db) {
+        window._addDoc(window._collection(window.db, 'orders'), {
+          userId:      window.currentUid,
+          email:       window.currentEmail || '',
+          orderId:     orderId ? String(orderId) : null,
+          serviceName: _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—',
+          serviceId:   _selSvc ? String(_selSvc.id) : '',
+          quantity:    parseInt(quantity),
+          charge:      orderPrice,
+          status:      'Pending',
+          remains:     parseInt(quantity),
+          createdAt:   Date.now(),
+          timestamp:   window._serverTimestamp ? window._serverTimestamp() : null
+        }).catch(e => console.error('Order save error:', e));
       }
       document.getElementById('smOrderId').textContent  = orderId ? '#' + orderId : 'Confirmed';
       document.getElementById('smService').textContent  = _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—';
@@ -2116,7 +2132,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
   getFirestore, collection, query, where, orderBy, limit,
-  doc, onSnapshot, updateDoc, increment
+  doc, onSnapshot, updateDoc, increment, addDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -2136,6 +2152,9 @@ window.db = db;
 window._updateDoc = updateDoc;
 window._increment = increment;
 window._doc = doc;
+window._addDoc = addDoc;
+window._collection = collection;
+window._serverTimestamp = serverTimestamp;
 
 let currentUid     = null;
 let currentEmail   = null;
