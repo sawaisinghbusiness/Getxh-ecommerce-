@@ -588,7 +588,7 @@ async function loadAllUsers() {
   try {
     var headers = { 'Content-Type': 'application/json' };
     // attach firebase token if available
-    var cu = auth.currentUser || _currentUser;
+    var cu = window._adminUser;
     if (cu) {
       try { headers['Authorization'] = 'Bearer ' + (await cu.getIdToken()); } catch(_) {}
     }
@@ -611,7 +611,7 @@ function searchUsers() {
     el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Searching…</p></div>';
     try {
       var headers = { 'Content-Type': 'application/json' };
-      var cu = auth.currentUser || _currentUser;
+      var cu = window._adminUser;
       if (cu) {
         try { headers['Authorization'] = 'Bearer ' + (await cu.getIdToken()); } catch(_) {}
       }
@@ -1233,6 +1233,7 @@ onAuthStateChanged(auth, async user => {
 
   // Store user for initAdminData, show password gate
   _currentUser = user;
+  window._adminUser = user;
   window._gateSignOut = () => signOut(auth).then(() => window.location.replace('/'));
   document.getElementById('sidebarEmail').textContent = user.email;
   document.getElementById('loadingScreen').style.display = 'none';
