@@ -358,8 +358,8 @@ textarea::placeholder {
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;">
         <button id="newTicketBtn" onclick="openCreatePanel()"
           style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;
-                 border:1px solid rgba(59,130,246,0.25);cursor:pointer;font-size:12px;font-weight:600;color:#93b4e8;
-                 background:rgba(59,130,246,0.08);transition:opacity .15s;"
+                 border:1px solid rgba(59,130,246,0.4);cursor:pointer;font-size:12px;font-weight:600;color:#60a5fa;
+                 background:rgba(59,130,246,0.14);transition:opacity .15s;"
           onmousedown="this.style.opacity='0.7'" onmouseup="this.style.opacity='1'"
           ontouchstart="this.style.opacity='0.7'" ontouchend="this.style.opacity='1'">
           <span class="material-symbols-outlined" style="font-size:15px">add</span>
@@ -524,28 +524,28 @@ textarea::placeholder {
       <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-semibold text-lg"
            style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.11);color:#94a3b8" id="popupAvatar">U</div>
       <div class="min-w-0 flex-1">
-        <p id="popupUsername" class="text-white font-semibold text-base truncate">User</p>
-        <p id="popupEmail" class="text-xs truncate mt-0.5" style="color:#475569">—</p>
+        <p id="popupUsername" class="font-semibold text-base truncate" style="color:#ffffff">User</p>
+        <p id="popupEmail" class="text-xs truncate mt-0.5" style="color:#64748b">—</p>
       </div>
     </div>
     <div class="px-4 flex flex-col gap-2.5">
       <button onclick="closeAccountPopup();window.location.href='/account'"
         class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
-        style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#e2e8f0">
-        <span class="material-symbols-outlined" style="font-size:18px;color:#94a3b8">manage_accounts</span>
+        style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);color:#93c5fd">
+        <span class="material-symbols-outlined" style="font-size:18px;color:#60a5fa">manage_accounts</span>
         My Account
-        <span class="material-symbols-outlined ml-auto" style="font-size:16px;color:#475569">chevron_right</span>
+        <span class="material-symbols-outlined ml-auto" style="font-size:16px;color:#3b82f6">chevron_right</span>
       </button>
       <button onclick="closeAccountPopup();window.location.href='/wallet'"
         class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
-        style="background:rgba(106,191,136,0.07);border:1px solid rgba(106,191,136,0.18);color:#6abf88">
+        style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);color:#6ee7b7">
         <span class="material-symbols-outlined" style="font-size:18px">account_balance_wallet</span>
         Add Funds
-        <span class="material-symbols-outlined ml-auto" style="font-size:16px;opacity:0.6">chevron_right</span>
+        <span class="material-symbols-outlined ml-auto" style="font-size:16px;opacity:0.7">chevron_right</span>
       </button>
       <button onclick="logout()"
         class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
-        style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.18);color:#fca5a5">
+        style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171">
         <span class="material-symbols-outlined" style="font-size:18px">logout</span>
         Sign Out
       </button>
