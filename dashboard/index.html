@@ -1875,7 +1875,8 @@ async function placeOrder(serviceId) {
         email: currentEmail
       })
     });
-    const data = await res.json();
+    let data;
+    try { data = await res.json(); } catch { data = {}; }
 
     // Accept both {order:id} and SMM panel status response {status:"Completed"/"Processing"/"Pending"/"In progress"}
     const orderId = data.order || data.orderId || null;
