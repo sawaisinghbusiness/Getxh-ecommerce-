@@ -819,8 +819,11 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
         showError("Couldn't send OTP. Please try again.");
         setBtn("Send OTP", false);
       }
-    } catch {
-      showError("Something went wrong. Please check your connection and try again.");
+    } catch(err) {
+      const msg = err && err.name === 'AbortError'
+        ? "Request timed out. Server may be starting up — wait 30 seconds and try again."
+        : "Something went wrong: " + (err && err.message ? err.message : "Network error");
+      showError(msg);
       setBtn("Send OTP", false);
     }
   };

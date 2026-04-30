@@ -1254,10 +1254,14 @@ onAuthStateChanged(auth, async user => {
       return;
     }
     if (!_adminUnlocked) {
-      document.getElementById('adminPanel').style.display  = 'none';
-      document.getElementById('otpGate').style.display     = 'none';
-      document.getElementById('passwordGate').style.display = 'flex';
-      document.getElementById('gatePasswordInput').focus();
+      // agar OTP gate already open hai toh wahan se mat hatao
+      const otpVisible = document.getElementById('otpGate').style.display === 'flex';
+      if (!otpVisible) {
+        document.getElementById('adminPanel').style.display   = 'none';
+        document.getElementById('otpGate').style.display      = 'none';
+        document.getElementById('passwordGate').style.display = 'flex';
+        document.getElementById('gatePasswordInput').focus();
+      }
     }
   });
 });
