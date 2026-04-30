@@ -1897,8 +1897,15 @@ async function placeOrder(serviceId) {
     const smmSuccess = data.status && ['completed','processing','pending','in progress','partial'].includes(String(data.status).toLowerCase());
 
     if (orderId || smmSuccess) {
-      // ── Success — populate & show modal ──
+      // ── Success — deduct balance & show modal ──
       const orderPrice = parseFloat(((parseInt(quantity) / 1000) * (_selSvc ? _selSvc.price : 0)).toFixed(2));
+      // Deduct balance from Firestore immediately
+      if (window.currentUid && window._updateDoc && window.db && orderPrice > 0) {
+        window._updateDoc(window._doc(window.db, 'Users', window.currentUid), {
+          Balance: window._increment(-orderPrice),
+          TotalOrders: window._increment(1)
+        }).catch(e => console.error('Balance deduct error:', e));
+      }
       document.getElementById('smOrderId').textContent  = orderId ? '#' + orderId : 'Confirmed';
       document.getElementById('smService').textContent  = _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—';
       document.getElementById('smQty').textContent      = parseInt(quantity).toLocaleString();
@@ -2109,7 +2116,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
   getFirestore, collection, query, where, orderBy, limit,
-  doc, onSnapshot
+  doc, onSnapshot, updateDoc, increment
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -2125,6 +2132,10 @@ const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 window.auth = auth;
+window.db = db;
+window._updateDoc = updateDoc;
+window._increment = increment;
+window._doc = doc;
 
 let currentUid     = null;
 let currentEmail   = null;
