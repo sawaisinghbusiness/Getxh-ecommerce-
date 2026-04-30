@@ -39,6 +39,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   to   { transform:translateY(0); opacity:1; }
 }
 .animate-slideUp { animation:slideUp 0.32s cubic-bezier(0.32,0.72,0,1); }
+@media (max-width: 1023px) { aside.desktop-sidebar { display: none !important; } }
+@media (min-width: 1024px) {
+  aside.desktop-sidebar { display: flex !important; flex-direction: column !important; }
+  .lg\:pl-72 { padding-left: 288px !important; }
+}
+aside.desktop-sidebar { position:fixed;top:0;left:0;bottom:0;width:288px;z-index:30;overflow:hidden;border-right:1px solid rgba(255,255,255,0.1);background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);flex-direction:column; }
+aside.desktop-sidebar .flex-1 { flex:1;overflow-y:auto;padding:12px; }
+aside.desktop-sidebar .flex-1 > a, aside.desktop-sidebar .flex-1 > button { display:flex !important;align-items:center !important;gap:12px !important;width:100%;text-align:left;text-decoration:none; }
 .order-card { transition:all 0.2s ease; }
 .order-card:active { transform:scale(0.99); }
 .status-pending    { background:rgba(234,179,8,0.07);  color:#c9a227; border:1px solid rgba(234,179,8,0.18);  }
@@ -52,10 +60,104 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
 <body class="bg-[#0b1220] text-white min-h-screen">
 
+<aside class="desktop-sidebar hidden">
+  <div class="px-5 pt-8 pb-5 border-b border-white/10" style="background:linear-gradient(135deg,#0e1f3d,#162844);flex-shrink:0;">
+    <div class="flex items-center gap-3 mb-4" style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <div style="width:40px;height:40px;min-width:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:20px">verified_user</span>
+      </div>
+      <div>
+        <p class="font-black text-white text-base tracking-wide">GETXH<span style="color:#2196f3">.IN</span></p>
+        <div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:#4ade80;flex-shrink:0;"></div>
+          <p class="text-xs font-semibold" style="color:#2196f3">Online</p>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.05);border-radius:12px;padding:10px 12px;border:1px solid rgba(255,255,255,0.1);">
+      <div style="width:32px;height:32px;min-width:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#2196f3,#00bcd4);">
+        <span class="material-symbols-outlined text-white" style="font-size:16px">person</span>
+      </div>
+      <div style="min-width:0;overflow:hidden;">
+        <p id="menuUsernameDesktop" style="font-size:12px;font-weight:700;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">User</p>
+        <p id="menuEmailDesktop" style="font-size:11px;color:#6b7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</p>
+      </div>
+    </div>
+  </div>
+  <div class="flex-1">
+    <a href="/dashboard" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#7aabdf;">dashboard</span>
+      </div>
+      <span style="font-weight:700;color:#d1d5db;font-size:14px;">Dashboard</span>
+      <span class="material-symbols-outlined" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <a href="/dashboard" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#7aabdf;">add_shopping_cart</span>
+      </div>
+      <span style="font-weight:700;color:#d1d5db;font-size:14px;">New Order</span>
+      <span class="material-symbols-outlined" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <a href="/orders" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#b8a050;">list_alt</span>
+      </div>
+      <span style="font-weight:700;color:white;font-size:14px;">Orders</span>
+      <span class="material-symbols-outlined" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <a href="/support" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#9d82d4;">support_agent</span>
+      </div>
+      <span style="font-weight:700;color:#d1d5db;font-size:14px;">Support</span>
+      <span class="material-symbols-outlined" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <a href="/wallet" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#6ab890;">account_balance_wallet</span>
+      </div>
+      <span style="font-weight:700;color:#d1d5db;font-size:14px;">Add Funds</span>
+      <span class="material-symbols-outlined" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <a href="/coming-soon" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#c07840;">person_add</span>
+      </div>
+      <span style="font-weight:700;color:#d1d5db;font-size:14px;">Affiliates</span>
+      <span class="material-symbols-outlined" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span style="color:#6ab890;font-weight:700;font-size:18px;line-height:1;">W</span>
+      </div>
+      <span style="font-weight:700;color:#d1d5db;font-size:14px;">WhatsApp</span>
+      <span class="material-symbols-outlined" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <div style="height:1px;background:rgba(255,255,255,0.1);margin:12px 8px;"></div>
+    <button onclick="logout()" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;cursor:pointer;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#e07070;">logout</span>
+      </div>
+      <span style="font-weight:700;color:#f87171;font-size:14px;">Logout</span>
+    </button>
+  </div>
+  <div style="padding:16px 20px;flex-shrink:0;border-top:1px solid rgba(255,255,255,0.1);">
+    <div style="display:grid;gap:8px;font-size:12px;">
+      <a href="/privacy" style="color:#9ca3af;text-decoration:none;">Privacy Policy</a>
+      <a href="/terms" style="color:#9ca3af;text-decoration:none;">Terms</a>
+      <a href="/refund" style="color:#9ca3af;text-decoration:none;">Refund Policy</a>
+    </div>
+    <p style="font-size:12px;color:#4b5563;text-align:center;margin-top:8px;">GETXH.IN © 2026 · All rights reserved</p>
+  </div>
+</aside>
+
 <span id="walletBalanceTop" class="hidden"></span>
 
+<div class="lg:pl-72">
+
 <!-- MAIN CONTENT -->
-<div class="w-full px-4 py-4 pb-[120px]">
+<div class="w-full px-4 py-4 pb-[120px] lg:px-8 lg:py-8">
 
   <!-- Filter Dropdown -->
   <div class="relative mb-3" id="filterWrapper">
@@ -106,6 +208,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   </div>
 
 </div>
+</div><!-- end lg:pl-72 -->
 
 <!-- BOTTOM NAV -->
 <style>
@@ -325,6 +428,10 @@ const mu = document.getElementById('menuUsername');
 const me = document.getElementById('menuEmail');
 if(mu) mu.textContent = _n;
 if(me) me.textContent = _email;
+const mud = document.getElementById('menuUsernameDesktop');
+const med = document.getElementById('menuEmailDesktop');
+if(mud) mud.textContent = _n;
+if(med) med.textContent = _email;
 
 function openMenu() {
   document.getElementById('sideMenu').classList.remove('-translate-x-full');
