@@ -1876,8 +1876,8 @@ async function placeOrder(serviceId) {
         link: link,
         quantity: quantity,
         requestId,
-        uid: currentUid,
-        email: currentEmail
+        uid: window.currentUid,
+        email: window.currentEmail
       })
     });
     if (!res.ok) {
@@ -1932,7 +1932,7 @@ async function placeOrder(serviceId) {
       const res2 = await fetch('https://backend-for-api-connect-production.up.railway.app/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken2 },
-        body: JSON.stringify({ service: serviceId, link: document.getElementById('linkInput').value.trim(), quantity: document.getElementById('quantityInput').value, requestId: String(Date.now()), uid: currentUid, email: currentEmail })
+        body: JSON.stringify({ service: serviceId, link: document.getElementById('linkInput').value.trim(), quantity: document.getElementById('quantityInput').value, requestId: String(Date.now()), uid: window.currentUid, email: window.currentEmail })
       });
       if (!res2.ok) {
         const errText2 = await res2.text().catch(() => res2.status);
@@ -2178,6 +2178,8 @@ onAuthStateChanged(auth, async (user) => {
 
   currentUid   = user.uid;
   currentEmail = (user.email || '').trim().toLowerCase();
+  window.currentUid   = currentUid;
+  window.currentEmail = currentEmail;
   window._formUid = user.uid;
   if (typeof window._restoreFormForUser === 'function') window._restoreFormForUser(user.uid);
 
