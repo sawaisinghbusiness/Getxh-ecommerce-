@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <link rel="icon" href="/GETXH WEB NEW LOGO.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>GETXH Dashboard</title>
@@ -1926,8 +1929,8 @@ async function placeOrder(serviceId) {
     console.error('Order error:', err && (err.message || err));
     // Retry with longer wait for Railway cold-start
     try {
-      if (labelSpan) labelSpan.textContent = 'Retrying (20s)...';
-      await new Promise(r => setTimeout(r, 20000));
+      if (labelSpan) labelSpan.textContent = 'Retrying...';
+      await new Promise(r => setTimeout(r, 5000));
       const idToken2 = await window.auth.currentUser.getIdToken(true);
       const res2 = await fetch('https://backend-for-api-connect-production.up.railway.app/order', {
         method: 'POST',
