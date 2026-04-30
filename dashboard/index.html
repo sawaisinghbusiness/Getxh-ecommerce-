@@ -2215,8 +2215,9 @@ onAuthStateChanged(auth, async (user) => {
     } catch(e) { callback(e); }
   };
 
-  // Show cached balance instantly before Firestore loads
-  const _cachedBal = localStorage.getItem("gx_wallet_bal");
+  // Show cached balance instantly before Firestore loads (UID-specific cache)
+  const _balCacheKey = "gx_wallet_bal_" + currentUid;
+  const _cachedBal = localStorage.getItem(_balCacheKey);
   if (_cachedBal) {
     document.getElementById("userBalance").textContent      = _cachedBal;
     document.getElementById("walletBalanceTop").textContent = _cachedBal;
@@ -2233,7 +2234,7 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById("userBalance").textContent      = balStr;
     document.getElementById("walletBalanceTop").textContent = balStr;
     document.getElementById("userOrders").textContent       = totalOrders.toLocaleString();
-    localStorage.setItem("gx_wallet_bal", balStr);
+    localStorage.setItem(_balCacheKey, balStr);
   });
 
   // ── REAL-TIME: recent orders ──

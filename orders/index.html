@@ -661,8 +661,9 @@ onAuthStateChanged(auth, (user) => {
 
   showSkeleton();
 
-  // Show cached balance instantly
-  const _cachedBal = localStorage.getItem("gx_wallet_bal");
+  // Show cached balance instantly (UID-specific cache)
+  const _balCacheKey = "gx_wallet_bal_" + user.uid;
+  const _cachedBal = localStorage.getItem(_balCacheKey);
   if (_cachedBal) document.getElementById('walletBalanceTop').textContent = _cachedBal;
 
   // Real-time wallet balance
@@ -671,7 +672,7 @@ onAuthStateChanged(auth, (user) => {
     const balance = snap.exists() ? Number(snap.data().Balance || 0) : 0;
     const balStr = `₹${balance.toFixed(2)}`;
     document.getElementById('walletBalanceTop').textContent = balStr;
-    localStorage.setItem("gx_wallet_bal", balStr);
+    localStorage.setItem(_balCacheKey, balStr);
   });
 
   // ── Real-time orders — flat collection, filtered by userId ──
