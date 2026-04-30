@@ -1918,7 +1918,7 @@ async function placeOrder(serviceId) {
           serviceName:      _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—',
           service:          _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—',
           serviceId:        _selSvc ? String(_selSvc.id) : '',
-          link:             document.getElementById('linkInput') ? document.getElementById('linkInput').value.trim() : '',
+          link:             link,
           quantity:         parseInt(quantity),
           price:            orderPrice,
           status:           'Pending',
