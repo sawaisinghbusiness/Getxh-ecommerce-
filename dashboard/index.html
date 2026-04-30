@@ -41,112 +41,27 @@ html, body {
   color: #38bdf8;
 }
 
-.logout-confirm-popup {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(2, 6, 23, 0.72);
-  backdrop-filter: blur(0);
-  -webkit-backdrop-filter: blur(0);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .24s ease, backdrop-filter .24s ease, -webkit-backdrop-filter .24s ease;
-}
-.logout-confirm-popup.is-visible {
-  opacity: 1;
-  pointer-events: auto;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-.logout-confirm-card {
-  width: 100%;
-  max-width: 340px;
-  overflow: hidden;
-  position: relative;
-  text-align: center;
-  border-radius: 24px;
-  padding: 30px 24px 24px;
-  background: radial-gradient(circle at 50% -20%, rgba(248, 113, 113, .20), transparent 38%), linear-gradient(160deg, #0d1525 0%, #111d33 100%);
-  border: 1px solid rgba(255, 255, 255, .10);
-  box-shadow: 0 34px 90px rgba(0, 0, 0, .62), inset 0 1px 0 rgba(255, 255, 255, .06);
-  opacity: 0;
-  transform: translateY(18px) scale(.94);
-  transition: transform .34s cubic-bezier(.16, 1, .3, 1), opacity .24s ease;
-}
-.logout-confirm-popup.is-visible .logout-confirm-card { opacity: 1; transform: translateY(0) scale(1); }
-.logout-confirm-popup.is-closing .logout-confirm-card { opacity: 0; transform: translateY(10px) scale(.96); }
-.logout-confirm-icon {
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 17px;
-  position: relative;
-  background: rgba(239, 68, 68, .12);
-  border: 1px solid rgba(248, 113, 113, .34);
-  box-shadow: 0 14px 34px rgba(239, 68, 68, .18);
-}
-.logout-confirm-icon::after {
-  content: "";
-  position: absolute;
-  inset: -7px;
-  border-radius: inherit;
-  border: 1px solid rgba(248, 113, 113, .18);
-  opacity: 0;
-}
-.logout-confirm-popup.is-visible .logout-confirm-icon { animation: logoutIconPop .48s cubic-bezier(.16, 1, .3, 1) .06s both; }
-.logout-confirm-popup.is-visible .logout-confirm-icon::after { animation: logoutRing .72s ease .14s both; }
-.logout-confirm-title { color: #fff; font-size: 17px; font-weight: 900; margin: 0 0 7px; }
-.logout-confirm-text { color: rgba(226, 232, 240, .62); font-size: 13px; font-weight: 600; line-height: 1.5; margin: 0 0 24px; }
-.logout-confirm-actions { display: flex; gap: 12px; }
-.logout-confirm-btn {
-  flex: 1;
-  min-height: 45px;
-  padding: 0 14px;
-  border-radius: 14px;
-  border: 0;
-  cursor: pointer;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: .03em;
-  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
-}
-.logout-confirm-btn:hover { transform: translateY(-1px); filter: brightness(1.06); }
-.logout-confirm-btn:active { transform: translateY(0) scale(.98); }
-.logout-confirm-stay { background: linear-gradient(135deg, #16a34a, #15803d); box-shadow: 0 10px 24px rgba(22, 163, 74, .26); }
-.logout-confirm-leave { background: linear-gradient(135deg, #ef4444, #b91c1c); box-shadow: 0 10px 24px rgba(220, 38, 38, .28); }
-@keyframes logoutIconPop {
-  0% { opacity: 0; transform: scale(.72) rotate(-8deg); }
-  70% { opacity: 1; transform: scale(1.08) rotate(2deg); }
-  100% { opacity: 1; transform: scale(1) rotate(0); }
-}
-@keyframes logoutRing {
-  0% { opacity: .7; transform: scale(.82); }
-  100% { opacity: 0; transform: scale(1.35); }
-}
+.logout-confirm-popup{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(2,6,23,.78);backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0);opacity:0;pointer-events:none;transition:opacity .2s ease,backdrop-filter .2s ease,-webkit-backdrop-filter .2s ease;}
+.logout-confirm-popup.is-visible{opacity:1;pointer-events:auto;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);}
+.logout-confirm-card{width:100%;max-width:320px;position:relative;text-align:center;border-radius:16px;padding:28px 24px 22px;background:#0d1628;border:1px solid rgba(255,255,255,.09);box-shadow:0 20px 50px rgba(0,0,0,.55);opacity:0;transform:translateY(10px) scale(.97);transition:transform .26s cubic-bezier(.16,1,.3,1),opacity .2s ease;}
+.logout-confirm-popup.is-visible .logout-confirm-card{opacity:1;transform:translateY(0) scale(1);}
+.logout-confirm-popup.is-closing .logout-confirm-card{opacity:0;transform:translateY(6px) scale(.97);}
+.logout-confirm-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);}
+.logout-confirm-title{color:#f1f5f9;font-size:16px;font-weight:700;margin:0 0 6px;letter-spacing:-.01em;}
+.logout-confirm-text{color:rgba(148,163,184,.65);font-size:13px;font-weight:400;line-height:1.55;margin:0 0 22px;}
+.logout-confirm-actions{display:flex;gap:10px;}
+.logout-confirm-btn{flex:1;min-height:42px;padding:0 14px;border-radius:10px;border:none;cursor:pointer;color:#e2e8f0;font-size:13px;font-weight:600;letter-spacing:.01em;transition:opacity .15s ease,background .15s ease;}
+.logout-confirm-btn:hover{opacity:.8;}
+.logout-confirm-btn:active{opacity:.65;}
+.logout-confirm-stay{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);}
+.logout-confirm-leave{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.28);color:#fca5a5;}
 
 /* ACCOUNT POPUP ANIMATION */
 @keyframes slideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
 }
-
-.animate-slideUp {
-  animation: slideUp 0.35s ease-out;
-}
+.animate-slideUp { animation: slideUp 0.32s cubic-bezier(0.32,0.72,0,1); }
 
 .dashboard-footer-card {
   background: linear-gradient(180deg, rgba(18, 28, 51, 0.96) 0%, rgba(10, 22, 40, 0.98) 100%);
@@ -346,73 +261,73 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   </div>
   <div class="flex-1 overflow-y-auto py-3 px-3">
     <a href="/dashboard" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 transition-all active:scale-[0.98]" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#2196f3,#00bcd4);">
-        <span class="material-symbols-outlined text-white" style="font-size:22px;color:white;">dashboard</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#7aabdf;">dashboard</span>
       </div>
       <span class="font-bold text-white text-sm" style="font-weight:700;color:white;font-size:14px;">Dashboard</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
     <button onclick="scrollToNewOrder()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(59,130,246,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#60a5fa;">add_shopping_cart</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#7aabdf;">add_shopping_cart</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">New Order</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </button>
     <a href="/orders" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(234,179,8,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#facc15;">list_alt</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#b8a050;">list_alt</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Orders</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
     <a href="/support" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(168,85,247,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#c084fc;">support_agent</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#9d82d4;">support_agent</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Support</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
     <a href="/wallet" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(34,197,94,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#4ade80;">account_balance_wallet</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#6ab890;">account_balance_wallet</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Add Funds</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
     <a href="/coming-soon" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(234,130,8,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#fb923c;">person_add</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#c07840;">person_add</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Affiliates</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
     <button onclick="window.location.href='/coming-soon'" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(6,182,212,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#22d3ee;">autorenew</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#5aacbf;">autorenew</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Subscriptions</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </button>
     <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer"
       class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(74,222,128,0.15);">
-        <span style="color:#4ade80;font-weight:900;font-size:20px;line-height:1;">W</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span style="color:#6ab890;font-weight:700;font-size:18px;line-height:1;">W</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">WhatsApp</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
     <a id="desktopAdminBtn" href="/admin" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 hidden" style="display:none;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(6,182,212,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#22d3ee;">admin_panel_settings</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#5aacbf;">admin_panel_settings</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Admin Panel</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
     <div class="h-px bg-white/10 my-3 mx-2" style="height:1px;background:rgba(255,255,255,0.1);margin:12px 8px;"></div>
     <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#f87171;">logout</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#e07070;">logout</span>
       </div>
       <span class="font-bold text-red-400 text-sm" style="font-weight:700;color:#f87171;font-size:14px;">Logout</span>
     </button>
@@ -694,7 +609,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         <!-- LINK -->
         <div class="mb-3">
           <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5">Link</p>
-          <input type="text" id="linkInput" placeholder="Paste your link"
+          <input type="text" id="linkInput" placeholder="Paste your link" autocomplete="off"
             class="w-full px-4 py-2.5 bg-[#121c33] border border-white/10 rounded-xl
                    text-white placeholder-gray-500 text-sm
                    focus:outline-none focus:border-[#2196f3] transition-all"/>
@@ -721,7 +636,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         <!-- QUANTITY -->
         <div class="mb-3">
           <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5">Quantity</p>
-          <input type="number" id="quantityInput" placeholder="Min: 0 - Max: 0"
+          <input type="number" id="quantityInput" placeholder="Min: 0 - Max: 0" autocomplete="off"
             class="w-full px-4 py-2.5 bg-[#121c33] border border-white/10 rounded-xl
                    text-white placeholder-gray-500 text-sm
                    focus:outline-none focus:border-[#2196f3] transition-all"/>
@@ -1004,8 +919,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     <button onclick="scrollToNewOrder();closeMenu()"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left transition-all active:scale-[0.98]"
       style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#2196f3,#00bcd4);">
-        <span class="material-symbols-outlined text-white" style="font-size:22px;color:white;">add_shopping_cart</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#7aabdf;">add_shopping_cart</span>
       </div>
       <span class="font-bold text-white text-sm" style="font-weight:700;color:white;font-size:15px;">New Order</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
@@ -1015,8 +930,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     <button onclick="closeMenu();window.location.href='/orders'"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
       style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(234,179,8,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#facc15;">list_alt</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#b8a050;">list_alt</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Orders</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
@@ -1026,8 +941,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     <button onclick="closeMenu();window.location.href='/support'"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
       style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(168,85,247,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#c084fc;">support_agent</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#9d82d4;">support_agent</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Support</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
@@ -1037,8 +952,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     <button onclick="closeMenu();window.location.href='/wallet'"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
       style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(34,197,94,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#4ade80;">account_balance_wallet</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#6ab890;">account_balance_wallet</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Add Funds</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
@@ -1048,8 +963,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     <button onclick="closeMenu();window.location.href='/coming-soon'"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
       style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(234,130,8,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#fb923c;">person_add</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#c07840;">person_add</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Affiliates</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
@@ -1059,8 +974,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     <button onclick="closeMenu();window.location.href='/coming-soon'"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
       style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(6,182,212,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#22d3ee;">autorenew</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#5aacbf;">autorenew</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Subscriptions</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
@@ -1070,8 +985,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     <button id="adminBtn" onclick="closeMenu();window.location.href='/admin'"
       class="menu-item hidden w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
       style="display:none;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(6,182,212,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#22d3ee;">admin_panel_settings</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#5aacbf;">admin_panel_settings</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Admin</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
@@ -1084,8 +999,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
       style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(74,222,128,0.15);">
-        <span style="color:#4ade80;font-weight:900;font-size:20px;line-height:1;">W</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span style="color:#6ab890;font-weight:700;font-size:18px;line-height:1;">W</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">WhatsApp</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
@@ -1094,8 +1009,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     <button onclick="logout()"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-red-500/10 transition-all active:scale-[0.98] border border-transparent hover:border-red-500/20"
       style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#f87171;">logout</span>
+      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#e07070;">logout</span>
       </div>
       <span class="font-bold text-red-400 text-sm" style="font-weight:700;color:#f87171;font-size:15px;">Logout</span>
     </button>
@@ -1124,46 +1039,49 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)"
   onclick="if(event.target===this)closeAccountPopup()">
   <div class="w-full max-w-md mx-auto animate-slideUp"
-       style="background:linear-gradient(180deg,#0e1f3d 0%,#0a1628 100%);
-              border-radius:24px 24px 0 0;
-              border-top:1px solid rgba(33,150,243,0.25);
-              padding:16px 0 32px;
+       style="background:#0b1525;
+              border-radius:20px 20px 0 0;
+              border-top:1px solid rgba(255,255,255,0.08);
+              padding:0 0 32px;
               touch-action:none;
               overscroll-behavior:none;"
        ontouchmove="event.preventDefault();event.stopPropagation();"
        onclick="event.stopPropagation()">
+    <div class="flex justify-center pt-3 pb-2">
+      <div class="w-9 h-1 rounded-full" style="background:rgba(255,255,255,0.12)"></div>
+    </div>
     <div id="accViewHome">
-    <div class="mx-4 mb-4 rounded-2xl p-4 flex items-center gap-3"
-         style="background:rgba(33,150,243,0.08);border:1px solid rgba(33,150,243,0.2)">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-black text-lg text-white"
-           style="background:linear-gradient(135deg,#2196f3,#00bcd4)" id="popupAvatar">U</div>
+    <div class="mx-4 mb-4 rounded-xl p-4 flex items-center gap-3"
+         style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07)">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-semibold text-lg"
+           style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.11);color:#94a3b8" id="popupAvatar">U</div>
       <div class="min-w-0 flex-1">
-        <p id="popupUsername" class="text-white font-black text-base truncate">User</p>
-        <p id="popupEmail" class="text-xs truncate mt-0.5" style="color:#2196f3">—</p>
+        <p id="popupUsername" class="font-semibold text-base truncate" style="color:#ffffff">User</p>
+        <p id="popupEmail" class="text-xs truncate mt-0.5" style="color:#64748b">—</p>
       </div>
     </div>
-    <div class="px-4 space-y-3">
-<button onclick="closeAccountPopup();window.location.href='/account'"
-        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-white text-sm active:scale-[0.98] transition-all"
-        style="background:linear-gradient(135deg,#2196f3,#00bcd4);box-shadow:0 4px 20px rgba(33,150,243,0.3)">
-        <span class="material-symbols-outlined" style="font-size:18px">manage_accounts</span>
+    <div class="px-4 flex flex-col gap-2.5">
+      <button onclick="closeAccountPopup();window.location.href='/account'"
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
+        style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.28);color:#93c5fd">
+        <span class="material-symbols-outlined" style="font-size:18px;color:#60a5fa">manage_accounts</span>
         My Account
-        <span class="material-symbols-outlined ml-auto" style="font-size:16px">chevron_right</span>
+        <span class="material-symbols-outlined ml-auto" style="font-size:16px;color:#3b82f6">chevron_right</span>
       </button>
       <button onclick="closeAccountPopup();window.location.href='/wallet'"
-        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all"
-        style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);color:#00e676">
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
+        style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.28);color:#6ee7b7">
         <span class="material-symbols-outlined" style="font-size:18px">account_balance_wallet</span>
         Add Funds
-        <span class="material-symbols-outlined ml-auto" style="font-size:16px">chevron_right</span>
+        <span class="material-symbols-outlined ml-auto" style="font-size:16px;opacity:0.7">chevron_right</span>
       </button>
       <button onclick="logout()"
-        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all"
-        style="background:rgba(244,67,54,0.08);border:1px solid rgba(244,67,54,0.2);color:#ef5350">
+        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
+        style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.28);color:#f87171">
         <span class="material-symbols-outlined" style="font-size:18px">logout</span>
-        Logout
+        Sign Out
       </button>
-      </div>     
+      </div>
     </div>
      </div>
 
@@ -2037,34 +1955,34 @@ function closeSuccessModal(){
   }
 }
   
-// ── FORM STATE PERSISTENCE (sessionStorage) ──
+// ── FORM STATE PERSISTENCE (UID-specific, link never saved) ──
+window._formUid = null;
+function _fk(uid, f) { return 'gx_form_' + uid + '_' + f; }
+
 function saveFormState() {
-  if (_selCat) sessionStorage.setItem('gx_cat', _selCat);
-  if (_selSvc) sessionStorage.setItem('gx_svc', _selSvc.id);
-  const qty  = document.getElementById('quantityInput').value;
-  const link = document.getElementById('linkInput').value;
-  if (qty)  sessionStorage.setItem('gx_qty', qty);
-  if (link) sessionStorage.setItem('gx_link', link);
+  const uid = window._formUid;
+  if (!uid) return;
+  if (_selCat) sessionStorage.setItem(_fk(uid,'cat'), _selCat);
+  if (_selSvc) sessionStorage.setItem(_fk(uid,'svc'), String(_selSvc.id));
+  const qty = document.getElementById('quantityInput').value;
+  if (qty) sessionStorage.setItem(_fk(uid,'qty'), qty);
+  // link intentionally never saved
 }
 
-function restoreFormState() {
-  const savedCat  = sessionStorage.getItem('gx_cat');
-  const savedSvcId = sessionStorage.getItem('gx_svc');
-  const savedQty  = sessionStorage.getItem('gx_qty');
-  const savedLink = sessionStorage.getItem('gx_link');
+function restoreFormState(uid) {
+  if (!uid) return;
+  const savedCat   = sessionStorage.getItem(_fk(uid,'cat'));
+  const savedSvcId = sessionStorage.getItem(_fk(uid,'svc'));
+  const savedQty   = sessionStorage.getItem(_fk(uid,'qty'));
   if (!savedCat) return;
-
   const cat = CATEGORIES.find(c => c.id === savedCat);
   if (!cat) return;
   selectCategory(cat);
-
   if (savedSvcId) {
-    const svcs = SERVICES[savedCat] || [];
-    const svc  = svcs.find(s => s.id === parseInt(savedSvcId));
+    const svc = (SERVICES[savedCat] || []).find(s => s.id === parseInt(savedSvcId));
     if (svc) {
       selectService(svc);
-      if (savedQty)  { document.getElementById('quantityInput').value = savedQty; document.getElementById('quantityInput').dispatchEvent(new Event('input')); }
-      if (savedLink) { document.getElementById('linkInput').value = savedLink; document.getElementById('linkInput').dispatchEvent(new Event('input')); }
+      if (savedQty) { document.getElementById('quantityInput').value = savedQty; document.getElementById('quantityInput').dispatchEvent(new Event('input')); }
     }
   }
 }
@@ -2075,14 +1993,18 @@ selectCategory = function(cat) { _origSelectCategory(cat); saveFormState(); };
 const _origSelectService = selectService;
 selectService = function(svc) { _origSelectService(svc); saveFormState(); };
 document.getElementById('quantityInput').addEventListener('change', saveFormState);
-document.getElementById('linkInput').addEventListener('change', saveFormState);
+// link input is intentionally NOT hooked — never persisted
 
-// Restore after a short delay to let SERVICES/CATEGORIES init
-setTimeout(restoreFormState, 100);
+// Called from module auth callback once UID is known
+window._restoreFormForUser = restoreFormState;
 
-// Clear form state on logout
+// Clear only current user's form state on logout
 const _origLogout = window.logout;
-window.logout = function() { sessionStorage.removeItem('gx_cat'); sessionStorage.removeItem('gx_svc'); sessionStorage.removeItem('gx_qty'); sessionStorage.removeItem('gx_link'); if(_origLogout) _origLogout(); };
+window.logout = function() {
+  const uid = window._formUid;
+  if (uid) { sessionStorage.removeItem(_fk(uid,'cat')); sessionStorage.removeItem(_fk(uid,'svc')); sessionStorage.removeItem(_fk(uid,'qty')); }
+  if (_origLogout) _origLogout();
+};
 
 // ── ORDER TRACKING ──
 async function checkStatus(orderId) {
@@ -2204,6 +2126,8 @@ onAuthStateChanged(auth, async (user) => {
 
   currentUid   = user.uid;
   currentEmail = (user.email || '').trim().toLowerCase();
+  window._formUid = user.uid;
+  if (typeof window._restoreFormForUser === 'function') window._restoreFormForUser(user.uid);
 
   // Password change — wired up here, no second Firebase init needed
   window._doChangePassword = async function(currPass, newPass, callback) {
@@ -2363,17 +2287,13 @@ const _OTP  = "https://backend-for-email-verification-code-production-61a3.up.ra
 <div id="logoutConfirmPopup" class="logout-confirm-popup hidden" role="dialog" aria-modal="true" aria-labelledby="logoutConfirmTitle" onclick="if(event.target===this)cancelLogout()">
   <div class="logout-confirm-card">
     <div class="logout-confirm-icon">
-      <span class="material-symbols-outlined" style="font-size:26px;color:#f87171;">logout</span>
+      <span class="material-symbols-outlined" style="font-size:20px;color:#f87171;">logout</span>
     </div>
-    <p id="logoutConfirmTitle" class="logout-confirm-title">Log Out?</p>
+    <p id="logoutConfirmTitle" class="logout-confirm-title">Sign Out</p>
     <p class="logout-confirm-text">Are you sure you want to end this session?</p>
     <div class="logout-confirm-actions">
-      <button class="logout-confirm-btn logout-confirm-stay" onclick="cancelLogout()">
-        Stay
-      </button>
-      <button class="logout-confirm-btn logout-confirm-leave" onclick="_doLogout()">
-        Log Out
-      </button>
+      <button class="logout-confirm-btn logout-confirm-stay" onclick="cancelLogout()">Cancel</button>
+      <button class="logout-confirm-btn logout-confirm-leave" onclick="_doLogout()">Sign Out</button>
     </div>
   </div>
 </div>

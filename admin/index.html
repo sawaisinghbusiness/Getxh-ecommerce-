@@ -1180,7 +1180,7 @@ function initAdminData() {
   };
 
   window.updateOrderStatus = async function(orderId, status) {
-    try { await updateDoc(doc(db, 'orders', orderId), { status }); } catch {}
+    try { await updateDoc(doc(db, 'orders', orderId), { status, adminOverride: true }); } catch {}
   };
 
   window.adminCloseTicket = async function() {

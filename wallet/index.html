@@ -175,7 +175,6 @@
     <h2 id="walletBalance" class="text-5xl font-black tracking-tight">
       <span class="skeleton inline-block w-36 h-12 rounded-xl">&nbsp;</span>
     </h2>
-    <p id="walletEmail" class="text-sm text-indigo-200/60 mt-2">Loading...</p>
 
 
   </section>
@@ -326,7 +325,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, getDocs, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -346,7 +345,7 @@ const db   = getFirestore(app);
 
 let currentUser = null;
 let _unsubBalance = null;
-
+let _unsubTxns = null;
 
 function renderTxList(txs) {
   const el = document.getElementById("txList");
@@ -371,13 +370,12 @@ function renderTxList(txs) {
 onAuthStateChanged(auth, user => {
   if (!user) { window.location.replace("/"); return; }
   currentUser = user;
-  document.getElementById("walletEmail").textContent = user.email;
 
-  // Show cached balance instantly
-  const cachedBal = localStorage.getItem("gx_wallet_bal");
-  const cachedTxs = localStorage.getItem("gx_wallet_txs_" + user.email);
+  const _balCacheKey = "gx_wallet_bal_" + user.uid;
+
+  // Show cached balance instantly (UID-specific key)
+  const cachedBal = localStorage.getItem(_balCacheKey);
   if (cachedBal) document.getElementById("walletBalance").textContent = cachedBal;
-  if (cachedTxs) { try { renderTxList(JSON.parse(cachedTxs)); } catch {} }
 
   // Real-time balance from Firestore
   if (_unsubBalance) _unsubBalance();
@@ -385,29 +383,27 @@ onAuthStateChanged(auth, user => {
     const balance = Number(snap.exists() ? (snap.data().Balance || 0) : 0);
     const balStr  = "₹" + balance.toFixed(2);
     document.getElementById("walletBalance").textContent = balStr;
-    localStorage.setItem("gx_wallet_bal", balStr);
+    localStorage.setItem(_balCacheKey, balStr);
   });
 
-  // Load transaction history
-  loadTransactions(user.uid);
-});
-
-
-async function loadTransactions(uid) {
+  // Real-time transaction history
+  if (_unsubTxns) _unsubTxns();
   try {
     const q = query(
       collection(db, "walletTxns"),
-      where("uid", "==", uid),
+      where("uid", "==", user.uid),
       orderBy("createdAt", "desc"),
       limit(20)
     );
-    const snap = await getDocs(q);
-    const txs = snap.docs.map(d => d.data());
-    renderTxList(txs);
+    _unsubTxns = onSnapshot(q, (snap) => {
+      renderTxList(snap.docs.map(d => d.data()));
+    }, () => {
+      document.getElementById("txList").innerHTML = '<p class="text-sm text-gray-500 text-center py-6">No transactions yet.</p>';
+    });
   } catch {
     document.getElementById("txList").innerHTML = '<p class="text-sm text-gray-500 text-center py-6">No transactions yet.</p>';
   }
-}
+});
 
 window.checkVerifyBtn = function() {
   const utr    = document.getElementById("utrInput").value.trim();
@@ -489,7 +485,7 @@ window.verifyPayment = async function() {
       showPopupState("success");
       document.getElementById("utrInput").value  = "";
       document.getElementById("amountInput").value = "";
-      loadTransactions(currentUser.uid);
+      // txList auto-updates via onSnapshot — no manual reload needed
     } else {
       showPopupState("failed", data.message || "Check your UTR & amount, then try again.");
     }
@@ -500,6 +496,11 @@ window.verifyPayment = async function() {
     checkVerifyBtn();
   }
 };
+
+window.addEventListener('beforeunload', () => {
+  if (_unsubBalance) _unsubBalance();
+  if (_unsubTxns) _unsubTxns();
+});
 </script>
 <script>requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.style.opacity=1))</script>
 </body>
