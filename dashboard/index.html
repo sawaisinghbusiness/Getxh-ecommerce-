@@ -1859,7 +1859,11 @@ async function placeOrder(serviceId) {
   if (chevron)   chevron.style.display = 'none';
 
   try {
-    const idToken = await auth.currentUser.getIdToken();
+    if (!auth.currentUser) {
+      showToast('error', 'Session Expired', 'Please refresh the page and try again.');
+      return;
+    }
+    const idToken = await auth.currentUser.getIdToken(true);
     const requestId = (crypto.randomUUID && crypto.randomUUID()) || String(Date.now()) + "-" + Math.random().toString(36).slice(2);
     const res = await fetch('https://backend-for-api-connect-production.up.railway.app/order', {
       method: 'POST',
@@ -1913,10 +1917,11 @@ async function placeOrder(serviceId) {
       showToast('error', 'Unable to Place Order', data.error || data.message || 'Something went wrong. Please try again or contact support.');
     }
   } catch (err) {
-    // Retry once in case of Railway cold-start timeout
+    console.error('Order error:', err && (err.message || err));
+    // Retry with longer wait for Railway cold-start
     try {
-      if (labelSpan) labelSpan.textContent = 'Retrying...';
-      await new Promise(r => setTimeout(r, 3000));
+      if (labelSpan) labelSpan.textContent = 'Retrying (20s)...';
+      await new Promise(r => setTimeout(r, 20000));
       const idToken2 = await auth.currentUser.getIdToken();
       const res2 = await fetch('https://backend-for-api-connect-production.up.railway.app/order', {
         method: 'POST',
