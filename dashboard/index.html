@@ -1927,41 +1927,7 @@ async function placeOrder(serviceId) {
     }
   } catch (err) {
     console.error('Order error:', err && (err.message || err));
-    // Retry with longer wait for Railway cold-start
-    try {
-      if (labelSpan) labelSpan.textContent = 'Retrying...';
-      await new Promise(r => setTimeout(r, 5000));
-      const idToken2 = await window.auth.currentUser.getIdToken(true);
-      const res2 = await fetch('https://backend-for-api-connect-production.up.railway.app/order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken2 },
-        body: JSON.stringify({ service: serviceId, link: document.getElementById('linkInput').value.trim(), quantity: document.getElementById('quantityInput').value, requestId: String(Date.now()), uid: window.currentUid, email: window.currentEmail })
-      });
-      if (!res2.ok) {
-        const errText2 = await res2.text().catch(() => res2.status);
-        console.error('Order retry HTTP error:', res2.status, errText2);
-        showToast('error', 'Order Failed (' + res2.status + ')', String(errText2).slice(0, 120));
-        return;
-      }
-      const data2 = await res2.json();
-      const orderId2 = data2.order || data2.orderId || null;
-      const smmSuccess2 = data2.status && ['completed','processing','pending','in progress','partial'].includes(String(data2.status).toLowerCase());
-      if (orderId2 || smmSuccess2) {
-        const orderPrice2 = parseFloat(((parseInt(document.getElementById('quantityInput').value) / 1000) * (_selSvc ? _selSvc.price : 0)).toFixed(2));
-        document.getElementById('smOrderId').textContent = orderId2 ? '#' + orderId2 : 'Confirmed';
-        document.getElementById('smService').textContent = _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—';
-        document.getElementById('smQty').textContent     = parseInt(document.getElementById('quantityInput').value).toLocaleString();
-        document.getElementById('smAmount').textContent  = '₹' + orderPrice2.toFixed(2);
-        const modal = document.getElementById('successModal');
-        modal.classList.remove('hidden'); modal.style.display = 'flex';
-        setTimeout(() => { const box = document.getElementById('successModalBox'); box.style.transform='scale(1)'; box.style.opacity='1'; }, 10);
-        if (orderId2) { localStorage.setItem('lastOrderId', orderId2); startTracking(); }
-      } else {
-        showToast('error', 'Unable to Place Order', data2.error || data2.message || 'Something went wrong. Please try again or contact support.');
-      }
-    } catch {
-      showToast('error', 'Unable to Place Order', 'Could not reach server. Please check your connection and try again.');
-    }
+    showToast('error', 'Unable to Place Order', 'Server error. Please try again.');
   } finally {
     // ── Restore button ──
     if (labelSpan) labelSpan.textContent = 'ORDER';
