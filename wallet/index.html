@@ -472,20 +472,27 @@ window.verifyPayment = async function() {
     const data = await res.json();
 
     if (data.status === "success") {
-      // Update Firestore balance (source of truth for dashboard)
+      // Update Firestore balance — this triggers the onSnapshot and updates display
+      let balUpdateOk = false;
       try {
         await updateDoc(doc(db, "Users", currentUser.uid), {
           Balance: increment(amount)
         });
+        balUpdateOk = true;
       } catch(e) {
         console.error("Firestore balance update failed:", e);
       }
       // Populate success popup
-      const curBalText = document.getElementById("walletBalance").textContent || "";
       document.getElementById("popupAmount").textContent = "₹" + amount.toFixed(2);
       document.getElementById("popupUtr").textContent = "UTR: " + utr;
-      document.getElementById("popupNewBal").textContent = curBalText || "Updated ✓";
+      document.getElementById("popupNewBal").textContent = balUpdateOk ? "Updating..." : "Contact support";
       showPopupState("success");
+      // If balance update failed, show a notice
+      if (!balUpdateOk) {
+        const notice = document.getElementById("walletNotice");
+        notice.className = "flex mb-4 rounded-2xl px-4 py-3 text-sm font-semibold bg-yellow-500/10 border border-yellow-500/20 text-yellow-400";
+        notice.textContent = "Payment verified but balance update failed — please contact support with UTR: " + utr;
+      }
       document.getElementById("utrInput").value  = "";
       document.getElementById("amountInput").value = "";
       // txList auto-updates via onSnapshot — no manual reload needed

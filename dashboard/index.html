@@ -1877,10 +1877,14 @@ async function placeOrder(serviceId) {
     });
     const data = await res.json();
 
-    if (data.order) {
+    // Accept both {order:id} and SMM panel status response {status:"Completed"/"Processing"/"Pending"/"In progress"}
+    const orderId = data.order || data.orderId || null;
+    const smmSuccess = data.status && ['completed','processing','pending','in progress','partial'].includes(String(data.status).toLowerCase());
+
+    if (orderId || smmSuccess) {
       // ── Success — populate & show modal ──
       const orderPrice = parseFloat(((parseInt(quantity) / 1000) * (_selSvc ? _selSvc.price : 0)).toFixed(2));
-      document.getElementById('smOrderId').textContent  = '#' + data.order;
+      document.getElementById('smOrderId').textContent  = orderId ? '#' + orderId : 'Confirmed';
       document.getElementById('smService').textContent  = _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—';
       document.getElementById('smQty').textContent      = parseInt(quantity).toLocaleString();
       document.getElementById('smAmount').textContent   = '₹' + orderPrice.toFixed(2);
@@ -1893,11 +1897,11 @@ async function placeOrder(serviceId) {
         box.style.opacity   = '1';
       }, 10);
 
-      localStorage.setItem('lastOrderId', data.order);
-      startTracking();
+      if (orderId) { localStorage.setItem('lastOrderId', orderId); startTracking(); }
 
     } else {
-      showToast('error', 'Unable to Place Order', 'Something went wrong. Please try again or contact support.');
+      console.error('Order response:', JSON.stringify(data));
+      showToast('error', 'Unable to Place Order', data.error || data.message || 'Something went wrong. Please try again or contact support.');
     }
   } catch (err) {
     // Retry once in case of Railway cold-start timeout
@@ -1911,19 +1915,20 @@ async function placeOrder(serviceId) {
         body: JSON.stringify({ service: serviceId, link: document.getElementById('linkInput').value.trim(), quantity: document.getElementById('quantityInput').value, requestId: String(Date.now()), uid: currentUid, email: currentEmail })
       });
       const data2 = await res2.json();
-      if (data2.order) {
+      const orderId2 = data2.order || data2.orderId || null;
+      const smmSuccess2 = data2.status && ['completed','processing','pending','in progress','partial'].includes(String(data2.status).toLowerCase());
+      if (orderId2 || smmSuccess2) {
         const orderPrice2 = parseFloat(((parseInt(document.getElementById('quantityInput').value) / 1000) * (_selSvc ? _selSvc.price : 0)).toFixed(2));
-        document.getElementById('smOrderId').textContent = '#' + data2.order;
+        document.getElementById('smOrderId').textContent = orderId2 ? '#' + orderId2 : 'Confirmed';
         document.getElementById('smService').textContent = _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—';
         document.getElementById('smQty').textContent     = parseInt(document.getElementById('quantityInput').value).toLocaleString();
         document.getElementById('smAmount').textContent  = '₹' + orderPrice2.toFixed(2);
         const modal = document.getElementById('successModal');
         modal.classList.remove('hidden'); modal.style.display = 'flex';
         setTimeout(() => { const box = document.getElementById('successModalBox'); box.style.transform='scale(1)'; box.style.opacity='1'; }, 10);
-        localStorage.setItem('lastOrderId', data2.order);
-        startTracking();
+        if (orderId2) { localStorage.setItem('lastOrderId', orderId2); startTracking(); }
       } else {
-        showToast('error', 'Unable to Place Order', 'Something went wrong. Please try again or contact support.');
+        showToast('error', 'Unable to Place Order', data2.error || data2.message || 'Something went wrong. Please try again or contact support.');
       }
     } catch {
       showToast('error', 'Unable to Place Order', 'Could not reach server. Please check your connection and try again.');
