@@ -326,7 +326,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, getDocs, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -473,6 +473,14 @@ window.verifyPayment = async function() {
     const data = await res.json();
 
     if (data.status === "success") {
+      // Update Firestore balance (source of truth for dashboard)
+      try {
+        await updateDoc(doc(db, "Users", currentUser.uid), {
+          Balance: increment(amount)
+        });
+      } catch(e) {
+        console.error("Firestore balance update failed:", e);
+      }
       // Populate success popup
       const curBalText = document.getElementById("walletBalance").textContent || "";
       document.getElementById("popupAmount").textContent = "₹" + amount.toFixed(2);
