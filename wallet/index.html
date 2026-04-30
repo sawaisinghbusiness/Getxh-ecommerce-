@@ -372,8 +372,6 @@ onAuthStateChanged(auth, user => {
   if (!user) { window.location.replace("/"); return; }
   currentUser = user;
 
-  // Warm up payment backend (prevents cold-start failure on verify)
-  fetch(`${PAYMENT_BACKEND}/ping`).catch(() => {});
 
   const _balCacheKey = "gx_wallet_bal_" + user.uid;
 

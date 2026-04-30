@@ -2161,8 +2161,6 @@ onAuthStateChanged(auth, async (user) => {
     }
   }).catch(() => document.body.classList.remove("is-admin"));
 
-  // Warm up Railway order backend (prevents cold-start failure on first order)
-  fetch('https://backend-for-api-connect-production.up.railway.app/ping').catch(() => {});
 
   // Password change — wired up here, no second Firebase init needed
   window._doChangePassword = async function(currPass, newPass, callback) {
