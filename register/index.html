@@ -1184,7 +1184,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
           <div class="rule" id="rule-maxlen">
             <span class="rule-dot"></span>Maximum 20 characters
           </div>
-          <div class="rule" id="rule-upper">
+          <div class="rule" id="rule-upper" style="display:none">
             <span class="rule-dot"></span>First letter must be uppercase
           </div>
         </div>
@@ -1303,13 +1303,10 @@ function shake(inputId) {
 function evalRules(pwd) {
   const minLen = pwd.length >= 8;
   const maxLen = pwd.length > 0 && pwd.length <= 20;
-  const upper  = /^[A-Z]/.test(pwd);
-
   setRule("rule-minlen", minLen);
   setRule("rule-maxlen", maxLen);
-  setRule("rule-upper",  upper);
 
-  return minLen && maxLen && upper;
+  return minLen && maxLen;
 }
 
 function setRule(id, valid) {
