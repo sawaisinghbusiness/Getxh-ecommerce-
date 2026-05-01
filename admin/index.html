@@ -625,7 +625,9 @@ function renderUsers(users) {
     return;
   }
   el.innerHTML = users.map(function(u) {
-    var date = u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+    var _rawDate = u.createdAt;
+    var _dateObj = _rawDate && _rawDate.toDate ? _rawDate.toDate() : (_rawDate ? new Date(_rawDate) : null);
+    var date = _dateObj && !isNaN(_dateObj) ? _dateObj.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
     var initial = (u.username || u.email || '?')[0].toUpperCase();
     return '<div style="background:#0f172a;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 18px;margin-bottom:10px;">'
 
