@@ -43,6 +43,12 @@ service cloud.firestore {
         );
     }
 
+    match /users/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+      allow list: if isAdmin();
+      allow get: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+    }
+
     match /otp_codes/{docId} {
       allow read, write: if isSignedIn();
     }

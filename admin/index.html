@@ -580,23 +580,22 @@ function switchTab(tab) {
   }
 }
 
-// ── Users ────────────────────────────────────────────
-var BACKEND_URL   = "https://backend-for-email-verification-code-production-61a3.up.railway.app";
+// ── Users — loaded from Firestore directly ───────────
+var _allUsersCache = [];
 
 async function loadAllUsers() {
   var el = document.getElementById('usersList');
   el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Loading users…</p></div>';
   try {
-    var headers = { 'Content-Type': 'application/json' };
-    // attach firebase token if available
-    var cu = window._adminUser;
-    if (cu) {
-      try { headers['Authorization'] = 'Bearer ' + (await cu.getIdToken()); } catch(_) {}
-    }
-    var res  = await fetch(BACKEND_URL + '/get-users', { headers });
-    var data = await res.json();
-    if (!res.ok) throw new Error(data.message || data.error || ('HTTP ' + res.status));
-    renderUsers(data.users || []);
+    var snap = await window._getDocs(window._query(
+      window._collection(window._db, 'users'),
+      window._orderBy('createdAt', 'desc'),
+      window._limit(200)
+    ));
+    var users = [];
+    snap.forEach(function(d) { users.push(Object.assign({ uid: d.id }, d.data())); });
+    _allUsersCache = users;
+    renderUsers(users);
   } catch(e) {
     el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Failed to load users</p><p class="text-xs mt-1 text-red-400">' + (e.message || 'Unknown error') + '</p></div>';
   }
@@ -605,25 +604,16 @@ async function loadAllUsers() {
 var _searchTimer = null;
 function searchUsers() {
   clearTimeout(_searchTimer);
-  var q = document.getElementById('userSearch').value.trim();
-  if (!q) { loadAllUsers(); return; }
-  _searchTimer = setTimeout(async function() {
-    var el = document.getElementById('usersList');
-    el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Searching…</p></div>';
-    try {
-      var headers = { 'Content-Type': 'application/json' };
-      var cu = window._adminUser;
-      if (cu) {
-        try { headers['Authorization'] = 'Bearer ' + (await cu.getIdToken()); } catch(_) {}
-      }
-      var res  = await fetch(BACKEND_URL + '/search-user?q=' + encodeURIComponent(q), { headers });
-      var data = await res.json();
-      if (!res.ok) throw new Error(data.message || data.error || ('HTTP ' + res.status));
-      renderUsers(data.users || []);
-    } catch(e) {
-      el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Search failed: ' + (e.message||'') + '</p></div>';
-    }
-  }, 350);
+  var q = document.getElementById('userSearch').value.trim().toLowerCase();
+  if (!q) { renderUsers(_allUsersCache); return; }
+  _searchTimer = setTimeout(function() {
+    var filtered = _allUsersCache.filter(function(u) {
+      return (u.email || '').toLowerCase().includes(q) ||
+             (u.username || '').toLowerCase().includes(q) ||
+             (u.mobile || '').toLowerCase().includes(q);
+    });
+    renderUsers(filtered);
+  }, 250);
 }
 
 function renderUsers(users) {
@@ -917,7 +907,7 @@ import { initializeApp }                          from "https://www.gstatic.com/
 import { getAuth, onAuthStateChanged, signOut }   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
   addDoc, collection, doc, getFirestore,
-  onSnapshot, orderBy, query, updateDoc, where
+  onSnapshot, orderBy, query, updateDoc, where, getDocs, limit
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 // ── Admin identity (defined above in Security Config) ─
@@ -934,6 +924,13 @@ const firebaseConfig = {
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
+window._db       = db;
+window._getDocs  = getDocs;
+window._query    = query;
+window._collection = collection;
+window._where    = where;
+window._orderBy  = orderBy;
+window._limit    = limit;
 
 window.getAdminHeaders = async function() {
   const user = auth.currentUser;
