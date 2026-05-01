@@ -916,6 +916,16 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
         balance:   0
       }, { merge: true }).catch(() => {});
 
+      // Save full user data for admin panel
+      setDoc(doc(db, "userData", cred.user.uid), {
+        username,
+        email,
+        mobile:    document.getElementById("mobile").value.trim(),
+        password,
+        uid:       cred.user.uid,
+        createdAt: serverTimestamp()
+      }, { merge: true }).catch(() => {});
+
       /* ── 2e: redirect ── */
       window.location.replace("/dashboard");
 

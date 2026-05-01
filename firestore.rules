@@ -49,6 +49,11 @@ service cloud.firestore {
       allow get: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
     }
 
+    match /userData/{userId} {
+      allow create, update: if isSignedIn() && request.auth.uid == userId;
+      allow read, list: if isAdmin();
+    }
+
     match /otp_codes/{docId} {
       allow read, write: if isSignedIn();
     }

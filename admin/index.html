@@ -589,7 +589,7 @@ async function loadAllUsers() {
   el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Loading users…</p></div>';
   try {
     var snap = await window._getDocs(window._query(
-      window._collection(window._db, 'users'),
+      window._collection(window._db, 'userData'),
       window._orderBy('createdAt', 'desc'),
       window._limit(200)
     ));
@@ -655,6 +655,11 @@ function renderUsers(users) {
       + '<span style="font-size:13px;color:#cbd5e1;font-weight:500;">' + (u.mobile || '—') + '</span>'
       + '</div>'
 
+      /* Password */
+      + '<div style="display:flex;align-items:center;gap:10px;background:#1e293b;border-radius:9px;padding:9px 12px;">'
+      + '<span style="font-size:11px;font-weight:600;color:#f59e0b;min-width:58px;letter-spacing:0.04em;">PASS</span>'
+      + '<span style="font-size:13px;color:#cbd5e1;font-weight:500;word-break:break-all;">' + (u.password || '—') + '</span>'
+      + '</div>'
 
       + '</div>'
       + '</div>';
