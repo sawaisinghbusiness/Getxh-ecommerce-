@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+Allow: /about/
+Allow: /contact/
+Allow: /register/
+Allow: /privacy/
+Allow: /terms/
+Allow: /refund/
+Allow: /cancellation/
+
+Disallow: /dashboard/
+Disallow: /orders/
+Disallow: /wallet/
+Disallow: /support/
+Disallow: /admin/
+Disallow: /admin-orders/
+Disallow: /account/
+Disallow: /payment-success/
+Disallow: /verify-otp/
+Disallow: /forgot-password/
+Disallow: /reset-password/
+
+Sitemap: https://getxh.in/sitemap.xml
