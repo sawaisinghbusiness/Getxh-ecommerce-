@@ -1005,29 +1005,10 @@ window.checkAdminPassword = async function checkAdminPassword() {
 
   if (hash === ADMIN_PWD_HASH) {
     _failedAttempts = 0;
-    // Password correct — now send OTP
-    btn.disabled = true;
-    btn.textContent = 'Sending OTP…';
-    try {
-      const res = await fetch(BACKEND_URL + '/send-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: ADMIN_EMAIL })
-      });
-      const data = await res.json();
-      if (res.ok || data.success) {
-        document.getElementById('passwordGate').style.display = 'none';
-        document.getElementById('otpGate').style.display = 'flex';
-        setTimeout(() => document.getElementById('otpInput').focus(), 150);
-      } else {
-        showGateErr(data.message || 'Failed to send OTP. Try again.');
-      }
-    } catch (e) {
-      showGateErr('Network error. Check connection and try again.');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Continue';
-    }
+    _adminUnlocked = true;
+    document.getElementById('passwordGate').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    initAdminData();
   } else {
     _failedAttempts++;
     if (_failedAttempts >= MAX_ATTEMPTS) {
