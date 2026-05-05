@@ -120,6 +120,8 @@ body::after{
 .nav-link:hover{color:#e2e8f0;background:rgba(255,255,255,0.06);}
 .nav-btn{font-size:13px;font-weight:700;color:#fff;text-decoration:none;padding:7px 18px;border-radius:9px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);box-shadow:0 4px 14px rgba(139,92,246,0.35);transition:all 0.25s ease;margin-left:6px;}
 .nav-btn:hover{transform:translateY(-1px) scale(1.03);box-shadow:0 8px 22px rgba(139,92,246,0.5);}
+.nav-btn-demo{background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);box-shadow:none;}
+.nav-btn-demo:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.35);box-shadow:none;transform:none;}
 .nav-ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:none;border:none;}
 .nav-ham span{width:22px;height:2px;background:#94a3b8;border-radius:2px;display:block;transition:all 0.3s;}
 .nav-drawer{display:none;position:fixed;top:62px;left:0;right:0;z-index:99;background:rgba(6,9,20,0.96);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07);padding:16px 20px 20px;flex-direction:column;gap:6px;animation:drawerDown 0.22s ease both;}
@@ -186,8 +188,8 @@ body::after{
 .trust-icon{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:#334155;}
 
 /* card head */
-.card-head{text-align:center;margin-bottom:22px;}
-.card-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:100px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.3);font-size:10px;font-weight:700;color:#c4b5fd;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px;}
+.card-head{text-align:center;margin-bottom:14px;}
+.card-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:100px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.3);font-size:10px;font-weight:700;color:#c4b5fd;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;}
 .badge-dot{width:6px;height:6px;border-radius:50%;background:#a78bfa;animation:pulseDot 2s ease-in-out infinite;}
 .card-title{font-size:24px;font-weight:800;letter-spacing:-0.02em;color:#ffffff;text-shadow:0 0 28px rgba(99,102,241,0.35);}
 .card-sub{font-size:12.5px;color:#64748b;margin-top:6px;}
@@ -197,8 +199,8 @@ body::after{
 #infoBox{display:none;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.18);color:#86efac;font-size:13px;font-weight:500;margin-bottom:14px;}
 
 /* form */
-.fgroup{margin-bottom:12px;}
-.flabel{display:block;font-size:11px;font-weight:700;color:#4b6280;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:7px;}
+.fgroup{margin-bottom:8px;}
+.flabel{display:block;font-size:11px;font-weight:700;color:#4b6280;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px;}
 .iwrap{position:relative;}
 .iicon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#3d5268;pointer-events:none;display:flex;transition:color 0.25s;}
 .iwrap:focus-within .iicon{color:#8b5cf6;}
@@ -218,7 +220,7 @@ body::after{
 .toggle-pwd{position:absolute;right:11px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#3d5268;transition:color 0.2s,background 0.2s;}
 .toggle-pwd:hover{background:rgba(255,255,255,0.07);color:#94a3b8;}
 
-.btn{width:100%;height:50px;border:none;border-radius:12px;background:linear-gradient(135deg,#8b5cf6 0%,#3b82f6 100%);background-size:200% 200%;color:#fff;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s ease;box-shadow:0 8px 28px rgba(139,92,246,0.35);margin-top:4px;}
+.btn{width:100%;height:44px;border:none;border-radius:12px;background:linear-gradient(135deg,#8b5cf6 0%,#3b82f6 100%);background-size:200% 200%;color:#fff;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s ease;box-shadow:0 8px 28px rgba(139,92,246,0.35);margin-top:4px;}
 .btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.18) 0%,transparent 55%);opacity:0;transition:opacity 0.3s ease;}
 .btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 16px 40px rgba(139,92,246,0.55),0 0 32px rgba(59,130,246,0.3),0 0 0 1px rgba(139,92,246,0.3);}
 .btn:hover::before{opacity:1;}
@@ -237,7 +239,7 @@ body::after{
 .terms-text a:hover{color:#a78bfa;}
 
 /* ── MOBILE HEADER ── */
-.mob-head{display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;margin-bottom:24px;background:transparent;}
+.mob-head{display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;margin-bottom:12px;background:transparent;}
 .mob-logo{display:flex;align-items:center;justify-content:center;}
 .mob-logo-blend{display:inline-flex;mix-blend-mode:screen;}
 .logo-img-sm{height:80px;width:auto;display:block;filter:invert(1) hue-rotate(180deg) brightness(1.1);}
@@ -283,10 +285,21 @@ body::after{
 /* ── RESPONSIVE ── */
 @media(max-width:960px){
   .left{display:none;}
-  .right{width:100%;min-width:unset;padding:24px 20px 32px;min-height:calc(100vh - 62px);justify-content:flex-start;padding-top:28px;}
+  .page{min-height:unset;overflow:hidden;}
+  .right{width:100%;min-width:unset;padding:0 20px 32px;min-height:unset;justify-content:flex-start;margin-top:-60px;}
   .card-shine-wrap{max-width:100%;}
-  .card{padding:28px 20px;}
-  .mob-head{display:flex;}
+  .card{padding:12px 14px 14px;}
+  .card-head{margin-bottom:8px;}
+  .card-badge{margin-bottom:6px;padding:3px 10px;}
+  .card-title{font-size:18px;}
+  .card-sub{font-size:11px;margin-top:2px;}
+  .fgroup{margin-bottom:5px;}
+  .flabel{margin-bottom:3px;font-size:10px;}
+  .field{height:38px;font-size:13px;}
+  .btn{height:38px;font-size:13px;margin-top:2px;}
+  .mob-head{display:flex;margin-bottom:6px;}
+  .cfoot{margin-top:8px;font-size:12px;}
+  .terms-text{margin-top:6px;font-size:10px;}
   .navbar{padding:0 20px;}
   .nav-links{display:none;}
   .nav-ham{display:flex;}
@@ -722,8 +735,8 @@ body::after{
   </a>
   <div class="nav-links">
     <a href="/" class="nav-link">Home</a>
-    <a href="/services" class="nav-link">Services</a>
     <a href="/contact" class="nav-link">Contact</a>
+    <a href="https://youtube.com/shorts/5uHqBSYV_7o?si=aBXODEVfKQ7l7qWC" target="_blank" rel="noopener" class="nav-btn nav-btn-demo">▶ Watch Demo</a>
     <a href="/" class="nav-btn">Login</a>
   </div>
   <button class="nav-ham" onclick="toggleNavDrawer()" aria-label="Menu">
@@ -734,8 +747,8 @@ body::after{
 <!-- Mobile nav drawer -->
 <div class="nav-drawer" id="navDrawer">
   <a href="/" class="nav-link">Home</a>
-  <a href="/services" class="nav-link">Services</a>
   <a href="/contact" class="nav-link">Contact</a>
+  <a href="https://youtube.com/shorts/5uHqBSYV_7o?si=aBXODEVfKQ7l7qWC" target="_blank" rel="noopener" class="nav-btn nav-btn-demo">▶ Watch Demo</a>
   <a href="/" class="nav-btn">Login</a>
 </div>
 
@@ -833,10 +846,6 @@ body::after{
 
       <!-- Card header -->
       <div class="card-head">
-        <div class="card-badge">
-          <span class="badge-dot"></span>
-          New Account
-        </div>
         <div class="card-title">Create Account</div>
         <div class="card-sub">Join GETXH and start growing today</div>
       </div>
@@ -1003,41 +1012,12 @@ body::after{
     </div>
     </div>
 
-    <!-- Trust line -->
-    <div class="trust-line">
-      <span class="trust-text">Trusted by 5,000+ creators</span>
-      <div class="trust-icons">
-        <span class="trust-icon">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Secure
-        </span>
-        <span class="trust-icon">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          Fast
-        </span>
-        <span class="trust-icon">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Realtime
-        </span>
-      </div>
-    </div>
 
   </div><!-- /.right -->
 
 </div><!-- /.page -->
 
 
-<footer class="site-footer">
-  <div class="footer-links">
-    <a href="/privacy" class="footer-link">Privacy Policy</a>
-    <span class="footer-sep">·</span>
-    <a href="/terms" class="footer-link">Terms of Service</a>
-    <span class="footer-sep">·</span>
-    <a href="/refund" class="footer-link">Refund Policy</a>
-    <span class="footer-sep">·</span>
-    <a href="/contact" class="footer-link">Contact</a>
-  </div>
-</footer>
 
 <script>
 /* ─── password toggle ─── */

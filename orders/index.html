@@ -533,8 +533,62 @@ async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
       window._updateOrderInFirestore(docId, firestoreStatus);
     }
 
+    // Show cancel button only if API says can_cancel = 1
+    const cancelWrap = document.getElementById('cancelWrap-' + eid);
+    if (cancelWrap) {
+      cancelWrap.style.display = (data.can_cancel == 1) ? 'block' : 'none';
+    }
+
   } catch(err) {
     console.log('Status poll error [' + apiOrderId + ']:', err);
+  }
+}
+
+async function cancelOrder(apiOrderId, docId, price, eid) {
+  const btn  = document.getElementById('cancelBtn-'  + eid);
+  const wrap = document.getElementById('cancelWrap-' + eid);
+  if (!btn) return;
+  btn.disabled = true;
+  btn.textContent = 'Cancelling...';
+
+  try {
+    const res  = await fetch('https://backend-for-api-connect-production.up.railway.app/cancel', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({order: apiOrderId})
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      // Update Firestore order status → Cancelled
+      if (typeof window._updateOrderInFirestore === 'function') {
+        await window._updateOrderInFirestore(docId, 'Cancelled');
+      }
+      // Refund price back to wallet
+      if (typeof window._refundBalance === 'function' && price > 0) {
+        await window._refundBalance(price);
+      }
+      // Update status badge in UI
+      const _bc = 'px-2.5 py-1 rounded-md text-xs font-semibold';
+      const txtEl   = document.getElementById('statusText-'  + eid);
+      const dotEl   = document.getElementById('statusDot-'   + eid);
+      const badgeEl = document.getElementById('statusBadge-' + eid);
+      const barEl   = document.getElementById('progressBar-' + eid);
+      if (txtEl)   txtEl.textContent = 'Cancelled';
+      if (dotEl)   dotEl.style.background = '#f87171';
+      if (badgeEl) { badgeEl.className = _bc + ' status-cancelled'; badgeEl.style.background=''; badgeEl.style.color=''; badgeEl.style.border=''; }
+      if (barEl)   barEl.style.background = 'transparent';
+      // Hide cancel button
+      if (wrap) wrap.style.display = 'none';
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Cancel Order';
+      alert(data.message || 'Cancellation failed. Please try again.');
+    }
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = 'Cancel Order';
+    alert('Network error. Please try again.');
   }
 }
 
@@ -685,6 +739,15 @@ function renderOrders(orders) {
           <span class="text-gray-400 text-xs">${o.createdAtReadable || '—'}</span>
         </div>
 
+        <!-- Cancel button — hidden until API confirms can_cancel=1 -->
+        <div id="cancelWrap-${eid}" style="display:none;padding-top:10px;margin-top:2px;border-top:1px solid rgba(255,255,255,0.05);">
+          <button id="cancelBtn-${eid}"
+                  onclick="cancelOrder('${o.apiOrderId}','${o.docId}',${o.price||0},'${eid}')"
+                  style="width:100%;padding:9px;border-radius:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.22);color:#f87171;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.04em;transition:background 0.2s;">
+            Cancel Order
+          </button>
+        </div>
+
       </div>
 
       <!-- Progress bar -->
@@ -704,7 +767,7 @@ function renderOrders(orders) {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -728,6 +791,13 @@ window._updateOrderInFirestore = async function(docId, status) {
   if (!docId) return;
   try {
     await updateDoc(doc(db, 'orders', docId), { status });
+  } catch(_) {}
+};
+
+window._refundBalance = async function(price) {
+  if (!window._currentUid || !price) return;
+  try {
+    await updateDoc(doc(db, 'Users', window._currentUid), { Balance: increment(Number(price)) });
   } catch(_) {}
 };
 

@@ -536,6 +536,11 @@ body::after{
   background:rgba(139,92,246,0.04);
 }
 .finput.has-toggle{padding-right:46px;}
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button{display:none !important;}
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-credentials-auto-fill-button{visibility:hidden;display:none !important;pointer-events:none;}
 
 .toggle-pwd{
   position:absolute;right:11px;top:50%;transform:translateY(-50%);
@@ -666,10 +671,11 @@ body::after{
 @media(max-width:960px){
   .left{display:none;}
   .wrap{overflow:hidden;}
+  .page{min-height:unset;}
   .right{
     width:100%;min-width:unset;
     padding:0 20px 32px;
-    min-height:calc(100vh - 62px);
+    min-height:unset;
     justify-content:flex-start;
     margin-top:-120px;
   }
@@ -735,30 +741,46 @@ body::after{
 .stats-bar-inner{
   max-width:960px;margin:0 auto;
   display:grid;grid-template-columns:repeat(4,1fr);
-  border:1px solid rgba(255,255,255,0.07);
-  border-radius:20px;overflow:hidden;
-  background:rgba(10,18,38,0.7);
+  background:rgba(6,12,30,0.9);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:24px;overflow:hidden;
+  box-shadow:0 0 0 1px rgba(255,255,255,0.03) inset, 0 24px 60px rgba(0,0,0,0.5);
 }
 .sbar-card{
-  padding:32px 24px;text-align:center;
-  background:transparent;
-  border-right:1px solid rgba(255,255,255,0.06);
+  position:relative;overflow:hidden;
+  padding:38px 28px 32px;text-align:center;
+  border-right:1px solid rgba(255,255,255,0.05);
   transition:background 0.3s;
 }
 .sbar-card:last-child{border-right:none;}
-.sbar-card:hover{background:rgba(99,102,241,0.08);}
+.sbar-card:hover{background:rgba(255,255,255,0.03);}
+.sbar-card::after{
+  content:'';position:absolute;
+  width:100px;height:100px;border-radius:50%;
+  top:10px;left:50%;transform:translateX(-50%);
+  filter:blur(35px);opacity:0.18;pointer-events:none;
+}
+.sbar-card:nth-child(1)::after{background:#10b981;}
+.sbar-card:nth-child(2)::after{background:#8b5cf6;}
+.sbar-card:nth-child(3)::after{background:#f59e0b;}
+.sbar-card:nth-child(4)::after{background:#3b82f6;}
 .sbar-val{
-  font-size:32px;font-weight:800;letter-spacing:-0.02em;
+  font-size:40px;font-weight:900;letter-spacing:-0.03em;
   color:#ffffff;
-  display:block;margin-bottom:8px;line-height:1;
+  display:block;margin-bottom:10px;line-height:1;
+  position:relative;z-index:1;
 }
 .sbar-val .live-dot-s{
   display:inline-block;width:7px;height:7px;border-radius:50%;
-  background:#10b981;box-shadow:0 0 6px rgba(16,185,129,0.5);
-  margin-right:5px;vertical-align:middle;
+  background:#10b981;box-shadow:0 0 8px rgba(16,185,129,0.7);
+  margin-right:6px;vertical-align:middle;
   animation:livePulse 1.6s ease-in-out infinite;
 }
-.sbar-lbl{font-size:10.5px;color:#ffffff;text-transform:uppercase;letter-spacing:0.09em;font-weight:600;}
+.sbar-lbl{
+  font-size:10px;color:#475569;text-transform:uppercase;
+  letter-spacing:0.16em;font-weight:700;
+  position:relative;z-index:1;
+}
 
 /* ── 4. SERVICES TICKER ── */
 .ticker-wrap{
@@ -905,20 +927,13 @@ body::after{
 .cta-section{position:relative;z-index:2;padding:0 40px 72px;background:transparent;}
 .cta-inner{
   max-width:900px;margin:0 auto;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(139,92,246,0.35);
+  background:#2E86C1;
+  border:1px solid rgba(255,255,255,0.15);
   border-radius:28px;padding:60px 48px;text-align:center;
   position:relative;overflow:hidden;
-  backdrop-filter:blur(16px);
-  box-shadow:0 0 0 1px rgba(99,102,241,0.12),0 24px 64px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06);
+  box-shadow:0 24px 64px rgba(46,134,193,0.35),inset 0 1px 0 rgba(255,255,255,0.12);
 }
-.cta-inner::before{
-  content:'';position:absolute;inset:0;border-radius:28px;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -10%,rgba(139,92,246,0.18),transparent 60%),
-    radial-gradient(ellipse 60% 40% at 90% 110%,rgba(99,102,241,0.12),transparent 55%);
-  pointer-events:none;
-}
+.cta-inner::before{display:none;}
 .cta-title{font-size:clamp(28px,3.2vw,44px);font-weight:800;color:#fff;letter-spacing:-0.025em;margin-bottom:12px;}
 .cta-sub{font-size:15px;color:rgba(255,255,255,0.78);margin-bottom:36px;line-height:1.65;}
 .cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
@@ -941,8 +956,10 @@ body::after{
   .stats-bar,.lp-section,.cta-section{padding-left:20px;padding-right:20px;}
   .stats-bar-inner{grid-template-columns:repeat(2,1fr);}
   .sbar-card:nth-child(2){border-right:none;}
-  .sbar-card:nth-child(3){border-top:1px solid rgba(255,255,255,0.06);}
-  .sbar-card:nth-child(4){border-top:1px solid rgba(255,255,255,0.06);border-right:none;}
+  .sbar-card:nth-child(3){border-top:1px solid rgba(255,255,255,0.05);}
+  .sbar-card:nth-child(4){border-top:1px solid rgba(255,255,255,0.05);border-right:none;}
+  .sbar-val{font-size:32px;}
+  .sbar-card{padding:28px 20px 24px;}
   .benefits-grid{grid-template-columns:1fr;}
   .hiw-layout{grid-template-columns:1fr;}
   .hiw-visual{display:none;}
@@ -1371,7 +1388,7 @@ body::after{
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
           </span>
-          <input id="password" type="password" autocomplete="new-password" autocapitalize="none" spellcheck="false"
+          <input id="password" type="password" autocomplete="off" autocapitalize="none" spellcheck="false"
             readonly onfocus="this.removeAttribute('readonly')"
             class="finput has-toggle" placeholder="Enter your password"
             oninput="siClearErr('password','si-err-password')"
