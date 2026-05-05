@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Services — GETXH</title>
+<link rel="icon" href="/GETXH WEB NEW LOGO.png" type="image/png">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:#000510;color:#e2e8f0;min-height:100vh;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 110% 22% at 28% 70%,rgba(140,225,255,0.22) 0%,rgba(30,130,255,0.1) 22%,rgba(0,60,200,0.04) 48%,transparent 62%),
+    radial-gradient(ellipse 95% 85% at -15% 115%,rgba(0,80,220,0.16) 0%,rgba(0,45,170,0.06) 38%,transparent 62%),
+    radial-gradient(ellipse 75% 65% at 3% 3%,rgba(0,55,170,0.1) 0%,transparent 58%),
+    linear-gradient(170deg,#000d28 0%,#000614 35%,#000208 100%);
+}
+
+/* ── NAV ── */
+.navbar{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:60px;
+  background:rgba(0,5,16,0.88);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo img{height:32px;}
+.nav-links{display:flex;align-items:center;gap:6px;}
+.nav-link{font-size:13px;font-weight:500;color:#94a3b8;text-decoration:none;padding:6px 14px;border-radius:8px;transition:all 0.2s;}
+.nav-link:hover,.nav-link.active{color:#e2e8f0;background:rgba(255,255,255,0.06);}
+.nav-btn{font-size:13px;font-weight:600;color:#fff;text-decoration:none;padding:7px 18px;border-radius:8px;background:linear-gradient(135deg,#6366f1,#8b5cf6);transition:opacity 0.2s;}
+.nav-btn:hover{opacity:0.85;}
+.nav-ham{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;}
+.nav-ham span{width:22px;height:2px;background:#94a3b8;border-radius:2px;display:block;}
+.nav-drawer{display:none;flex-direction:column;gap:4px;padding:16px;position:fixed;top:60px;left:0;right:0;z-index:99;background:rgba(0,5,16,0.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07);}
+.nav-drawer.open{display:flex;}
+.nav-drawer .nav-link{padding:11px 14px;font-size:14px;border-radius:10px;}
+.nav-drawer .nav-btn{margin:6px 0 0;text-align:center;padding:12px;border-radius:10px;font-size:14px;}
+@media(max-width:960px){.navbar{padding:0 16px;}.nav-links{display:none;}.nav-ham{display:flex;}}
+
+/* ── PAGE ── */
+.page{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:36px 20px 80px;}
+
+/* ── HEADER ── */
+.pg-head{margin-bottom:28px;}
+.pg-title{font-size:clamp(22px,3vw,32px);font-weight:800;color:#fff;letter-spacing:-0.025em;}
+.pg-sub{font-size:13px;color:#475569;margin-top:5px;}
+
+/* ── SEARCH + FILTER ── */
+.topbar{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;align-items:center;}
+.search-box{
+  position:relative;flex:1;min-width:200px;
+}
+.search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:0.4;}
+.search-box input{
+  width:100%;padding:10px 12px 10px 36px;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);
+  border-radius:10px;color:#e2e8f0;font-size:13px;outline:none;
+}
+.search-box input::placeholder{color:#475569;}
+.search-box input:focus{border-color:rgba(99,102,241,0.5);}
+
+.pill-bar{display:flex;gap:6px;flex-wrap:wrap;}
+.pill{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 13px;border-radius:20px;font-size:12px;font-weight:600;
+  border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);
+  color:#64748b;cursor:pointer;transition:all 0.2s;white-space:nowrap;
+}
+.pill svg{width:14px;height:14px;flex-shrink:0;}
+.pill:hover{border-color:rgba(255,255,255,0.15);color:#94a3b8;}
+.pill.on{border-color:rgba(99,102,241,0.45);background:rgba(99,102,241,0.12);color:#a5b4fc;}
+
+/* ── CATEGORY BLOCK ── */
+.cat-block{margin-bottom:6px;}
+.cat-head{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 16px;
+  background:rgba(10,18,38,0.9);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:12px 12px 0 0;
+  cursor:pointer;user-select:none;
+}
+.cat-picon{
+  width:28px;height:28px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.cat-picon svg{width:15px;height:15px;}
+.cat-picon-instagram{background:rgba(225,48,108,0.12);border:1px solid rgba(225,48,108,0.22);color:#e1306c;}
+.cat-picon-youtube  {background:rgba(255,0,0,0.1);   border:1px solid rgba(255,0,0,0.2);   color:#ff4444;}
+.cat-picon-facebook {background:rgba(24,119,242,0.12);border:1px solid rgba(24,119,242,0.22);color:#1877f2;}
+.cat-picon-telegram {background:rgba(0,136,204,0.12); border:1px solid rgba(0,136,204,0.22); color:#0088cc;}
+.cat-picon-whatsapp {background:rgba(37,211,102,0.12);border:1px solid rgba(37,211,102,0.22);color:#25d366;}
+.cat-head-label{font-size:13px;font-weight:700;color:#e2e8f0;flex:1;}
+.cat-count{font-size:11px;color:#475569;background:rgba(255,255,255,0.05);padding:2px 8px;border-radius:10px;font-weight:600;}
+.cat-chevron{width:16px;height:16px;color:#475569;transition:transform 0.2s;flex-shrink:0;}
+.cat-block.collapsed .cat-chevron{transform:rotate(-90deg);}
+.cat-body{
+  border:1px solid rgba(255,255,255,0.06);
+  border-top:none;border-radius:0 0 12px 12px;
+  overflow:hidden;
+}
+.cat-block.collapsed .cat-body{display:none;}
+
+/* ── SERVICE ROW ── */
+.svc-row{
+  display:grid;
+  grid-template-columns:80px 1fr 110px 70px 100px 90px;
+  align-items:center;
+  padding:14px 16px;gap:0;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  transition:background 0.15s;
+}
+.svc-row:last-child{border-bottom:none;}
+.svc-row:hover{background:rgba(99,102,241,0.05);}
+
+/* Column headers */
+.tbl-head{
+  display:grid;
+  grid-template-columns:80px 1fr 110px 70px 100px 90px;
+  padding:9px 16px;gap:0;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  background:rgba(5,12,28,0.8);
+}
+.th{font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:0.08em;}
+.th.c{text-align:center;}
+
+.svc-id{font-size:12px;font-weight:700;color:#6366f1;font-family:monospace;}
+.svc-name{font-size:12.5px;color:#cbd5e1;line-height:1.45;padding-right:12px;}
+.svc-price{font-size:13px;font-weight:700;color:#f1f5f9;text-align:center;}
+.svc-min{font-size:12px;font-weight:600;color:#22c55e;text-align:center;}
+.svc-max{font-size:12px;color:#f87171;text-align:center;}
+.svc-act{display:flex;justify-content:center;}
+
+.view-btn{
+  padding:7px 18px;border-radius:20px;
+  background:linear-gradient(135deg,#ef4444,#dc2626);
+  color:#fff;font-size:11px;font-weight:700;
+  border:none;cursor:pointer;white-space:nowrap;
+  transition:opacity 0.2s,transform 0.15s;
+}
+.view-btn:hover{opacity:0.85;transform:scale(1.04);}
+
+/* ── MOBILE CARDS (≤700px) ── */
+@media(max-width:700px){
+  .tbl-head{display:none;}
+  .svc-row{
+    display:flex;flex-direction:column;align-items:stretch;
+    padding:14px;gap:10px;
+    background:rgba(255,255,255,0.02);
+  }
+  .svc-row:hover{background:rgba(99,102,241,0.06);}
+  .svc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+  .svc-info{flex:1;}
+  .svc-id-wrap{margin-bottom:4px;}
+  .svc-id{font-size:11px;}
+  .svc-name{font-size:13px;padding-right:0;}
+  .svc-meta{display:flex;gap:8px;flex-wrap:wrap;}
+  .meta-tag{
+    display:inline-flex;align-items:center;gap:4px;
+    padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;
+    background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07);
+    color:#94a3b8;
+  }
+  .meta-tag.price{color:#f1f5f9;border-color:rgba(255,255,255,0.12);}
+  .meta-tag.min{color:#22c55e;border-color:rgba(34,197,94,0.2);}
+  .meta-tag.max{color:#f87171;border-color:rgba(248,113,113,0.2);}
+  .svc-act{justify-content:flex-end;}
+  .view-btn{padding:8px 20px;font-size:12px;}
+  /* Hide desktop grid items */
+  .svc-price,.svc-min,.svc-max{display:none;}
+
+  .page{padding:20px 12px 60px;}
+  .topbar{gap:8px;}
+  .pill{padding:6px 10px;font-size:11px;}
+}
+
+/* ── NO RESULTS ── */
+.no-res{padding:48px;text-align:center;color:#334155;font-size:14px;}
+
+/* ── MODAL ── */
+.modal-bg{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,0.72);backdrop-filter:blur(10px);
+  align-items:center;justify-content:center;padding:16px;
+}
+.modal-bg.open{display:flex;}
+.modal{
+  width:100%;max-width:500px;
+  background:#0d1628;
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:20px;overflow:hidden;
+  box-shadow:0 40px 80px rgba(0,0,0,0.65);
+  animation:mIn 0.22s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes mIn{from{opacity:0;transform:translateY(14px) scale(0.97);}to{opacity:1;transform:none;}}
+.modal-hd{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  padding:18px 20px 16px;
+  background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);
+}
+.modal-hd-title{font-size:14px;font-weight:700;color:#fff;line-height:1.45;}
+.modal-x{
+  width:28px;height:28px;flex-shrink:0;
+  background:rgba(255,255,255,0.15);border:none;color:#fff;
+  border-radius:8px;cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.15s;
+}
+.modal-x:hover{background:rgba(255,255,255,0.25);}
+.modal-bd{padding:18px 20px 20px;}
+.m-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px;margin-bottom:8px;
+  font-size:13px;
+}
+.m-row span:first-child{color:#64748b;font-weight:500;}
+.m-row span:last-child{color:#e2e8f0;font-weight:600;}
+.m-desc{
+  padding:12px 14px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px;margin-bottom:18px;
+}
+.m-desc-title{font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;}
+.m-desc ul{padding-left:16px;}
+.m-desc li{font-size:12.5px;color:#94a3b8;line-height:1.6;margin-bottom:3px;}
+.order-btn{
+  display:block;width:100%;padding:13px;
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  color:#fff;font-size:14px;font-weight:700;
+  border:none;border-radius:12px;cursor:pointer;
+  text-decoration:none;text-align:center;
+  transition:opacity 0.2s;
+}
+.order-btn:hover{opacity:0.88;}
+
+/* ── FOOTER ── */
+.site-footer{position:relative;z-index:1;border-top:1px solid rgba(255,255,255,0.06);padding:28px 20px;text-align:center;}
+.footer-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;}
+.footer-links a{font-size:12px;color:#334155;text-decoration:none;transition:color 0.2s;}
+.footer-links a:hover{color:#64748b;}
+.footer-copy{font-size:11px;color:#1e293b;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="navbar">
+  <a href="/" class="nav-logo"><img src="/GETXH WEB NEW LOGO.png" alt="GETXH"></a>
+  <div class="nav-links">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/services" class="nav-link active">Services</a>
+    <a href="/contact" class="nav-link">Contact</a>
+    <a href="/" class="nav-btn">Login</a>
+  </div>
+  <button class="nav-ham" onclick="toggleNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="nav-drawer" id="navDrawer">
+  <a href="/" class="nav-link">Home</a>
+  <a href="/services" class="nav-link active">Services</a>
+  <a href="/contact" class="nav-link">Contact</a>
+  <a href="/" class="nav-btn">Login</a>
+</div>
+
+<div class="page">
+  <div class="pg-head">
+    <h1 class="pg-title">Our Services</h1>
+    <p class="pg-sub">Instagram, YouTube, Facebook, Telegram & more — all in one place</p>
+  </div>
+
+  <!-- Search -->
+  <div class="topbar">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="searchInput" type="text" placeholder="Search services or ID...">
+    </div>
+  </div>
+
+  <div id="tableArea"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal" id="modalBox">
+    <div class="modal-hd">
+      <div class="modal-hd-title" id="mTitle"></div>
+      <button class="modal-x" id="modalCloseBtn">✕</button>
+    </div>
+    <div class="modal-bd">
+      <div class="m-row"><span>Price per 1000</span><span id="mPrice"></span></div>
+      <div class="m-row"><span>Minimum Order</span><span id="mMin" style="color:#22c55e"></span></div>
+      <div class="m-row"><span>Maximum Order</span><span id="mMax" style="color:#f87171"></span></div>
+      <div class="m-desc">
+        <div class="m-desc-title">Service Details</div>
+        <ul id="mDesc"></ul>
+      </div>
+      <a href="/" class="order-btn">Order Now</a>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-links">
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/terms">Terms of Service</a>
+    <a href="/refund">Refund Policy</a>
+    <a href="/cancellation">Cancellation</a>
+    <a href="/contact">Contact</a>
+  </div>
+  <p class="footer-copy">© 2025 GETXH. All rights reserved.</p>
+</footer>
+
+<script>
+// ── NAV ──
+function toggleNav(){document.getElementById('navDrawer').classList.toggle('open');}
+document.addEventListener('click',e=>{
+  const d=document.getElementById('navDrawer');
+  if(d.classList.contains('open')&&!d.contains(e.target)&&!e.target.closest('.nav-ham')) d.classList.remove('open');
+});
+
+// ── PLATFORM ICONS ──
+const PLATFORM_ICONS={
+  instagram:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>`,
+  youtube:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.96-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg>`,
+  facebook: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`,
+  telegram: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.2 4.4 2.5 11.7c-1.2.5-1.2 1.1-.2 1.4l4.7 1.5 1.8 5.5c.2.6.5.9 1 .9.4 0 .7-.2.9-.5l2.7-2.6 5.2 3.8c1 .5 1.7.3 1.9-.9l2.9-13.7c.3-1.4-.5-2-1.2-1.7z"/></svg>`,
+  whatsapp: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`,
+};
+
+// ── DATA ──
+const CATS=[
+  {id:'welcome-offer',   label:'Welcome Offer',                         p:'instagram'},
+  {id:'cheap_followers', label:'Cheapest Instagram Followers',          p:'instagram'},
+  {id:'reel-views',      label:'Instagram — Reel / Post Views',         p:'instagram'},
+  {id:'followers',       label:'Instagram — Followers',                 p:'instagram'},
+  {id:'likes',           label:'Instagram — Likes',                     p:'instagram'},
+  {id:'comments',        label:'Instagram — Comments',                  p:'instagram'},
+  {id:'shares',          label:'Instagram — Shares & Saves',            p:'instagram'},
+  {id:'yt-likes',        label:'YouTube — Likes',                       p:'youtube'},
+  {id:'yt-views',        label:'YouTube — Views',                       p:'youtube'},
+  {id:'yt-subscribers',  label:'YouTube — Subscribers',                 p:'youtube'},
+  {id:'yt-native-ad',    label:'YouTube — Native Ad Views',             p:'youtube'},
+  {id:'yt-adwords',      label:'YouTube — Adwords Views',               p:'youtube'},
+  {id:'yt-livestream',   label:'YouTube — Live Stream Views',           p:'youtube'},
+  {id:'fb-views',        label:'Facebook — Views',                      p:'facebook'},
+  {id:'fb-reactions',    label:'Facebook — Post Reactions',             p:'facebook'},
+  {id:'fb-followers',    label:'Facebook — Followers',                  p:'facebook'},
+  {id:'fb-livestream',   label:'Facebook — Live Stream Views',          p:'facebook'},
+  {id:'tg-members',      label:'Telegram — Members',                    p:'telegram'},
+  {id:'wa-members',      label:'WhatsApp — Members',                    p:'whatsapp'},
+];
+
+// All services indexed by ID for quick modal lookup
+const SVC_MAP={};
+
+const SVCS={
+  'welcome-offer':[
+    {id:12278,name:'Instagram Followers',price:151.51,min:10,max:100000,d:['Make sure your account is public','In high demand, speed and start time may change','Do not place a second order on the same link before completion']},
+    {id:12179,name:'Instagram Views',price:0.38,min:100,max:2147483647,d:['Use reels or post link','Private accounts not accepted']},
+    {id:12181,name:'Instagram Likes',price:10,min:10,max:500000,d:['When service is busy, start speed may change','Do not place second order on same link before completion','Contact support if any issue']},
+  ],
+  'cheap_followers':[
+    {id:12321,name:'Instagram Followers | Real Accounts | 20K-50K+/Day | 30 Days | 10-30% Drop',price:43.71,min:10,max:100000,d:['When service is busy, start time may change','Do not place second order on same link before completion','Contact support if any issue']},
+    {id:11945,name:'Instagram Followers | Real Accounts | 10K/Day | No Refill | High Drop',price:62.88,min:10,max:50000,d:['Location: Global','Use profile link or username','Make sure account is public','In high demand, speed and start time may change','Do not place second order on same link before completion']},
+    {id:11911,name:'Instagram Followers | Real Accounts | 100K/Day | 365 Days | Low Drop',price:89.23,min:10,max:100000,d:['Location: Global','Use profile link or username','Make sure account is public','In high demand, speed and start time may change','Do not place second order on same link before completion']},
+  ],
+  'reel-views':[
+    {id:12179,name:'Instagram Views',price:1,min:50,max:2147483647,d:['Works on Reels and Post links','Use reel or post link only','Private accounts not accepted','Wrong links are non-refundable']},
+    {id:12007,name:'Instagram Video Views',price:2.5,min:10,max:2147483647,d:['Make sure account is public','Use reel or post link only','Wrong links are non-refundable']},
+    {id:12008,name:'Instagram High Quality Views',price:4.86,min:50,max:2147483647,d:['Works on Video, Reel & IGTV links','Make sure account is public','Wrong links are non-refundable']},
+  ],
+  'followers':[
+    {id:12327,name:'Low Quality Followers',price:79.25,min:50,max:1000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12278,name:'Low Quality Followers',price:110,min:50,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:11948,name:'Good Quality Followers',price:120,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:11492,name:'High Quality Followers',price:200,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:11494,name:'Premium Quality Followers',price:239,min:20,max:1000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+  ],
+  'likes':[
+    {id:12305,name:'Instagram Likes | Real Profiles | 100K+/Day | 365 Days Refill',price:15.55,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12308,name:'Instagram Likes | Indian | 300K/Day | 30 Days Refill',price:21.17,min:50,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12312,name:'Instagram Likes | Indian | 300K/Day | Lifetime Refill',price:22.15,min:50,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:11418,name:'Instagram Likes | Real Indian + Story | 10K+/Hour | Lifetime Refill',price:86,min:100,max:1000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:11443,name:'Instagram Likes | 100% Real Indian Profile with Story | 10K+/Hour | Lifetime',price:86,min:100,max:1000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+  ],
+  'comments':[
+    {id:10389,name:'Instagram Comments | Random | 100% Real Users | Non Drop | 10K/Day',price:189.35,min:50,max:50000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:10390,name:'Instagram Comments | Custom | 100% Real Users | Non Drop | 10K/Day',price:489.23,min:50,max:50000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+  ],
+  'shares':[
+    {id:8703,name:'Instagram Shares',price:8.034,min:100,max:1000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:8704,name:'Instagram Post Share',price:64.837,min:10,max:10000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12317,name:'Instagram Saves',price:24.6176,min:100,max:200000,d:['Link: Instagram username / Profile Link','Location: Worldwide | Quality: 100% Real Accounts','In high demand, there may be changes in speed and start time']},
+    {id:12001,name:'Instagram Premium Quality Saves',price:10.4912,min:10,max:400000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+  ],
+  'yt-likes':[
+    {id:11579,name:'YouTube Likes | High Quality | 50K+/Day | 365 Days',price:50.26,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:11285,name:'YouTube Likes | 200K+/Day | 30 Days | 1 Min Complete',price:386,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:11289,name:'YouTube Likes | 200K+/Day | Lifetime | 1 Min Complete',price:413,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12349,name:'YouTube Likes | HQ Profiles | 500K/Day | 365 Days',price:845,min:10,max:5000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+  ],
+  'yt-views':[
+    {id:11346,name:'YouTube Views | Non Drop | 3K-5K+/Day | Lifetime',price:146.017,min:100,max:10000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:10007,name:'YouTube Views | Social Ads | 200K+/Day | Real Users | Lifetime',price:159.53,min:10000,max:3000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12303,name:'YouTube Views | Non Drop | 5K-10K+/Day | Lifetime',price:140.9444,min:100,max:10000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:11580,name:'YouTube Views | Worldwide | 20K+/Day | Lifetime',price:160.7413,min:100,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+  ],
+  'yt-subscribers':[
+    {id:12224,name:'YouTube Subscribers | Low Quality | No Refill | 30K/Hour',price:400,min:10,max:30000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:11586,name:'YouTube Subscribers | Non Drop | 100/Day | Lifetime',price:2134.93,min:100,max:100000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:11589,name:'YouTube Subscribers | Non Drop | 1000/Day | Lifetime',price:2810.74,min:100,max:100000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+  ],
+  'yt-native-ad':[
+    {id:10796,name:'YouTube Native Ads Views | 500K+/Day | Lifetime | Min 1K',price:178.63,min:1000,max:10000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:10795,name:'YouTube Native Ads Views | 500K+/Day | Lifetime | Min 5K',price:184.06,min:5000,max:10000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:11754,name:'YouTube Native Ads Views | 500K+/Day | Lifetime | Min 500K',price:106.53,min:500000,max:10000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:10789,name:'YouTube Native Ads Views | 500K+/Day | Lifetime | Min 200K',price:133.72,min:200000,max:10000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+  ],
+  'yt-adwords':[
+    {id:9805,name:'YouTube Adwords Views | 500K/Day | Lifetime | Min 1M | Start 24-48H',price:137.02,min:1000000,max:100000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12042,name:'YouTube Adwords Views | 100% Indian | 1M/Day | Lifetime | Min 50K',price:165.75,min:50000,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12041,name:'YouTube Adwords Views | 100% Indian | 1M/Day | Lifetime | Min 100K',price:170.64,min:100000,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+  ],
+  'yt-livestream':[
+    {id:10248,name:'YouTube Livestream Views | Real Views + Likes | Concurrent | 15 Min',price:104.54,min:100,max:500000,d:['100% Concurrent for 15 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10249,name:'YouTube Livestream Views | Real Views + Likes | Concurrent | 30 Min',price:109.10,min:100,max:5000000,d:['100% Concurrent for 30 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10250,name:'YouTube Livestream Views | Real Views + Likes | Concurrent | 60 Min',price:118.24,min:100,max:5000000,d:['100% Concurrent for 60 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10251,name:'YouTube Livestream Views | Real Views + Likes | Concurrent | 90 Min',price:127.70,min:100,max:5000000,d:['100% Concurrent for 90 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10252,name:'YouTube Livestream Views | Real Views + Likes | Concurrent | 120 Min',price:136.56,min:100,max:5000000,d:['100% Concurrent for 120 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10253,name:'YouTube Livestream Views | Real Views + Likes | Concurrent | 180 Min',price:172.01,min:100,max:5000000,d:['100% Concurrent for 180 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10254,name:'YouTube Livestream Views | Real Views + Likes | Concurrent | 240 Min',price:172.51,min:50,max:5000000,d:['100% Concurrent for 240 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10255,name:'YouTube Livestream Views | Real Views + Likes | Concurrent | 360 Min',price:208.20,min:100,max:5000000,d:['100% Concurrent for 360 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10256,name:'YouTube Livestream Views | Real Views + Likes | Concurrent | 720 Min',price:317.88,min:100,max:5000000,d:['100% Concurrent for 720 Minutes','Real Views + Likes included','Use YouTube live stream link']},
+    {id:10257,name:'YouTube Livestream Views | Real Views + Likes | Concurrent | 1 Day',price:530.85,min:100,max:5000000,d:['100% Concurrent for 1 Day','Real Views + Likes included','Use YouTube live stream link']},
+  ],
+  'fb-views':[
+    {id:12257,name:'Facebook Views | Non Drop | Lifetime | 50K/Day',price:3.87,min:500,max:2147483647,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12418,name:'Facebook Views (Video/Reels) | Non Drop | Lifetime | 100K/Day',price:5.53,min:100,max:2147483647,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12417,name:'Facebook Views (Video/Reels) | Non Drop | Lifetime | 1M/Day',price:7.55,min:100,max:100000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+  ],
+  'fb-reactions':[
+    {id:12232,name:'Facebook Reactions | Like | Worldwide | 30 Days | 10K/Day',price:14.66,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12233,name:'Facebook Reactions | Love | Worldwide | 30 Days | 10K/Day',price:14.98,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12234,name:'Facebook Reactions | Wow | Worldwide | 30 Days | 10K/Day',price:14.72,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12235,name:'Facebook Reactions | Care | Worldwide | 30 Days | 10K/Day',price:14.12,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12236,name:'Facebook Reactions | Haha | Worldwide | 30 Days | 10K/Day',price:14.12,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12239,name:'Facebook Reactions | Like | No Refill | 10K/Day',price:13.92,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12240,name:'Facebook Reactions | Love | No Refill | 10K/Day',price:13.92,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:11889,name:'Facebook Reactions | Like | Mix Quality | No Refill | 10K/Day',price:14.98,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+  ],
+  'fb-followers':[
+    {id:12198,name:'Facebook Followers | All Type Profile | Non Drop | Lifetime | 100K+/Day',price:113.32,min:10,max:100000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12182,name:'Facebook Followers | All Type Profile | Non Drop | 365 Days | 100K+/Day',price:118.63,min:100,max:1000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12210,name:'Facebook Followers | All Type Profile & Page | Non Drop | Lifetime | 200K/Day',price:118.86,min:10,max:500000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+  ],
+  'fb-livestream':[
+    {id:12258,name:'Facebook Live Stream | 100% Concurrent | 15 Min',price:134.37,min:10,max:5000,d:['100% Concurrent for 15 Minutes','Use Facebook live stream link','In case of any problems, contact support']},
+    {id:12259,name:'Facebook Live Stream | 100% Concurrent | 30 Min',price:168.75,min:10,max:5000,d:['100% Concurrent for 30 Minutes','Use Facebook live stream link','In case of any problems, contact support']},
+    {id:12260,name:'Facebook Live Stream | 100% Concurrent | 60 Min',price:237.49,min:10,max:5000,d:['100% Concurrent for 60 Minutes','Use Facebook live stream link','In case of any problems, contact support']},
+    {id:12261,name:'Facebook Live Stream | 100% Concurrent | 90 Min',price:306.24,min:10,max:5000,d:['100% Concurrent for 90 Minutes','Use Facebook live stream link','In case of any problems, contact support']},
+    {id:12262,name:'Facebook Live Stream | 100% Concurrent | 120 Min',price:374.98,min:10,max:5000,d:['100% Concurrent for 120 Minutes','Use Facebook live stream link','In case of any problems, contact support']},
+    {id:12263,name:'Facebook Live Stream | 100% Concurrent | 180 Min',price:512.48,min:10,max:5000,d:['100% Concurrent for 180 Minutes','Use Facebook live stream link','In case of any problems, contact support']},
+    {id:12264,name:'Facebook Live Stream | 100% Concurrent | 240 Min',price:649.97,min:10,max:5000,d:['100% Concurrent for 240 Minutes','Use Facebook live stream link','In case of any problems, contact support']},
+    {id:12265,name:'Facebook Live Stream | 100% Concurrent | 360 Min',price:924.95,min:10,max:5000,d:['100% Concurrent for 360 Minutes','Use Facebook live stream link','In case of any problems, contact support']},
+  ],
+  'tg-members':[
+    {id:12180,name:'Telegram Members | High Quality | Non Drop | Lifetime | 100K+/Day',price:164.40,min:10,max:1000000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12366,name:'Telegram Premium Members | Premium Account | 10 Days Refill | 30K/Day',price:400.41,min:100,max:50000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12367,name:'Telegram Premium Members | Premium Account | 20 Days Refill | 30K/Day',price:515.47,min:100,max:50000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:12368,name:'Telegram Premium Members | Premium Account | 30 Days Refill | 30K/Day',price:662.48,min:100,max:50000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+  ],
+  'wa-members':[
+    {id:11607,name:'WhatsApp Channel Members | Worldwide | Non Drop | No Refill | 10K/Day',price:342.83,min:10,max:10000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:11608,name:'WhatsApp Channel Members | Worldwide | Non Drop | 30 Days | 100K/Day',price:405.06,min:10,max:10000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+    {id:11609,name:'WhatsApp Channel Members | Worldwide | Non Drop | 365 Days | 100K/Day',price:523.82,min:10,max:10000,d:['When the service is busy, the starting speed changes','Do not place second order on same link before completion','In case of any problems, contact support']},
+  ],
+};
+
+// Build SVC_MAP — use composite key catId+svcIndex to allow duplicate IDs
+const SVC_KEY_MAP={};
+Object.keys(SVCS).forEach(catId=>{
+  SVCS[catId].forEach((s,i)=>{
+    const key=catId+'_'+i;
+    SVC_KEY_MAP[key]=s;
+  });
+});
+
+// ── HELPERS ──
+function fmtN(n){
+  if(n>=1000000000) return (n/1000000000).toFixed(1).replace(/\.0$/,'')+'B';
+  if(n>=1000000) return (n/1000000).toFixed(1).replace(/\.0$/,'')+'M';
+  if(n>=1000) return (n/1000).toFixed(0)+'K';
+  return String(n);
+}
+function fmtP(p){
+  const r=parseFloat(p);
+  return '₹'+(Number.isInteger(r)?r:r.toFixed(2).replace(/\.?0+$/,''));
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── STATE ──
+let activePlatform='all';
+let searchQ='';
+const isMobile=()=>window.innerWidth<=700;
+
+// ── RENDER ──
+function render(){
+  const area=document.getElementById('tableArea');
+  let html='';
+  let total=0;
+
+  CATS.forEach(cat=>{
+    if(activePlatform!=='all'&&cat.p!==activePlatform) return;
+    const svcs=(SVCS[cat.id]||[]).filter(s=>{
+      if(!searchQ) return true;
+      const q=searchQ.toLowerCase();
+      return s.name.toLowerCase().includes(q)||String(s.id).includes(q);
+    });
+    if(!svcs.length) return;
+    total+=svcs.length;
+
+    html+=`<div class="cat-block" id="cat_${cat.id}">
+      <div class="cat-head" onclick="toggleCat('${cat.id}')">
+        <span class="cat-picon cat-picon-${cat.p}">${PLATFORM_ICONS[cat.p]||''}</span>
+        <span class="cat-head-label">${esc(cat.label)}</span>
+        <span class="cat-count">${svcs.length} service${svcs.length>1?'s':''}</span>
+        <svg class="cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="cat-body">`;
+
+    // Desktop header (only first block of each platform)
+    html+=`<div class="tbl-head">
+      <div class="th">ID</div>
+      <div class="th">Service Name</div>
+      <div class="th c">Price/1K</div>
+      <div class="th c">Min</div>
+      <div class="th c">Max</div>
+      <div class="th c">View</div>
+    </div>`;
+
+    svcs.forEach((s,i)=>{
+      const key=cat.id+'_'+SVCS[cat.id].indexOf(s);
+      if(isMobile()){
+        html+=`<div class="svc-row">
+          <div class="svc-top">
+            <div class="svc-info">
+              <div class="svc-id-wrap"><span class="svc-id">${s.id}</span></div>
+              <div class="svc-name">${esc(s.name)}</div>
+            </div>
+            <div class="svc-act"><button class="view-btn" data-key="${esc(key)}">View</button></div>
+          </div>
+          <div class="svc-meta">
+            <span class="meta-tag price">₹${fmtP(s.price).replace('₹','')}/1K</span>
+            <span class="meta-tag min">Min: ${fmtN(s.min)}</span>
+            <span class="meta-tag max">Max: ${fmtN(s.max)}</span>
+          </div>
+        </div>`;
+      } else {
+        html+=`<div class="svc-row">
+          <div class="svc-id">${s.id}</div>
+          <div class="svc-name">${esc(s.name)}</div>
+          <div class="svc-price">${fmtP(s.price)}</div>
+          <div class="svc-min">${fmtN(s.min)}</div>
+          <div class="svc-max">${fmtN(s.max)}</div>
+          <div class="svc-act"><button class="view-btn" data-key="${esc(key)}">View</button></div>
+        </div>`;
+      }
+    });
+
+    html+=`</div></div>`;
+  });
+
+  if(!total) html='<div class="no-res">No services found.</div>';
+  area.innerHTML=html;
+
+  // Attach view btn events
+  area.querySelectorAll('.view-btn').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      openModal(this.dataset.key);
+    });
+  });
+}
+
+function toggleCat(id){
+  document.getElementById('cat_'+id).classList.toggle('collapsed');
+}
+
+// ── MODAL ──
+function openModal(key){
+  const s=SVC_KEY_MAP[key];
+  if(!s) return;
+  document.getElementById('mTitle').textContent=s.name;
+  document.getElementById('mPrice').textContent=fmtP(s.price)+' per 1000';
+  document.getElementById('mMin').textContent=fmtN(s.min);
+  document.getElementById('mMax').textContent=fmtN(s.max);
+  document.getElementById('mDesc').innerHTML=s.d.map(x=>`<li>${esc(x)}</li>`).join('');
+  document.getElementById('modalBg').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modalBg').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('modalCloseBtn').addEventListener('click',closeModal);
+document.getElementById('modalBg').addEventListener('click',function(e){
+  if(e.target===this) closeModal();
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+// ── SEARCH ──
+document.getElementById('searchInput').addEventListener('input',function(){
+  searchQ=this.value.trim();
+  render();
+});
+
+
+// ── RESIZE ──
+let resizeTimer;
+window.addEventListener('resize',()=>{
+  clearTimeout(resizeTimer);
+  resizeTimer=setTimeout(render,150);
+});
+
+render();
+</script>
+</body>
+</html>
