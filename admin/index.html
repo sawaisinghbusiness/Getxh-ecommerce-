@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" href="/GETXH WEB NEW LOGO.png" type="image/png">/>
+<link rel="icon" href="/GETXH WEB NEW LOGO.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <!-- Security: prevent caching -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
@@ -40,6 +40,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 @keyframes spin { to { transform:rotate(360deg); } }
 </style>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
+<script>
+  // Hard block — instant redirect if not agency@getxh.in
+  (function(){
+    var e = (localStorage.getItem('getxh_current_user') || '').toLowerCase().trim();
+    var loggedIn = localStorage.getItem('getxh_user_logged_in');
+    if (!loggedIn || e !== 'agency@getxh.in') {
+      window.location.replace('/');
+    }
+  })();
+</script>
   <style>body{opacity:0;transition:opacity .18s ease}</style>
 </head>
 <body class="bg-[#0b1220] text-white min-h-screen" style="visibility:hidden">
@@ -584,23 +594,38 @@ function switchTab(tab) {
 // ── Users — loaded from Firestore directly ───────────
 var BACKEND_URL = "https://backend-for-email-verification-code-production-61a3.up.railway.app";
 var _allUsersCache = [];
+var _unsubUsers = null;
 
-async function loadAllUsers() {
+function loadAllUsers() {
   var el = document.getElementById('usersList');
   el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Loading users…</p></div>';
-  try {
-    var snap = await window._getDocs(window._query(
-      window._collection(window._db, 'userData'),
-      window._orderBy('createdAt', 'desc'),
-      window._limit(200)
-    ));
-    var users = [];
-    snap.forEach(function(d) { users.push(Object.assign({ uid: d.id }, d.data())); });
-    _allUsersCache = users;
-    renderUsers(users);
-  } catch(e) {
-    el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Failed to load users</p><p class="text-xs mt-1 text-red-400">' + (e.message || 'Unknown error') + '</p></div>';
+
+  if (_unsubUsers) { _unsubUsers(); _unsubUsers = null; }
+
+  function startListener(collectionName) {
+    var q = window._collection(window._db, collectionName);
+    _unsubUsers = window._onSnapshot(q, function(snap) {
+      var users = [];
+      snap.forEach(function(d) { users.push(Object.assign({ uid: d.id }, d.data())); });
+      // Sort client-side newest first
+      users.sort(function(a, b) {
+        var at = a.createdAt && a.createdAt.seconds ? a.createdAt.seconds : (Number(a.createdAt) || 0);
+        var bt = b.createdAt && b.createdAt.seconds ? b.createdAt.seconds : (Number(b.createdAt) || 0);
+        return bt - at;
+      });
+      _allUsersCache = users;
+      renderUsers(users);
+    }, function(e) {
+      if (collectionName === 'userData') {
+        // Fallback to 'users' collection
+        startListener('users');
+      } else {
+        el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Failed to load users</p><p class="text-xs mt-1 text-red-400">' + (e.message || 'Unknown error') + '</p></div>';
+      }
+    });
   }
+
+  startListener('userData');
 }
 
 var _searchTimer = null;
@@ -923,7 +948,7 @@ import {
 
 const firebaseConfig = {
   apiKey:            "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
-  authDomain:        "getxh-42588.firebaseapp.com",
+  authDomain:        "getxh.in",
   projectId:         "getxh-42588",
   storageBucket:     "getxh-42588.firebasestorage.app",
   messagingSenderId: "170770122888",
@@ -933,13 +958,14 @@ const firebaseConfig = {
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
-window._db       = db;
-window._getDocs  = getDocs;
-window._query    = query;
-window._collection = collection;
-window._where    = where;
-window._orderBy  = orderBy;
-window._limit    = limit;
+window._db          = db;
+window._getDocs     = getDocs;
+window._query       = query;
+window._collection  = collection;
+window._where       = where;
+window._orderBy     = orderBy;
+window._limit       = limit;
+window._onSnapshot  = onSnapshot;
 
 window.getAdminHeaders = async function() {
   const user = auth.currentUser;
@@ -1005,10 +1031,19 @@ window.checkAdminPassword = async function checkAdminPassword() {
 
   if (hash === ADMIN_PWD_HASH) {
     _failedAttempts = 0;
-    _adminUnlocked = true;
+    // Password correct — now require OTP
     document.getElementById('passwordGate').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'block';
-    initAdminData();
+    const otpGate = document.getElementById('otpGate');
+    otpGate.style.display = 'flex';
+    setTimeout(() => document.getElementById('otpInput').focus(), 150);
+    // Auto-send OTP
+    try {
+      await fetch(BACKEND_URL + '/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: ADMIN_EMAIL })
+      });
+    } catch {}
   } else {
     _failedAttempts++;
     if (_failedAttempts >= MAX_ATTEMPTS) {
