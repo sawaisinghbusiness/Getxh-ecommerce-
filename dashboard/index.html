@@ -94,7 +94,7 @@ html, body {
   /* Positioning — works without Tailwind */
   position: fixed;
   top: 0; left: 0; bottom: 0;
-  width: 288px;
+  width:250px;
   z-index: 30;
   overflow: hidden;
   display: flex;
@@ -105,7 +105,7 @@ html, body {
 }
 @media (min-width: 1024px) {
   aside.desktop-sidebar { display: flex !important; flex-direction: column !important; }
-  .lg\:pl-72 { padding-left: 288px !important; }
+  .lg\:pl-72 { padding-left:250px !important; }
 }
 .desktop-sidebar-link {
   display: flex;
@@ -239,7 +239,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 
 <body class="bg-[#0b1220] text-white">
 
-<aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-72 lg:flex-col lg:overflow-hidden lg:border-r lg:border-white/10 desktop-sidebar"
+<aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-[250px] lg:flex-col lg:overflow-hidden lg:border-r lg:border-white/10 desktop-sidebar"
   style="background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);">
   <div class="px-5 pt-8 pb-5 border-b border-white/10" style="background:linear-gradient(135deg,#0e1f3d,#162844);">
     <div class="flex items-center gap-3 mb-4">
@@ -265,76 +265,76 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     </div>
   </div>
   <div class="flex-1 overflow-y-auto py-3 px-3">
-    <a href="/dashboard" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 transition-all active:scale-[0.98]" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#7aabdf;">dashboard</span>
+    <a href="/dashboard" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 transition-all active:scale-[0.98]" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;text-decoration:none;background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#7aabdf;">dashboard</span>
       </div>
-      <span class="font-bold text-white text-sm" style="font-weight:700;color:white;font-size:14px;">Dashboard</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-white text-sm" style="font-weight:700;color:white;font-size:16px;">Dashboard</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <button onclick="scrollToNewOrder()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#7aabdf;">add_shopping_cart</span>
+    <button onclick="scrollToNewOrder()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#7aabdf;">add_shopping_cart</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">New Order</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:16px;">New Order</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </button>
-    <a href="/orders" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#b8a050;">list_alt</span>
+    <a href="/orders" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#b8a050;">list_alt</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Orders</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:16px;">Orders</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="/support" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#9d82d4;">support_agent</span>
+    <a href="/support" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#9d82d4;">support_agent</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Support</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:16px;">Support</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="/wallet" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#6ab890;">account_balance_wallet</span>
+    <a href="/wallet" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#6ab890;">account_balance_wallet</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Add Funds</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:16px;">Add Funds</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="/coming-soon" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#c07840;">person_add</span>
+    <a href="/coming-soon" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#c07840;">person_add</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Affiliates</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:16px;">Affiliates</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <button onclick="window.location.href='/coming-soon'" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#5aacbf;">autorenew</span>
+    <button onclick="window.location.href='/coming-soon'" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#5aacbf;">autorenew</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Subscriptions</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:16px;">Subscriptions</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </button>
     <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer"
-      class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+      class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
         <span style="color:#6ab890;font-weight:700;font-size:18px;line-height:1;">W</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">WhatsApp</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:16px;">WhatsApp</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a id="desktopAdminBtn" href="/admin" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 hidden" style="display:none;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#5aacbf;">admin_panel_settings</span>
+    <a id="desktopAdminBtn" href="/admin" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 hidden" style="display:none;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#5aacbf;">admin_panel_settings</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:14px;">Admin Panel</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:16px;">Admin Panel</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
     <div class="h-px bg-white/10 my-3 mx-2" style="height:1px;background:rgba(255,255,255,0.1);margin:12px 8px;"></div>
-    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#e07070;">logout</span>
+    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#e07070;">logout</span>
       </div>
-      <span class="font-bold text-red-400 text-sm" style="font-weight:700;color:#f87171;font-size:14px;">Logout</span>
+      <span class="font-bold text-red-400 text-sm" style="font-weight:700;color:#f87171;font-size:16px;">Logout</span>
     </button>
   </div>
   <div class="px-5 py-4 border-t border-white/10">
@@ -350,7 +350,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   </div>
 </aside>
 
-<div class="lg:pl-72">
+<div class="lg:pl-[250px]">
 
 <span id="walletBalanceTop" class="hidden"></span>
 
@@ -365,9 +365,9 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 }
 .welcome-card {
   position: relative;
-  border-radius: 22px;
-  padding: 14px 16px 14px;
-  margin-bottom: 14px;
+  border-radius:8px;
+  padding:16px;
+  margin-bottom:16px;
   overflow: hidden;
   background: #0F172A;
   border: 1px solid rgba(255,255,255,0.1);
@@ -392,9 +392,9 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   pointer-events: none;
 }
 .wc-stat {
-  flex: 1;
-  border-radius: 14px;
-  padding: 10px 12px;
+  flex:1;
+  border-radius:7px;
+  padding:7px 10px;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.1);
   backdrop-filter: blur(10px);
@@ -410,7 +410,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
               top:-80px;right:-60px;pointer-events:none"></div>
 
   <!-- Top row: avatar + username + Add Funds btn -->
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;position:relative;z-index:1;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;position:relative;z-index:1;">
     <div style="display:flex;align-items:center;gap:13px;">
       <div style="width:38px;height:38px;border-radius:12px;flex-shrink:0;
                   background:rgba(34,197,94,0.12);border:1.5px solid rgba(34,197,94,0.3);
@@ -424,11 +424,10 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       </div>
     </div>
     <button onclick="window.location.href='/wallet'"
-      style="display:flex;align-items:center;gap:6px;padding:8px 14px;
-             border-radius:12px;cursor:pointer;
+      style="display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:12px;cursor:pointer;
              background:linear-gradient(135deg,#22C55E,#16a34a);
              border:1px solid rgba(34,197,94,0.4);
-             color:#fff;font-size:13px;font-weight:800;
+             color:#fff;font-size:12px;font-weight:700;
              box-shadow:0 4px 16px rgba(34,197,94,0.3);
              transition:all 0.2s ease;"
       onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'"
@@ -439,7 +438,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   </div>
 
   <!-- Stats row -->
-  <div style="display:flex;gap:12px;position:relative;z-index:1;">
+  <div style="display:flex;gap:10px;position:relative;z-index:1;">
 
     <div class="wc-stat">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
@@ -448,10 +447,9 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
                     display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <span class="material-symbols-outlined" style="font-size:18px;color:#22C55E">account_balance_wallet</span>
         </div>
-        <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;
-                  text-transform:uppercase;letter-spacing:1px;">Balance</p>
+        <p style="color:rgba(255,255,255,0.4);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Balance</p>
       </div>
-      <p id="userBalance" style="color:#22C55E;font-size:18px;font-weight:900;letter-spacing:-0.5px;">₹0</p>
+      <p id="userBalance" style="color:#22C55E;font-size:16px;font-weight:900;letter-spacing:-0.5px;">₹0</p>
     </div>
 
     <div class="wc-stat">
@@ -461,10 +459,9 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
                     display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <span class="material-symbols-outlined" style="font-size:18px;color:#22C55E">shopping_bag</span>
         </div>
-        <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:700;
-                  text-transform:uppercase;letter-spacing:1px;">Orders</p>
+        <p style="color:rgba(255,255,255,0.4);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Orders</p>
       </div>
-      <p id="userOrders" style="color:#22C55E;font-size:18px;font-weight:900;letter-spacing:-0.5px;">0</p>
+      <p id="userOrders" style="color:#22C55E;font-size:16px;font-weight:900;letter-spacing:-0.5px;">0</p>
     </div>
 
   </div>
@@ -474,8 +471,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 <!-- ================= NEW ORDER SECTION ================= -->
 <div class="h-px bg-white/10 my-3"></div>
 
-<div id="newOrderSection" class="w-full rounded-2xl p-3"
-  style="background:rgba(255,255,255,0.04);
+<div id="newOrderSection" class="w-full"
+  style="background:rgba(255,255,255,0.04);border-radius:15px;padding:15px;
          border:1px solid rgba(255,255,255,0.08);
          box-shadow:0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);">
 
@@ -494,9 +491,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     <input type="text" id="searchService" placeholder="Search"
       autocomplete="new-password" readonly
       onfocus="this.removeAttribute('readonly')"
-      class="w-full pl-10 pr-10 py-2.5 bg-[#0e1629] border border-white/10 rounded-xl
-             text-white placeholder-gray-500 text-sm
-             focus:outline-none focus:border-[#2196f3] transition-all"/>
+      style="width:100%;padding:12px 16px;padding-left:40px;padding-right:36px;background:#0e1629;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
     <button id="searchClearBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-all" style="font-size:18px;line-height:1">✕</button>
     <!-- Global Search Results -->
     <div id="globalSearchDrop"
@@ -506,17 +501,15 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   </div>
 
   <!-- FORM CARD -->
-  <div class="rounded-2xl border shadow-xl mb-4" style="background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.08);">
-    <div class="p-3">
+  <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:15px;margin-bottom:16px;">
+    <div style="padding:10px;">
 
       <!-- CATEGORY -->
-      <div class="mb-3">
-        <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5">Category</p>
+      <div style="margin-bottom:15px;">
+        <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Category</p>
         <div class="relative" id="categoryWrapper">
           <button type="button" onclick="toggleCategoryDropdown()"
-            class="w-full flex items-center justify-between bg-[#121c33]
-                   border border-white/10 rounded-xl px-4 py-2.5 text-left
-                   hover:border-[#2196f3]/50 transition-all">
+            style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#121c33;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px 16px;text-align:left;cursor:pointer;transition:all 0.2s;box-sizing:border-box;">
             <div class="flex items-center gap-3">
               <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
                    id="catIcon" class="w-5 h-5 rounded hidden" alt=""/>
@@ -538,12 +531,10 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 
       <!-- SERVICE -->
       <div class="mb-3" id="serviceWrapper" style="display:none">
-        <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5">Service</p>
+        <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Service</p>
         <div class="relative" id="serviceDropdownWrapper">
           <button type="button" onclick="toggleServiceDropdown()"
-            class="w-full flex items-center justify-between bg-[#121c33]
-                   border border-white/10 rounded-xl px-4 py-2.5 text-left
-                   hover:border-[#2196f3]/50 transition-all">
+            style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#121c33;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px 16px;text-align:left;cursor:pointer;transition:all 0.2s;box-sizing:border-box;">
             <div class="flex items-center gap-3 min-w-0">
               <span id="svcNumBadge"
                 class="h-6 min-w-[44px] px-2 rounded-lg bg-[#2196f3] text-white text-xs
@@ -566,8 +557,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       <div id="serviceDetails" class="hidden">
 
         <!-- 6 STAT CARDS -->
-        <div class="mb-3">
-          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5">Description</p>
+        <div style="margin-bottom:15px;">
+          <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Description</p>
           <div class="rounded-xl p-3" style="background:rgba(96,165,250,0.03);border:1px solid rgba(96,165,250,0.1);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 4px 24px rgba(96,165,250,0.03),inset 0 1px 0 rgba(255,255,255,0.04);">
             <div class="grid grid-cols-3 gap-1.5 mb-2.5">
 
@@ -612,12 +603,10 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         </div>
 
         <!-- LINK -->
-        <div class="mb-3">
-          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5">Link</p>
+        <div style="margin-bottom:15px;">
+          <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Link</p>
           <input type="text" id="linkInput" placeholder="Paste your link" autocomplete="off"
-            class="w-full px-4 py-2.5 bg-[#121c33] border border-white/10 rounded-xl
-                   text-white placeholder-gray-500 text-sm
-                   focus:outline-none focus:border-[#2196f3] transition-all"/>
+            style="width:100%;padding:12px 16px;background:#121c33;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
         </div>
 
         <!-- CUSTOM COMMENTS BOX (shown only for Custom comment services) -->
@@ -639,12 +628,10 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         </div>
 
         <!-- QUANTITY -->
-        <div class="mb-3">
-          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5">Quantity</p>
+        <div style="margin-bottom:15px;">
+          <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Quantity</p>
           <input type="number" id="quantityInput" placeholder="Min: 0 - Max: 0" autocomplete="off"
-            class="w-full px-4 py-2.5 bg-[#121c33] border border-white/10 rounded-xl
-                   text-white placeholder-gray-500 text-sm
-                   focus:outline-none focus:border-[#2196f3] transition-all"/>
+            style="width:100%;padding:12px 16px;background:#121c33;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
           <p id="quantityError" class="hidden text-xs text-red-400 mt-2 font-semibold">
             ⚠ Quantity must be between Min and Max
           </p>
@@ -656,18 +643,14 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
             Delivery Time
             <span class="material-symbols-outlined text-gray-500" style="font-size:13px">info</span>
           </p>
-          <div class="bg-[#121c33] border border-white/10 rounded-xl px-4 py-2.5">
+          <div style="background:#121c33;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px 16px;">
             <p id="dDeliveryTime" class="text-white font-bold text-sm">—</p>
           </div>
         </div>
 
         <!-- ORDER BUTTON -->
         <button id="placeOrderBtn" disabled
-          class="w-full rounded-xl font-black text-base py-3.5
-                 bg-gradient-to-r from-[#2196f3] to-[#00bcd4]
-                 text-white relative overflow-hidden
-                 disabled:opacity-35 disabled:cursor-not-allowed
-                 transition-all active:scale-[0.98]">
+          style="width:100%;border-radius:10px;font-weight:900;font-size:16px;padding:14px 0;background:linear-gradient(to right,#2196f3,#00bcd4);color:#fff;position:relative;overflow:hidden;cursor:pointer;transition:all 0.2s;box-sizing:border-box;border:none;">
           <div class="flex items-center justify-between px-2">
             <span class="text-xs font-bold uppercase tracking-widest opacity-80">TOTAL AMOUNT</span>
             <div class="flex items-center gap-2">
@@ -894,7 +877,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 <div id="menuOverlay" class="fixed inset-0 bg-black/60 hidden z-40 backdrop-blur-sm" onclick="closeMenu()"></div>
 
 <div id="sideMenu"
-  class="fixed top-0 left-0 h-full w-72 z-[150]
+  class="fixed top-0 left-0 h-full w-[250px] z-[150]
          transform -translate-x-full transition-transform duration-300
          flex flex-col"
   style="background: linear-gradient(180deg, #0a1628 0%, #0e1f3d 50%, #0a1628 100%);">
@@ -923,78 +906,78 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     <!-- New Order -->
     <button onclick="scrollToNewOrder();closeMenu()"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left transition-all active:scale-[0.98]"
-      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#7aabdf;">add_shopping_cart</span>
+      style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;width:100%;text-align:left;background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#7aabdf;">add_shopping_cart</span>
       </div>
       <span class="font-bold text-white text-sm" style="font-weight:700;color:white;font-size:15px;">New Order</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </button>
 
     <!-- Orders -->
     <button onclick="closeMenu();window.location.href='/orders'"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
-      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#b8a050;">list_alt</span>
+      style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#b8a050;">list_alt</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Orders</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </button>
 
     <!-- Support -->
     <button onclick="closeMenu();window.location.href='/support'"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
-      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#9d82d4;">support_agent</span>
+      style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#9d82d4;">support_agent</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Support</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </button>
 
     <!-- Add Funds -->
     <button onclick="closeMenu();window.location.href='/wallet'"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
-      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#6ab890;">account_balance_wallet</span>
+      style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#6ab890;">account_balance_wallet</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Add Funds</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </button>
 
     <!-- Affiliates -->
     <button onclick="closeMenu();window.location.href='/coming-soon'"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
-      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#c07840;">person_add</span>
+      style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#c07840;">person_add</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Affiliates</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </button>
 
     <!-- Subscriptions -->
     <button onclick="closeMenu();window.location.href='/coming-soon'"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
-      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#5aacbf;">autorenew</span>
+      style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#5aacbf;">autorenew</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Subscriptions</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </button>
 
     <!-- Admin (hidden, shown for admins) -->
     <button id="adminBtn" onclick="closeMenu();window.location.href='/admin'"
       class="menu-item hidden w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
-      style="display:none;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#5aacbf;">admin_panel_settings</span>
+      style="display:none;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#5aacbf;">admin_panel_settings</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Admin</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </button>
 
     <!-- Divider -->
@@ -1003,8 +986,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     <!-- WhatsApp -->
     <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
-      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+      style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;text-decoration:none;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
         <span style="color:#6ab890;font-weight:700;font-size:18px;line-height:1;">W</span>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">WhatsApp</span>
@@ -1013,9 +996,9 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 
     <button onclick="logout()"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-red-500/10 transition-all active:scale-[0.98] border border-transparent hover:border-red-500/20"
-      style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#e07070;">logout</span>
+      style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#e07070;">logout</span>
       </div>
       <span class="font-bold text-red-400 text-sm" style="font-weight:700;color:#f87171;font-size:15px;">Logout</span>
     </button>
