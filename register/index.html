@@ -517,7 +517,7 @@ body::after{
     try {
       const _ctrl = new AbortController();
       const _t = setTimeout(() => _ctrl.abort(), 15000);
-      const res  = await fetch("https://backend-for-email-verification-code-production-61a3.up.railway.app/send-otp", {
+      const res  = await fetch("https://backendforemailverificationcode-igfnqsf4.b4a.run/send-otp", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ email, type: "signup" }),
@@ -571,7 +571,7 @@ body::after{
     /* ── 2a: hit backend to verify OTP ── */
     let verifyData;
     try {
-      const res = await fetch("https://backend-for-email-verification-code-production-61a3.up.railway.app/verify-otp", {
+      const res = await fetch("https://backendforemailverificationcode-igfnqsf4.b4a.run/verify-otp", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ email, otp, type: "signup" })
@@ -618,7 +618,7 @@ body::after{
       localStorage.setItem("getxh_current_user",     email);
 
       /* Save to MongoDB in background */
-      fetch("https://backend-for-email-verification-code-production-61a3.up.railway.app/save-user", {
+      fetch("https://backendforemailverificationcode-igfnqsf4.b4a.run/save-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uid: cred.user.uid, email, mobile: document.getElementById("mobile").value.trim(), username })
