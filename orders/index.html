@@ -483,7 +483,7 @@ async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
   // Skip API polling if admin has manually overridden this order's status
   if (docId && window._adminOverriddenOrders.has(docId)) return;
   try {
-    const res  = await fetch('https://backend-for-api-connect-production.up.railway.app/status/' + apiOrderId);
+    const res  = await fetch('https://backendforapi-f9kehpt2.b4a.run/status/' + apiOrderId);
     const data = await res.json();
 
     const status = (data.status || '').toLowerCase();
@@ -552,7 +552,7 @@ async function cancelOrder(apiOrderId, docId, price, eid) {
   btn.textContent = 'Cancelling...';
 
   try {
-    const res  = await fetch('https://backend-for-api-connect-production.up.railway.app/cancel', {
+    const res  = await fetch('https://backendforapi-f9kehpt2.b4a.run/cancel', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({order: apiOrderId})

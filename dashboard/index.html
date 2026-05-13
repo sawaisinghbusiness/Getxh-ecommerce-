@@ -1817,7 +1817,7 @@ async function placeOrder(serviceId) {
     }
     const idToken = await window.auth.currentUser.getIdToken(true);
     const requestId = (crypto.randomUUID && crypto.randomUUID()) || String(Date.now()) + "-" + Math.random().toString(36).slice(2);
-    const res = await fetch('https://backend-for-api-connect-production.up.railway.app/order', {
+    const res = await fetch('https://backendforapi-f9kehpt2.b4a.run/order', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -2013,7 +2013,7 @@ window.logout = function() {
 // ── ORDER TRACKING ──
 async function checkStatus(orderId) {
   try {
-    const res  = await fetch('https://backend-for-api-connect-production.up.railway.app/status/' + orderId);
+    const res  = await fetch('https://backendforapi-f9kehpt2.b4a.run/status/' + orderId);
     const data = await res.json();
 
 
@@ -2296,7 +2296,7 @@ function changePasswordInline() {
 <div id="toastContainer"></div>
 
 <script>
-const _API  = "https://backend-for-api-connect-production.up.railway.app";
+const _API  = "https://backendforapi-f9kehpt2.b4a.run";
 const _OTP  = "https://backendforemailverificationcode-igfnqsf4.b4a.run";
 
 </script>
