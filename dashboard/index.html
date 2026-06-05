@@ -10,6 +10,13 @@
 <title>GETXH Dashboard</title>
 <meta name="robots" content="noindex, nofollow"/>
 
+<!-- Asset Preloading -->
+<link rel="preconnect" href="https://firestore.googleapis.com">
+<link rel="preconnect" href="https://identitytoolkit.googleapis.com">
+<link rel="dns-prefetch" href="https://firebase.googleapis.com">
+<link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+<link rel="preload" href="/GETXH WEB NEW LOGO.png" as="image">
+
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -236,9 +243,85 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   });
 </script>
   <style>body{opacity:0;transition:opacity .18s ease}</style>
+
+<!-- Brand Loader CSS -->
+<style>
+#gx-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #0b1220;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  transition: opacity 0.4s ease;
+}
+#gx-loader.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+#gx-loader img {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  animation: gxPulse 1.4s ease-in-out infinite;
+}
+@keyframes gxPulse {
+  0%, 100% { transform: scale(1);   opacity: 1;    }
+  50%       { transform: scale(1.08); opacity: 0.75; }
+}
+#gx-loader .gx-bar {
+  width: 120px;
+  height: 3px;
+  border-radius: 99px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+#gx-loader .gx-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #2196f3, #00bcd4);
+  animation: gxBar 1.4s ease-in-out infinite;
+}
+@keyframes gxBar {
+  0%   { width: 0%;   margin-left: 0%;   }
+  50%  { width: 70%;  margin-left: 15%;  }
+  100% { width: 0%;   margin-left: 100%; }
+}
+#gx-loader p {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  font-family: 'Inter', sans-serif;
+}
+
+/* Skeleton Loading */
+.gx-skeleton {
+  display: inline-block;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #1a2d45 25%, #1e3550 50%, #1a2d45 75%);
+  background-size: 200% 100%;
+  animation: gxSkeleton 1.5s ease-in-out infinite;
+}
+@keyframes gxSkeleton {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+</style>
 </head>
 
 <body class="bg-[#0b1220] text-white">
+
+<!-- Brand Loader -->
+<div id="gx-loader">
+  <img src="/GETXH WEB NEW LOGO.png" alt="GETXH">
+  <div class="gx-bar"><div class="gx-bar-fill"></div></div>
+  <p>Loading...</p>
+</div>
 
 <aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-[250px] lg:flex-col lg:overflow-hidden lg:border-r lg:border-white/10 desktop-sidebar"
   style="background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);">
@@ -430,7 +513,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       <span class="material-symbols-outlined" style="font-size:20px;color:#22C55E;flex-shrink:0;">account_balance_wallet</span>
       <div>
         <p style="margin:0;font-weight:600;color:#ffffff99;margin-bottom:5px;font-size:13px;">Balance</p>
-        <p id="userBalance" style="font-weight:bold;font-size:16px;color:#22C55E;margin:0;">₹0</p>
+        <p id="userBalance" style="font-weight:bold;font-size:16px;color:#22C55E;margin:0;"><span class="gx-skeleton" style="width:60px;height:16px;display:inline-block;">&nbsp;</span></p>
       </div>
     </div>
 
@@ -438,7 +521,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       <span class="material-symbols-outlined" style="font-size:20px;color:#22C55E;flex-shrink:0;">shopping_bag</span>
       <div>
         <p style="margin:0;font-weight:600;color:#ffffff99;margin-bottom:5px;font-size:13px;">Your Orders</p>
-        <p id="userOrders" style="font-weight:bold;font-size:16px;color:#22C55E;margin:0;">0</p>
+        <p id="userOrders" style="font-weight:bold;font-size:16px;color:#22C55E;margin:0;"><span class="gx-skeleton" style="width:40px;height:16px;display:inline-block;">&nbsp;</span></p>
       </div>
     </div>
 
@@ -2166,6 +2249,17 @@ onAuthStateChanged(auth, async (user) => {
   }
   if (_cachedOrd) document.getElementById("userOrders").textContent = _cachedOrd;
 
+  // If cache exists → hide loader immediately (data already shown)
+  if (_cachedBal || _cachedOrd) {
+    const loader = document.getElementById('gx-loader');
+    if (loader) { loader.classList.add('hide'); setTimeout(() => loader.remove(), 450); }
+  }
+  // Fallback: hide loader after 5s no matter what (network slow/fail)
+  setTimeout(() => {
+    const loader = document.getElementById('gx-loader');
+    if (loader) { loader.classList.add('hide'); setTimeout(() => loader.remove(), 450); }
+  }, 5000);
+
   // ── REAL-TIME: user stats (balance, orders) ──
   if (_unsubStats) _unsubStats();
   _unsubStats = onSnapshot(doc(db, "Users", currentUid), (snap) => {
@@ -2179,6 +2273,12 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById("userOrders").textContent       = totalOrders.toLocaleString();
     localStorage.setItem(_balCacheKey, balStr);
     localStorage.setItem(_ordCacheKey, totalOrders.toLocaleString());
+    // Hide loader after first data load
+    const loader = document.getElementById('gx-loader');
+    if (loader && !loader.classList.contains('hide')) {
+      loader.classList.add('hide');
+      setTimeout(() => { if(loader) loader.remove(); }, 450);
+    }
   });
 
   // ── REAL-TIME: recent orders ──
