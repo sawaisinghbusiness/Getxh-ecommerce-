@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Blog Post | GETXH</title>
+<meta name="robots" content="index, follow"/>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#020617;--bg2:#0f172a;
+  --purple:#8b5cf6;--blue:#3b82f6;
+  --grad:linear-gradient(135deg,#8b5cf6 0%,#3b82f6 100%);
+  --border:rgba(255,255,255,0.1);
+  --text:#f1f5f9;--muted:#94a3b8;--sub:#64748b;
+}
+
+html,body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);color:var(--text);
+  overflow-x:hidden;min-height:100vh;
+}
+
+/* ── NAVBAR ── */
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;height:62px;
+  background:rgba(3,7,18,0.75);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.nav-logo{display:flex;align-items:center;mix-blend-mode:screen;}
+.nav-logo img{height:52px;width:auto;filter:invert(1) hue-rotate(180deg) brightness(1.1);}
+.nav-links{display:flex;align-items:center;gap:6px;}
+.nav-link{
+  font-size:13px;font-weight:500;color:#94a3b8;
+  text-decoration:none;padding:6px 14px;border-radius:8px;
+  transition:color 0.2s,background 0.2s;
+}
+.nav-link:hover{color:#e2e8f0;background:rgba(255,255,255,0.06);}
+.nav-link.active{color:#e2e8f0;background:rgba(255,255,255,0.06);}
+.nav-btn{
+  font-size:13px;font-weight:700;color:#fff;
+  text-decoration:none;padding:7px 18px;border-radius:9px;
+  background:linear-gradient(135deg,#8b5cf6,#3b82f6);
+  box-shadow:0 4px 14px rgba(139,92,246,0.35);
+  transition:all 0.25s ease;margin-left:6px;
+}
+.nav-btn:hover{transform:translateY(-1px) scale(1.03);box-shadow:0 8px 22px rgba(139,92,246,0.5);}
+.nav-btn-demo{
+  background:transparent;border:1px solid rgba(255,255,255,0.2);
+  color:rgba(255,255,255,0.85);box-shadow:none;
+}
+.nav-btn-demo:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.35);box-shadow:none;}
+.nav-ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:none;border:none;}
+.nav-ham span{width:22px;height:2px;background:#94a3b8;border-radius:2px;display:block;transition:all 0.3s;}
+.nav-drawer{
+  display:none;position:fixed;top:62px;left:0;right:0;z-index:99;
+  background:rgba(6,9,20,0.96);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  padding:16px 20px 20px;flex-direction:column;gap:6px;
+  animation:drawerDown 0.22s ease both;
+}
+.nav-drawer.open{display:flex;}
+@keyframes drawerDown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.nav-drawer .nav-link{padding:11px 14px;font-size:14px;border-radius:10px;}
+.nav-drawer .nav-btn{margin:6px 0 0;text-align:center;padding:12px;border-radius:10px;font-size:14px;}
+
+@media(max-width:760px){
+  .navbar{padding:0 16px;}
+  .nav-links{display:none;}
+  .nav-ham{display:flex;}
+}
+
+/* ── PAGE ── */
+.page{padding-top:62px;min-height:100vh;}
+
+/* ── SKELETON ── */
+@keyframes shimmer{
+  0%{background-position:-600px 0;}100%{background-position:600px 0;}
+}
+.skeleton{
+  background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.09) 50%,rgba(255,255,255,0.04) 75%);
+  background-size:1200px 100%;
+  animation:shimmer 1.5s infinite;border-radius:8px;
+}
+
+/* ── BACK LINK ── */
+.back-bar{
+  max-width:780px;margin:0 auto;
+  padding:28px 40px 0;
+}
+.back-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:500;color:var(--muted);
+  text-decoration:none;transition:color 0.2s;
+}
+.back-link:hover{color:var(--text);}
+.back-link svg{width:15px;height:15px;}
+
+@media(max-width:760px){.back-bar{padding:20px 20px 0;}}
+
+/* ── ARTICLE ── */
+.article{max-width:780px;margin:0 auto;padding:32px 40px 80px;}
+@media(max-width:760px){.article{padding:24px 20px 60px;}}
+
+/* ── COVER IMAGE ── */
+.cover-wrap{
+  border-radius:16px;overflow:hidden;
+  margin-bottom:36px;
+  border:1px solid var(--border);
+  background:#0f172a;
+}
+.cover-img{width:100%;max-height:440px;object-fit:cover;display:block;}
+.cover-placeholder{
+  width:100%;height:260px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:4rem;
+  background:linear-gradient(135deg,#1e293b,#0f172a);
+}
+.sk-cover{width:100%;height:300px;border-radius:16px;margin-bottom:36px;}
+
+/* ── META ── */
+.post-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+.post-category{
+  font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--purple);background:rgba(139,92,246,0.1);
+  padding:3px 10px;border-radius:20px;border:1px solid rgba(139,92,246,0.2);
+}
+.post-date{font-size:13px;color:var(--sub);}
+.post-reading-time{font-size:13px;color:var(--sub);}
+.meta-dot{width:3px;height:3px;border-radius:50%;background:var(--sub);}
+
+/* ── TITLE ── */
+.post-title{
+  font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;
+  line-height:1.25;letter-spacing:-0.02em;
+  margin-bottom:16px;
+}
+.sk-title-l{height:40px;width:90%;margin-bottom:12px;}
+.sk-title-s{height:40px;width:60%;margin-bottom:24px;}
+
+.post-excerpt{
+  font-size:1.05rem;color:var(--muted);line-height:1.7;
+  padding-bottom:28px;margin-bottom:28px;
+  border-bottom:1px solid var(--border);
+}
+
+/* ── BODY CONTENT ── */
+.post-body{
+  font-size:1rem;line-height:1.8;color:#cbd5e1;
+}
+.post-body h2{
+  font-size:1.4rem;font-weight:700;color:var(--text);
+  margin:36px 0 14px;letter-spacing:-0.01em;
+}
+.post-body h3{
+  font-size:1.15rem;font-weight:600;color:var(--text);
+  margin:28px 0 10px;
+}
+.post-body p{margin-bottom:18px;}
+.post-body ul,.post-body ol{margin:0 0 18px 24px;}
+.post-body li{margin-bottom:6px;}
+.post-body a{color:var(--purple);text-decoration:underline;text-underline-offset:3px;}
+.post-body a:hover{color:#a78bfa;}
+.post-body strong{color:var(--text);font-weight:600;}
+.post-body em{color:#c4b5fd;}
+.post-body blockquote{
+  border-left:3px solid var(--purple);
+  padding:12px 20px;margin:24px 0;
+  background:rgba(139,92,246,0.06);
+  border-radius:0 10px 10px 0;
+  color:var(--muted);font-style:italic;
+}
+.post-body code{
+  background:rgba(255,255,255,0.08);
+  padding:2px 7px;border-radius:5px;
+  font-family:'Courier New',monospace;font-size:0.88em;
+  color:#c4b5fd;
+}
+.post-body pre{
+  background:#0f172a;border:1px solid var(--border);
+  border-radius:10px;padding:20px;
+  overflow-x:auto;margin-bottom:18px;
+}
+.post-body pre code{background:none;padding:0;color:#94a3b8;}
+.post-body img{
+  width:100%;border-radius:10px;
+  border:1px solid var(--border);
+  margin:10px 0 18px;
+}
+.post-body hr{
+  border:none;border-top:1px solid var(--border);
+  margin:32px 0;
+}
+
+/* skeleton body lines */
+.sk-body-line{height:14px;margin-bottom:10px;}
+.sk-body-line.w60{width:60%;}
+.sk-body-line.w80{width:80%;}
+.sk-body-line.w100{width:100%;}
+.sk-h2{height:22px;width:55%;margin:32px 0 14px;}
+
+/* ── NOT FOUND ── */
+.not-found{
+  text-align:center;padding:80px 20px;
+}
+.not-found svg{opacity:0.2;margin-bottom:20px;}
+.not-found h2{font-size:1.4rem;font-weight:700;margin-bottom:10px;}
+.not-found p{color:var(--muted);margin-bottom:28px;}
+.not-found a{
+  display:inline-block;padding:10px 24px;border-radius:9px;
+  background:var(--grad);color:#fff;text-decoration:none;
+  font-weight:600;font-size:14px;
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="/" class="nav-logo">
+    <img src="/getxh new logo.png" alt="GETXH"/>
+  </a>
+  <div class="nav-links">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/blogs" class="nav-link active">Blog</a>
+    <a href="/contact" class="nav-link">Contact</a>
+    <a href="https://youtube.com/shorts/5uHqBSYV_7o?si=aBXODEVfKQ7l7qWC" target="_blank" rel="noopener" class="nav-btn nav-btn-demo">▶ Watch Demo</a>
+    <a href="/register" class="nav-btn">Register</a>
+  </div>
+  <button class="nav-ham" onclick="toggleNavDrawer()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="nav-drawer" id="navDrawer">
+  <a href="/" class="nav-link">Home</a>
+  <a href="/blogs" class="nav-link active">Blog</a>
+  <a href="/contact" class="nav-link">Contact</a>
+  <a href="https://youtube.com/shorts/5uHqBSYV_7o?si=aBXODEVfKQ7l7qWC" target="_blank" rel="noopener" class="nav-btn nav-btn-demo">▶ Watch Demo</a>
+  <a href="/register" class="nav-btn">Register</a>
+</div>
+
+<div class="page">
+  <div class="back-bar">
+    <a href="/blogs" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 4L6 8l4 4"/>
+      </svg>
+      All Posts
+    </a>
+  </div>
+
+  <article class="article" id="articleContent">
+    <!-- Skeleton while loading -->
+    <div class="sk-cover skeleton"></div>
+    <div class="sk-meta" style="display:flex;gap:10px;margin-bottom:20px;">
+      <div class="skeleton" style="height:20px;width:80px;border-radius:20px;"></div>
+      <div class="skeleton" style="height:14px;width:100px;margin-top:3px;"></div>
+    </div>
+    <div class="skeleton sk-title-l"></div>
+    <div class="skeleton sk-title-s"></div>
+    <div class="skeleton" style="height:16px;width:100%;margin-bottom:10px;"></div>
+    <div class="skeleton" style="height:16px;width:85%;margin-bottom:28px;"></div>
+    <div class="skeleton sk-h2"></div>
+    <div class="skeleton sk-body-line w100"></div>
+    <div class="skeleton sk-body-line w80"></div>
+    <div class="skeleton sk-body-line w100"></div>
+    <div class="skeleton sk-body-line w60"></div>
+    <div class="skeleton sk-h2"></div>
+    <div class="skeleton sk-body-line w100"></div>
+    <div class="skeleton sk-body-line w80"></div>
+    <div class="skeleton sk-body-line w100"></div>
+  </article>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getFirestore, doc, getDoc }
+  from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+function formatDate(ts) {
+  if (!ts) return '';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
+}
+
+function estimateReadTime(text) {
+  const words = String(text||'').split(/\s+/).length;
+  const mins  = Math.max(1, Math.round(words / 200));
+  return `${mins} min read`;
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Simple markdown-like renderer for the body field
+function renderBody(content) {
+  if (!content) return '';
+  // If content is already HTML (starts with a tag), render as-is (sanitized)
+  if (content.trimStart().startsWith('<')) {
+    return content; // admin-provided HTML
+  }
+  // Otherwise treat as plain text with basic markdown
+  return content
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h2>$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    .replace(/^\> (.+)$/gm, '<blockquote>$1</blockquote>')
+    .replace(/^---$/gm, '<hr>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>')
+    .replace(/^(.)/,'<p>$1')
+    .replace(/(.)$/,'$1</p>');
+}
+
+function showNotFound() {
+  document.getElementById('articleContent').innerHTML = `
+    <div class="not-found">
+      <svg width="72" height="72" fill="none" viewBox="0 0 24 24" stroke="#94a3b8">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
+          d="M9 12h6m-3-3v6M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <h2>Post not found</h2>
+      <p>This blog post doesn't exist or has been removed.</p>
+      <a href="/blogs">← Back to Blog</a>
+    </div>`;
+}
+
+async function loadPost() {
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  if (!id) { showNotFound(); return; }
+
+  try {
+    const snap = await getDoc(doc(db, 'blogs', id));
+    if (!snap.exists() || snap.data().published === false) { showNotFound(); return; }
+
+    const post = { id: snap.id, ...snap.data() };
+
+    // Update page title and meta
+    document.title = `${post.title} | GETXH Blog`;
+    if (post.excerpt) {
+      const desc = document.querySelector('meta[name="description"]') || document.createElement('meta');
+      desc.name = 'description'; desc.content = post.excerpt;
+      document.head.appendChild(desc);
+    }
+
+    const imgHtml = post.coverImage
+      ? `<div class="cover-wrap"><img class="cover-img" src="${escHtml(post.coverImage)}" alt="${escHtml(post.title)}" onerror="this.parentElement.innerHTML='<div class=cover-placeholder>📝</div>'"></div>`
+      : '';
+
+    const readTime = estimateReadTime(post.body);
+
+    document.getElementById('articleContent').innerHTML = `
+      ${imgHtml}
+      <div class="post-meta">
+        ${post.category ? `<span class="post-category">${escHtml(post.category)}</span><span class="meta-dot"></span>` : ''}
+        <span class="post-date">${formatDate(post.publishedAt || post.createdAt)}</span>
+        <span class="meta-dot"></span>
+        <span class="post-reading-time">${readTime}</span>
+      </div>
+      <h1 class="post-title">${escHtml(post.title || 'Untitled')}</h1>
+      ${post.excerpt ? `<div class="post-excerpt">${escHtml(post.excerpt)}</div>` : ''}
+      <div class="post-body">${renderBody(post.body || '')}</div>
+    `;
+  } catch (err) {
+    console.error(err);
+    showNotFound();
+  }
+}
+
+loadPost();
+
+// Navbar
+window.toggleNavDrawer = function() {
+  document.getElementById('navDrawer').classList.toggle('open');
+};
+document.addEventListener('click', e => {
+  const drawer = document.getElementById('navDrawer');
+  if (drawer.classList.contains('open') && !drawer.contains(e.target) && !e.target.closest('.nav-ham')) {
+    drawer.classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>

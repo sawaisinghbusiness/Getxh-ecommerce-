@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Blog | GETXH – SMM Panel India Tips & Guides</title>
+<meta name="description" content="Read the latest tips, guides, and updates from GETXH. Learn how to grow your social media presence with Instagram followers, YouTube views and more."/>
+<meta name="robots" content="index, follow"/>
+<link rel="canonical" href="https://getxh.in/blogs/"/>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#020617;
+  --bg2:#0f172a;
+  --purple:#8b5cf6;
+  --blue:#3b82f6;
+  --grad:linear-gradient(135deg,#8b5cf6 0%,#3b82f6 100%);
+  --glass:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.1);
+  --text:#f1f5f9;
+  --muted:#94a3b8;
+  --sub:#64748b;
+}
+
+html,body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* ── NAVBAR ── */
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;height:62px;
+  background:rgba(3,7,18,0.75);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.nav-logo{display:flex;align-items:center;mix-blend-mode:screen;}
+.nav-logo img{height:52px;width:auto;filter:invert(1) hue-rotate(180deg) brightness(1.1);}
+.nav-links{display:flex;align-items:center;gap:6px;}
+.nav-link{
+  font-size:13px;font-weight:500;color:#94a3b8;
+  text-decoration:none;padding:6px 14px;border-radius:8px;
+  transition:color 0.2s,background 0.2s;
+}
+.nav-link:hover{color:#e2e8f0;background:rgba(255,255,255,0.06);}
+.nav-link.active{color:#e2e8f0;background:rgba(255,255,255,0.06);}
+.nav-btn{
+  font-size:13px;font-weight:700;color:#fff;
+  text-decoration:none;padding:7px 18px;border-radius:9px;
+  background:linear-gradient(135deg,#8b5cf6,#3b82f6);
+  box-shadow:0 4px 14px rgba(139,92,246,0.35);
+  transition:all 0.25s ease;margin-left:6px;
+}
+.nav-btn:hover{transform:translateY(-1px) scale(1.03);box-shadow:0 8px 22px rgba(139,92,246,0.5);}
+.nav-btn-demo{
+  background:transparent;border:1px solid rgba(255,255,255,0.2);
+  color:rgba(255,255,255,0.85);box-shadow:none;
+}
+.nav-btn-demo:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.35);box-shadow:none;}
+.nav-ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:none;border:none;}
+.nav-ham span{width:22px;height:2px;background:#94a3b8;border-radius:2px;display:block;transition:all 0.3s;}
+.nav-drawer{
+  display:none;position:fixed;top:62px;left:0;right:0;z-index:99;
+  background:rgba(6,9,20,0.96);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  padding:16px 20px 20px;flex-direction:column;gap:6px;
+  animation:drawerDown 0.22s ease both;
+}
+.nav-drawer.open{display:flex;}
+@keyframes drawerDown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.nav-drawer .nav-link{padding:11px 14px;font-size:14px;border-radius:10px;}
+.nav-drawer .nav-btn{margin:6px 0 0;text-align:center;padding:12px;border-radius:10px;font-size:14px;}
+
+@media(max-width:760px){
+  .navbar{padding:0 16px;}
+  .nav-links{display:none;}
+  .nav-ham{display:flex;}
+}
+
+/* ── PAGE LAYOUT ── */
+.page{padding-top:62px;min-height:100vh;}
+
+/* ── HERO ── */
+.blog-hero{
+  padding:60px 40px 40px;
+  text-align:center;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(139,92,246,0.06) 0%,transparent 100%);
+}
+.blog-hero-tag{
+  display:inline-block;
+  font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--purple);background:rgba(139,92,246,0.12);
+  padding:4px 12px;border-radius:20px;border:1px solid rgba(139,92,246,0.2);
+  margin-bottom:16px;
+}
+.blog-hero h1{
+  font-size:clamp(1.8rem,4vw,3rem);font-weight:800;
+  letter-spacing:-0.02em;line-height:1.2;
+  margin-bottom:12px;
+}
+.blog-hero h1 span{
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.blog-hero p{font-size:1rem;color:var(--muted);max-width:520px;margin:0 auto;}
+
+@media(max-width:600px){
+  .blog-hero{padding:40px 20px 30px;}
+}
+
+/* ── CONTAINER ── */
+.container{max-width:1100px;margin:0 auto;padding:48px 40px 80px;}
+@media(max-width:760px){.container{padding:32px 20px 60px;}}
+
+/* ── SKELETON LOADING ── */
+@keyframes shimmer{
+  0%{background-position:-400px 0;}
+  100%{background-position:400px 0;}
+}
+.skeleton{
+  background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.09) 50%,rgba(255,255,255,0.04) 75%);
+  background-size:800px 100%;
+  animation:shimmer 1.5s infinite;
+  border-radius:8px;
+}
+
+/* ── GRID ── */
+.blog-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:28px;
+}
+@media(max-width:700px){.blog-grid{grid-template-columns:1fr;gap:20px;}}
+
+/* ── CARD ── */
+.blog-card{
+  background:rgba(15,23,42,0.7);
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  text-decoration:none;
+  color:inherit;
+  display:flex;flex-direction:column;
+  transition:transform 0.22s ease,border-color 0.22s ease,box-shadow 0.22s ease;
+}
+.blog-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(139,92,246,0.4);
+  box-shadow:0 12px 40px rgba(0,0,0,0.4),0 0 0 1px rgba(139,92,246,0.1);
+}
+.blog-card-img{
+  width:100%;height:200px;
+  object-fit:cover;
+  display:block;
+  background:#0f172a;
+}
+.blog-card-img-placeholder{
+  width:100%;height:200px;
+  background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;
+  flex-shrink:0;
+}
+.blog-card-body{padding:20px 22px 22px;display:flex;flex-direction:column;flex:1;}
+.blog-card-category{
+  font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--purple);margin-bottom:10px;
+}
+.blog-card-title{
+  font-size:1.05rem;font-weight:700;line-height:1.4;
+  color:var(--text);margin-bottom:10px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.blog-card-excerpt{
+  font-size:0.875rem;color:var(--muted);line-height:1.6;
+  flex:1;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+  margin-bottom:16px;
+}
+.blog-card-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:14px;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.blog-card-date{font-size:12px;color:var(--sub);}
+.blog-card-read{
+  font-size:12px;font-weight:600;color:var(--purple);
+  display:flex;align-items:center;gap:4px;
+}
+.blog-card-read svg{width:13px;height:13px;transition:transform 0.2s;}
+.blog-card:hover .blog-card-read svg{transform:translateX(3px);}
+
+/* ── SKELETON CARDS ── */
+.sk-card{
+  background:rgba(15,23,42,0.7);
+  border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;
+}
+.sk-img{width:100%;height:200px;}
+.sk-body{padding:20px 22px 22px;}
+.sk-tag{height:12px;width:80px;margin-bottom:14px;}
+.sk-title{height:18px;width:90%;margin-bottom:8px;}
+.sk-title2{height:18px;width:65%;margin-bottom:14px;}
+.sk-line{height:13px;width:100%;margin-bottom:7px;}
+.sk-line2{height:13px;width:80%;margin-bottom:20px;}
+.sk-meta{display:flex;justify-content:space-between;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);}
+.sk-date{height:12px;width:80px;}
+.sk-read{height:12px;width:60px;}
+
+/* ── EMPTY STATE ── */
+.empty-state{
+  text-align:center;padding:80px 20px;
+  grid-column:1/-1;
+}
+.empty-state svg{opacity:0.25;margin-bottom:20px;}
+.empty-state h3{font-size:1.2rem;font-weight:600;color:var(--muted);margin-bottom:8px;}
+.empty-state p{font-size:0.9rem;color:var(--sub);}
+
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="/" class="nav-logo">
+    <img src="/getxh new logo.png" alt="GETXH"/>
+  </a>
+  <div class="nav-links">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/blogs" class="nav-link active">Blog</a>
+    <a href="/contact" class="nav-link">Contact</a>
+    <a href="https://youtube.com/shorts/5uHqBSYV_7o?si=aBXODEVfKQ7l7qWC" target="_blank" rel="noopener" class="nav-btn nav-btn-demo">▶ Watch Demo</a>
+    <a href="/register" class="nav-btn">Register</a>
+  </div>
+  <button class="nav-ham" onclick="toggleNavDrawer()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="nav-drawer" id="navDrawer">
+  <a href="/" class="nav-link">Home</a>
+  <a href="/blogs" class="nav-link active">Blog</a>
+  <a href="/contact" class="nav-link">Contact</a>
+  <a href="https://youtube.com/shorts/5uHqBSYV_7o?si=aBXODEVfKQ7l7qWC" target="_blank" rel="noopener" class="nav-btn nav-btn-demo">▶ Watch Demo</a>
+  <a href="/register" class="nav-btn">Register</a>
+</div>
+
+<div class="page">
+  <!-- HERO -->
+  <div class="blog-hero">
+    <div class="blog-hero-tag">GETXH Blog</div>
+    <h1>Tips, Guides & <span>Updates</span></h1>
+    <p>Learn how to grow your social media presence. Guides, tips and latest news from GETXH.</p>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="container">
+    <div class="blog-grid" id="blogGrid">
+      <!-- Skeleton cards -->
+      <div class="sk-card">
+        <div class="sk-img skeleton"></div>
+        <div class="sk-body">
+          <div class="sk-tag skeleton"></div>
+          <div class="sk-title skeleton"></div>
+          <div class="sk-title2 skeleton"></div>
+          <div class="sk-line skeleton"></div>
+          <div class="sk-line2 skeleton"></div>
+          <div class="sk-meta">
+            <div class="sk-date skeleton"></div>
+            <div class="sk-read skeleton"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sk-card">
+        <div class="sk-img skeleton"></div>
+        <div class="sk-body">
+          <div class="sk-tag skeleton"></div>
+          <div class="sk-title skeleton"></div>
+          <div class="sk-title2 skeleton"></div>
+          <div class="sk-line skeleton"></div>
+          <div class="sk-line2 skeleton"></div>
+          <div class="sk-meta">
+            <div class="sk-date skeleton"></div>
+            <div class="sk-read skeleton"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sk-card">
+        <div class="sk-img skeleton"></div>
+        <div class="sk-body">
+          <div class="sk-tag skeleton"></div>
+          <div class="sk-title skeleton"></div>
+          <div class="sk-title2 skeleton"></div>
+          <div class="sk-line skeleton"></div>
+          <div class="sk-line2 skeleton"></div>
+          <div class="sk-meta">
+            <div class="sk-date skeleton"></div>
+            <div class="sk-read skeleton"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getFirestore, collection, getDocs }
+  from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+function formatDate(ts) {
+  if (!ts) return '';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+}
+
+function slugify(str) {
+  return String(str).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+
+function renderCards(posts) {
+  const grid = document.getElementById('blogGrid');
+  if (!posts.length) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <svg width="64" height="64" fill="none" viewBox="0 0 24 24" stroke="#94a3b8">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v8a2 2 0 01-2 2z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20v-8H7v8M7 4v4h8"/>
+        </svg>
+        <h3>No posts yet</h3>
+        <p>Check back soon — content is coming.</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = posts.map(post => {
+    const slug = post.slug || slugify(post.title || post.id);
+    const imgHtml = post.coverImage
+      ? `<img class="blog-card-img" src="${post.coverImage}" alt="${escHtml(post.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        + `<div class="blog-card-img-placeholder" style="display:none">📝</div>`
+      : `<div class="blog-card-img-placeholder">📝</div>`;
+
+    return `
+    <a href="/blog/?id=${post.id}" class="blog-card">
+      ${imgHtml}
+      <div class="blog-card-body">
+        ${post.category ? `<div class="blog-card-category">${escHtml(post.category)}</div>` : ''}
+        <div class="blog-card-title">${escHtml(post.title || 'Untitled')}</div>
+        ${post.excerpt ? `<div class="blog-card-excerpt">${escHtml(post.excerpt)}</div>` : ''}
+        <div class="blog-card-meta">
+          <span class="blog-card-date">${formatDate(post.publishedAt || post.createdAt)}</span>
+          <span class="blog-card-read">
+            Read
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 8h10M9 4l4 4-4 4"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function loadBlogs() {
+  try {
+    // Always fetch all docs first (no composite index needed)
+    const snap = await getDocs(collection(db, 'blogs'));
+    const posts = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(p => p.published !== false)
+      .sort((a, b) => {
+        const ta = a.publishedAt?.toMillis?.() || a.createdAt?.toMillis?.() || 0;
+        const tb = b.publishedAt?.toMillis?.() || b.createdAt?.toMillis?.() || 0;
+        return tb - ta;
+      });
+    renderCards(posts);
+  } catch (err) {
+    console.error(err);
+    // Any error (permissions, network) → show empty state, not error
+    renderCards([]);
+  }
+}
+
+loadBlogs();
+
+// Navbar
+window.toggleNavDrawer = function() {
+  document.getElementById('navDrawer').classList.toggle('open');
+};
+document.addEventListener('click', e => {
+  const drawer = document.getElementById('navDrawer');
+  if (drawer.classList.contains('open') && !drawer.contains(e.target) && !e.target.closest('.nav-ham')) {
+    drawer.classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>
