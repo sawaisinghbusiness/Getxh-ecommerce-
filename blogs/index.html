@@ -394,11 +394,10 @@ function escHtml(str) {
 
 async function loadBlogs() {
   try {
-    // Always fetch all docs first (no composite index needed)
     const snap = await getDocs(collection(db, 'blogs'));
     const posts = snap.docs
       .map(d => ({ id: d.id, ...d.data() }))
-      .filter(p => p.published !== false)
+      .filter(p => p.published === true)
       .sort((a, b) => {
         const ta = a.publishedAt?.toMillis?.() || a.createdAt?.toMillis?.() || 0;
         const tb = b.publishedAt?.toMillis?.() || b.createdAt?.toMillis?.() || 0;
@@ -406,8 +405,7 @@ async function loadBlogs() {
       });
     renderCards(posts);
   } catch (err) {
-    console.error(err);
-    // Any error (permissions, network) → show empty state, not error
+    console.error('[blogs]', err.code, err.message);
     renderCards([]);
   }
 }
