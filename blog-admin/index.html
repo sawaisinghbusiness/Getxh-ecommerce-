@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Blog Admin — GETXH</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#020617;--surface:#0f172a;--surface2:#1e293b;
+  --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.06);
+  --text:#f1f5f9;--muted:#94a3b8;--sub:#64748b;
+  --purple:#8b5cf6;--blue:#3b82f6;--green:#22c55e;--red:#ef4444;
+  --grad:linear-gradient(135deg,#8b5cf6,#3b82f6);
+}
+html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── AUTH SCREEN ── */
+#authScreen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:20px;
+}
+.auth-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:18px;padding:40px 36px;width:100%;max-width:400px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.auth-logo{font-size:1.3rem;font-weight:800;color:var(--purple);margin-bottom:4px;}
+.auth-sub{font-size:0.85rem;color:var(--muted);margin-bottom:28px;}
+.auth-card label{display:block;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.auth-card input{
+  width:100%;background:var(--bg);border:1px solid var(--border);
+  color:var(--text);padding:11px 14px;border-radius:10px;
+  font-size:0.95rem;outline:none;margin-bottom:16px;font-family:inherit;
+  transition:border-color 0.2s;
+}
+.auth-card input:focus{border-color:var(--purple);}
+.btn-primary{
+  width:100%;padding:12px;border-radius:10px;border:none;
+  background:var(--grad);color:#fff;font-size:0.95rem;
+  font-weight:700;cursor:pointer;font-family:inherit;
+  transition:opacity 0.2s,transform 0.2s;
+}
+.btn-primary:hover{opacity:0.88;transform:translateY(-1px);}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.auth-err{
+  background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);
+  color:#fca5a5;padding:10px 14px;border-radius:8px;
+  font-size:0.85rem;margin-bottom:16px;display:none;
+}
+
+/* ── MAIN APP ── */
+#appScreen{display:none;}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:58px;
+  background:rgba(2,6,23,0.85);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border2);
+}
+.topbar-logo{font-size:1rem;font-weight:800;color:var(--text);}
+.topbar-logo span{color:var(--purple);}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.topbar-email{font-size:12px;color:var(--muted);}
+.btn-sm{
+  padding:7px 14px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:12px;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:all 0.2s;
+}
+.btn-sm:hover{border-color:var(--border);color:var(--text);background:var(--surface2);}
+
+/* ── LAYOUT ── */
+.app-layout{display:flex;min-height:calc(100vh - 58px);}
+.sidebar{
+  width:220px;flex-shrink:0;
+  border-right:1px solid var(--border2);
+  padding:24px 16px;
+  display:flex;flex-direction:column;gap:4px;
+}
+.sidebar-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:10px;
+  font-size:13px;font-weight:500;color:var(--muted);
+  cursor:pointer;transition:all 0.18s;border:none;background:none;
+  font-family:inherit;text-align:left;width:100%;
+}
+.sidebar-item:hover{color:var(--text);background:var(--surface2);}
+.sidebar-item.active{color:var(--text);background:var(--surface2);}
+.sidebar-item svg{width:16px;height:16px;flex-shrink:0;}
+.sidebar-divider{height:1px;background:var(--border2);margin:8px 0;}
+
+.main-content{flex:1;padding:32px;max-width:900px;}
+
+/* ── SECTION TITLES ── */
+.section-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;
+}
+.section-title{font-size:1.3rem;font-weight:800;letter-spacing:-0.01em;}
+.btn-new{
+  display:flex;align-items:center;gap:6px;
+  padding:9px 18px;border-radius:10px;border:none;
+  background:var(--grad);color:#fff;font-size:13px;
+  font-weight:700;cursor:pointer;font-family:inherit;
+  transition:opacity 0.2s,transform 0.2s;
+}
+.btn-new:hover{opacity:0.88;transform:translateY(-1px);}
+
+/* ── POSTS LIST ── */
+.posts-list{display:flex;flex-direction:column;gap:12px;}
+.post-row{
+  display:flex;align-items:center;gap:16px;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:14px;padding:16px 20px;
+  transition:border-color 0.2s;
+}
+.post-row:hover{border-color:var(--border);}
+.post-row-thumb{
+  width:64px;height:48px;border-radius:8px;
+  object-fit:cover;background:var(--surface2);flex-shrink:0;
+}
+.post-row-thumb-ph{
+  width:64px;height:48px;border-radius:8px;
+  background:var(--surface2);display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;flex-shrink:0;
+}
+.post-row-info{flex:1;min-width:0;}
+.post-row-title{font-size:14px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.post-row-meta{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;}
+.badge{
+  display:inline-block;padding:2px 8px;border-radius:20px;
+  font-size:11px;font-weight:600;letter-spacing:0.04em;
+}
+.badge-published{background:rgba(34,197,94,0.12);color:#86efac;border:1px solid rgba(34,197,94,0.2);}
+.badge-draft{background:rgba(148,163,184,0.1);color:var(--muted);border:1px solid var(--border);}
+.post-row-actions{display:flex;gap:8px;flex-shrink:0;}
+.btn-icon{
+  padding:7px 12px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:12px;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:all 0.18s;
+}
+.btn-icon:hover{color:var(--text);background:var(--surface2);}
+.btn-icon.danger:hover{color:#fca5a5;border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);}
+
+/* ── EMPTY ── */
+.empty-posts{
+  text-align:center;padding:60px 20px;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:14px;
+}
+.empty-posts p{color:var(--muted);font-size:14px;margin-bottom:16px;}
+
+/* ── EDITOR ── */
+#editorSection{display:none;}
+.editor-form{display:flex;flex-direction:column;gap:20px;}
+.form-group{display:flex;flex-direction:column;gap:8px;}
+.form-label{font-size:12px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);}
+.form-input{
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);padding:11px 14px;border-radius:10px;
+  font-size:14px;outline:none;font-family:inherit;
+  transition:border-color 0.2s;
+}
+.form-input:focus{border-color:var(--purple);}
+.form-textarea{
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);padding:14px;border-radius:10px;
+  font-size:13.5px;outline:none;font-family:'Inter',sans-serif;
+  line-height:1.7;resize:vertical;
+  transition:border-color 0.2s;
+}
+.form-textarea:focus{border-color:var(--purple);}
+.form-hint{font-size:11px;color:var(--sub);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.toggle-wrap{display:flex;align-items:center;gap:12px;}
+.toggle{
+  position:relative;width:44px;height:24px;
+  background:var(--surface2);border-radius:12px;
+  border:1px solid var(--border);cursor:pointer;
+  transition:background 0.2s;flex-shrink:0;
+}
+.toggle.on{background:var(--purple);border-color:var(--purple);}
+.toggle::after{
+  content:'';position:absolute;top:3px;left:3px;
+  width:16px;height:16px;border-radius:50%;
+  background:#fff;transition:transform 0.2s;
+}
+.toggle.on::after{transform:translateX(20px);}
+.toggle-label{font-size:13px;color:var(--muted);}
+
+.editor-actions{
+  display:flex;align-items:center;gap:12px;
+  padding-top:8px;border-top:1px solid var(--border2);
+  margin-top:4px;
+}
+.btn-save{
+  padding:11px 28px;border-radius:10px;border:none;
+  background:var(--grad);color:#fff;font-size:14px;
+  font-weight:700;cursor:pointer;font-family:inherit;
+  transition:opacity 0.2s,transform 0.2s;
+}
+.btn-save:hover{opacity:0.88;transform:translateY(-1px);}
+.btn-save:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.btn-cancel{
+  padding:11px 20px;border-radius:10px;
+  border:1px solid var(--border);background:transparent;
+  color:var(--muted);font-size:14px;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:all 0.2s;
+}
+.btn-cancel:hover{color:var(--text);background:var(--surface2);}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:28px;right:28px;z-index:999;
+  background:var(--surface);border:1px solid var(--border);
+  padding:12px 20px;border-radius:12px;
+  font-size:13px;font-weight:500;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  transform:translateY(20px);opacity:0;
+  transition:all 0.3s ease;pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-color:rgba(34,197,94,0.3);color:#86efac;}
+.toast.error{border-color:rgba(239,68,68,0.3);color:#fca5a5;}
+
+/* ── CONFIRM MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;
+}
+.modal-overlay.show{display:flex;}
+.modal{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:32px;max-width:380px;width:90%;
+}
+.modal h3{font-size:1.1rem;font-weight:700;margin-bottom:8px;}
+.modal p{font-size:14px;color:var(--muted);margin-bottom:24px;}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;}
+
+/* ── SKELETON ── */
+@keyframes shimmer{0%{background-position:-400px 0;}100%{background-position:400px 0;}}
+.sk{
+  background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%);
+  background-size:800px 100%;animation:shimmer 1.4s infinite;border-radius:8px;
+}
+
+/* ── PREVIEW ── */
+.preview-bar{
+  background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);
+  border-radius:10px;padding:10px 16px;
+  font-size:12px;color:#c4b5fd;margin-bottom:16px;
+}
+
+@media(max-width:700px){
+  .sidebar{display:none;}
+  .main-content{padding:20px;}
+  .form-row{grid-template-columns:1fr;}
+  .topbar{padding:0 16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo">⚡ GETXH</div>
+    <div class="auth-sub">Blog Admin Panel — Sign in to continue</div>
+    <div class="auth-err" id="authErr"></div>
+    <label for="authEmail">Email</label>
+    <input type="email" id="authEmail" placeholder="agency@getxh.in" autocomplete="email"/>
+    <label for="authPass">Password</label>
+    <input type="password" id="authPass" placeholder="••••••••" autocomplete="current-password"/>
+    <button class="btn-primary" id="authBtn" onclick="doLogin()">Sign In</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="appScreen">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo">GETXH <span>Blog</span> Admin</div>
+    <div class="topbar-right">
+      <span class="topbar-email" id="topbarEmail"></span>
+      <button class="btn-sm" onclick="doLogout()">Sign Out</button>
+      <a href="/blogs" target="_blank" class="btn-sm" style="text-decoration:none;">View Blog ↗</a>
+    </div>
+  </div>
+
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <button class="sidebar-item active" id="sideAll" onclick="showSection('list')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
+        </svg>
+        All Posts
+      </button>
+      <button class="sidebar-item" id="sideNew" onclick="openNewPost()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+        </svg>
+        New Post
+      </button>
+      <div class="sidebar-divider"></div>
+      <a href="/blogs" target="_blank" class="sidebar-item" style="text-decoration:none;color:inherit;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+        Live Blog
+      </a>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content">
+
+      <!-- LIST SECTION -->
+      <div id="listSection">
+        <div class="section-header">
+          <div class="section-title">All Posts</div>
+          <button class="btn-new" onclick="openNewPost()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Post
+          </button>
+        </div>
+        <div id="postsList"></div>
+      </div>
+
+      <!-- EDITOR SECTION -->
+      <div id="editorSection">
+        <div class="section-header">
+          <div class="section-title" id="editorTitle">New Post</div>
+        </div>
+        <div class="preview-bar" id="previewBar" style="display:none">
+          Editing: <strong id="previewLink"></strong>
+        </div>
+        <form class="editor-form" onsubmit="return false;">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Title *</label>
+              <input class="form-input" id="fTitle" placeholder="Post title..." maxlength="200"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <input class="form-input" id="fCategory" placeholder="e.g. Instagram Growth" maxlength="60"/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Excerpt (Short Description) *</label>
+            <textarea class="form-textarea" id="fExcerpt" rows="2" placeholder="2-3 line summary shown on blog listing..." maxlength="300"></textarea>
+            <div class="form-hint">Shown on blog listing page. Keep under 160 characters for best SEO.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Cover Image URL</label>
+            <input class="form-input" id="fCoverImage" placeholder="https://images.unsplash.com/..."/>
+            <div class="form-hint">Paste any image URL. Unsplash works great: unsplash.com → copy image address.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Body Content *</label>
+            <textarea class="form-textarea" id="fBody" rows="20" placeholder="Write your blog post here...
+
+You can use basic HTML tags:
+&lt;h2&gt;Heading&lt;/h2&gt;
+&lt;p&gt;Paragraph&lt;/p&gt;
+&lt;ul&gt;&lt;li&gt;List item&lt;/li&gt;&lt;/ul&gt;
+&lt;strong&gt;Bold&lt;/strong&gt;
+&lt;a href=&quot;https://getxh.in&quot;&gt;Link&lt;/a&gt;
+&lt;blockquote&gt;Quote&lt;/blockquote&gt;"></textarea>
+            <div class="form-hint">Use HTML tags for formatting. &lt;h2&gt; for headings, &lt;p&gt; for paragraphs, &lt;ul&gt;&lt;li&gt; for lists.</div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Publish Status</label>
+              <div class="toggle-wrap">
+                <div class="toggle" id="publishToggle" onclick="togglePublish()"></div>
+                <span class="toggle-label" id="publishLabel">Draft (not visible on site)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="editor-actions">
+            <button class="btn-save" id="saveBtn" onclick="savePost()">Save Post</button>
+            <button class="btn-cancel" onclick="showSection('list')">Cancel</button>
+            <span id="saveStatus" style="font-size:12px;color:var(--muted);"></span>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <h3>Delete Post?</h3>
+    <p>Yeh post permanently delete ho jaayega. Isko wapas nahi laaya ja sakta.</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn-save" style="background:#ef4444;box-shadow:none;" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, orderBy, query }
+  from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+const ADMIN_EMAIL = 'agency@getxh.in';
+
+// ── AUTH ──
+onAuthStateChanged(auth, user => {
+  if (user && user.email.toLowerCase() === ADMIN_EMAIL) {
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('appScreen').style.display = 'block';
+    document.getElementById('topbarEmail').textContent = user.email;
+    loadPosts();
+  } else if (user) {
+    // Not admin
+    signOut(auth);
+    showAuthError('Access denied. Admin only.');
+  } else {
+    document.getElementById('authScreen').style.display = 'flex';
+    document.getElementById('appScreen').style.display = 'none';
+  }
+});
+
+window.doLogin = async function() {
+  const email = document.getElementById('authEmail').value.trim();
+  const pass  = document.getElementById('authPass').value;
+  const btn   = document.getElementById('authBtn');
+  if (!email || !pass) return;
+  btn.disabled = true; btn.textContent = 'Signing in...';
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    showAuthError('Invalid email or password.');
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+};
+
+document.getElementById('authPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') window.doLogin();
+});
+
+window.doLogout = () => signOut(auth);
+
+function showAuthError(msg) {
+  const el = document.getElementById('authErr');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+// ── POSTS ──
+let allPosts = [];
+let editingId = null;
+let isPublished = false;
+let deleteTargetId = null;
+
+async function loadPosts() {
+  const list = document.getElementById('postsList');
+  list.innerHTML = `
+    <div class="sk" style="height:72px;border-radius:14px;margin-bottom:12px;"></div>
+    <div class="sk" style="height:72px;border-radius:14px;margin-bottom:12px;"></div>
+    <div class="sk" style="height:72px;border-radius:14px;"></div>`;
+
+  try {
+    const snap = await getDocs(collection(db, 'blogs'));
+    allPosts = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => {
+        const ta = a.publishedAt?.toMillis?.() || a.createdAt?.toMillis?.() || 0;
+        const tb = b.publishedAt?.toMillis?.() || b.createdAt?.toMillis?.() || 0;
+        return tb - ta;
+      });
+    renderPostsList();
+  } catch(e) {
+    list.innerHTML = `<div style="color:#fca5a5;font-size:13px;">Error loading posts: ${e.message}</div>`;
+  }
+}
+
+function renderPostsList() {
+  const list = document.getElementById('postsList');
+  if (!allPosts.length) {
+    list.innerHTML = `
+      <div class="empty-posts">
+        <p>Koi post nahi hai abhi.</p>
+        <button class="btn-new" onclick="openNewPost()">+ Pehla Post Likho</button>
+      </div>`;
+    return;
+  }
+  list.innerHTML = `<div class="posts-list">${allPosts.map(post => {
+    const isPubl = post.published === true;
+    const date = post.publishedAt?.toDate ? post.publishedAt.toDate().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '—';
+    const thumb = post.coverImage
+      ? `<img class="post-row-thumb" src="${post.coverImage}" alt="" onerror="this.style.display='none'">`
+      : `<div class="post-row-thumb-ph">📝</div>`;
+    return `
+    <div class="post-row">
+      ${thumb}
+      <div class="post-row-info">
+        <div class="post-row-title">${escHtml(post.title || 'Untitled')}</div>
+        <div class="post-row-meta">
+          <span class="badge ${isPubl ? 'badge-published' : 'badge-draft'}">${isPubl ? 'Published' : 'Draft'}</span>
+          ${post.category ? `<span>${escHtml(post.category)}</span>` : ''}
+          <span>${date}</span>
+        </div>
+      </div>
+      <div class="post-row-actions">
+        <button class="btn-icon" onclick="openEditPost('${post.id}')">Edit</button>
+        <button class="btn-icon danger" onclick="openDeleteModal('${post.id}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ── EDITOR ──
+window.showSection = function(section) {
+  document.getElementById('listSection').style.display   = section === 'list'   ? 'block' : 'none';
+  document.getElementById('editorSection').style.display = section === 'editor' ? 'block' : 'none';
+  document.getElementById('sideAll').classList.toggle('active', section === 'list');
+  document.getElementById('sideNew').classList.toggle('active', section === 'editor');
+  if (section === 'list') loadPosts();
+};
+
+window.openNewPost = function() {
+  editingId = null;
+  isPublished = false;
+  document.getElementById('editorTitle').textContent = 'New Post';
+  document.getElementById('fTitle').value = '';
+  document.getElementById('fCategory').value = '';
+  document.getElementById('fExcerpt').value = '';
+  document.getElementById('fCoverImage').value = '';
+  document.getElementById('fBody').value = '';
+  document.getElementById('previewBar').style.display = 'none';
+  setToggle(false);
+  document.getElementById('saveStatus').textContent = '';
+  showSection('editor');
+};
+
+window.openEditPost = function(id) {
+  const post = allPosts.find(p => p.id === id);
+  if (!post) return;
+  editingId = id;
+  isPublished = post.published === true;
+  document.getElementById('editorTitle').textContent = 'Edit Post';
+  document.getElementById('fTitle').value = post.title || '';
+  document.getElementById('fCategory').value = post.category || '';
+  document.getElementById('fExcerpt').value = post.excerpt || '';
+  document.getElementById('fCoverImage').value = post.coverImage || '';
+  document.getElementById('fBody').value = post.body || '';
+  document.getElementById('previewBar').style.display = 'block';
+  document.getElementById('previewLink').textContent = `/blog/?id=${id}`;
+  setToggle(isPublished);
+  document.getElementById('saveStatus').textContent = '';
+  showSection('editor');
+};
+
+window.togglePublish = function() {
+  isPublished = !isPublished;
+  setToggle(isPublished);
+};
+
+function setToggle(val) {
+  isPublished = val;
+  const t = document.getElementById('publishToggle');
+  const l = document.getElementById('publishLabel');
+  t.classList.toggle('on', val);
+  l.textContent = val ? 'Published (visible on site)' : 'Draft (not visible on site)';
+}
+
+window.savePost = async function() {
+  const title   = document.getElementById('fTitle').value.trim();
+  const excerpt = document.getElementById('fExcerpt').value.trim();
+  const body    = document.getElementById('fBody').value.trim();
+
+  if (!title) { showToast('Title required!', 'error'); return; }
+  if (!excerpt) { showToast('Excerpt required!', 'error'); return; }
+  if (!body) { showToast('Body content required!', 'error'); return; }
+
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  document.getElementById('saveStatus').textContent = '';
+
+  const data = {
+    title,
+    excerpt,
+    body,
+    category: document.getElementById('fCategory').value.trim(),
+    coverImage: document.getElementById('fCoverImage').value.trim(),
+    published: isPublished,
+  };
+
+  try {
+    if (editingId) {
+      await updateDoc(doc(db, 'blogs', editingId), {
+        ...data,
+        updatedAt: serverTimestamp(),
+        ...(isPublished && !allPosts.find(p=>p.id===editingId)?.publishedAt
+          ? { publishedAt: serverTimestamp() } : {}),
+      });
+      showToast('Post updated!', 'success');
+    } else {
+      const ref = await addDoc(collection(db, 'blogs'), {
+        ...data,
+        createdAt: serverTimestamp(),
+        ...(isPublished ? { publishedAt: serverTimestamp() } : {}),
+      });
+      editingId = ref.id;
+      document.getElementById('previewBar').style.display = 'block';
+      document.getElementById('previewLink').textContent = `/blog/?id=${ref.id}`;
+      document.getElementById('editorTitle').textContent = 'Edit Post';
+      showToast('Post saved!', 'success');
+    }
+  } catch(e) {
+    showToast('Error: ' + e.message, 'error');
+  }
+  btn.disabled = false; btn.textContent = 'Save Post';
+};
+
+// ── DELETE ──
+window.openDeleteModal = function(id) {
+  deleteTargetId = id;
+  document.getElementById('deleteModal').classList.add('show');
+};
+window.closeDeleteModal = function() {
+  deleteTargetId = null;
+  document.getElementById('deleteModal').classList.remove('show');
+};
+window.confirmDelete = async function() {
+  if (!deleteTargetId) return;
+  try {
+    await deleteDoc(doc(db, 'blogs', deleteTargetId));
+    showToast('Post deleted.', 'success');
+    closeDeleteModal();
+    loadPosts();
+  } catch(e) {
+    showToast('Error: ' + e.message, 'error');
+  }
+};
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Init
+showSection('list');
+</script>
+</body>
+</html>

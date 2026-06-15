@@ -689,16 +689,8 @@ input::-webkit-credentials-auto-fill-button{visibility:hidden;display:none !impo
 }
 
 /* ── 4. SERVICES TICKER ── */
-.ticker-wrap{
-  position:relative;z-index:2;overflow:hidden;padding:18px 0;
-  background:rgba(8,15,32,0.6);
-  border-top:1px solid rgba(255,255,255,0.05);
-  border-bottom:1px solid rgba(255,255,255,0.05);
-  -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 7%,#000 93%,transparent 100%);
-  mask-image:linear-gradient(to right,transparent 0%,#000 7%,#000 93%,transparent 100%);
-}
-.ticker-track{display:flex;align-items:center;gap:0;width:max-content;animation:tickerScroll 38s linear infinite;}
-.ticker-track:hover{animation-play-state:paused;}
+.ticker-wrap{display:none;}
+.ticker-track{display:none;}
 @keyframes tickerScroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
 .ticker-item{display:inline-flex;align-items:center;gap:10px;white-space:nowrap;}
 .t-icon-wrap{
@@ -1044,7 +1036,7 @@ input::-webkit-credentials-auto-fill-button{visibility:hidden;display:none !impo
     localStorage.setItem("getxh_current_user",      email);
   }
 
-  onAuthStateChanged(auth,(user)=>{ if(!user) return; saveSession(user); });
+  onAuthStateChanged(auth,(user)=>{ if(!user) return; saveSession(user); window.location.replace('/dashboard'); });
 
   function clearLoginFields(){
     const e=document.getElementById("email");
