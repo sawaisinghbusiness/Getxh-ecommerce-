@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -492,7 +492,7 @@ async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
   // Skip API polling if admin has manually overridden this order's status
   if (docId && window._adminOverriddenOrders.has(docId)) return;
   try {
-    const res  = await fetch('https://backendforapi-f9kehpt2.b4a.run/status/' + apiOrderId);
+    const res  = await fetch('https://backend-for-api-connect-production-8856.up.railway.app/status/' + apiOrderId);
     const data = await res.json();
 
     const status = (data.status || '').toLowerCase();
@@ -573,7 +573,7 @@ document.addEventListener('click', () => {
 
 async function refillOrder(apiOrderId, eid) {
   try {
-    const res  = await fetch('https://backendforapi-f9kehpt2.b4a.run/refill', {
+    const res  = await fetch('https://backend-for-api-connect-production-8856.up.railway.app/refill', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({order: apiOrderId})
@@ -597,7 +597,7 @@ async function cancelOrder(apiOrderId, docId, price, eid) {
   btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#f87171">hourglass_top</span> Cancelling...';
 
   try {
-    const res  = await fetch('https://backendforapi-f9kehpt2.b4a.run/cancel', {
+    const res  = await fetch('https://backend-for-api-connect-production-8856.up.railway.app/cancel', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({order: apiOrderId})
