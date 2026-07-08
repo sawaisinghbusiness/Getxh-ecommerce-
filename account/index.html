@@ -113,6 +113,7 @@ function logout() {
     window._logoutUser();
     return;
   }
+  sessionStorage.setItem("getxh_logged_out", "yes");
   localStorage.clear();
   window.location.href = '/';
 }
@@ -166,6 +167,7 @@ window._logoutUser = async function() {
   } catch (err) {
     console.error("Logout error:", err);
   } finally {
+    sessionStorage.setItem("getxh_logged_out", "yes");
     localStorage.clear();
     window.location.href = '/';
   }

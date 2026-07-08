@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1521,9 +1521,10 @@ function logout() {
   p.style.display='flex';
   requestAnimationFrame(() => p.classList.add('is-visible'));
 }
-function _doLogout() {
-  if (typeof window._logoutUser === 'function') { window._logoutUser(); return; }
-  localStorage.clear(); window.location.href = '/';
+function _doLogout() {\r
+  if (typeof window._logoutUser === 'function') { window._logoutUser(); return; }\r
+  sessionStorage.setItem("getxh_logged_out", "yes");\r
+  localStorage.clear(); window.location.href = '/';\r
 }
 function cancelLogout() {
   const p = document.getElementById('logoutConfirmPopup');
@@ -2182,12 +2183,13 @@ let _unsubOrders   = null;
 window._currentBalance = 0;
 
 // ── LOGOUT ──
-window._logoutUser = async function() {
-  if (_unsubStats)  _unsubStats();
-  if (_unsubOrders) _unsubOrders();
-  try { await signOut(auth); } catch(_) {}
-  localStorage.clear();
-  window.location.href = '/';
+window._logoutUser = async function() {\r
+  if (_unsubStats)  _unsubStats();\r
+  if (_unsubOrders) _unsubOrders();\r
+  try { await signOut(auth); } catch(_) {}\r
+  sessionStorage.setItem("getxh_logged_out", "yes");\r
+  localStorage.clear();\r
+  window.location.href = '/';\r
 };
 
 // ── AUTH GUARD — single onAuthStateChanged, no race condition ──

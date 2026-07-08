@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -470,6 +470,7 @@ function logout() {
 }
 function _doLogout() {
   if (typeof window._logoutUser === 'function') { window._logoutUser(); return; }
+  sessionStorage.setItem("getxh_logged_out", "yes");
   localStorage.clear(); window.location.href='/';
 }
 function cancelLogout() {
@@ -870,6 +871,7 @@ window._logoutUser = async function() {
   if (_unsubOrders) _unsubOrders();
   if (_unsubWallet) _unsubWallet();
   try { await signOut(auth); } catch(_) {}
+  sessionStorage.setItem("getxh_logged_out", "yes");
   localStorage.clear();
   window.location.href = '/';
 };

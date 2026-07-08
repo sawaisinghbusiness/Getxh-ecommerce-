@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -1036,7 +1036,17 @@ input::-webkit-credentials-auto-fill-button{visibility:hidden;display:none !impo
     localStorage.setItem("getxh_current_user",      email);
   }
 
-  onAuthStateChanged(auth,(user)=>{ if(!user) return; saveSession(user); window.location.replace('/dashboard'); });
+  onAuthStateChanged(auth,(user)=>{
+    if(!user) return;
+    // If user explicitly logged out, don't auto-redirect
+    if(sessionStorage.getItem("getxh_logged_out")==="yes"){
+      sessionStorage.removeItem("getxh_logged_out");
+      signOut(auth);
+      return;
+    }
+    saveSession(user);
+    window.location.replace('/dashboard');
+  });
 
   function clearLoginFields(){
     const e=document.getElementById("email");
