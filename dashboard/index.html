@@ -701,6 +701,28 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
           </p>
         </div>
 
+        <!-- DRIP FEED FIELDS (Shown only for drip-feed specific services) -->
+        <div id="dripFieldsContainer" class="hidden">
+          <div style="margin-bottom:15px;">
+            <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Runs</p>
+            <input type="number" id="dripRuns" placeholder="Number of Runs" autocomplete="off" min="1"
+              style="width:100%;padding:12px 16px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
+          </div>
+          <div style="margin-bottom:15px;">
+            <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Interval (minutes)</p>
+            <input type="number" id="dripInterval" placeholder="Interval in minutes" autocomplete="off" min="1"
+              style="width:100%;padding:12px 16px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
+          </div>
+          <div style="margin-bottom:15px;">
+            <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Total Quantity</p>
+            <input type="number" id="dripTotalQty" placeholder="Total Quantity" disabled
+              style="width:100%;padding:12px 16px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;opacity:0.75;cursor:not-allowed;"/>
+          </div>
+          <p id="dripError" class="hidden text-xs text-red-400 mt-2 font-semibold">
+            ⚠ Runs and Interval must be at least 1
+          </p>
+        </div>
+
         <!-- DELIVERY TIME -->
         <div class="mb-3">
           <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5 flex items-center gap-1">
@@ -1380,6 +1402,7 @@ const SERVICES = {
   'reel-views': [
     {id:5829,name:'Instagram Views - Max Unlimited',price:1,min:50,max:2147483647,startTime:'Instant',speed:'300K/Day',refill:'NO',cancel:'NO',drop:'—',quality:'—',delivery:'Instant',details:['Works on Reels and Post links','Use reel or post link only','Private accounts not accepted','Wrong links are non-refundable']},
     {id:5830,name:'Instagram Video Views - All Links',price:2.5,min:10,max:2147483647,startTime:'Instant',speed:'100K/Day',refill:'NO',cancel:'NO',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:["Please Note - Make sure to make your account public. If the account is not public, the order will be marked as complete."]},
+    {id:5833,name:'ultrafast views services drip feed (interval available )',price:2.25,min:100,max:2147483647,startTime:'Instant',speed:'Ultra Fast',refill:'NO',cancel:'NO',drop:'Non Drop',quality:'HQ',delivery:'Instant',details:["- Speed: Ultrafast","- Drip Feed / Interval available","- Kindly make sure your account is public."]},
     {id:5835,name:'Instagram Video Views All Link',price:4.86,min:50,max:2147483647,startTime:'Instant',speed:'500K-1M/Day',refill:'NO',cancel:'NO',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:["Please Note - Make sure to make your account public. If the account is not public, the order will be marked as complete."]},
   ],
   'post-views': [
@@ -1397,7 +1420,8 @@ const SERVICES = {
     {id:5031,name:'Instagram Likes - Real Profile',price:15.55,min:10,max:500000,startTime:'Instant',speed:'100K+/Day',refill:'365 Days ♻',cancel:'NO',drop:'Non Drop',quality:'Real Profile',delivery:'Instant',details:["Notes:","-When the service is busy, the starting speed of the process changes.","-Do not place the second order on the same link before your order is completed in the system.","-In case of any problems with the service, please contact support."]},
     {id:5032,name:'Instagram Likes - Indian Profiles',price:21.17,min:50,max:500000,startTime:'Instant',speed:'300K/Day',refill:'30 Days ♻',cancel:'YES',drop:'Non Drop',quality:'Indian Profiles 🇮🇳',delivery:'Instant',details:["- Location: India 🇮🇳","- Example Link: All Link | Video + Reels + IGTV","Notes:","• In case of high demand for the service, there may be changes in speed and start time.","• Do not place the second order on the same link before your order is completed in the system."]},
     {id:5112,name:'Instagram Likes - Indian Profiles',price:22.15,min:50,max:500000,startTime:'Instant',speed:'300K/Day',refill:'Lifetime ♻',cancel:'YES',drop:'Non Drop',quality:'Indian Profiles 🇮🇳',delivery:'Instant',details:["- Location: India 🇮🇳","- Example Link: All Link | Video + Reels + IGTV","Notes:","• In case of high demand for the service, there may be changes in speed and start time.","• Do not place the second order on the same link before your order is completed in the system."]},
-    {id:5210,name:'Instagram Likes - Indian Profile',price:86,min:100,max:1000000,startTime:'0-1 Minute',speed:'10K+/Hour',refill:'Lifetime ♻',cancel:'NO',drop:'Non Drop',quality:'100% Real Indian Profile with Story 🇮🇳',delivery:'0-1 minute',details:[]},
+    {id:5209,name:'Instagram Likes - Indian Profile',price:86,min:100,max:1000000,startTime:'0-1 Minute',speed:'10K+/Hour',refill:'Lifetime ♻',cancel:'NO',drop:'Non Drop',quality:'100% Real Indian Profile with Story 🇮🇳',delivery:'0-1 minute',details:[]},
+    {id:5210,name:'real indian likes with profile photo and stories also drip feed (interval availble )',price:99.34,min:10,max:5000,startTime:'Instant',speed:'10K+/Day',refill:'Lifetime ♻',cancel:'YES',drop:'Non Drop',quality:'Real Indian with Profile Photo & Stories',delivery:'Instant',details:["- Real Indian Profiles","- With profile photo and stories","- Drip Feed available","- Cancel Button Enabled"]},
   ],
   'comments': [
     {id:4966,name:'Instagram Comments - Random',price:189.35,min:50,max:50000,startTime:'0-1 Hour',speed:'10K/Day',refill:'No Refill',cancel:'NO',drop:'Non Drop',quality:'100% Real Users',delivery:'0-1 hour',details:[]},
@@ -1674,6 +1698,21 @@ function selectService(svc) {
   document.getElementById('totalPrice').textContent='';
   document.getElementById('quantityError').classList.add('hidden');
   document.getElementById('placeOrderBtn').disabled=true;
+
+  // Reset and show/hide drip feed container based on service ID
+  const isDripSvc = svc && (svc.id === 5833 || svc.id === 5210);
+  const dripContainer = document.getElementById('dripFieldsContainer');
+  if (dripContainer) {
+    if (isDripSvc) {
+      dripContainer.classList.remove('hidden');
+    } else {
+      dripContainer.classList.add('hidden');
+    }
+    document.getElementById('dripRuns').value = '';
+    document.getElementById('dripInterval').value = '';
+    document.getElementById('dripTotalQty').value = '';
+    document.getElementById('dripError').classList.add('hidden');
+  }
   // Custom comments box logic
   const isCustomComment = svc.name.toLowerCase().includes('custom');
   const ccWrap = document.getElementById('customCommentsWrap');
@@ -1767,28 +1806,91 @@ document.addEventListener('click', function (e) {
     document.getElementById('globalSearchDrop').classList.add('hidden');
   }
 });
-// ── VALIDATION ──
-document.getElementById('quantityInput').addEventListener('input',()=>{
-  if(!_selSvc)return;
-  if(_selSvc.name.toLowerCase().includes('custom'))return; // custom mode — qty is read-only
-  const qty=parseInt(document.getElementById('quantityInput').value);
-  const err=document.getElementById('quantityError');
-  if(!qty||qty<_selSvc.min||qty>_selSvc.max){err.classList.remove('hidden');document.getElementById('totalPrice').textContent='';document.getElementById('placeOrderBtn').disabled=true;return;}
-  err.classList.add('hidden');
-  document.getElementById('totalPrice').textContent='₹'+fmtPrice((qty/1000)*_selSvc.price)+'  ';
-  document.getElementById('placeOrderBtn').disabled=!document.getElementById('linkInput').value.trim();
-});
-document.getElementById('linkInput').addEventListener('input',()=>{
-  if(!_selSvc)return;
-  if(_selSvc.name.toLowerCase().includes('custom')){
-    // custom mode — recheck line count
-    const lines=document.getElementById('customCommentsInput').value.split('\n').filter(l=>l.trim()!=='').length;
-    document.getElementById('placeOrderBtn').disabled=!(document.getElementById('linkInput').value.trim()&&lines>=_selSvc.min);
+// ── VALIDATION & PRICE CALCULATION ──
+function updateTotalPrice() {
+  if (!_selSvc) return;
+
+  const isCustomComment = _selSvc.name.toLowerCase().includes('custom');
+  const link = document.getElementById('linkInput').value.trim();
+  const qtyInput = document.getElementById('quantityInput');
+  const qty = parseInt(qtyInput.value) || 0;
+
+  // Drip feed is active ONLY for services 5833 and 5210
+  const isDrip = _selSvc.id === 5833 || _selSvc.id === 5210;
+  const runsInput = document.getElementById('dripRuns');
+  const intervalInput = document.getElementById('dripInterval');
+  const runs = parseInt(runsInput.value) || 0;
+  const interval = parseInt(intervalInput.value) || 0;
+
+  // Elements
+  const qtyErr = document.getElementById('quantityError');
+  const dripErr = document.getElementById('dripError');
+  const totalQtyEl = document.getElementById('dripTotalQty');
+  const priceEl = document.getElementById('totalPrice');
+  const orderBtn = document.getElementById('placeOrderBtn');
+
+  // Custom comments validation
+  if (isCustomComment) {
+    const lines = document.getElementById('customCommentsInput').value.split('\n').filter(l => l.trim() !== '').length;
+    const ccErr = document.getElementById('customCommentsError');
+    if (lines < _selSvc.min) {
+      priceEl.textContent = '';
+      orderBtn.disabled = true;
+      return;
+    }
+    const orderPrice = parseFloat(((lines / 1000) * _selSvc.price).toFixed(2));
+    priceEl.textContent = '₹' + orderPrice.toFixed(2) + '  ';
+    orderBtn.disabled = !link;
     return;
   }
-  const qty=parseInt(document.getElementById('quantityInput').value);
-  document.getElementById('placeOrderBtn').disabled=!(document.getElementById('linkInput').value.trim()&&qty&&qty>=_selSvc.min&&qty<=_selSvc.max);
-});
+
+  // Normal quantity validation
+  if (!qty || qty < _selSvc.min || qty > _selSvc.max) {
+    if (qty > 0) {
+      qtyErr.classList.remove('hidden');
+    }
+    priceEl.textContent = '';
+    orderBtn.disabled = true;
+    totalQtyEl.value = '';
+    return;
+  }
+  qtyErr.classList.add('hidden');
+
+  let totalQty = qty;
+  let hasDripError = false;
+
+  if (isDrip) {
+    if (runs <= 0 || interval <= 0) {
+      hasDripError = true;
+      if (runsInput.value || intervalInput.value) {
+        dripErr.classList.remove('hidden');
+      }
+    } else {
+      dripErr.classList.add('hidden');
+    }
+    totalQty = qty * runs;
+    totalQtyEl.value = totalQty || '';
+  } else {
+    dripErr.classList.add('hidden');
+    totalQtyEl.value = '';
+  }
+
+  if (hasDripError) {
+    priceEl.textContent = '';
+    orderBtn.disabled = true;
+    return;
+  }
+
+  const orderPrice = parseFloat(((totalQty / 1000) * _selSvc.price).toFixed(2));
+  priceEl.textContent = '₹' + orderPrice.toFixed(2) + '  ';
+  orderBtn.disabled = !link;
+}
+
+// Wire up listeners
+document.getElementById('quantityInput').addEventListener('input', updateTotalPrice);
+document.getElementById('linkInput').addEventListener('input', updateTotalPrice);
+document.getElementById('dripRuns').addEventListener('input', updateTotalPrice);
+document.getElementById('dripInterval').addEventListener('input', updateTotalPrice);
 // ── CUSTOM COMMENTS TEXTAREA ──
 document.getElementById('customCommentsInput').addEventListener('input',function(){
   if(!_selSvc)return;
@@ -1855,6 +1957,7 @@ function showToast(type, title, msg) {
 }
 
 // ── PLACE ORDER ──
+// ── PLACE ORDER ──
 async function placeOrder(serviceId) {
   const link     = document.getElementById('linkInput').value.trim();
   const quantity = document.getElementById('quantityInput').value;
@@ -1864,8 +1967,21 @@ async function placeOrder(serviceId) {
     return;
   }
 
+  // Drip feed variables
+  const isDrip = _selSvc && (_selSvc.id === 5833 || _selSvc.id === 5210);
+  const runs = isDrip ? (parseInt(document.getElementById('dripRuns').value) || 0) : null;
+  const interval = isDrip ? (parseInt(document.getElementById('dripInterval').value) || 0) : null;
+
+  if (isDrip && (runs <= 0 || interval <= 0)) {
+    showToast('warn', 'Invalid Drip Feed', 'Please enter valid runs and interval values.');
+    return;
+  }
+
+  // Calculate order price
+  const totalQty = isDrip ? (parseInt(quantity) * runs) : parseInt(quantity);
+  const orderPrice = parseFloat(((totalQty / 1000) * (_selSvc ? _selSvc.price : 0)).toFixed(2));
+
   // ── Balance check ──
-  const orderPrice = parseFloat(((parseInt(quantity) / 1000) * (_selSvc ? _selSvc.price : 0)).toFixed(2));
   if (_currentBalance < orderPrice) {
     showInsufficientModal(orderPrice);
     return;
@@ -1887,20 +2003,27 @@ async function placeOrder(serviceId) {
     }
     const idToken = await window.auth.currentUser.getIdToken(true);
     const requestId = (crypto.randomUUID && crypto.randomUUID()) || String(Date.now()) + "-" + Math.random().toString(36).slice(2);
+    
+    const requestBody = {
+      service: serviceId,
+      link: link,
+      quantity: quantity,
+      requestId,
+      uid: window.currentUid,
+      email: window.currentEmail
+    };
+    if (isDrip) {
+      requestBody.runs = runs;
+      requestBody.interval = interval;
+    }
+
     const res = await fetch('https://backend-for-api-connect-production-8856.up.railway.app/order', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + idToken
       },
-      body: JSON.stringify({
-        service: serviceId,
-        link: link,
-        quantity: quantity,
-        requestId,
-        uid: window.currentUid,
-        email: window.currentEmail
-      })
+      body: JSON.stringify(requestBody)
     });
     if (!res.ok) {
       const errText = await res.text().catch(() => res.status);
@@ -1916,8 +2039,6 @@ async function placeOrder(serviceId) {
     const smmSuccess = data.status && ['completed','processing','pending','in progress','partial'].includes(String(data.status).toLowerCase());
 
     if (orderId || smmSuccess) {
-      // ── Success — deduct balance & show modal ──
-      const orderPrice = parseFloat(((parseInt(quantity) / 1000) * (_selSvc ? _selSvc.price : 0)).toFixed(2));
       // Deduct balance and increment order count
       if (window.currentUid && window._updateDoc && window.db && orderPrice > 0) {
         window._updateDoc(window._doc(window.db, 'Users', window.currentUid), {
@@ -1929,7 +2050,7 @@ async function placeOrder(serviceId) {
       if (window.currentUid && window._addDoc && window.db) {
         const _now = Date.now();
         const _readableDate = new Date(_now).toLocaleString('en-IN');
-        window._addDoc(window._collection(window.db, 'orders'), {
+        const dbOrderData = {
           userId:           window.currentUid,
           email:            window.currentEmail || '',
           orderId:          orderId ? String(orderId) : null,
@@ -1944,11 +2065,19 @@ async function placeOrder(serviceId) {
           remains:          parseInt(quantity),
           createdAt:        _now,
           createdAtReadable: _readableDate
-        }).catch(e => console.error('Order save error:', e));
+        };
+        if (isDrip) {
+          dbOrderData.runs = runs;
+          dbOrderData.interval = interval;
+          dbOrderData.isDrip = true;
+          dbOrderData.totalQuantity = totalQty;
+        }
+        window._addDoc(window._collection(window.db, 'orders'), dbOrderData)
+          .catch(e => console.error('Order save error:', e));
       }
       document.getElementById('smOrderId').textContent  = orderId ? '#' + orderId : 'Confirmed';
       document.getElementById('smService').textContent  = _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—';
-      document.getElementById('smQty').textContent      = parseInt(quantity).toLocaleString();
+      document.getElementById('smQty').textContent      = isDrip ? `${totalQty.toLocaleString()} (${quantity} x ${runs} runs)` : parseInt(quantity).toLocaleString();
       document.getElementById('smAmount').textContent   = '₹' + orderPrice.toFixed(2);
       const modal = document.getElementById('successModal');
       modal.classList.remove('hidden');
@@ -1979,10 +2108,7 @@ async function placeOrder(serviceId) {
     // ── Restore button ──
     if (labelSpan) labelSpan.textContent = 'ORDER';
     if (chevron)   chevron.style.display = '';
-    btn.disabled = !(
-      document.getElementById('linkInput').value.trim() &&
-      parseInt(document.getElementById('quantityInput').value) >= (_selSvc ? _selSvc.min : 1)
-    );
+    updateTotalPrice();
   }
 }
 

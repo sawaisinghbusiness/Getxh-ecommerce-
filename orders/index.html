@@ -777,8 +777,20 @@ function renderOrders(orders) {
         <div class="flex items-center justify-between"
              style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:8px;">
           <span class="text-gray-400 text-xs">Quantity:</span>
-          <span class="text-white text-xs font-semibold">${(o.quantity||0).toLocaleString()}</span>
+          <span class="text-white text-xs font-semibold">${o.isDrip ? `${(o.quantity||0).toLocaleString()} / run (${o.runs} runs)` : (o.quantity||0).toLocaleString()}</span>
         </div>
+        ${o.isDrip ? `
+        <div class="flex items-center justify-between"
+             style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:8px;">
+          <span class="text-gray-400 text-xs">Total Quantity:</span>
+          <span class="text-white text-xs font-semibold">${(o.totalQuantity||0).toLocaleString()}</span>
+        </div>
+        <div class="flex items-center justify-between"
+             style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:8px;">
+          <span class="text-gray-400 text-xs">Interval:</span>
+          <span class="text-white text-xs font-semibold">${o.interval} min</span>
+        </div>
+        ` : ''}
 
         <!-- Bottom row: date + actions -->
         <div class="flex items-center justify-between pt-1" style="margin-top:4px;">
