@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -121,7 +121,7 @@
     btn.textContent = "Verifying…";
 
     try {
-      const res = await fetch("https://backend-for-email-verification-code-production.up.railway.app/verify-otp", {
+      const res = await fetch("https://getxh.online/verify-otp", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ email, otp, type })
