@@ -223,6 +223,7 @@ body::before{
 <script>
 const params = new URLSearchParams(window.location.search);
 const email  = String(params.get("email") || "").trim().toLowerCase();
+const otp    = String(params.get("otp") || sessionStorage.getItem("gx_reset_otp") || "").trim();
 
 if (!email) {
   window.location.href = "/forgot-password";
@@ -363,10 +364,15 @@ async function resetPassword() {
   btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;animation:spin 0.7s linear infinite;display:inline-block"></span>Updating Password…</span>';
 
   try {
-    const res = await fetch("https://getxh.online/reset-password", {
+    const res = await fetch("https://getxh.online/api/reset-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email, newPassword: pwd })
+      body: JSON.stringify({
+        email: email,
+        otp: otp,
+        newPassword: pwd,
+        confirmPassword: conf
+      })
     });
 
     const data = await res.json().catch(() => ({}));

@@ -277,8 +277,9 @@ async function verifyOTP() {
 
     if (res.ok && (data.success || data.status === "success" || data.valid)) {
       showInfo("OTP verified successfully! Redirecting…");
+      try { sessionStorage.setItem("gx_reset_otp", otp); } catch(e){}
       setTimeout(() => {
-        window.location.href = `/reset-password?email=${encodeURIComponent(email)}`;
+        window.location.href = `/reset-password?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`;
       }, 700);
     } else {
       const msg = data.error || data.message || "Incorrect OTP. Please check and try again.";
