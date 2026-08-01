@@ -1,316 +1,396 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-<link rel="icon" href="/GETXH WEB NEW LOGO.png" type="image/png"> />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reset Password - GETXH</title>
-  <meta name="robots" content="noindex, nofollow"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Reset Password | GETXH – SMM Panel India</title>
+<meta name="description" content="Enter your new password to complete reset."/>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="icon" href="/GETXH WEB NEW LOGO.png" type="image/png"/>
 
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      color: white;
-    }
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-    .brand {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 28px;
-    }
-    .brand-logo-wrap {
-      display: inline-flex;
-      mix-blend-mode: screen;
-    }
-    .brand-logo-wrap img {
-      height: 120px;
-      width: auto;
-      display: block;
-      filter: invert(1) hue-rotate(180deg);
-    }
+:root{
+  --bg:#020617;--bg2:#0f172a;--purple:#8b5cf6;--blue:#3b82f6;
+  --text:#f1f5f9;--muted:#94a3b8;
+}
 
-    .card {
-      background: #1e293b;
-      padding: 36px 30px;
-      border-radius: 12px;
-      width: 340px;
-      text-align: center;
-    }
+html,body{
+  height:100%;font-family:'Inter',sans-serif;
+  background:#000510;color:var(--text);overflow-x:hidden;
+}
+a,button,input,.card,.orb{transition:all 0.3s ease;}
 
-    .card h2 {
-      margin-bottom: 6px;
-      font-size: 22px;
-    }
+/* Background */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 110% 22% at 28% 70%,rgba(140,225,255,0.38) 0%,rgba(30,130,255,0.18) 22%,rgba(0,60,200,0.05) 48%,transparent 62%),
+    radial-gradient(ellipse 95% 85% at -15% 115%,rgba(0,80,220,0.28) 0%,rgba(0,45,170,0.1) 38%,transparent 62%),
+    radial-gradient(ellipse 75% 65% at 3% 3%,rgba(0,55,170,0.18) 0%,transparent 58%),
+    radial-gradient(ellipse 50% 40% at 85% 15%,rgba(0,30,100,0.12) 0%,transparent 55%),
+    linear-gradient(170deg,#000d28 0%,#000614 35%,#000208 100%);
+}
 
-    .card p.sub {
-      font-size: 13px;
-      color: #94a3b8;
-      margin-bottom: 20px;
-    }
+.page{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px 20px;position:relative;z-index:2;
+}
 
-    .input-wrap {
-      position: relative;
-      margin-top: 14px;
-    }
+.orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;opacity:0.6;z-index:0;}
+.orb-1{width:500px;height:500px;background:rgba(139,92,246,0.22);top:-140px;left:-120px;}
+.orb-2{width:400px;height:400px;background:rgba(59,130,246,0.16);bottom:-80px;right:-60px;}
 
-    .input-wrap input {
-      width: 100%;
-      padding: 12px 40px 12px 14px;
-      border-radius: 8px;
-      border: 1.5px solid #334155;
-      background: #0f172a;
-      color: white;
-      font-size: 15px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
+.wrap{width:100%;max-width:440px;position:relative;z-index:2;}
 
-    .input-wrap input:focus {
-      border-color: #6366f1;
-    }
+/* Logo */
+.brand{display:flex;justify-content:center;align-items:center;margin-bottom:24px;}
+.brand-logo-wrap{display:inline-flex;mix-blend-mode:screen;}
+.brand-logo-wrap img{height:90px;width:auto;display:block;filter:invert(1) hue-rotate(180deg) brightness(1.1);}
 
-    .toggle-pwd {
-      position: absolute;
-      right: 11px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 28px;
-      height: 28px;
-      border-radius: 7px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: #334155;
-      transition: color 0.2s, background 0.2s;
-    }
-    .toggle-pwd:hover { background: rgba(255,255,255,0.07); color: #94a3b8; }
+/* Card */
+.card-shine-wrap{position:relative;width:100%;border-radius:24px;padding:1.5px;}
+.card-shine-wrap::before{content:'';position:absolute;inset:0;border-radius:24px;background:conic-gradient(from var(--shine-angle,0deg),transparent 0deg,rgba(139,92,246,0.9) 60deg,rgba(59,130,246,0.8) 120deg,rgba(6,182,212,0.7) 180deg,transparent 240deg);animation:card-spin 5s linear infinite;z-index:0;}
+.card-shine-wrap::after{content:'';position:absolute;inset:1.5px;border-radius:22.5px;background:#080f1e;z-index:1;}
+@keyframes card-spin{to{--shine-angle:360deg;}}
+@property --shine-angle{syntax:'<angle>';initial-value:0deg;inherits:false;}
 
-    button {
-      width: 100%;
-      padding: 13px;
-      margin-top: 22px;
-      background: #6366f1;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+.card{position:relative;z-index:2;width:100%;background:rgba(10,16,34,0.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:22px;padding:36px 32px;box-shadow:0 32px 80px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.08);}
 
-    button:hover:not(:disabled) { background: #4f46e5; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
+.card-head{text-align:center;margin-bottom:24px;}
+.card-title{font-size:22px;font-weight:800;letter-spacing:-0.02em;color:#ffffff;}
+.card-sub{font-size:13px;color:#94a3b8;margin-top:6px;line-height:1.5;}
 
-    .msg { margin-top: 14px; font-size: 14px; }
-    .msg.error { color: #ef4444; }
-    .msg.success { color: #22c55e; }
+/* Boxes */
+#errorBox{display:none;align-items:center;gap:8px;padding:11px 14px;border-radius:10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.22);color:#fca5a5;font-size:12.5px;font-weight:500;margin-bottom:16px;}
+#infoBox{display:none;align-items:center;gap:8px;padding:11px 14px;border-radius:10px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.22);color:#86efac;font-size:12.5px;font-weight:500;margin-bottom:16px;}
 
-    /* Password rules panel — same as Registerpage */
-    .pwd-rules {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 0 12px;
-      background: rgba(255,255,255,0.025);
-      border-radius: 8px;
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
-      transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.3s ease, margin-top 0.3s ease;
-      margin-top: 0;
-    }
-    .pwd-rules.visible {
-      max-height: 110px;
-      opacity: 1;
-      padding: 11px 12px;
-      margin-top: 8px;
-    }
-    .rule {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 11.5px;
-      font-weight: 500;
-      color: #f87171;
-      transition: color 0.28s ease;
-    }
-    .rule.valid { color: #4ade80; }
-    .rule-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: #f87171;
-      flex-shrink: 0;
-      transition: background 0.28s ease, transform 0.2s ease, box-shadow 0.28s ease;
-    }
-    .rule.valid .rule-dot {
-      background: #4ade80;
-      transform: scale(1.2);
-      box-shadow: 0 0 6px rgba(74,222,128,0.45);
-    }
-  </style>
+/* Form */
+.fgroup{margin-bottom:14px;}
+.flabel{display:block;font-size:10.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;}
+.iwrap{position:relative;}
+.iicon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#64748b;pointer-events:none;display:flex;transition:color 0.25s;}
+.iwrap:focus-within .iicon{color:#8b5cf6;}
+.finput{width:100%;height:46px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:0 14px 0 40px;color:#f1f5f9;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:all 0.28s ease;}
+.finput::placeholder{color:#475569;}
+.finput:hover{border-color:rgba(255,255,255,0.18);background:rgba(255,255,255,0.07);}
+.finput:focus{border-color:rgba(139,92,246,0.65);box-shadow:0 0 0 3px rgba(139,92,246,0.14),0 0 24px rgba(139,92,246,0.18);background:rgba(139,92,246,0.04);}
+.finput.has-toggle{padding-right:46px;}
+
+.toggle-pwd{position:absolute;right:11px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#475569;transition:color 0.2s,background 0.2s;}
+.toggle-pwd:hover{background:rgba(255,255,255,0.07);color:#94a3b8;}
+
+/* Rules panel */
+.pwd-rules{display:flex;flex-direction:column;gap:6px;padding:0 12px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;max-height:0;opacity:0;transition:max-height 0.38s cubic-bezier(0.22,1,0.36,1),opacity 0.3s ease,padding 0.3s ease,margin-top 0.3s ease;margin-top:0;}
+.pwd-rules.visible{max-height:110px;opacity:1;padding:11px 12px;margin-top:8px;}
+.rule{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:500;color:#f87171;transition:color 0.28s ease;}
+.rule.valid{color:#4ade80;}
+.rule-dot{width:5px;height:5px;border-radius:50%;background:#f87171;flex-shrink:0;transition:background 0.28s ease,transform 0.2s ease,box-shadow 0.28s ease;}
+.rule.valid .rule-dot{background:#4ade80;transform:scale(1.2);box-shadow:0 0 6px rgba(74,222,128,0.45);}
+
+.confirm-hint{font-size:11.5px;font-weight:500;display:flex;align-items:center;gap:5px;margin-top:5px;padding-left:3px;min-height:15px;opacity:0;transform:translateY(-5px);transition:opacity 0.22s ease,transform 0.22s ease,color 0.25s ease;pointer-events:none;}
+.confirm-hint.show{opacity:1;transform:translateY(0);}
+.confirm-hint.match{color:#4ade80;}
+.confirm-hint.no-match{color:#f87171;}
+
+/* Validation */
+.field-err{font-size:11.5px;font-weight:500;color:#f87171;margin-top:5px;padding-left:3px;min-height:15px;display:flex;align-items:center;gap:5px;opacity:0;transform:translateY(-5px);transition:opacity 0.22s ease,transform 0.22s ease;pointer-events:none;}
+.field-err.show{opacity:1;transform:translateY(0);}
+.finput.input-error{border-color:rgba(239,68,68,0.65)!important;box-shadow:0 0 0 3px rgba(239,68,68,0.13),0 0 18px rgba(239,68,68,0.09)!important;}
+
+@keyframes shake{0%,100%{transform:translateX(0);}15%{transform:translateX(-3.5px);}30%{transform:translateX(3.5px);}48%{transform:translateX(-2.5px);}64%{transform:translateX(2.5px);}80%{transform:translateX(-1px);}92%{transform:translateX(1px);}}
+.shake{animation:shake 0.36s cubic-bezier(0.36,0.07,0.19,0.97) both;}
+
+.btn{width:100%;height:44px;border:none;border-radius:12px;background:linear-gradient(135deg,#8b5cf6 0%,#3b82f6 100%);color:#fff;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s ease;box-shadow:0 8px 28px rgba(139,92,246,0.35);margin-top:12px;}
+.btn:hover:not(:disabled){transform:translateY(-2px) scale(1.02);box-shadow:0 16px 40px rgba(139,92,246,0.55);}
+.btn:disabled{opacity:0.65;cursor:not-allowed;}
+
+.cfoot{display:flex;align-items:center;justify-content:center;margin-top:20px;gap:6px;font-size:13px;color:#475569;}
+.link-back{font-size:13px;font-weight:600;color:#8b5cf6;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:color 0.2s;}
+.link-back:hover{color:#a78bfa;}
+</style>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
 </head>
 
 <body>
-  <div class="brand">
-    <div class="brand-logo-wrap">
-      <img src="../getxh new logo.png" alt="GETXH" />
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="page">
+  <div class="wrap">
+
+    <div class="brand">
+      <div class="brand-logo-wrap">
+        <img src="/GETXH WEB NEW LOGO.png" alt="GETXH"/>
+      </div>
     </div>
+
+    <div class="card-shine-wrap">
+      <div class="card">
+
+        <div class="card-head">
+          <h1 class="card-title">Reset Password</h1>
+          <p class="card-sub">Create a strong new password for your GETXH account.</p>
+        </div>
+
+        <div id="errorBox"></div>
+        <div id="infoBox"></div>
+
+        <!-- New Password -->
+        <div class="fgroup">
+          <label class="flabel" for="password">New Password</label>
+          <div class="iwrap">
+            <span class="iicon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </span>
+            <input id="password" type="password" autocomplete="new-password" autocapitalize="none" spellcheck="false"
+              class="finput has-toggle" placeholder="Min. 8 characters"
+              oninput="onPasswordInput(this.value)"
+              onkeydown="if(event.key==='Enter')document.getElementById('confirmPassword').focus()"/>
+            <div class="toggle-pwd" onclick="togglePwd('password','eyeIcon1')" title="Show/hide password">
+              <svg id="eyeIcon1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+          </div>
+          <div class="field-err" id="err-password"></div>
+
+          <!-- Password rules -->
+          <div class="pwd-rules" id="pwdRules">
+            <div class="rule" id="rule-minlen">
+              <span class="rule-dot"></span>At least 8 characters
+            </div>
+            <div class="rule" id="rule-maxlen">
+              <span class="rule-dot"></span>Maximum 20 characters
+            </div>
+            <div class="rule" id="rule-upper">
+              <span class="rule-dot"></span>First letter must be uppercase
+            </div>
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="fgroup">
+          <label class="flabel" for="confirmPassword">Confirm Password</label>
+          <div class="iwrap">
+            <span class="iicon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </span>
+            <input id="confirmPassword" type="password" autocomplete="new-password" autocapitalize="none" spellcheck="false"
+              class="finput has-toggle" placeholder="Re-enter your new password"
+              oninput="onConfirmInput(this.value)"
+              onkeydown="if(event.key==='Enter')resetPassword()"/>
+            <div class="toggle-pwd" onclick="togglePwd('confirmPassword','eyeIcon2')" title="Show/hide password">
+              <svg id="eyeIcon2" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+          </div>
+          <div class="field-err" id="err-confirmPassword"></div>
+          <div class="confirm-hint" id="confirmHint"></div>
+        </div>
+
+        <button id="resetBtn" class="btn" onclick="resetPassword()">Update Password</button>
+
+        <div class="cfoot">
+          <a class="link-back" href="/">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+            </svg>
+            Back to Sign In
+          </a>
+        </div>
+
+      </div>
+    </div>
+
   </div>
-
-  <div class="card">
-    <h2>Reset Password</h2>
-    <p class="sub">Enter your new password below</p>
-
-    <div class="input-wrap">
-      <input type="password" id="password" placeholder="New password"
-             oninput="onPasswordInput(this.value)" />
-      <div class="toggle-pwd" onclick="togglePwd('password','eyeIcon1')" title="Show/hide password">
-        <svg id="eyeIcon1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-        </svg>
-      </div>
-    </div>
-
-    <!-- Live password rules — same as Registerpage -->
-    <div class="pwd-rules" id="pwdRules">
-      <div class="rule" id="rule-minlen">
-        <span class="rule-dot"></span>At least 8 characters
-      </div>
-      <div class="rule" id="rule-maxlen">
-        <span class="rule-dot"></span>Maximum 20 characters
-      </div>
-      <div class="rule" id="rule-upper">
-        <span class="rule-dot"></span>First letter must be uppercase
-      </div>
-    </div>
-
-    <div class="input-wrap" style="margin-top:14px;">
-      <input type="password" id="confirm" placeholder="Confirm new password" />
-      <div class="toggle-pwd" onclick="togglePwd('confirm','eyeIcon2')" title="Show/hide password">
-        <svg id="eyeIcon2" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-        </svg>
-      </div>
-    </div>
-
-    <button id="resetBtn" onclick="resetPassword()">Update Password</button>
-
-    <div id="msg" class="msg"></div>
-  </div>
+</div>
 
 <script>
-  const params  = new URLSearchParams(window.location.search);
-  const email   = params.get("email") || "";
+const params = new URLSearchParams(window.location.search);
+const email  = String(params.get("email") || "").trim().toLowerCase();
 
-  if (!email) {
-    document.getElementById("msg").className = "msg error";
-    document.getElementById("msg").textContent = "Invalid link. Please start again.";
-    document.getElementById("resetBtn").disabled = true;
+if (!email) {
+  window.location.href = "/forgot-password";
+}
+
+function togglePwd(inputId, iconId) {
+  const p = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
+  const isHidden = p.type === "password";
+  p.type = isHidden ? "text" : "password";
+  icon.innerHTML = isHidden
+    ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+}
+
+function setRule(id, valid) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle("valid", valid);
+}
+
+function evalRules(pwd) {
+  const minLen = pwd.length >= 8;
+  const maxLen = pwd.length > 0 && pwd.length <= 20;
+  const upper  = /^[A-Z]/.test(pwd);
+  setRule("rule-minlen", minLen);
+  setRule("rule-maxlen", maxLen);
+  setRule("rule-upper",  upper);
+  return minLen && maxLen && upper;
+}
+
+function onPasswordInput(val) {
+  const panel = document.getElementById("pwdRules");
+  val.length > 0 ? panel.classList.add("visible") : panel.classList.remove("visible");
+  evalRules(val);
+  clearErr("password", "err-password");
+  const confirmVal = document.getElementById("confirmPassword").value;
+  if (confirmVal) onConfirmInput(confirmVal);
+}
+
+function onConfirmInput(val) {
+  const pwd  = document.getElementById("password").value;
+  const hint = document.getElementById("confirmHint");
+  clearErr("confirmPassword", "err-confirmPassword");
+
+  if (!val) {
+    hint.classList.remove("show", "match", "no-match");
+    return;
   }
 
-  function evalRules(pwd) {
-    const minLen = pwd.length >= 8;
-    const maxLen = pwd.length > 0 && pwd.length <= 20;
-    const upper  = /^[A-Z]/.test(pwd);
-    setRule("rule-minlen", minLen);
-    setRule("rule-maxlen", maxLen);
-    setRule("rule-upper",  upper);
-    return minLen && maxLen && upper;
+  hint.classList.add("show");
+  const matched = pwd === val;
+  hint.classList.toggle("match", matched);
+  hint.classList.toggle("no-match", !matched);
+  hint.innerHTML = matched
+    ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Passwords match'
+    : '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Passwords do not match';
+}
+
+function setErr(inputId, errId, msg) {
+  const inp = document.getElementById(inputId);
+  const err = document.getElementById(errId);
+  if (inp) inp.classList.add("input-error");
+  if (err) { err.textContent = msg; err.classList.add("show"); }
+}
+
+function clearErr(inputId, errId) {
+  const inp = document.getElementById(inputId);
+  const err = document.getElementById(errId);
+  if (inp) inp.classList.remove("input-error");
+  if (err) { err.textContent = ""; err.classList.remove("show"); }
+  const eb = document.getElementById("errorBox");
+  if (eb) eb.style.display = "none";
+}
+
+function shake(inputId) {
+  const el = document.getElementById(inputId);
+  if (!el) return;
+  const wrap = el.closest(".iwrap") || el;
+  wrap.classList.remove("shake");
+  void wrap.offsetWidth;
+  wrap.classList.add("shake");
+  if (navigator.vibrate) { try { navigator.vibrate(30); } catch(e){} }
+  wrap.addEventListener("animationend", () => wrap.classList.remove("shake"), { once: true });
+}
+
+function showError(msg) {
+  const eb = document.getElementById("errorBox");
+  eb.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> ' + msg;
+  eb.style.display = "flex";
+}
+
+function showInfo(msg) {
+  const ib = document.getElementById("infoBox");
+  ib.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg> ' + msg;
+  ib.style.display = "flex";
+}
+
+async function resetPassword() {
+  const pwdInp  = document.getElementById("password");
+  const confInp = document.getElementById("confirmPassword");
+  const pwd     = pwdInp.value;
+  const conf    = confInp.value;
+  const btn     = document.getElementById("resetBtn");
+
+  clearErr("password", "err-password");
+  clearErr("confirmPassword", "err-confirmPassword");
+
+  let firstInvalid = null;
+
+  if (!pwd) {
+    setErr("password", "err-password", "Enter new password to continue");
+    shake("password");
+    firstInvalid = "password";
+  } else if (!evalRules(pwd)) {
+    document.getElementById("pwdRules").classList.add("visible");
+    setErr("password", "err-password", "Password doesn't meet all requirements");
+    shake("password");
+    firstInvalid = "password";
   }
 
-  function setRule(id, valid) {
-    document.getElementById(id).classList.toggle("valid", valid);
+  if (!conf) {
+    setErr("confirmPassword", "err-confirmPassword", "Re-enter your new password");
+    if (!firstInvalid) shake("confirmPassword");
+    firstInvalid = firstInvalid || "confirmPassword";
+  } else if (pwd !== conf) {
+    setErr("confirmPassword", "err-confirmPassword", "Passwords do not match");
+    if (!firstInvalid) shake("confirmPassword");
+    firstInvalid = firstInvalid || "confirmPassword";
   }
 
-  function onPasswordInput(val) {
-    const panel = document.getElementById("pwdRules");
-    val.length > 0 ? panel.classList.add("visible") : panel.classList.remove("visible");
-    evalRules(val);
+  if (firstInvalid) {
+    const el = document.getElementById(firstInvalid);
+    el.focus();
+    return;
   }
 
-  function togglePwd(inputId, iconId) {
-    const p      = document.getElementById(inputId);
-    const icon   = document.getElementById(iconId);
-    const hidden = p.type === "password";
-    p.type       = hidden ? "text" : "password";
-    icon.innerHTML = hidden
-      ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
-      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-  }
+  btn.disabled = true;
+  btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;animation:spin 0.7s linear infinite;display:inline-block"></span>Updating Password…</span>';
 
-  async function resetPassword() {
-    const password = document.getElementById("password").value;
-    const confirm  = document.getElementById("confirm").value;
-    const msgEl    = document.getElementById("msg");
-    const btn      = document.getElementById("resetBtn");
+  try {
+    const res = await fetch("https://getxh.online/reset-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, newPassword: pwd })
+    });
 
-    msgEl.className   = "msg";
-    msgEl.textContent = "";
+    const data = await res.json().catch(() => ({}));
 
-    if (!password) {
-      msgEl.className   = "msg error";
-      msgEl.textContent = "Enter a new password.";
-      return;
-    }
-
-    if (!evalRules(password)) {
-      document.getElementById("pwdRules").classList.add("visible");
-      msgEl.className   = "msg error";
-      msgEl.textContent = "Password doesn't meet all requirements.";
-      return;
-    }
-
-    if (password !== confirm) {
-      msgEl.className   = "msg error";
-      msgEl.textContent = "Passwords do not match.";
-      return;
-    }
-
-    btn.disabled    = true;
-    btn.textContent = "Updating…";
-
-    try {
-      const res  = await fetch("https://getxh.online/reset-password", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ email, newPassword: password })
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        msgEl.className   = "msg success";
-        msgEl.textContent = "Password updated! Redirecting to login…";
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 2000);
-      } else {
-        msgEl.className   = "msg error";
-        msgEl.textContent = data.message || "Failed to update password. Try again.";
-        btn.disabled    = false;
-        btn.textContent = "Update Password";
-      }
-
-    } catch (err) {
-      msgEl.className   = "msg error";
-      msgEl.textContent = "Cannot reach server. Try again.";
-      btn.disabled    = false;
+    if (res.ok && (data.success || data.status === "success")) {
+      showInfo("Password updated successfully! Redirecting to sign in…");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 2000);
+    } else {
+      const msg = data.message || data.error || "Failed to update password. Please try again.";
+      showError(msg);
+      shake("password");
+      btn.disabled = false;
       btn.textContent = "Update Password";
     }
+  } catch (err) {
+    showError("Cannot reach server. Please check your internet connection.");
+    shake("password");
+    btn.disabled = false;
+    btn.textContent = "Update Password";
   }
+}
 </script>
-
+<style>@keyframes spin{to{transform:rotate(360deg);}}</style>
 </body>
 </html>
