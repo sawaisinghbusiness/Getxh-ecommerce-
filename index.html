@@ -1659,10 +1659,13 @@ function siClearErr(inputId, errId) {
 }
 
 function siShake(inputId) {
-  const wrap = document.getElementById(inputId).closest(".iwrap");
+  const wrap = document.getElementById(inputId).closest(".iwrap") || document.getElementById(inputId);
   wrap.classList.remove("shake");
   void wrap.offsetWidth;
   wrap.classList.add("shake");
+  if (navigator.vibrate) {
+    try { navigator.vibrate(30); } catch(e){}
+  }
   wrap.addEventListener("animationend", () => wrap.classList.remove("shake"), { once: true });
 }
 
@@ -1688,7 +1691,9 @@ function validateAndLogin() {
   }
 
   if (firstInvalid) {
-    document.getElementById(firstInvalid).focus();
+    const el = document.getElementById(firstInvalid);
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => el.focus(), 120);
     return;
   }
 

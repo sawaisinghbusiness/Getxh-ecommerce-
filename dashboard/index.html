@@ -236,6 +236,43 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   align-items: center !important;
   justify-content: center !important;
 }
+/* ── FIELD VALIDATION & SHAKE ── */
+.field-err {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #f87171 !important;
+  margin-top: 5px;
+  padding-left: 3px;
+  min-height: 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.field-err.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+.input-error {
+  border-color: rgba(239, 68, 68, 0.65) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.13), 0 0 18px rgba(239, 68, 68, 0.09) !important;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-3.5px); }
+  30% { transform: translateX(3.5px); }
+  48% { transform: translateX(-2.5px); }
+  64% { transform: translateX(2.5px); }
+  80% { transform: translateX(-1px); }
+  92% { transform: translateX(1px); }
+}
+.shake {
+  animation: shake 0.36s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
 </style>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
 <script>
@@ -571,7 +608,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       <div style="margin-bottom:15px;">
         <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Category</p>
         <div class="relative" id="categoryWrapper">
-          <button type="button" onclick="toggleCategoryDropdown()"
+          <button type="button" id="catBtn" onclick="toggleCategoryDropdown()"
             style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px 16px;text-align:left;cursor:pointer;transition:all 0.2s;box-sizing:border-box;">
             <div class="flex items-center gap-3">
               <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
@@ -591,13 +628,14 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
                    overflow-y-auto" style="max-height:260px;">
           </div>
         </div>
+        <div class="field-err" id="err-category"></div>
       </div>
 
       <!-- SERVICE -->
       <div class="mb-3" id="serviceWrapper" style="display:none">
         <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Service</p>
         <div class="relative" id="serviceDropdownWrapper">
-          <button type="button" onclick="toggleServiceDropdown()"
+          <button type="button" id="svcBtn" onclick="toggleServiceDropdown()"
             style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px 16px;text-align:left;cursor:pointer;transition:all 0.2s;box-sizing:border-box;">
             <div class="flex items-center gap-3 min-w-0">
               <span id="svcNumBadge"
@@ -615,6 +653,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
                    max-h-64 overflow-y-auto">
           </div>
         </div>
+        <div class="field-err" id="err-service"></div>
       </div>
 
       <!-- SERVICE DETAILS -->
@@ -671,6 +710,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
           <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Link</p>
           <input type="text" id="linkInput" placeholder="Paste your link" autocomplete="off"
             style="width:100%;padding:12px 16px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
+          <div class="field-err" id="err-link"></div>
         </div>
 
         <!-- CUSTOM COMMENTS BOX (shown only for Custom comment services) -->
@@ -686,9 +726,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
                    text-white placeholder-gray-500 text-sm resize-none
                    focus:outline-none focus:border-[#2196f3] transition-all leading-relaxed"></textarea>
           <p id="customCommentsCount" class="text-xs text-gray-500 mt-1.5 font-semibold">0 comments entered</p>
-          <p id="customCommentsError" class="hidden text-xs text-red-400 mt-1 font-semibold">
-            ⚠ Enter at least <span id="customCommentsMin"></span> comments to place order
-          </p>
+          <div class="field-err" id="err-customComments"></div>
         </div>
 
         <!-- QUANTITY -->
@@ -696,9 +734,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
           <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Quantity</p>
           <input type="number" id="quantityInput" placeholder="Min: 0 - Max: 0" autocomplete="off"
             style="width:100%;padding:12px 16px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
-          <p id="quantityError" class="hidden text-xs text-red-400 mt-2 font-semibold">
-            ⚠ Quantity must be between Min and Max
-          </p>
+          <div class="field-err" id="err-quantity"></div>
         </div>
 
         <!-- DRIP FEED FIELDS (Shown only for drip-feed specific services) -->
@@ -707,20 +743,20 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
             <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Runs</p>
             <input type="number" id="dripRuns" placeholder="Number of Runs" autocomplete="off" min="1"
               style="width:100%;padding:12px 16px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
+            <div class="field-err" id="err-dripRuns"></div>
           </div>
           <div style="margin-bottom:15px;">
             <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Interval (minutes)</p>
             <input type="number" id="dripInterval" placeholder="Interval in minutes" autocomplete="off" min="1"
               style="width:100%;padding:12px 16px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
+            <div class="field-err" id="err-dripInterval"></div>
           </div>
           <div style="margin-bottom:15px;">
             <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Total Quantity</p>
             <input type="number" id="dripTotalQty" placeholder="Total Quantity" disabled
               style="width:100%;padding:12px 16px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;opacity:0.75;cursor:not-allowed;"/>
           </div>
-          <p id="dripError" class="hidden text-xs text-red-400 mt-2 font-semibold">
-            ⚠ Runs and Interval must be at least 1
-          </p>
+          <div class="field-err" id="err-dripGeneral"></div>
         </div>
 
         <!-- DELIVERY TIME -->
@@ -740,11 +776,11 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
             <input type="checkbox" id="policyAcceptCb" style="margin-top:2px;width:16px;height:16px;accent-color:#2196f3;cursor:pointer;flex-shrink:0;" />
             <span style="font-size:12px;color:#94a3b8;line-height:1.6;">I have read and agree to the <a href="/terms/" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'" onfocus="this.style.color='#93c5fd'" onblur="this.style.color='#60a5fa'">Terms & Conditions</a> and <a href="/privacy/" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'" onfocus="this.style.color='#93c5fd'" onblur="this.style.color='#60a5fa'">Privacy Policy</a>.</span>
           </label>
-          <div id="policyAcceptError" class="hidden" style="margin-top:6px;padding:8px 12px;border-radius:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);font-size:12px;color:#f87171;font-weight:600;">You must accept the Terms & Conditions and Privacy Policy before placing an order.</div>
+          <div class="field-err" id="err-policy"></div>
         </div>
 
         <!-- ORDER BUTTON -->
-        <button id="placeOrderBtn" disabled
+        <button id="placeOrderBtn"
           style="width:100%;border-radius:10px;font-weight:900;font-size:16px;padding:14px 0;background:linear-gradient(to right,#2196f3,#00bcd4);color:#fff;position:relative;overflow:hidden;cursor:pointer;transition:all 0.2s;box-sizing:border-box;border:none;">
           <div class="flex items-center justify-between px-2">
             <span class="text-xs font-bold uppercase tracking-widest opacity-80">TOTAL AMOUNT</span>
@@ -1659,6 +1695,7 @@ function toggleCategoryDropdown() {
 function closeCatDrop(){document.getElementById('categoryDropdown').classList.add('hidden');document.getElementById('catArrow').style.transform='rotate(0deg)';_catOpen=false;}
 function selectCategory(cat) {
   _selCat=cat.id;_selSvc=null;
+  dbClearErr("catBtn", "err-category");
   const isWelcome = cat.id==='welcome-offer';
   const platformIcons = {
     'instagram': 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png',
@@ -1682,7 +1719,6 @@ function selectCategory(cat) {
   document.getElementById('svcLabel').className='text-gray-400 text-sm font-semibold truncate';
   document.getElementById('svcNumBadge').classList.add('hidden');
   document.getElementById('serviceDetails').classList.add('hidden');
-  document.getElementById('placeOrderBtn').disabled=true;
   document.getElementById('totalPrice').textContent='';
 
   // ⭐ AUTO SELECT FIRST SERVICE — myfame.in jaisa
@@ -1710,6 +1746,10 @@ function toggleServiceDropdown() {
 function closeSvcDrop(){document.getElementById('serviceDropdown').classList.add('hidden');document.getElementById('svcArrow').style.transform='rotate(0deg)';_svcOpen=false;}
 function selectService(svc) {
   _selSvc=svc;
+  dbClearErr("svcBtn", "err-service");
+  dbClearErr("linkInput", "err-link");
+  dbClearErr("quantityInput", "err-quantity");
+  dbClearErr("customCommentsInput", "err-customComments");
   document.getElementById('svcNumBadge').textContent=svc.id;document.getElementById('svcNumBadge').classList.remove('hidden');
   document.getElementById('svcLabel').textContent=svc.name;document.getElementById('svcLabel').className='text-white text-sm font-semibold truncate';
   closeSvcDrop();
@@ -1835,112 +1875,210 @@ document.addEventListener('click', function (e) {
     document.getElementById('globalSearchDrop').classList.add('hidden');
   }
 });
+/* ── DASHBOARD VALIDATION HELPERS ── */
+function dbSetErr(elementId, errId, msg) {
+  const el = document.getElementById(elementId);
+  if (el) el.classList.add("input-error");
+  const err = document.getElementById(errId);
+  if (err) {
+    err.textContent = msg;
+    err.classList.add("show");
+  }
+}
+
+function dbClearErr(elementId, errId) {
+  const el = document.getElementById(elementId);
+  if (el) el.classList.remove("input-error");
+  const err = document.getElementById(errId);
+  if (err) {
+    err.textContent = "";
+    err.classList.remove("show");
+  }
+}
+
+function dbShake(elementId) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const target = el.closest(".relative") || el.parentElement || el;
+  target.classList.remove("shake");
+  void target.offsetWidth;
+  target.classList.add("shake");
+  if (navigator.vibrate) {
+    try { navigator.vibrate(30); } catch(e){}
+  }
+  target.addEventListener("animationend", () => target.classList.remove("shake"), { once: true });
+}
+
+function validateOrderForm() {
+  dbClearErr("catBtn", "err-category");
+  dbClearErr("svcBtn", "err-service");
+  dbClearErr("linkInput", "err-link");
+  dbClearErr("customCommentsInput", "err-customComments");
+  dbClearErr("quantityInput", "err-quantity");
+  dbClearErr("dripRuns", "err-dripRuns");
+  dbClearErr("dripInterval", "err-dripInterval");
+  dbClearErr("policyAcceptLabel", "err-policy");
+
+  let firstInvalid = null;
+
+  if (!_selCat) {
+    dbSetErr("catBtn", "err-category", "Select category to continue");
+    dbShake("catBtn");
+    firstInvalid = firstInvalid || "catBtn";
+  }
+
+  if (!_selSvc) {
+    dbSetErr("svcBtn", "err-service", "Select service to continue");
+    if (!firstInvalid) dbShake("svcBtn");
+    firstInvalid = firstInvalid || "svcBtn";
+  } else {
+    const link = document.getElementById("linkInput").value.trim();
+    if (!link) {
+      dbSetErr("linkInput", "err-link", "Enter link to continue");
+      if (!firstInvalid) dbShake("linkInput");
+      firstInvalid = firstInvalid || "linkInput";
+    }
+
+    const isCustomComment = _selSvc.name.toLowerCase().includes("custom");
+    if (isCustomComment) {
+      const ccInput = document.getElementById("customCommentsInput");
+      const lines = ccInput.value.split("\n").filter(l => l.trim() !== "").length;
+      if (lines === 0) {
+        dbSetErr("customCommentsInput", "err-customComments", "Enter custom comments to continue");
+        if (!firstInvalid) dbShake("customCommentsInput");
+        firstInvalid = firstInvalid || "customCommentsInput";
+      } else if (lines < _selSvc.min) {
+        dbSetErr("customCommentsInput", "err-customComments", `Enter at least ${_selSvc.min} comments to continue`);
+        if (!firstInvalid) dbShake("customCommentsInput");
+        firstInvalid = firstInvalid || "customCommentsInput";
+      }
+    } else {
+      const qtyVal = document.getElementById("quantityInput").value.trim();
+      const qty = parseInt(qtyVal) || 0;
+      if (!qtyVal) {
+        dbSetErr("quantityInput", "err-quantity", "Enter quantity to continue");
+        if (!firstInvalid) dbShake("quantityInput");
+        firstInvalid = firstInvalid || "quantityInput";
+      } else if (qty < _selSvc.min || qty > _selSvc.max) {
+        dbSetErr("quantityInput", "err-quantity", `Quantity must be between ${_selSvc.min.toLocaleString()} and ${_selSvc.max.toLocaleString()}`);
+        if (!firstInvalid) dbShake("quantityInput");
+        firstInvalid = firstInvalid || "quantityInput";
+      }
+    }
+
+    const isDrip = _selSvc.id === 5833 || _selSvc.id === 5210;
+    if (isDrip) {
+      const runsVal = document.getElementById("dripRuns").value.trim();
+      const runs = parseInt(runsVal) || 0;
+      if (!runsVal || runs <= 0) {
+        dbSetErr("dripRuns", "err-dripRuns", "Enter valid runs to continue");
+        if (!firstInvalid) dbShake("dripRuns");
+        firstInvalid = firstInvalid || "dripRuns";
+      }
+
+      const intervalVal = document.getElementById("dripInterval").value.trim();
+      const interval = parseInt(intervalVal) || 0;
+      if (!intervalVal || interval <= 0) {
+        dbSetErr("dripInterval", "err-dripInterval", "Enter valid interval to continue");
+        if (!firstInvalid) dbShake("dripInterval");
+        firstInvalid = firstInvalid || "dripInterval";
+      }
+    }
+
+    const cb = document.getElementById("policyAcceptCb");
+    if (!cb.checked) {
+      dbSetErr("policyAcceptLabel", "err-policy", "Accept Terms & Conditions to continue");
+      if (!firstInvalid) dbShake("policyAcceptLabel");
+      firstInvalid = firstInvalid || "policyAcceptLabel";
+    }
+  }
+
+  if (firstInvalid) {
+    const el = document.getElementById(firstInvalid);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => el.focus(), 120);
+    }
+    return false;
+  }
+
+  return true;
+}
+
 // ── VALIDATION & PRICE CALCULATION ──
 function updateTotalPrice() {
   if (!_selSvc) return;
 
   const isCustomComment = _selSvc.name.toLowerCase().includes('custom');
-  const link = document.getElementById('linkInput').value.trim();
   const qtyInput = document.getElementById('quantityInput');
   const qty = parseInt(qtyInput.value) || 0;
 
-  // Drip feed is active ONLY for services 5833 and 5210
   const isDrip = _selSvc.id === 5833 || _selSvc.id === 5210;
   const runsInput = document.getElementById('dripRuns');
-  const intervalInput = document.getElementById('dripInterval');
   const runs = parseInt(runsInput.value) || 0;
-  const interval = parseInt(intervalInput.value) || 0;
 
-  // Elements
-  const qtyErr = document.getElementById('quantityError');
-  const dripErr = document.getElementById('dripError');
   const totalQtyEl = document.getElementById('dripTotalQty');
   const priceEl = document.getElementById('totalPrice');
-  const orderBtn = document.getElementById('placeOrderBtn');
 
-  // Custom comments validation
   if (isCustomComment) {
     const lines = document.getElementById('customCommentsInput').value.split('\n').filter(l => l.trim() !== '').length;
-    const ccErr = document.getElementById('customCommentsError');
     if (lines < _selSvc.min) {
       priceEl.textContent = '';
-      orderBtn.disabled = true;
       return;
     }
     const orderPrice = parseFloat(((lines / 1000) * _selSvc.price).toFixed(2));
     priceEl.textContent = '₹' + orderPrice.toFixed(2) + '  ';
-    orderBtn.disabled = !link || !document.getElementById('policyAcceptCb').checked;
     return;
   }
 
-  // Normal quantity validation
   if (!qty || qty < _selSvc.min || qty > _selSvc.max) {
-    if (qty > 0) {
-      qtyErr.classList.remove('hidden');
-    }
     priceEl.textContent = '';
-    orderBtn.disabled = true;
     totalQtyEl.value = '';
     return;
   }
-  qtyErr.classList.add('hidden');
 
   let totalQty = qty;
-  let hasDripError = false;
-
   if (isDrip) {
-    if (runs <= 0 || interval <= 0) {
-      hasDripError = true;
-      if (runsInput.value || intervalInput.value) {
-        dripErr.classList.remove('hidden');
-      }
-    } else {
-      dripErr.classList.add('hidden');
+    if (runs <= 0) {
+      priceEl.textContent = '';
+      return;
     }
     totalQty = qty * runs;
     totalQtyEl.value = totalQty || '';
   } else {
-    dripErr.classList.add('hidden');
     totalQtyEl.value = '';
-  }
-
-  if (hasDripError) {
-    priceEl.textContent = '';
-    orderBtn.disabled = true;
-    return;
   }
 
   const orderPrice = parseFloat(((totalQty / 1000) * _selSvc.price).toFixed(2));
   priceEl.textContent = '₹' + orderPrice.toFixed(2) + '  ';
-  orderBtn.disabled = !link || !document.getElementById('policyAcceptCb').checked;
 }
 
 // Wire up listeners
-document.getElementById('quantityInput').addEventListener('input', updateTotalPrice);
-document.getElementById('linkInput').addEventListener('input', updateTotalPrice);
-document.getElementById('dripRuns').addEventListener('input', updateTotalPrice);
-document.getElementById('dripInterval').addEventListener('input', updateTotalPrice);
+document.getElementById('quantityInput').addEventListener('input', function() {
+  dbClearErr('quantityInput', 'err-quantity');
+  updateTotalPrice();
+});
+document.getElementById('linkInput').addEventListener('input', function() {
+  dbClearErr('linkInput', 'err-link');
+  updateTotalPrice();
+});
+document.getElementById('dripRuns').addEventListener('input', function() {
+  dbClearErr('dripRuns', 'err-dripRuns');
+  updateTotalPrice();
+});
+document.getElementById('dripInterval').addEventListener('input', function() {
+  dbClearErr('dripInterval', 'err-dripInterval');
+  updateTotalPrice();
+});
 // ── CUSTOM COMMENTS TEXTAREA ──
-document.getElementById('customCommentsInput').addEventListener('input',function(){
-  if(!_selSvc)return;
-  const lines=this.value.split('\n').filter(l=>l.trim()!=='').length;
-  const countEl=document.getElementById('customCommentsCount');
-  const errEl=document.getElementById('customCommentsError');
-  countEl.textContent=lines+' comment'+(lines===1?'':'s')+' entered';
-  document.getElementById('quantityInput').value=lines||'';
-  if(lines>0&&lines<_selSvc.min){
-    errEl.classList.remove('hidden');
-    document.getElementById('totalPrice').textContent='';
-    document.getElementById('placeOrderBtn').disabled=true;
-  } else if(lines>=_selSvc.min){
-    errEl.classList.add('hidden');
-    document.getElementById('totalPrice').textContent='₹'+((lines/1000)*_selSvc.price).toFixed(2)+'  ';
-    document.getElementById('placeOrderBtn').disabled=!document.getElementById('linkInput').value.trim()||!document.getElementById('policyAcceptCb').checked;
-  } else {
-    errEl.classList.add('hidden');
-    document.getElementById('totalPrice').textContent='';
-    document.getElementById('placeOrderBtn').disabled=true;
-  }
+document.getElementById('customCommentsInput').addEventListener('input', function() {
+  if (!_selSvc) return;
+  dbClearErr('customCommentsInput', 'err-customComments');
+  const lines = this.value.split('\n').filter(l => l.trim() !== '').length;
+  const countEl = document.getElementById('customCommentsCount');
+  countEl.textContent = lines + ' comment' + (lines === 1 ? '' : 's') + ' entered';
+  document.getElementById('quantityInput').value = lines || '';
+  updateTotalPrice();
 });
 
 // ── PLACE ORDER ──
@@ -2149,10 +2287,9 @@ function isPolicyAccepted() {
     cb.checked = true;
   }
   cb.addEventListener('change', function() {
-    const errEl = document.getElementById('policyAcceptError');
     if (this.checked) {
       localStorage.setItem(GX_POLICY_KEY, GX_POLICY_VERSION);
-      errEl.classList.add('hidden');
+      dbClearErr('policyAcceptLabel', 'err-policy');
       document.getElementById('policyAcceptLabel').style.borderColor = 'rgba(255,255,255,0.06)';
     } else {
       localStorage.removeItem(GX_POLICY_KEY);
@@ -2163,21 +2300,17 @@ function isPolicyAccepted() {
 
 document.getElementById('placeOrderBtn').addEventListener('click', function(e) {
   e.preventDefault();
-  if (!_selSvc) return;
-  // Check policy acceptance
-  const cb = document.getElementById('policyAcceptCb');
-  if (!cb.checked) {
-    document.getElementById('policyAcceptError').classList.remove('hidden');
-    document.getElementById('policyAcceptLabel').style.borderColor = 'rgba(239,68,68,0.4)';
-    return;
-  }
+  if (!validateOrderForm()) return;
+
   // Ripple
   const rip = document.getElementById('rippleEl'), r = this.getBoundingClientRect();
-  rip.style.left = (e.clientX - r.left) + 'px';
-  rip.style.top  = (e.clientY - r.top)  + 'px';
-  rip.style.transform = 'scale(4)'; rip.style.opacity = '1';
-  setTimeout(() => { rip.style.transform = 'scale(0)'; rip.style.opacity = '0'; }, 500);
-  placeOrder(_selSvc.id);
+  if (rip && r) {
+    rip.style.left = (e.clientX - r.left) + 'px';
+    rip.style.top  = (e.clientY - r.top)  + 'px';
+    rip.style.transform = 'scale(4)'; rip.style.opacity = '1';
+    setTimeout(() => { rip.style.transform = 'scale(0)'; rip.style.opacity = '0'; }, 500);
+  }
+  placeOrder(_selSvc ? _selSvc.id : null);
 });
 
 document.getElementById('closeModalBtn').addEventListener('click',closeSuccessModal);
@@ -2195,10 +2328,10 @@ function closeSuccessModal(){
 },300);
   // Reset only link — category, service, quantity stay same
   document.getElementById('linkInput').value='';
-  document.getElementById('placeOrderBtn').disabled=true;
+  dbClearErr('linkInput', 'err-link');
   document.getElementById('customCommentsInput').value='';
   document.getElementById('customCommentsCount').textContent='0 comments entered';
-  document.getElementById('customCommentsError').classList.add('hidden');
+  dbClearErr('customCommentsInput', 'err-customComments');
   document.getElementById('orderErrorToast').classList.add('hidden');
   // Recalculate total price from kept quantity
   if(_selSvc){
