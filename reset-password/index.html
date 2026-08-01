@@ -152,7 +152,7 @@ body::before{
               </svg>
             </span>
             <input id="password" type="password" autocomplete="new-password" autocapitalize="none" spellcheck="false"
-              class="finput has-toggle" placeholder="Min. 8 characters"
+              class="finput has-toggle" placeholder="Min. 6 characters"
               oninput="onPasswordInput(this.value)"
               onkeydown="if(event.key==='Enter')document.getElementById('confirmPassword').focus()"/>
             <div class="toggle-pwd" onclick="togglePwd('password','eyeIcon1')" title="Show/hide password">
@@ -167,13 +167,7 @@ body::before{
           <!-- Password rules -->
           <div class="pwd-rules" id="pwdRules">
             <div class="rule" id="rule-minlen">
-              <span class="rule-dot"></span>At least 8 characters
-            </div>
-            <div class="rule" id="rule-maxlen">
-              <span class="rule-dot"></span>Maximum 20 characters
-            </div>
-            <div class="rule" id="rule-upper">
-              <span class="rule-dot"></span>First letter must be uppercase
+              <span class="rule-dot"></span>At least 6 characters
             </div>
           </div>
         </div>
@@ -245,13 +239,9 @@ function setRule(id, valid) {
 }
 
 function evalRules(pwd) {
-  const minLen = pwd.length >= 8;
-  const maxLen = pwd.length > 0 && pwd.length <= 20;
-  const upper  = /^[A-Z]/.test(pwd);
+  const minLen = pwd.length >= 6;
   setRule("rule-minlen", minLen);
-  setRule("rule-maxlen", maxLen);
-  setRule("rule-upper",  upper);
-  return minLen && maxLen && upper;
+  return minLen;
 }
 
 function onPasswordInput(val) {
