@@ -546,7 +546,7 @@ onAuthStateChanged(auth, async user => {
   // ── STEP 5: Update order status ───────────────────
   window.updateOrderStatus = async function(orderId, newStatus) {
     try {
-      await updateDoc(doc(db, 'orders', orderId), { status: newStatus });
+      await updateDoc(doc(db, 'orders', orderId), { status: newStatus, adminOverride: true });
       showToast('Status updated → ' + newStatus);
     } catch (err) {
       console.error('updateOrderStatus failed:', err.code, err.message);

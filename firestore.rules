@@ -7,50 +7,60 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && request.auth.uid == "XVQ4WNIRyKbJz7HCDUmU0Lv9squ2";
+      return isSignedIn() &&
+        request.auth.uid == "XVQ4WNIRyKbJz7HCDUmU0Lv9squ2";
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function onlyChanged(keys) {
+      return request.resource.data.diff(resource.data).changedKeys().hasOnly(keys);
     }
 
     match /Users/{userId} {
-      allow read, write: if isSignedIn() && request.auth.uid == userId;
-    }
-
-    match /orders/{orderId} {
-      allow create: if isSignedIn() &&
-        request.resource.data.userId == request.auth.uid;
-
-      // list (collection query) needs isSignedIn() — userId filter in query ensures users only see their own
-      allow list: if isSignedIn();
-      allow get, update, delete: if isAdmin() ||
-        (isSignedIn() && resource.data.userId == request.auth.uid);
-    }
-
-    match /tickets/{ticketId} {
-      allow create: if isSignedIn() &&
-        request.resource.data.userId == request.auth.uid;
-
-      allow read, update, delete: if isAdmin() ||
-        (isSignedIn() && resource.data.userId == request.auth.uid);
-    }
-
-    match /messages/{messageId} {
-      allow create: if isSignedIn() &&
-        request.resource.data.senderId == request.auth.uid;
-
-      allow read: if isAdmin() ||
-        (isSignedIn() &&
-          exists(/databases/$(database)/documents/tickets/$(resource.data.ticketId)) &&
-          get(/databases/$(database)/documents/tickets/$(resource.data.ticketId)).data.userId == request.auth.uid
-        );
+      allow read: if isAdmin() || isOwner(userId);
+      // Allow initial document creation on signup with 0 balance
+      allow create: if isOwner(userId) &&
+        request.resource.data.keys().hasOnly(['Balance', 'TotalOrders', 'TotalSpent']) &&
+        (!('Balance' in request.resource.data) || request.resource.data.Balance == 0) &&
+        (!('TotalOrders' in request.resource.data) || request.resource.data.TotalOrders == 0) &&
+        (!('TotalSpent' in request.resource.data) || request.resource.data.TotalSpent == 0);
+      // Wallet balance update strictly restricted to Admin / Server Admin SDK
+      allow update, delete: if isAdmin();
     }
 
     match /users/{userId} {
-      allow read, write: if isSignedIn() && request.auth.uid == userId;
-      allow list: if isAdmin();
-      allow get: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow read: if isAdmin() || isOwner(userId);
+      allow create: if isOwner(userId) &&
+        request.resource.data.uid == request.auth.uid &&
+        !('password' in request.resource.data) &&
+        (!('balance' in request.resource.data) || request.resource.data.balance == 0);
+      allow update: if isOwner(userId) &&
+        !('password' in request.resource.data) &&
+        onlyChanged(['username', 'mobile']);
+      allow delete: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    match /tickets/{ticketId} {
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+    }
+
+    match /messages/{messageId} {
+      allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
+      allow read: if isAdmin() || (isSignedIn() && exists(/databases/$(database)/documents/tickets/$(resource.data.ticketId)) && get(/databases/$(database)/documents/tickets/$(resource.data.ticketId)).data.userId == request.auth.uid);
     }
 
     match /userData/{userId} {
-      allow create, update: if isSignedIn() && request.auth.uid == userId;
+      allow create, update: if isOwner(userId);
       allow read, list: if isAdmin();
     }
 

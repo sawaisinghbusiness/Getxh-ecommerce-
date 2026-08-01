@@ -734,6 +734,15 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
           </div>
         </div>
 
+        <!-- T&C ACCEPTANCE CHECKBOX -->
+        <div id="policyAcceptWrap" style="margin-bottom:12px;margin-top:4px;">
+          <label id="policyAcceptLabel" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;user-select:none;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);transition:border-color 0.2s;">
+            <input type="checkbox" id="policyAcceptCb" style="margin-top:2px;width:16px;height:16px;accent-color:#2196f3;cursor:pointer;flex-shrink:0;" />
+            <span style="font-size:12px;color:#94a3b8;line-height:1.6;">I have read and agree to the <a href="/terms/" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'" onfocus="this.style.color='#93c5fd'" onblur="this.style.color='#60a5fa'">Terms & Conditions</a> and <a href="/privacy/" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'" onfocus="this.style.color='#93c5fd'" onblur="this.style.color='#60a5fa'">Privacy Policy</a>.</span>
+          </label>
+          <div id="policyAcceptError" class="hidden" style="margin-top:6px;padding:8px 12px;border-radius:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);font-size:12px;color:#f87171;font-weight:600;">You must accept the Terms & Conditions and Privacy Policy before placing an order.</div>
+        </div>
+
         <!-- ORDER BUTTON -->
         <button id="placeOrderBtn" disabled
           style="width:100%;border-radius:10px;font-weight:900;font-size:16px;padding:14px 0;background:linear-gradient(to right,#2196f3,#00bcd4);color:#fff;position:relative;overflow:hidden;cursor:pointer;transition:all 0.2s;box-sizing:border-box;border:none;">
@@ -760,16 +769,31 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   </div><!-- /newOrderSection -->
 
 <!-- ORDER TRACKING CARD -->
-<div id="orderTrackingCard" class="order-card hidden" style="max-width:480px;margin:20px auto;">
-  <h3 style="margin:0 0 12px;font-size:15px;font-weight:800;letter-spacing:.04em;">Order Tracking</h3>
-  <p style="margin:0 0 6px;font-size:13px;">Order ID: <span id="orderId" style="font-weight:700;">-</span></p>
-  <p style="margin:0 0 6px;font-size:13px;">Status:
-    <span id="orderStatus" class="status pending">Pending</span>
-  </p>
-  <div class="progress-bar">
-    <div id="orderProgress" class="progress"></div>
+<div id="orderTrackingCard" class="hidden transition-all duration-300" style="max-width:480px;margin:24px auto 0;">
+  <div style="background:rgba(18,28,51,0.85);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:20px;box-shadow:0 12px 40px rgba(0,0,0,0.4);">
+    <div class="flex items-center justify-between mb-3 pb-3" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,rgba(33,150,243,0.2),rgba(0,188,212,0.2));border:1px solid rgba(33,150,243,0.3);">
+          <span class="material-symbols-outlined text-blue-400" style="font-size:17px">radar</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-black text-white tracking-wide">Live Order Tracking</h3>
+          <p class="text-[11px] text-gray-400">Order ID: <span id="orderId" class="text-gray-200 font-bold">#—</span></p>
+        </div>
+      </div>
+      <span id="orderStatus" class="status pending">Pending</span>
+    </div>
+
+    <div>
+      <div class="flex justify-between items-center text-xs mb-1.5">
+        <span class="text-gray-400 font-semibold">Delivery Progress</span>
+        <span class="text-gray-400">Remains: <strong id="orderRemains" class="text-white font-bold">—</strong></span>
+      </div>
+      <div class="progress-bar">
+        <div id="orderProgress" class="progress"></div>
+      </div>
+    </div>
   </div>
-  <p style="margin:0;font-size:13px;">Remaining: <span id="orderRemains" style="font-weight:700;">0</span></p>
 </div>
 
 <!-- SUCCESS MODAL -->
@@ -1255,34 +1279,39 @@ body.is-admin #adminBtn, body.is-admin #desktopAdminBtn { display:flex !importan
   font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0 6px;
 }
 /* ── ORDER TRACKING CARD ── */
-.order-card {
-  background: #111;
-  color: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  margin-top: 20px;
-}
 .status {
-  padding: 5px 10px;
-  border-radius: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
-.pending    { background: orange; }
-.completed  { background: green; }
-.inprogress { background: blue; }
-.partial    { background: purple; }
+.status.pending    { background: rgba(234,179,8,0.12); color: #fbbf24; border: 1px solid rgba(234,179,8,0.25); }
+.status.completed  { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); }
+.status.inprogress { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); }
+.status.partial    { background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.25); }
+.status.canceled   { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+
 .progress-bar {
   width: 100%;
-  height: 10px;
-  background: #333;
-  border-radius: 10px;
-  margin: 10px 0;
+  height: 8px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.04);
 }
 .progress {
   height: 100%;
   width: 0%;
-  background: green;
-  border-radius: 10px;
-  transition: width 0.3s;
+  background: linear-gradient(90deg, #2196f3, #00bcd4);
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px rgba(33,150,243,0.5);
 }
 /* ── TOAST ── */
 #toastContainer {
@@ -1840,7 +1869,7 @@ function updateTotalPrice() {
     }
     const orderPrice = parseFloat(((lines / 1000) * _selSvc.price).toFixed(2));
     priceEl.textContent = '₹' + orderPrice.toFixed(2) + '  ';
-    orderBtn.disabled = !link;
+    orderBtn.disabled = !link || !document.getElementById('policyAcceptCb').checked;
     return;
   }
 
@@ -1883,7 +1912,7 @@ function updateTotalPrice() {
 
   const orderPrice = parseFloat(((totalQty / 1000) * _selSvc.price).toFixed(2));
   priceEl.textContent = '₹' + orderPrice.toFixed(2) + '  ';
-  orderBtn.disabled = !link;
+  orderBtn.disabled = !link || !document.getElementById('policyAcceptCb').checked;
 }
 
 // Wire up listeners
@@ -1906,7 +1935,7 @@ document.getElementById('customCommentsInput').addEventListener('input',function
   } else if(lines>=_selSvc.min){
     errEl.classList.add('hidden');
     document.getElementById('totalPrice').textContent='₹'+((lines/1000)*_selSvc.price).toFixed(2)+'  ';
-    document.getElementById('placeOrderBtn').disabled=!document.getElementById('linkInput').value.trim();
+    document.getElementById('placeOrderBtn').disabled=!document.getElementById('linkInput').value.trim()||!document.getElementById('policyAcceptCb').checked;
   } else {
     errEl.classList.add('hidden');
     document.getElementById('totalPrice').textContent='';
@@ -2039,13 +2068,6 @@ async function placeOrder(serviceId) {
     const smmSuccess = data.status && ['completed','processing','pending','in progress','partial'].includes(String(data.status).toLowerCase());
 
     if (orderId || smmSuccess) {
-      // Deduct balance and increment order count
-      if (window.currentUid && window._updateDoc && window.db && orderPrice > 0) {
-        window._updateDoc(window._doc(window.db, 'Users', window.currentUid), {
-          Balance: window._increment(-orderPrice),
-          TotalOrders: window._increment(1)
-        }).catch(e => console.error('Balance deduct error:', e));
-      }
       // Save order to Firestore so it appears in orders tab
       if (window.currentUid && window._addDoc && window.db) {
         const _now = Date.now();
@@ -2112,9 +2134,43 @@ async function placeOrder(serviceId) {
   }
 }
 
+// ── POLICY ACCEPTANCE LOGIC ──
+const GX_POLICY_VERSION = 'aug2026_v1';
+const GX_POLICY_KEY = 'gx_policy_accepted';
+
+function isPolicyAccepted() {
+  return localStorage.getItem(GX_POLICY_KEY) === GX_POLICY_VERSION;
+}
+
+// Restore checkbox state from localStorage
+(function initPolicyCb() {
+  const cb = document.getElementById('policyAcceptCb');
+  if (isPolicyAccepted()) {
+    cb.checked = true;
+  }
+  cb.addEventListener('change', function() {
+    const errEl = document.getElementById('policyAcceptError');
+    if (this.checked) {
+      localStorage.setItem(GX_POLICY_KEY, GX_POLICY_VERSION);
+      errEl.classList.add('hidden');
+      document.getElementById('policyAcceptLabel').style.borderColor = 'rgba(255,255,255,0.06)';
+    } else {
+      localStorage.removeItem(GX_POLICY_KEY);
+    }
+    updateTotalPrice();
+  });
+})();
+
 document.getElementById('placeOrderBtn').addEventListener('click', function(e) {
   e.preventDefault();
   if (!_selSvc) return;
+  // Check policy acceptance
+  const cb = document.getElementById('policyAcceptCb');
+  if (!cb.checked) {
+    document.getElementById('policyAcceptError').classList.remove('hidden');
+    document.getElementById('policyAcceptLabel').style.borderColor = 'rgba(239,68,68,0.4)';
+    return;
+  }
   // Ripple
   const rip = document.getElementById('rippleEl'), r = this.getBoundingClientRect();
   rip.style.left = (e.clientX - r.left) + 'px';
@@ -2224,16 +2280,24 @@ async function checkStatus(orderId) {
     remainsEl.innerText = data.remains;
     statusEl.className  = 'status';
 
+    const isTerminal = ['completed', 'canceled', 'cancelled', 'failed', 'partial'].includes(status);
+    if (isTerminal && _trackingInterval) {
+      clearInterval(_trackingInterval);
+      _trackingInterval = null;
+    }
+
     if (status === 'completed') {
       statusEl.classList.add('completed');
-      if (_trackingInterval) { clearInterval(_trackingInterval); _trackingInterval = null; }
       progressEl.style.width = '100%';
-    } else if (status === 'inprogress') {
+    } else if (status === 'inprogress' || status === 'in progress' || status === 'processing') {
       statusEl.classList.add('inprogress');
       progressEl.style.width = '70%';
     } else if (status === 'partial') {
       statusEl.classList.add('partial');
       progressEl.style.width = '85%';
+    } else if (status === 'canceled' || status === 'cancelled' || status === 'failed') {
+      statusEl.classList.add('canceled');
+      progressEl.style.width = '0%';
     } else {
       statusEl.classList.add('pending');
       progressEl.style.width = '20%';

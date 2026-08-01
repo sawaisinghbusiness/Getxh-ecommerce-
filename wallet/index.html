@@ -269,6 +269,15 @@
         oninput="checkVerifyBtn()"/>
     </div>
 
+    <!-- T&C ACCEPTANCE CHECKBOX -->
+    <div id="policyAcceptWrap" style="margin-bottom:14px;">
+      <label id="policyAcceptLabel" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;user-select:none;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);transition:border-color 0.2s;">
+        <input type="checkbox" id="policyAcceptCb" style="margin-top:2px;width:16px;height:16px;accent-color:#6366f1;cursor:pointer;flex-shrink:0;" onchange="handlePolicyChange(this)" />
+        <span style="font-size:12px;color:#94a3b8;line-height:1.6;">I have read and agree to the <a href="/terms/" target="_blank" rel="noopener" style="color:#818cf8;text-decoration:underline;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='#818cf8'" onfocus="this.style.color='#a5b4fc'" onblur="this.style.color='#818cf8'">Terms & Conditions</a> and <a href="/privacy/" target="_blank" rel="noopener" style="color:#818cf8;text-decoration:underline;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='#818cf8'" onfocus="this.style.color='#a5b4fc'" onblur="this.style.color='#818cf8'">Privacy Policy</a>.</span>
+      </label>
+      <div id="policyAcceptError" class="hidden" style="margin-top:6px;padding:8px 12px;border-radius:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);font-size:12px;color:#f87171;font-weight:600;">You must accept the Terms & Conditions and Privacy Policy before submitting payment verification.</div>
+    </div>
+
     <!-- Verify Button -->
     <button id="verifyBtn" onclick="verifyPayment()" disabled
       class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white mb-6">
@@ -433,10 +442,39 @@ onAuthStateChanged(auth, user => {
   }
 });
 
+// ── POLICY ACCEPTANCE LOGIC ──
+const GX_POLICY_VERSION = 'aug2026_v1';
+const GX_POLICY_KEY = 'gx_policy_accepted_wallet';
+
+function isPolicyAccepted() {
+  return localStorage.getItem(GX_POLICY_KEY) === GX_POLICY_VERSION;
+}
+
+// Restore checkbox state from localStorage
+(function initPolicyCb() {
+  const cb = document.getElementById('policyAcceptCb');
+  if (isPolicyAccepted()) {
+    cb.checked = true;
+  }
+})();
+
+window.handlePolicyChange = function(cb) {
+  const errEl = document.getElementById('policyAcceptError');
+  if (cb.checked) {
+    localStorage.setItem(GX_POLICY_KEY, GX_POLICY_VERSION);
+    errEl.classList.add('hidden');
+    document.getElementById('policyAcceptLabel').style.borderColor = 'rgba(255,255,255,0.06)';
+  } else {
+    localStorage.removeItem(GX_POLICY_KEY);
+  }
+  checkVerifyBtn();
+};
+
 window.checkVerifyBtn = function() {
   const utr    = document.getElementById("utrInput").value.trim();
   const amount = document.getElementById("amountInput").value.trim();
-  document.getElementById("verifyBtn").disabled = !(utr && amount);
+  const policyOk = document.getElementById("policyAcceptCb").checked;
+  document.getElementById("verifyBtn").disabled = !(utr && amount && policyOk);
 };
 
 function showPopupState(state, msg) {
@@ -455,6 +493,13 @@ window.closeVerifyPopup = function() {
 
 window.verifyPayment = async function() {
   if (!currentUser) return;
+  // Check policy acceptance
+  const policyCb = document.getElementById("policyAcceptCb");
+  if (!policyCb.checked) {
+    document.getElementById("policyAcceptError").classList.remove("hidden");
+    document.getElementById("policyAcceptLabel").style.borderColor = "rgba(239,68,68,0.4)";
+    return;
+  }
   const utr    = document.getElementById("utrInput").value.trim();
   const amount = parseFloat(document.getElementById("amountInput").value);
   const notice = document.getElementById("walletNotice");

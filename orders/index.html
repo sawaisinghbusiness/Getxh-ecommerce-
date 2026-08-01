@@ -49,14 +49,68 @@ aside.desktop-sidebar { position:fixed;top:0;left:0;bottom:0;width:288px;z-index
 aside.desktop-sidebar .flex-1 { flex:1;overflow-y:auto;padding:12px; }
 aside.desktop-sidebar .flex-1 > a, aside.desktop-sidebar .flex-1 > button { display:flex !important;align-items:center !important;gap:12px !important;width:100%;text-align:left;text-decoration:none; }
 .order-card { }
-.action-menu { display:none; position:absolute; right:0; bottom:calc(100% + 4px); min-width:160px; background:#1a2744; border:1px solid rgba(255,255,255,0.1); border-radius:12px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.4); z-index:50; }
-.action-menu.open { display:block; }
-.action-menu button { display:flex; align-items:center; gap:8px; width:100%; padding:10px 14px; background:none; border:none; color:#e2e8f0; font-size:13px; font-weight:600; cursor:pointer; text-align:left; transition:background 0.15s; }
+.action-menu {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px) scale(0.95);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  min-width: 160px;
+  background: #0e1629;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 4px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+  z-index: 50;
+  pointer-events: none;
+}
+.action-menu.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.action-menu.open-up {
+  top: auto;
+  bottom: calc(100% + 6px);
+  transform-origin: bottom right;
+}
+.action-menu button { display:flex; align-items:center; gap:8px; width:100%; padding:10px 14px; background:none; border:none; color:#e2e8f0; font-size:13px; font-weight:600; cursor:pointer; text-align:left; transition:background 0.15s; border-radius:8px; }
 .action-menu button:hover { background:rgba(255,255,255,0.06); }
+
+/* Focus-visible accessibility styles */
+:focus-visible {
+  outline: 2px solid #2196f3 !important;
+  outline-offset: 2px !important;
+}
+button:focus-visible, input:focus-visible, a:focus-visible, select:focus-visible {
+  outline: 2px solid #2196f3 !important;
+  outline-offset: 2px !important;
+}
+.status-badge-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 .status-pending    { background:rgba(234,179,8,0.07);  color:#c9a227; border:1px solid rgba(234,179,8,0.18);  }
 .status-processing { background:rgba(59,130,246,0.07); color:#608fe0; border:1px solid rgba(59,130,246,0.18); }
 .status-completed  { background:rgba(34,197,94,0.07);  color:#4ade80; border:1px solid rgba(34,197,94,0.18);  }
 .status-cancelled  { background:rgba(239,68,68,0.07);  color:#f87171; border:1px solid rgba(239,68,68,0.18);  }
+.status-partial    { background:rgba(168,85,247,0.07); color:#c084fc; border:1px solid rgba(168,85,247,0.18); }
+.status-failed     { background:rgba(239,68,68,0.07);  color:#f87171; border:1px solid rgba(239,68,68,0.18);  }
+
+/* Toast Notification Styles */
+.toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+.toast { pointer-events: auto; display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 14px; background: rgba(14, 22, 41, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); color: #fff; min-width: 260px; max-width: 380px; animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); transition: all 0.3s ease; }
+@keyframes toastIn { from { transform: translateX(100%) scale(0.9); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
+.toast-success { border-color: rgba(34, 197, 94, 0.3); background: rgba(20, 67, 42, 0.95); }
+.toast-success .toast-icon { color: #4ade80; }
+.toast-error { border-color: rgba(239, 68, 68, 0.3); background: rgba(59, 17, 17, 0.95); }
+.toast-error .toast-icon { color: #f87171; }
+.toast-warn { border-color: rgba(245, 158, 11, 0.3); background: rgba(60, 40, 10, 0.95); }
+.toast-warn .toast-icon { color: #fbbf24; }
+.toast-info { border-color: rgba(59, 130, 246, 0.3); background: rgba(30, 58, 95, 0.95); }
+.toast-info .toast-icon { color: #60a5fa; }
+.toast-title { font-size: 13px; font-weight: 700; color: #fff; }
+.toast-msg { font-size: 12px; color: #94a3b8; margin-top: 1px; }
 </style>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
   <style>html,body{overflow-x:hidden !important;max-width:100vw;overscroll-behavior-x:none;}body{opacity:0;transition:opacity .18s ease;}</style>
@@ -494,10 +548,15 @@ async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
   if (docId && window._adminOverriddenOrders.has(docId)) return;
   try {
     const res  = await fetch('https://getxh.online/api/status/' + apiOrderId);
+    if (!res.ok) return;
     const data = await res.json();
+
+    // M5: Guard against empty/invalid API response
+    if (!data || !data.status) return;
 
     const status = (data.status || '').toLowerCase();
 
+    const cardEl  = document.querySelector(`[data-eid="${eid}"]`);
     const txtEl   = document.getElementById('statusText-'  + eid);
     const dotEl   = document.getElementById('statusDot-'   + eid);
     const badgeEl = document.getElementById('statusBadge-' + eid);
@@ -505,42 +564,55 @@ async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
     if (!txtEl) return;
 
     // Completed: ONLY when API status field explicitly says "completed"
-    // Do NOT use remains === 0 — new/pending orders also return remains=0 before processing starts
     const isCompleted  = status === 'completed';
     const isInProgress = status === 'inprogress' || status === 'in progress' || status === 'processing';
     const isPartial    = status === 'partial';
+    const isCancelled  = status === 'canceled' || status === 'cancelled';
+    const isFailed     = status === 'failed';
 
-    let firestoreStatus = data.status || 'Pending';
+    let firestoreStatus = data.status;
 
-    const _bc = 'px-2.5 py-1 rounded-md text-xs font-semibold';
+    const _bc = 'px-2.5 py-1 rounded-md text-xs font-semibold status-badge-transition';
     if (isCompleted) {
       if (txtEl)   txtEl.textContent      = 'Completed';
       if (dotEl)   dotEl.style.background  = '#4ade80';
-      if (badgeEl) { badgeEl.className = _bc + ' status-completed'; badgeEl.style.display='flex'; badgeEl.style.alignItems='center'; badgeEl.style.gap='4px'; }
+      if (badgeEl) { badgeEl.className = _bc + ' status-completed'; badgeEl.style.background=''; badgeEl.style.color=''; badgeEl.style.border=''; }
       if (barEl)   barEl.style.background  = 'rgba(34,197,94,0.5)';
       firestoreStatus = 'Completed';
     } else if (isInProgress) {
       if (txtEl)   txtEl.textContent      = 'Processing';
       if (dotEl)   dotEl.style.background  = '#608fe0';
-      if (badgeEl) { badgeEl.className = _bc + ' status-processing'; badgeEl.style.display='flex'; badgeEl.style.alignItems='center'; badgeEl.style.gap='4px'; }
+      if (badgeEl) { badgeEl.className = _bc + ' status-processing'; badgeEl.style.background=''; badgeEl.style.color=''; badgeEl.style.border=''; }
       if (barEl)   barEl.style.background  = 'rgba(59,130,246,0.4)';
       firestoreStatus = 'Processing';
     } else if (isPartial) {
       if (txtEl)   txtEl.textContent      = 'Partial';
       if (dotEl)   dotEl.style.background  = '#c084fc';
-      if (badgeEl) { badgeEl.className = _bc; badgeEl.style.background='rgba(168,85,247,0.07)'; badgeEl.style.color='#c084fc'; badgeEl.style.border='1px solid rgba(168,85,247,0.18)'; badgeEl.style.display='flex'; badgeEl.style.alignItems='center'; badgeEl.style.gap='4px'; }
+      if (badgeEl) { badgeEl.className = _bc + ' status-partial'; badgeEl.style.background=''; badgeEl.style.color=''; badgeEl.style.border=''; }
       if (barEl)   barEl.style.background  = 'rgba(168,85,247,0.4)';
       firestoreStatus = 'Partial';
+    } else if (isCancelled || isFailed) {
+      if (txtEl)   txtEl.textContent      = isCancelled ? 'Cancelled' : 'Failed';
+      if (dotEl)   dotEl.style.background  = '#f87171';
+      if (badgeEl) { badgeEl.className = _bc + (isCancelled ? ' status-cancelled' : ' status-failed'); badgeEl.style.background=''; badgeEl.style.color=''; badgeEl.style.border=''; }
+      if (barEl)   barEl.style.background  = 'transparent';
+      firestoreStatus = isCancelled ? 'Cancelled' : 'Failed';
     } else {
       if (txtEl)   txtEl.textContent      = data.status || 'Pending';
       if (dotEl)   dotEl.style.background  = '#c9a227';
-      if (badgeEl) { badgeEl.className = _bc + ' status-pending'; badgeEl.style.display='flex'; badgeEl.style.alignItems='center'; badgeEl.style.gap='4px'; }
+      if (badgeEl) { badgeEl.className = _bc + ' status-pending'; badgeEl.style.background=''; badgeEl.style.color=''; badgeEl.style.border=''; }
       if (barEl)   barEl.style.background  = 'transparent';
       firestoreStatus = data.status || 'Pending';
     }
 
-    if (typeof window._updateOrderInFirestore === 'function') {
-      window._updateOrderInFirestore(docId, firestoreStatus);
+    // H2 & M6: Only update Firestore if status or remains actually changed
+    const currentStatus = cardEl ? (cardEl.getAttribute('data-status') || '') : '';
+    if (cardEl) cardEl.setAttribute('data-status', firestoreStatus);
+
+    if (currentStatus.toLowerCase() !== firestoreStatus.toLowerCase()) {
+      if (typeof window._updateOrderInFirestore === 'function') {
+        window._updateOrderInFirestore(docId, firestoreStatus, data.remains);
+      }
     }
 
     // Show/hide Actions button based on API can_refill / can_cancel
@@ -565,14 +637,62 @@ function toggleActionMenu(eid, e) {
   const menu = document.getElementById('actionMenu-' + eid);
   if (!menu) return;
   const isOpen = menu.classList.contains('open');
-  document.querySelectorAll('.action-menu.open').forEach(m => m.classList.remove('open'));
-  if (!isOpen) menu.classList.add('open');
+  document.querySelectorAll('.action-menu.open').forEach(m => {
+    m.classList.remove('open');
+    m.classList.remove('open-up');
+  });
+  if (!isOpen) {
+    if (e && e.currentTarget) {
+      const btnRect = e.currentTarget.getBoundingClientRect();
+      if (btnRect.bottom + 140 > window.innerHeight) {
+        menu.classList.add('open-up');
+      }
+    }
+    menu.classList.add('open');
+  }
 }
 document.addEventListener('click', () => {
-  document.querySelectorAll('.action-menu.open').forEach(m => m.classList.remove('open'));
+  document.querySelectorAll('.action-menu.open').forEach(m => {
+    m.classList.remove('open');
+    m.classList.remove('open-up');
+  });
 });
 
+// ── TOAST NOTIFICATIONS (M2) ──
+function showToast(type, title, msg) {
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  const icons = { success: 'check_circle', error: 'cancel', warn: 'warning', info: 'info' };
+  const t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.innerHTML = `
+    <span class="material-symbols-outlined toast-icon" style="font-size:18px">${icons[type]||'info'}</span>
+    <div>
+      <div class="toast-title">${title}</div>
+      ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+    </div>`;
+  container.appendChild(t);
+  setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(100%)';
+    setTimeout(() => t.remove(), 300);
+  }, 4000);
+}
+
+// ── REFILL & CANCEL ──
 async function refillOrder(apiOrderId, eid) {
+  const btn = document.getElementById('refillBtn-' + eid);
+  if (btn) {
+    if (btn.disabled) return; // M1: Double-click protection
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#38bdf8;animation:spin 0.7s linear infinite">sync</span> Requesting...';
+  }
   try {
     const res  = await fetch('https://getxh.online/api/refill', {
       method: 'POST',
@@ -580,22 +700,29 @@ async function refillOrder(apiOrderId, eid) {
       body: JSON.stringify({order: apiOrderId})
     });
     const data = await res.json();
-    if (data.refill) {
-      alert('Refill placed successfully!');
+    if (data.refill || data.status) {
+      showToast('success', 'Refill Requested', `Refill ID: ${data.refill || data.status || 'Submitted'}`);
     } else {
-      alert('Refill failed: ' + (data.error || 'Unknown error'));
+      showToast('error', 'Refill Failed', data.error || data.message || 'Could not refill this order.');
     }
   } catch(err) {
-    alert('Refill error: ' + err.message);
+    showToast('error', 'Refill Error', err.message || 'Something went wrong. Try again.');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#38bdf8">replay</span> Refill';
+    }
   }
 }
 
-async function cancelOrder(apiOrderId, docId, price, eid) {
+async function cancelOrder(apiOrderId, docId, eid) {
   const btn  = document.getElementById('cancelBtn-'  + eid);
   const wrap = document.getElementById('cancelWrap-' + eid);
   if (!btn) return;
+  if (btn.disabled) return;
   btn.disabled = true;
-  btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#f87171">hourglass_top</span> Cancelling...';
+  btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#f87171;animation:spin 0.7s linear infinite">sync</span> Cancelling...';
 
   try {
     const res  = await fetch('https://getxh.online/api/cancel', {
@@ -610,12 +737,10 @@ async function cancelOrder(apiOrderId, docId, price, eid) {
       if (typeof window._updateOrderInFirestore === 'function') {
         await window._updateOrderInFirestore(docId, 'Cancelled');
       }
-      // Refund price back to wallet
-      if (typeof window._refundBalance === 'function' && price > 0) {
-        await window._refundBalance(price);
-      }
+      // Note: Refund is strictly processed server-side by /api/cancel endpoint
+
       // Update status badge in UI
-      const _bc = 'px-2.5 py-1 rounded-md text-xs font-semibold';
+      const _bc = 'px-2.5 py-1 rounded-md text-xs font-semibold status-badge-transition';
       const txtEl   = document.getElementById('statusText-'  + eid);
       const dotEl   = document.getElementById('statusDot-'   + eid);
       const badgeEl = document.getElementById('statusBadge-' + eid);
@@ -626,23 +751,30 @@ async function cancelOrder(apiOrderId, docId, price, eid) {
       if (barEl)   barEl.style.background = 'transparent';
       // Hide cancel button
       if (wrap) wrap.style.display = 'none';
+      showToast('success', 'Order Cancelled', 'Order cancelled successfully. Refund (if applicable) processed by server.');
     } else {
       btn.disabled = false;
       btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#f87171">cancel</span> Cancel Order';
-      alert(data.message || 'Cancellation failed. Please try again.');
+      showToast('error', 'Cancellation Failed', data.message || 'Could not cancel this order.');
     }
   } catch(err) {
     btn.disabled = false;
     btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#f87171">cancel</span> Cancel Order';
-    alert('Network error. Please try again.');
+    showToast('error', 'Network Error', 'Please check connection and try again.');
   }
 }
 
 function updateAllOrders() {
+  const terminalStatuses = ['completed', 'canceled', 'cancelled', 'failed', 'partial'];
   document.querySelectorAll('[data-order-id]').forEach(card => {
     const apiOrderId = card.getAttribute('data-order-id');
     const eid        = card.getAttribute('data-eid');
     const docId      = card.getAttribute('data-doc-id');
+    const status     = (card.getAttribute('data-status') || '').toLowerCase();
+    
+    // H1: Skip polling for terminal order statuses
+    if (terminalStatuses.includes(status)) return;
+    
     if (apiOrderId && eid) fetchAndUpdateOrder(apiOrderId, eid, docId);
   });
 }
@@ -703,15 +835,18 @@ function filterOrders() {
 function getStatusClass(status) {
   const s = (status||'').toLowerCase();
   if(s==='completed') return 'status-completed';
-  if(s==='processing') return 'status-processing';
-  if(s==='cancelled') return 'status-cancelled';
+  if(s==='processing' || s==='in progress' || s==='inprogress') return 'status-processing';
+  if(s==='cancelled' || s==='canceled') return 'status-cancelled';
+  if(s==='partial') return 'status-partial';
+  if(s==='failed') return 'status-failed';
   return 'status-pending';
 }
 function getStatusDot(status) {
   const s = (status||'').toLowerCase();
   if(s==='completed') return '#4ade80';
-  if(s==='processing') return '#608fe0';
-  if(s==='cancelled') return '#f87171';
+  if(s==='processing' || s==='in progress' || s==='inprogress') return '#608fe0';
+  if(s==='cancelled' || s==='canceled' || s==='failed') return '#f87171';
+  if(s==='partial') return '#c084fc';
   return '#c9a227';
 }
 
@@ -732,6 +867,7 @@ function renderOrders(orders) {
          data-order-id="${o.apiOrderId || ''}"
          data-eid="${eid}"
          data-doc-id="${o.docId || ''}"
+         data-status="${o.status || 'Pending'}"
          style="background:#121c33; border:1px solid rgba(255,255,255,0.06);">
 
       <!-- Order Header -->
@@ -744,7 +880,7 @@ function renderOrders(orders) {
           </div>
           <span class="font-black text-sm text-white">#${o.orderId || '—'}</span>
         </div>
-        <span id="statusBadge-${eid}" class="px-2.5 py-1 rounded-md text-xs font-semibold ${getStatusClass(o.status)}"
+        <span id="statusBadge-${eid}" class="px-2.5 py-1 rounded-md text-xs font-semibold status-badge-transition ${getStatusClass(o.status)}"
               style="display:flex;align-items:center;gap:4px;letter-spacing:.01em;">
           <span id="statusDot-${eid}" style="width:5px;height:5px;border-radius:50%;background:${getStatusDot(o.status)};display:inline-block;flex-shrink:0"></span>
           <span id="statusText-${eid}">${o.status || 'Pending'}</span>
@@ -809,14 +945,14 @@ function renderOrders(orders) {
             </button>
             <div id="actionMenu-${eid}" class="action-menu">
               <div id="refillWrap-${eid}" style="display:none;">
-                <button onclick="refillOrder('${o.apiOrderId}','${eid}');toggleActionMenu('${eid}')">
+                <button id="refillBtn-${eid}" onclick="refillOrder('${o.apiOrderId}','${eid}');toggleActionMenu('${eid}')">
                   <span class="material-symbols-outlined" style="font-size:16px;color:#38bdf8">replay</span>
                   Refill
                 </button>
               </div>
               <div id="cancelWrap-${eid}" style="display:none;">
                 <button id="cancelBtn-${eid}"
-                        onclick="cancelOrder('${o.apiOrderId}','${o.docId}',${o.price||0},'${eid}');toggleActionMenu('${eid}')"
+                        onclick="cancelOrder('${o.apiOrderId}','${o.docId}','${eid}');toggleActionMenu('${eid}')"
                         style="color:#f87171;">
                   <span class="material-symbols-outlined" style="font-size:16px;color:#f87171">cancel</span>
                   Cancel Order
@@ -836,8 +972,10 @@ function renderOrders(orders) {
     </div>
   `}).join('');
 
-  // Start real-time status polling — scans all [data-order-id] cards
-  startOrderPolling();
+  // Ensure polling is active (without restarting timer if already running)
+  if (!_ordersInterval) {
+    startOrderPolling();
+  }
 }
 </script>
 
@@ -845,7 +983,7 @@ function renderOrders(orders) {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, collection, query, where, limit, onSnapshot, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -863,19 +1001,16 @@ const db   = getFirestore(app);
 let _unsubOrders = null;
 let _unsubWallet = null;
 
-// Expose Firestore writer so polling JS (non-module) can persist status back
+// Expose Firestore writer so polling JS (non-module) can persist status & remains back
 window._currentUid = null;
-window._updateOrderInFirestore = async function(docId, status) {
+window._updateOrderInFirestore = async function(docId, status, remains) {
   if (!docId) return;
   try {
-    await updateDoc(doc(db, 'orders', docId), { status });
-  } catch(_) {}
-};
-
-window._refundBalance = async function(price) {
-  if (!window._currentUid || !price) return;
-  try {
-    await updateDoc(doc(db, 'Users', window._currentUid), { Balance: increment(Number(price)) });
+    const updateData = { status };
+    if (remains !== undefined && remains !== null && !isNaN(remains)) {
+      updateData.remains = Number(remains);
+    }
+    await updateDoc(doc(db, 'orders', docId), updateData);
   } catch(_) {}
 };
 
@@ -932,11 +1067,12 @@ onAuthStateChanged(auth, (user) => {
     localStorage.setItem(_balCacheKey, balStr);
   });
 
-  // ── Real-time orders — flat collection, filtered by userId ──
+  // ── Real-time orders — flat collection, filtered by userId, capped to 100 ──
   if (_unsubOrders) _unsubOrders();
   const ordersQuery = query(
     collection(db, 'orders'),
-    where('userId', '==', user.uid)
+    where('userId', '==', user.uid),
+    limit(100)
   );
   _unsubOrders = onSnapshot(
     ordersQuery,
