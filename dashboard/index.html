@@ -1745,28 +1745,52 @@ function toggleServiceDropdown() {
 }
 function closeSvcDrop(){document.getElementById('serviceDropdown').classList.add('hidden');document.getElementById('svcArrow').style.transform='rotate(0deg)';_svcOpen=false;}
 function selectService(svc) {
+  if(!svc) return;
   _selSvc=svc;
   dbClearErr("svcBtn", "err-service");
   dbClearErr("linkInput", "err-link");
   dbClearErr("quantityInput", "err-quantity");
   dbClearErr("customCommentsInput", "err-customComments");
-  document.getElementById('svcNumBadge').textContent=svc.id;document.getElementById('svcNumBadge').classList.remove('hidden');
-  document.getElementById('svcLabel').textContent=svc.name;document.getElementById('svcLabel').className='text-white text-sm font-semibold truncate';
+
+  const bBadge = document.getElementById('svcNumBadge');
+  if(bBadge){ bBadge.textContent=svc.id; bBadge.classList.remove('hidden'); }
+
+  const sLbl = document.getElementById('svcLabel');
+  if(sLbl){ sLbl.textContent=svc.name; sLbl.className='text-white text-sm font-semibold truncate'; }
+
   closeSvcDrop();
-  document.getElementById('dStartTime').textContent=svc.startTime;
-  document.getElementById('dSpeed').textContent=svc.speed;
-  document.getElementById('dRefill').textContent=svc.refill;
-  document.getElementById('dCancel').textContent=svc.cancel;
-  document.getElementById('dDrop').textContent=svc.drop;
-  document.getElementById('dQuality').textContent=svc.quality;
-  document.getElementById('dDeliveryTime').textContent=svc.delivery;
-  document.getElementById('dDetailsList').innerHTML=svc.details.map(d=>`<li class="flex items-start gap-1.5"><span class="flex-shrink-0">•</span>${d}</li>`).join('');
-  document.getElementById('quantityInput').placeholder=`Min: ${svc.min.toLocaleString()} - Max: ${svc.max.toLocaleString()}`;
-  document.getElementById('quantityInput').value='';
-  document.getElementById('linkInput').value='';
-  document.getElementById('totalPrice').textContent='';
-  document.getElementById('quantityError').classList.add('hidden');
-  document.getElementById('placeOrderBtn').disabled=true;
+
+  const setElText = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val || '—'; };
+  setElText('dStartTime', svc.startTime);
+  setElText('dSpeed', svc.speed);
+  setElText('dRefill', svc.refill);
+  setElText('dCancel', svc.cancel);
+  setElText('dDrop', svc.drop);
+  setElText('dQuality', svc.quality);
+  setElText('dDeliveryTime', svc.delivery);
+
+  const dList = document.getElementById('dDetailsList');
+  if(dList && svc.details) {
+    dList.innerHTML = svc.details.map(d=>`<li class="flex items-start gap-1.5"><span class="flex-shrink-0">•</span>${d}</li>`).join('');
+  }
+
+  const qInp = document.getElementById('quantityInput');
+  if(qInp) {
+    qInp.placeholder=`Min: ${(svc.min||0).toLocaleString()} - Max: ${(svc.max||0).toLocaleString()}`;
+    qInp.value='';
+  }
+
+  const lInp = document.getElementById('linkInput');
+  if(lInp) lInp.value='';
+
+  const tPrice = document.getElementById('totalPrice');
+  if(tPrice) tPrice.textContent='';
+
+  const qErr = document.getElementById('quantityError');
+  if(qErr) qErr.classList.add('hidden');
+
+  const pBtn = document.getElementById('placeOrderBtn');
+  if(pBtn) pBtn.disabled=false;
 
   // Reset and show/hide drip feed container based on service ID
   const isDripSvc = svc && (svc.id === 5833 || svc.id === 5210);
@@ -1777,32 +1801,41 @@ function selectService(svc) {
     } else {
       dripContainer.classList.add('hidden');
     }
-    document.getElementById('dripRuns').value = '';
-    document.getElementById('dripInterval').value = '';
-    document.getElementById('dripTotalQty').value = '';
-    document.getElementById('dripError').classList.add('hidden');
+    const dRuns = document.getElementById('dripRuns'); if(dRuns) dRuns.value = '';
+    const dInt = document.getElementById('dripInterval'); if(dInt) dInt.value = '';
+    const dTot = document.getElementById('dripTotalQty'); if(dTot) dTot.value = '';
+    const dErr = document.getElementById('dripError'); if(dErr) dErr.classList.add('hidden');
   }
+
   // Custom comments box logic
-  const isCustomComment = svc.name.toLowerCase().includes('custom');
+  const isCustomComment = svc && svc.name && svc.name.toLowerCase().includes('custom');
   const ccWrap = document.getElementById('customCommentsWrap');
   const ccInput = document.getElementById('customCommentsInput');
   const qtyInput = document.getElementById('quantityInput');
-  if(isCustomComment){
-    ccWrap.classList.remove('hidden');
-    ccInput.value='';
-    document.getElementById('customCommentsCount').textContent='0 comments entered';
-    document.getElementById('customCommentsError').classList.add('hidden');
-    document.getElementById('customCommentsMin').textContent=svc.min;
-    qtyInput.readOnly=true;
-    qtyInput.classList.add('opacity-50','cursor-not-allowed');
-  } else {
-    ccWrap.classList.add('hidden');
-    ccInput.value='';
-    qtyInput.readOnly=false;
-    qtyInput.classList.remove('opacity-50','cursor-not-allowed');
+  if(ccWrap && ccInput && qtyInput){
+    if(isCustomComment){
+      ccWrap.classList.remove('hidden');
+      ccInput.value='';
+      const ccCount = document.getElementById('customCommentsCount'); if(ccCount) ccCount.textContent='0 comments entered';
+      const ccErr = document.getElementById('customCommentsError'); if(ccErr) ccErr.classList.add('hidden');
+      const ccMin = document.getElementById('customCommentsMin'); if(ccMin) ccMin.textContent=svc.min;
+      qtyInput.readOnly=true;
+      qtyInput.classList.add('opacity-50','cursor-not-allowed');
+    } else {
+      ccWrap.classList.add('hidden');
+      ccInput.value='';
+      qtyInput.readOnly=false;
+      qtyInput.classList.remove('opacity-50','cursor-not-allowed');
+    }
   }
+
   const det=document.getElementById('serviceDetails');
-  det.classList.remove('hidden');det.style.animation='none';det.offsetHeight;det.style.animation='fadeUpAnim 0.35s ease forwards';
+  if(det) {
+    det.classList.remove('hidden');
+    det.style.animation='none';
+    det.offsetHeight;
+    det.style.animation='fadeUpAnim 0.35s ease forwards';
+  }
 }
 
 // ── GLOBAL SEARCH ──
