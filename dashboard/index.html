@@ -2632,24 +2632,25 @@ onAuthStateChanged(auth, async (user) => {
     }
   });
 
-  // ── CHECK FOR ADMIN BALANCE NOTIFICATIONS ──
-  (async function checkAdminBalanceNotify() {
-    try {
-      const lastSeenKey = 'gx_admin_bal_seen_' + currentUid;
+  // ── CHECK FOR ADMIN BALANCE NOTIFICATIONS (REAL-TIME & ON LOGIN) ──
+  try {
+    const lastSeenKey = 'gx_admin_bal_seen_' + currentUid;
+    const nq = query(
+      collection(db, 'walletTxns'),
+      where('uid', '==', currentUid)
+    );
+    onSnapshot(nq, (snap) => {
+      if (snap.empty) return;
       const lastSeen = parseInt(localStorage.getItem(lastSeenKey) || '0');
-      const nq = query(
-        collection(db, 'walletTxns'),
-        where('uid', '==', currentUid),
-        where('method', '==', 'admin'),
-        orderBy('createdAt', 'desc'),
-        limit(1)
-      );
-      const nsnap = await getDocs(nq);
-      if (!nsnap.empty) {
-        const txn = nsnap.docs[0].data();
+      const adminTxns = snap.docs
+        .map(d => d.data())
+        .filter(t => t.method === 'admin')
+        .sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0));
+
+      if (adminTxns.length > 0) {
+        const txn = adminTxns[0];
         const txnTime = Number(txn.createdAt || 0);
         if (txnTime > lastSeen) {
-          // Show notification popup
           const isCredit = txn.type === 'credit';
           const amt = Number(txn.amount || 0);
           const note = txn.reason || '';
@@ -2677,13 +2678,14 @@ onAuthStateChanged(auth, async (user) => {
               noteEl.style.display = 'none';
             }
             el.classList.add('active');
-            // Mark as seen
             localStorage.setItem(lastSeenKey, String(txnTime));
           }
         }
       }
-    } catch(e) { /* silent — notification is non-critical */ }
-  })();
+    }, (err) => {
+      console.warn("Wallet notify snapshot error:", err);
+    });
+  } catch(e) { console.error("Notification setup error:", e); }
 
   // ── REAL-TIME: recent orders ──
   if (_unsubOrders) _unsubOrders();
