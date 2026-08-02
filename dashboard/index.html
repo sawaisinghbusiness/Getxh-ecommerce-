@@ -2827,41 +2827,46 @@ onAuthStateChanged(auth, async (user) => {
   });
 
   // ── CHECK FOR ADMIN BALANCE NOTIFICATIONS (REAL-TIME & ON LOGIN) ──
+  // Uses Firestore to track "seen" state so popup shows ONCE per txn across all devices/logins
   try {
-    const lastSeenKey = 'gx_admin_bal_seen_' + currentUid;
     const nq = query(
       collection(db, 'walletTxns'),
-      where('uid', '==', currentUid)
+      where('uid', '==', currentUid),
+      where('method', '==', 'admin'),
+      where('notified', '==', false)
     );
-    onSnapshot(nq, (snap) => {
+    onSnapshot(nq, async (snap) => {
       if (snap.empty) return;
-      const lastSeen = parseInt(localStorage.getItem(lastSeenKey) || '0');
+      // Get the latest UNSEEN admin txn
       const adminTxns = snap.docs
-        .map(d => d.data())
-        .filter(t => t.method === 'admin')
+        .map(d => ({ id: d.id, ...d.data() }))
         .sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0));
 
       if (adminTxns.length > 0) {
-        const txn = adminTxns[0];
-        const txnTime = Number(txn.createdAt || 0);
-        if (txnTime > lastSeen) {
-          const isCredit = txn.type === 'credit';
-          const amt = Number(txn.amount || 0);
-          const note = txn.reason || '';
-          const el = document.getElementById('balNotifyOverlay');
-          if (el) {
-            window._hasPendingNotify = true;
+        const txnDoc = adminTxns[0];
+        const txnTime = Number(txnDoc.createdAt || 0);
+        // Guard: only show once — mark as notified immediately in Firestore before showing
+        try {
+          await updateDoc(doc(db, 'walletTxns', txnDoc.id), { notified: true });
+        } catch(e) { console.warn('Failed to mark txn notified:', e); return; }
 
-            // Compute exact old and new balance mathematically
-            const currentBal = window._currentBalance || 0;
-            let oldBal, newBal;
-            if (isCredit) {
-              newBal = currentBal;
-              oldBal = Math.max(0, currentBal - amt);
-            } else {
-              newBal = currentBal;
-              oldBal = currentBal + amt;
-            }
+        const isCredit = txnDoc.type === 'credit';
+        const amt = Number(txnDoc.amount || 0);
+        const note = txnDoc.reason || '';
+        const el = document.getElementById('balNotifyOverlay');
+        if (el) {
+          window._hasPendingNotify = true;
+
+          // Compute exact old and new balance mathematically
+          const currentBal = window._currentBalance || 0;
+          let oldBal, newBal;
+          if (isCredit) {
+            newBal = currentBal;
+            oldBal = Math.max(0, currentBal - amt);
+          } else {
+            newBal = currentBal;
+            oldBal = currentBal + amt;
+          }
 
             // Immediately set DOM text to display oldBal while notification is open!
             const oldBalStr = `\u20b9${oldBal.toFixed(2)}`;
@@ -2912,7 +2917,6 @@ onAuthStateChanged(auth, async (user) => {
             if (loader) { loader.classList.add('hide'); setTimeout(() => { try { loader.remove(); } catch(e){} }, 200); }
 
             el.classList.add('active');
-            localStorage.setItem(lastSeenKey, String(txnTime));
 
             // Clear any existing auto-close timer
             if (window._balAutoCloseTimer) clearTimeout(window._balAutoCloseTimer);
@@ -2922,7 +2926,6 @@ onAuthStateChanged(auth, async (user) => {
               window._closeBalNotifyAndAnimate();
             }, 5000);
           }
-        }
       }
     }, (err) => {
       console.warn("Wallet notify snapshot error:", err);

@@ -1515,6 +1515,7 @@ window._addBalance = async function() {
         type: 'credit',
         method: 'admin',
         status: 'success',
+        notified: false,
         reason: reason || 'Admin added balance',
         createdAt: Date.now()
       });
@@ -1567,6 +1568,7 @@ window._deductBalance = async function() {
         type: 'debit',
         method: 'admin',
         status: 'success',
+        notified: false,
         reason: reason || 'Admin deducted balance',
         createdAt: Date.now()
       });
