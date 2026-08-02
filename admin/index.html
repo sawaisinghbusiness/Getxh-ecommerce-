@@ -38,6 +38,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .adm-field:focus { border-color:rgba(56,189,248,.7); }
 .adm-field::placeholder { color:#475569; }
 @keyframes spin { to { transform:rotate(360deg); } }
+.bal-btn{width:100%;padding:11px;border-radius:10px;border:none;font-weight:800;font-size:12px;color:#fff;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 12px rgba(16,185,129,0.25);transition:transform .15s,opacity .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.bal-btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(16,185,129,0.35)}
+.bal-btn:active{transform:scale(0.98)}
+@keyframes balFadeIn{from{opacity:0;transform:scale(0.92)}to{opacity:1;transform:scale(1)}}
+.bal-popup-box{animation:balFadeIn .25s ease}
 </style>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
 <script>
@@ -551,6 +556,66 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   </div>
 </div>
 
+<!-- ── BALANCE MANAGEMENT POPUP ────────────────────────── -->
+<div id="balancePopup" style="display:none;position:fixed;inset:0;z-index:200;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);" onclick="if(event.target===this)window._closeBalPopup()">
+  <div class="bal-popup-box" style="background:linear-gradient(160deg,#0f1623 0%,#131c2e 100%);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:32px 24px 24px;width:360px;max-width:92vw;box-shadow:0 32px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.04) inset;">
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="width:52px;height:52px;border-radius:18px;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 8px 24px rgba(16,185,129,0.3);">
+        <span class="material-symbols-outlined" style="font-size:24px;color:#fff;">account_balance_wallet</span>
+      </div>
+      <h3 style="font-size:17px;font-weight:900;color:#fff;margin:0 0 4px;">Manage User Balance</h3>
+      <p id="balPopupEmail" style="font-size:12px;color:#64748b;margin:0;word-break:break-all;">—</p>
+    </div>
+
+    <!-- Current Balance -->
+    <div style="background:linear-gradient(135deg,#1e293b,#1a2332);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px 16px;margin-bottom:18px;text-align:center;">
+      <p style="font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.12em;margin:0 0 6px;">Current Balance</p>
+      <p id="balPopupCurrent" style="font-size:32px;font-weight:900;color:#fff;margin:0;letter-spacing:-0.02em;">₹0.00</p>
+    </div>
+
+    <!-- Amount Input -->
+    <div style="margin-bottom:12px;">
+      <label style="font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">Amount (₹)</label>
+      <input id="balAmountInput" type="number" min="1" step="0.01" placeholder="Enter amount"
+        class="adm-field" style="width:100%;box-sizing:border-box;font-size:16px;font-weight:700;border-radius:14px;padding:13px 16px;" />
+    </div>
+
+    <!-- Note for User -->
+    <div style="margin-bottom:20px;">
+      <label style="font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">Note / Message for User</label>
+      <input id="balReasonInput" type="text" placeholder="e.g. Refund credited, Welcome bonus, Order cancelled"
+        class="adm-field" style="width:100%;box-sizing:border-box;font-size:13px;border-radius:14px;padding:11px 16px;" />
+      <p style="font-size:10px;color:#475569;margin:6px 0 0;font-style:italic;">This note will be shown to the user when they login</p>
+    </div>
+
+    <!-- Status Message -->
+    <div id="balStatusMsg" style="display:none;text-align:center;padding:10px 14px;border-radius:12px;font-size:12px;font-weight:700;margin-bottom:14px;"></div>
+
+    <!-- Action Buttons -->
+    <div style="display:flex;gap:10px;margin-bottom:14px;">
+      <button id="balAddBtn" onclick="window._addBalance()"
+        style="flex:1;padding:13px;border-radius:14px;border:none;font-weight:800;font-size:13px;color:#fff;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 16px rgba(16,185,129,0.3);transition:transform .15s,opacity .15s;"
+        onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform=''">
+        + Add Balance
+      </button>
+      <button id="balDeductBtn" onclick="window._deductBalance()"
+        style="flex:1;padding:13px;border-radius:14px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);font-weight:800;font-size:13px;color:#f87171;cursor:pointer;transition:transform .15s,opacity .15s;"
+        onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform=''">
+        − Deduct
+      </button>
+    </div>
+
+    <!-- Close Button -->
+    <button onclick="window._closeBalPopup()"
+      style="width:100%;padding:11px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#94a3b8;font-weight:700;font-size:12px;cursor:pointer;transition:background .15s;"
+      onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+      Close
+    </button>
+  </div>
+</div>
+
 <!-- ════════════════════════════════════════════════════
      INLINE SCRIPT — UI state (var) & render functions
      ════════════════════════════════════════════════════ -->
@@ -646,6 +711,7 @@ function searchUsers() {
 function renderUsers(users) {
   document.getElementById('userCountLabel').textContent = users.length;
   var el = document.getElementById('usersList');
+  window._userDataMap = {};
   if (!users.length) {
     el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">No users found</p></div>';
     return;
@@ -655,6 +721,7 @@ function renderUsers(users) {
     var _dateObj = _rawDate && _rawDate.toDate ? _rawDate.toDate() : (_rawDate ? new Date(_rawDate) : null);
     var date = _dateObj && !isNaN(_dateObj) ? _dateObj.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
     var initial = (u.username || u.email || '?')[0].toUpperCase();
+    window._userDataMap[u.uid] = u;
     return '<div style="background:#0f172a;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 18px;margin-bottom:10px;">'
 
       /* ── Header: avatar + name + date ── */
@@ -688,6 +755,14 @@ function renderUsers(users) {
       + '</div>'
 
       + '</div>'
+
+      /* Manage Balance Button */
+      + '<div style="margin-top:14px;">'
+      + '<button onclick="window._openBalPopup(\'' + u.uid + '\')" class="bal-btn">'
+      + '<span class="material-symbols-outlined" style="font-size:16px;">account_balance_wallet</span>Manage Balance'
+      + '</button>'
+      + '</div>'
+
       + '</div>';
   }).join('');
 }
@@ -940,8 +1015,8 @@ function escHtml(v) {
 import { initializeApp }                          from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut }   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
-  addDoc, collection, doc, getFirestore,
-  onSnapshot, orderBy, query, updateDoc, where, getDocs, limit
+  addDoc, collection, doc, getDoc, getFirestore,
+  increment, onSnapshot, orderBy, query, setDoc, updateDoc, where, getDocs, limit
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 // ── Admin identity (defined above in Security Config) ─
@@ -1238,6 +1313,136 @@ function initAdminData() {
     if (unsubMsgs)    unsubMsgs();
   });
 }
+
+// ── Balance Management ──────────────────────────────
+let _balPopupUid = null;
+
+window._openBalPopup = async function(uid) {
+  _balPopupUid = uid;
+  const userData = window._userDataMap && window._userDataMap[uid];
+  const email = userData ? (userData.email || uid) : uid;
+  document.getElementById('balPopupEmail').textContent = email;
+  document.getElementById('balAmountInput').value = '';
+  document.getElementById('balReasonInput').value = '';
+  document.getElementById('balStatusMsg').style.display = 'none';
+  document.getElementById('balPopupCurrent').textContent = 'Loading…';
+  document.getElementById('balAddBtn').disabled = false;
+  document.getElementById('balDeductBtn').disabled = false;
+  document.getElementById('balAddBtn').textContent = '+ Add Balance';
+  document.getElementById('balDeductBtn').textContent = '− Deduct';
+  document.getElementById('balancePopup').style.display = 'flex';
+
+  try {
+    const snap = await getDoc(doc(db, 'Users', uid));
+    const bal = snap.exists() ? (snap.data().Balance || 0) : 0;
+    document.getElementById('balPopupCurrent').textContent = '₹' + Number(bal).toFixed(2);
+  } catch(e) {
+    document.getElementById('balPopupCurrent').textContent = '₹0.00';
+  }
+};
+
+window._closeBalPopup = function() {
+  document.getElementById('balancePopup').style.display = 'none';
+  _balPopupUid = null;
+};
+
+function _showBalStatus(msg, isSuccess) {
+  const el = document.getElementById('balStatusMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = isSuccess ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)';
+  el.style.border = '1px solid ' + (isSuccess ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)');
+  el.style.color = isSuccess ? '#34d399' : '#f87171';
+}
+
+window._addBalance = async function() {
+  if (!_balPopupUid) return;
+  const amount = parseFloat(document.getElementById('balAmountInput').value);
+  const reason = document.getElementById('balReasonInput').value.trim();
+  if (!amount || amount <= 0) { _showBalStatus('Enter a valid amount.', false); return; }
+
+  const addBtn = document.getElementById('balAddBtn');
+  const deductBtn = document.getElementById('balDeductBtn');
+  addBtn.disabled = true; deductBtn.disabled = true;
+  addBtn.textContent = 'Adding…';
+
+  try {
+    try {
+      await updateDoc(doc(db, 'Users', _balPopupUid), { Balance: increment(amount) });
+    } catch(e) {
+      await setDoc(doc(db, 'Users', _balPopupUid), { Balance: amount, TotalOrders: 0, TotalSpent: 0 });
+    }
+
+    await addDoc(collection(db, 'walletTxns'), {
+      uid: _balPopupUid,
+      amount: amount,
+      type: 'credit',
+      method: 'admin',
+      status: 'success',
+      reason: reason || 'Admin added balance',
+      createdAt: Date.now()
+    });
+
+    const snap = await getDoc(doc(db, 'Users', _balPopupUid));
+    const newBal = snap.exists() ? (snap.data().Balance || 0) : 0;
+    document.getElementById('balPopupCurrent').textContent = '₹' + Number(newBal).toFixed(2);
+    _showBalStatus('✓ ₹' + amount.toFixed(2) + ' added successfully!', true);
+    document.getElementById('balAmountInput').value = '';
+    document.getElementById('balReasonInput').value = '';
+  } catch(e) {
+    _showBalStatus('Failed: ' + (e.message || 'Unknown error'), false);
+  } finally {
+    addBtn.disabled = false; deductBtn.disabled = false;
+    addBtn.textContent = '+ Add Balance';
+  }
+};
+
+window._deductBalance = async function() {
+  if (!_balPopupUid) return;
+  const amount = parseFloat(document.getElementById('balAmountInput').value);
+  const reason = document.getElementById('balReasonInput').value.trim();
+  if (!amount || amount <= 0) { _showBalStatus('Enter a valid amount.', false); return; }
+
+  const addBtn = document.getElementById('balAddBtn');
+  const deductBtn = document.getElementById('balDeductBtn');
+  addBtn.disabled = true; deductBtn.disabled = true;
+  deductBtn.textContent = 'Deducting…';
+
+  try {
+    const snap = await getDoc(doc(db, 'Users', _balPopupUid));
+    const currentBal = snap.exists() ? (snap.data().Balance || 0) : 0;
+    if (currentBal < amount) {
+      _showBalStatus('Insufficient balance! Current: ₹' + currentBal.toFixed(2), false);
+      addBtn.disabled = false; deductBtn.disabled = false;
+      deductBtn.textContent = '− Deduct';
+      return;
+    }
+
+    await updateDoc(doc(db, 'Users', _balPopupUid), { Balance: increment(-amount) });
+
+    await addDoc(collection(db, 'walletTxns'), {
+      uid: _balPopupUid,
+      amount: amount,
+      type: 'debit',
+      method: 'admin',
+      status: 'success',
+      reason: reason || 'Admin deducted balance',
+      createdAt: Date.now()
+    });
+
+    const snap2 = await getDoc(doc(db, 'Users', _balPopupUid));
+    const newBal = snap2.exists() ? (snap2.data().Balance || 0) : 0;
+    document.getElementById('balPopupCurrent').textContent = '₹' + Number(newBal).toFixed(2);
+    _showBalStatus('✓ ₹' + amount.toFixed(2) + ' deducted successfully!', true);
+    document.getElementById('balAmountInput').value = '';
+    document.getElementById('balReasonInput').value = '';
+  } catch(e) {
+    _showBalStatus('Failed: ' + (e.message || 'Unknown error'), false);
+  } finally {
+    addBtn.disabled = false; deductBtn.disabled = false;
+    deductBtn.textContent = '− Deduct';
+  }
+};
 
 // ── Auth Guard ───────────────────────────────────────
 onAuthStateChanged(auth, async user => {
