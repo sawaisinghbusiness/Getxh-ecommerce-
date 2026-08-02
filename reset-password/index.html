@@ -367,7 +367,7 @@ async function resetPassword() {
 
     const data = await res.json().catch(() => ({}));
 
-    if (res.ok && (data.success || data.status === "success")) {
+    if (res.ok && (data.success || data.status === "success" || data.status === "ok" || (data.message && data.message.toLowerCase().includes("success")))) {
       showInfo("Password updated successfully! Redirecting to sign in…");
       setTimeout(() => {
         window.location.href = "/";
