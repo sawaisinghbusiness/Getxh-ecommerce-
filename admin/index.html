@@ -680,6 +680,24 @@ var _allFirebaseUsers = [];
 var _userBalanceMap = {};
 var _unsubAppUsers = null;
 var _unsubFbUsers = null;
+var _unsubUsersFallback = null;
+
+window._masterUserMap = window._masterUserMap || {};
+
+function registerUserInfo(uid, info) {
+  if (!uid) return;
+  if (!window._masterUserMap[uid]) {
+    window._masterUserMap[uid] = { uid: uid };
+  }
+  var m = window._masterUserMap[uid];
+  if (info.email && info.email !== '—') m.email = info.email;
+  if (info.userEmail && info.userEmail !== '—') m.email = info.userEmail;
+  if (info.username && info.username !== '—') m.username = info.username;
+  if (info.userName && info.userName !== '—') m.username = info.userName;
+  if (info.name && info.name !== '—') m.username = info.name;
+  if (info.mobile && info.mobile !== '—') m.mobile = info.mobile;
+  if (info.password && info.password !== '—') m.password = info.password;
+}
 
 function switchUserSubTab(tab) {
   _activeUserSubTab = tab;
@@ -712,6 +730,7 @@ function loadAllUsers() {
 
   if (_unsubAppUsers) { _unsubAppUsers(); _unsubAppUsers = null; }
   if (_unsubFbUsers)  { _unsubFbUsers();  _unsubFbUsers = null; }
+  if (_unsubUsersFallback) { _unsubUsersFallback(); _unsubUsersFallback = null; }
 
   // 1. Listen to Users collection (all wallet users) for real-time balances & all Firebase users
   var qFb = window._collection(window._db, 'Users');
@@ -722,6 +741,7 @@ function loadAllUsers() {
       var data = d.data();
       var bal = Number(data.Balance || 0);
       _userBalanceMap[uid] = bal;
+      registerUserInfo(uid, data);
       fbUsers.push({
         uid: uid,
         balance: bal,
@@ -735,34 +755,38 @@ function loadAllUsers() {
     searchUsers();
   }, function(err) { console.warn("Firebase users listen error:", err); });
 
-  // 2. Listen to userData collection (app registered users)
-  function startAppListener(colName) {
-    var qApp = window._collection(window._db, colName);
-    _unsubAppUsers = window._onSnapshot(qApp, function(snap) {
-      var appUsers = [];
-      window._userDataMap = window._userDataMap || {};
-      snap.forEach(function(d) {
-        var data = d.data();
-        var uid = data.uid || d.id;
-        var uObj = Object.assign({ uid: uid }, data);
-        window._userDataMap[uid] = uObj;
-        appUsers.push(uObj);
-      });
-      appUsers.sort(function(a, b) {
-        var at = a.createdAt && a.createdAt.seconds ? a.createdAt.seconds : (Number(a.createdAt) || 0);
-        var bt = b.createdAt && b.createdAt.seconds ? b.createdAt.seconds : (Number(b.createdAt) || 0);
-        return bt - at;
-      });
-      _allAppUsers = appUsers;
-      var countEl = document.getElementById('appUsersCount');
-      if (countEl) countEl.textContent = appUsers.length;
-      searchUsers();
-    }, function(e) {
-      if (colName === 'userData') startAppListener('users');
+  // 2. Listen to users collection (fallback/supplementary user metadata)
+  var qUsers = window._collection(window._db, 'users');
+  _unsubUsersFallback = window._onSnapshot(qUsers, function(snap) {
+    snap.forEach(function(d) {
+      var data = d.data();
+      var uid = data.uid || d.id;
+      registerUserInfo(uid, data);
     });
-  }
+    searchUsers();
+  }, function(err) {});
 
-  startAppListener('userData');
+  // 3. Listen to userData collection (app registered users)
+  var qApp = window._collection(window._db, 'userData');
+  _unsubAppUsers = window._onSnapshot(qApp, function(snap) {
+    var appUsers = [];
+    snap.forEach(function(d) {
+      var data = d.data();
+      var uid = data.uid || d.id;
+      var uObj = Object.assign({ uid: uid }, data);
+      registerUserInfo(uid, data);
+      appUsers.push(uObj);
+    });
+    appUsers.sort(function(a, b) {
+      var at = a.createdAt && a.createdAt.seconds ? a.createdAt.seconds : (Number(a.createdAt) || 0);
+      var bt = b.createdAt && b.createdAt.seconds ? b.createdAt.seconds : (Number(b.createdAt) || 0);
+      return bt - at;
+    });
+    _allAppUsers = appUsers;
+    var countEl = document.getElementById('appUsersCount');
+    if (countEl) countEl.textContent = appUsers.length;
+    searchUsers();
+  }, function(e) {});
 }
 
 var _searchTimer = null;
@@ -778,10 +802,10 @@ function searchUsers() {
   }
   _searchTimer = setTimeout(function() {
     var filtered = listToFilter.filter(function(u) {
-      var extra = window._userDataMap ? window._userDataMap[u.uid] : null;
-      var email = (u.email || (extra ? extra.email : '') || '').toLowerCase();
-      var name  = (u.username || (extra ? extra.username : '') || '').toLowerCase();
-      var mob   = (u.mobile || (extra ? extra.mobile : '') || '').toLowerCase();
+      var info = window._masterUserMap ? (window._masterUserMap[u.uid] || {}) : {};
+      var email = (u.email || info.email || '').toLowerCase();
+      var name  = (u.username || info.username || '').toLowerCase();
+      var mob   = (u.mobile || info.mobile || '').toLowerCase();
       var uid   = (u.uid || '').toLowerCase();
       return email.includes(q) || name.includes(q) || mob.includes(q) || uid.includes(q);
     });
@@ -803,23 +827,22 @@ function renderUsersList(users) {
   var isApp = _activeUserSubTab === 'app';
 
   el.innerHTML = users.map(function(u) {
-    var extra = (window._userDataMap && window._userDataMap[u.uid]) ? window._userDataMap[u.uid] : null;
-    var email = u.email || (extra ? extra.email : '') || '—';
-    var name  = u.username || (extra ? extra.username : '') || (email !== '—' ? email.split('@')[0] : 'User');
-    var mobile = u.mobile || (extra ? extra.mobile : '') || '—';
-    var pass  = u.password || (extra ? extra.password : '') || '—';
+    var info = (window._masterUserMap && window._masterUserMap[u.uid]) ? window._masterUserMap[u.uid] : {};
+    var email = u.email || info.email || '—';
+    var name  = u.username || info.username || (email !== '—' ? email.split('@')[0] : 'User (' + u.uid.slice(0, 6) + ')');
+    var mobile = u.mobile || info.mobile || '—';
+    var pass  = u.password || info.password || '—';
     
     var liveBal = _userBalanceMap[u.uid] !== undefined ? _userBalanceMap[u.uid] : (u.balance || 0);
 
-    var _rawDate = u.createdAt || (extra ? extra.createdAt : null);
+    var _rawDate = u.createdAt || info.createdAt;
     var _dateObj = _rawDate && _rawDate.toDate ? _rawDate.toDate() : (_rawDate ? new Date(_rawDate) : null);
     var date = _dateObj && !isNaN(_dateObj) ? _dateObj.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
     var initial = (name || email || '?')[0].toUpperCase();
 
+    // Ensure _userDataMap has resolved values for manage balance popup header
     if (!window._userDataMap) window._userDataMap = {};
-    if (!window._userDataMap[u.uid]) {
-      window._userDataMap[u.uid] = { uid: u.uid, email: email, username: name, mobile: mobile, password: pass };
-    }
+    window._userDataMap[u.uid] = { uid: u.uid, email: email, username: name, mobile: mobile, password: pass };
 
     return '<div style="background:#0f172a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px 20px;margin-bottom:12px;">'
 
@@ -1339,7 +1362,13 @@ function initAdminData() {
 
   // Real-time Orders
   unsubOrders = onSnapshot(collection(db, 'orders'), snap => {
-    const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const orders = snap.docs.map(d => {
+      const o = d.data();
+      if (o.userId && (o.userEmail || o.email)) {
+        registerUserInfo(o.userId, { email: o.userEmail || o.email, username: o.userName || o.name });
+      }
+      return { id: d.id, ...o };
+    });
     orders.sort((a, b) => {
       const at = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : (Number(a.createdAt) || 0);
       const bt = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : (Number(b.createdAt) || 0);
@@ -1350,7 +1379,13 @@ function initAdminData() {
 
   // Real-time Tickets
   unsubTickets = onSnapshot(collection(db, 'tickets'), snap => {
-    const tickets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const tickets = snap.docs.map(d => {
+      const t = d.data();
+      if (t.userId && (t.userEmail || t.userName)) {
+        registerUserInfo(t.userId, { email: t.userEmail, username: t.userName });
+      }
+      return { id: d.id, ...t };
+    });
     tickets.sort((a, b) => {
       const at = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : (Number(a.createdAt) || 0);
       const bt = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : (Number(b.createdAt) || 0);
@@ -1427,9 +1462,11 @@ let _balPopupUid = null;
 
 window._openBalPopup = async function(uid) {
   _balPopupUid = uid;
-  const userData = window._userDataMap && window._userDataMap[uid];
-  const email = userData ? (userData.email || uid) : uid;
-  document.getElementById('balPopupEmail').textContent = email;
+  const info = (window._masterUserMap && window._masterUserMap[uid]) ? window._masterUserMap[uid] : {};
+  const email = (info.email && info.email !== '—') ? info.email : uid;
+  const username = (info.username && info.username !== '—') ? info.username : '';
+  
+  document.getElementById('balPopupEmail').textContent = username ? (username + ' (' + email + ')') : email;
   document.getElementById('balAmountInput').value = '';
   document.getElementById('balReasonInput').value = '';
   document.getElementById('balStatusMsg').style.display = 'none';
