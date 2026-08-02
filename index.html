@@ -1056,6 +1056,7 @@ input::-webkit-credentials-auto-fill-button{visibility:hidden;display:none !impo
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, signOut }
   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -1068,6 +1069,7 @@ input::-webkit-credentials-auto-fill-button{visibility:hidden;display:none !impo
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getFirestore(app);
   const googleProvider = new GoogleAuthProvider();
 
   function normalizeEmail(value){ return String(value||"").trim().toLowerCase(); }
@@ -1082,8 +1084,8 @@ input::-webkit-credentials-auto-fill-button{visibility:hidden;display:none !impo
 
   onAuthStateChanged(auth,(user)=>{
     if(!user) return;
-    // If user explicitly logged out, don't auto-redirect
-    if(sessionStorage.getItem("getxh_logged_out")==="yes"){
+    // If user explicitly logged out earlier, check if they are trying to log in now
+    if(sessionStorage.getItem("getxh_logged_out")==="yes" && !window._isLoggingIn){
       sessionStorage.removeItem("getxh_logged_out");
       signOut(auth);
       return;
@@ -1103,6 +1105,8 @@ input::-webkit-credentials-auto-fill-button{visibility:hidden;display:none !impo
 
   // ── LOGIN ──
   window.loginNow = function(){
+    window._isLoggingIn = true;
+    sessionStorage.removeItem("getxh_logged_out");
     const email    = normalizeEmail(document.getElementById("email").value);
     const password = document.getElementById("password").value.trim();
     const errBox   = document.getElementById("errorBox");
@@ -1127,6 +1131,7 @@ input::-webkit-credentials-auto-fill-button{visibility:hidden;display:none !impo
       window.location.replace("/dashboard");
     })
     .catch((err)=>{
+      window._isLoggingIn = false;
       let msg="Invalid email or password";
       if(err.code==="auth/user-not-found")        msg="No account exists with this email";
       if(err.code==="auth/wrong-password")         msg="Incorrect password";
@@ -1142,12 +1147,16 @@ input::-webkit-credentials-auto-fill-button{visibility:hidden;display:none !impo
 
   // ── GOOGLE SIGN IN ──
   window.signInWithGoogle = async function() {
+    window._isLoggingIn = true;
+    sessionStorage.removeItem("getxh_logged_out");
     const errBox = document.getElementById("errorBox");
     if (errBox) errBox.style.display = "none";
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       saveSession(user, user.email);
+
+      const username = user.displayName || (user.email ? user.email.split("@")[0] : "User");
 
       // Save user to MongoDB in background
       fetch("https://getxh.online/save-user", {

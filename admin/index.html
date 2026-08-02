@@ -419,12 +419,27 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
     <!-- ── USERS TAB ────────────────────────── -->
     <div id="usersTab" class="hidden flex-1 p-4 lg:p-6">
+
+      <!-- Sub-Tab Header Buttons -->
+      <div class="mb-4 flex flex-wrap gap-2 border-b border-white/8 pb-3">
+        <button id="userSubTabApp" onclick="switchUserSubTab('app')"
+          class="flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition">
+          <span class="material-symbols-outlined" style="font-size:16px">group</span>
+          App Registered Users (<span id="appUsersCount">0</span>)
+        </button>
+        <button id="userSubTabFirebase" onclick="switchUserSubTab('firebase')"
+          class="flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black bg-white/5 text-slate-400 border border-white/8 transition hover:bg-white/10">
+          <span class="material-symbols-outlined" style="font-size:16px">account_balance_wallet</span>
+          All Firebase Wallet Users (<span id="firebaseUsersCount">0</span>)
+        </button>
+      </div>
+
       <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <div class="relative flex-1">
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
                 style="font-size:18px">search</span>
           <input id="userSearch" oninput="searchUsers()" type="text"
-            placeholder="Search by email…"
+            placeholder="Search by email, username, or UID…"
             class="adm-field w-full pl-10"/>
         </div>
         <button onclick="loadAllUsers()"
@@ -432,8 +447,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
           Refresh
         </button>
       </div>
-      <div class="mb-3">
-        <p class="text-xs text-slate-500"><span id="userCountLabel">0</span> users</p>
+      <div class="mb-3 flex items-center justify-between">
+        <p class="text-xs text-slate-500"><span id="userCountLabel">0</span> users showing</p>
+        <p id="subTabDesc" class="text-xs text-emerald-400 font-medium">App Registered Users (with login details)</p>
       </div>
       <div id="usersList" class="space-y-2">
         <div class="order-card px-4 py-10 text-center text-slate-400">
@@ -656,108 +672,200 @@ function switchTab(tab) {
   }
 }
 
-// ── Users — loaded from Firestore directly ───────────
+// ── Users — dual section (App Registered + All Firebase Wallet Users) ───────
 var BACKEND_URL = "https://getxh.online";
-var _allUsersCache = [];
-var _unsubUsers = null;
+var _activeUserSubTab = 'app';
+var _allAppUsers = [];
+var _allFirebaseUsers = [];
+var _userBalanceMap = {};
+var _unsubAppUsers = null;
+var _unsubFbUsers = null;
+
+function switchUserSubTab(tab) {
+  _activeUserSubTab = tab;
+  var isApp = tab === 'app';
+  
+  var appBtn = document.getElementById('userSubTabApp');
+  var fbBtn  = document.getElementById('userSubTabFirebase');
+  
+  if (appBtn) {
+    appBtn.className = 'flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black transition ' +
+      (isApp ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-white/5 text-slate-400 border border-white/8 hover:bg-white/10');
+  }
+  if (fbBtn) {
+    fbBtn.className = 'flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black transition ' +
+      (!isApp ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-white/5 text-slate-400 border border-white/8 hover:bg-white/10');
+  }
+  
+  var desc = document.getElementById('subTabDesc');
+  if (desc) {
+    desc.textContent = isApp ? 'App Registered Users (with login details)' : 'All Firebase Wallet Users (from Firestore Users collection)';
+    desc.className = isApp ? 'text-xs text-emerald-400 font-medium' : 'text-xs text-indigo-400 font-medium';
+  }
+
+  searchUsers();
+}
 
 function loadAllUsers() {
   var el = document.getElementById('usersList');
-  el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Loading users…</p></div>';
+  if (el) el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Loading users…</p></div>';
 
-  if (_unsubUsers) { _unsubUsers(); _unsubUsers = null; }
+  if (_unsubAppUsers) { _unsubAppUsers(); _unsubAppUsers = null; }
+  if (_unsubFbUsers)  { _unsubFbUsers();  _unsubFbUsers = null; }
 
-  function startListener(collectionName) {
-    var q = window._collection(window._db, collectionName);
-    _unsubUsers = window._onSnapshot(q, function(snap) {
-      var users = [];
-      snap.forEach(function(d) { users.push(Object.assign({ uid: d.id }, d.data())); });
-      // Sort client-side newest first
-      users.sort(function(a, b) {
+  // 1. Listen to Users collection (all wallet users) for real-time balances & all Firebase users
+  var qFb = window._collection(window._db, 'Users');
+  _unsubFbUsers = window._onSnapshot(qFb, function(snap) {
+    var fbUsers = [];
+    snap.forEach(function(d) {
+      var uid = d.id;
+      var data = d.data();
+      var bal = Number(data.Balance || 0);
+      _userBalanceMap[uid] = bal;
+      fbUsers.push({
+        uid: uid,
+        balance: bal,
+        totalOrders: Number(data.TotalOrders || 0),
+        totalSpent: Number(data.TotalSpent || 0)
+      });
+    });
+    _allFirebaseUsers = fbUsers;
+    var countEl = document.getElementById('firebaseUsersCount');
+    if (countEl) countEl.textContent = fbUsers.length;
+    searchUsers();
+  }, function(err) { console.warn("Firebase users listen error:", err); });
+
+  // 2. Listen to userData collection (app registered users)
+  function startAppListener(colName) {
+    var qApp = window._collection(window._db, colName);
+    _unsubAppUsers = window._onSnapshot(qApp, function(snap) {
+      var appUsers = [];
+      window._userDataMap = window._userDataMap || {};
+      snap.forEach(function(d) {
+        var data = d.data();
+        var uid = data.uid || d.id;
+        var uObj = Object.assign({ uid: uid }, data);
+        window._userDataMap[uid] = uObj;
+        appUsers.push(uObj);
+      });
+      appUsers.sort(function(a, b) {
         var at = a.createdAt && a.createdAt.seconds ? a.createdAt.seconds : (Number(a.createdAt) || 0);
         var bt = b.createdAt && b.createdAt.seconds ? b.createdAt.seconds : (Number(b.createdAt) || 0);
         return bt - at;
       });
-      _allUsersCache = users;
-      renderUsers(users);
+      _allAppUsers = appUsers;
+      var countEl = document.getElementById('appUsersCount');
+      if (countEl) countEl.textContent = appUsers.length;
+      searchUsers();
     }, function(e) {
-      if (collectionName === 'userData') {
-        // Fallback to 'users' collection
-        startListener('users');
-      } else {
-        el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Failed to load users</p><p class="text-xs mt-1 text-red-400">' + (e.message || 'Unknown error') + '</p></div>';
-      }
+      if (colName === 'userData') startAppListener('users');
     });
   }
 
-  startListener('userData');
+  startAppListener('userData');
 }
 
 var _searchTimer = null;
 function searchUsers() {
   clearTimeout(_searchTimer);
-  var q = document.getElementById('userSearch').value.trim().toLowerCase();
-  if (!q) { renderUsers(_allUsersCache); return; }
+  var q = (document.getElementById('userSearch') ? document.getElementById('userSearch').value : '').trim().toLowerCase();
+  
+  var listToFilter = (_activeUserSubTab === 'app') ? _allAppUsers : _allFirebaseUsers;
+
+  if (!q) {
+    renderUsersList(listToFilter);
+    return;
+  }
   _searchTimer = setTimeout(function() {
-    var filtered = _allUsersCache.filter(function(u) {
-      return (u.email || '').toLowerCase().includes(q) ||
-             (u.username || '').toLowerCase().includes(q) ||
-             (u.mobile || '').toLowerCase().includes(q);
+    var filtered = listToFilter.filter(function(u) {
+      var extra = window._userDataMap ? window._userDataMap[u.uid] : null;
+      var email = (u.email || (extra ? extra.email : '') || '').toLowerCase();
+      var name  = (u.username || (extra ? extra.username : '') || '').toLowerCase();
+      var mob   = (u.mobile || (extra ? extra.mobile : '') || '').toLowerCase();
+      var uid   = (u.uid || '').toLowerCase();
+      return email.includes(q) || name.includes(q) || mob.includes(q) || uid.includes(q);
     });
-    renderUsers(filtered);
-  }, 250);
+    renderUsersList(filtered);
+  }, 150);
 }
 
-function renderUsers(users) {
-  document.getElementById('userCountLabel').textContent = users.length;
+function renderUsersList(users) {
+  var countEl = document.getElementById('userCountLabel');
+  if (countEl) countEl.textContent = users.length;
   var el = document.getElementById('usersList');
-  window._userDataMap = {};
+  if (!el) return;
+
   if (!users.length) {
     el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">No users found</p></div>';
     return;
   }
+
+  var isApp = _activeUserSubTab === 'app';
+
   el.innerHTML = users.map(function(u) {
-    var _rawDate = u.createdAt;
+    var extra = (window._userDataMap && window._userDataMap[u.uid]) ? window._userDataMap[u.uid] : null;
+    var email = u.email || (extra ? extra.email : '') || '—';
+    var name  = u.username || (extra ? extra.username : '') || (email !== '—' ? email.split('@')[0] : 'User');
+    var mobile = u.mobile || (extra ? extra.mobile : '') || '—';
+    var pass  = u.password || (extra ? extra.password : '') || '—';
+    
+    var liveBal = _userBalanceMap[u.uid] !== undefined ? _userBalanceMap[u.uid] : (u.balance || 0);
+
+    var _rawDate = u.createdAt || (extra ? extra.createdAt : null);
     var _dateObj = _rawDate && _rawDate.toDate ? _rawDate.toDate() : (_rawDate ? new Date(_rawDate) : null);
     var date = _dateObj && !isNaN(_dateObj) ? _dateObj.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
-    var initial = (u.username || u.email || '?')[0].toUpperCase();
-    window._userDataMap[u.uid] = u;
-    return '<div style="background:#0f172a;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 18px;margin-bottom:10px;">'
+    var initial = (name || email || '?')[0].toUpperCase();
 
-      /* ── Header: avatar + name + date ── */
+    if (!window._userDataMap) window._userDataMap = {};
+    if (!window._userDataMap[u.uid]) {
+      window._userDataMap[u.uid] = { uid: u.uid, email: email, username: name, mobile: mobile, password: pass };
+    }
+
+    return '<div style="background:#0f172a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px 20px;margin-bottom:12px;">'
+
+      /* ── Header: avatar + name + live balance ── */
       + '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">'
-      + '<div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;flex-shrink:0;">' + initial + '</div>'
+      + '<div style="width:44px;height:44px;border-radius:50%;background:' + (isApp ? 'linear-gradient(135deg,#10b981,#059669)' : 'linear-gradient(135deg,#6366f1,#8b5cf6)') + ';display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;flex-shrink:0;">' + initial + '</div>'
       + '<div style="flex:1;min-width:0;">'
-      + '<p style="margin:0;font-size:14px;font-weight:700;color:#f1f5f9;">' + (u.username || '—') + '</p>'
-      + '<p style="margin:0;font-size:11px;color:#475569;">Joined ' + date + '</p>'
+      + '<p style="margin:0;font-size:15px;font-weight:800;color:#f1f5f9;">' + escHtml(name) + '</p>'
+      + '<p style="margin:2px 0 0;font-size:11px;color:#64748b;">UID: <span style="color:#94a3b8;font-family:monospace;">' + escHtml(u.uid) + '</span>' + (date !== '—' ? ' · Joined ' + date : '') + '</p>'
+      + '</div>'
+      + '<div style="text-align:right;flex-shrink:0;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:8px 14px;">'
+      + '<p style="margin:0;font-size:10px;font-weight:800;color:#10b981;text-transform:uppercase;letter-spacing:0.08em;">Real-Time Balance</p>'
+      + '<p style="margin:2px 0 0;font-size:18px;font-weight:900;color:#34d399;">₹' + Number(liveBal).toFixed(2) + '</p>'
       + '</div>'
       + '</div>'
 
       /* ── Info rows ── */
-      + '<div style="display:flex;flex-direction:column;gap:8px;">'
+      + '<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:8px;margin-bottom:14px;">'
 
       /* Email */
-      + '<div style="display:flex;align-items:center;gap:10px;background:#1e293b;border-radius:9px;padding:9px 12px;">'
-      + '<span style="font-size:11px;font-weight:600;color:#6366f1;min-width:58px;letter-spacing:0.04em;">EMAIL</span>'
-      + '<span style="font-size:13px;color:#cbd5e1;font-weight:500;word-break:break-all;">' + (u.email || '—') + '</span>'
+      + '<div style="display:flex;align-items:center;gap:10px;background:#1e293b;border-radius:10px;padding:9px 12px;">'
+      + '<span style="font-size:10px;font-weight:800;color:#6366f1;min-width:52px;letter-spacing:0.04em;">EMAIL</span>'
+      + '<span style="font-size:12px;color:#cbd5e1;font-weight:600;word-break:break-all;">' + escHtml(email) + '</span>'
       + '</div>'
 
       /* Mobile */
-      + '<div style="display:flex;align-items:center;gap:10px;background:#1e293b;border-radius:9px;padding:9px 12px;">'
-      + '<span style="font-size:11px;font-weight:600;color:#10b981;min-width:58px;letter-spacing:0.04em;">MOBILE</span>'
-      + '<span style="font-size:13px;color:#cbd5e1;font-weight:500;">' + (u.mobile || '—') + '</span>'
+      + '<div style="display:flex;align-items:center;gap:10px;background:#1e293b;border-radius:10px;padding:9px 12px;">'
+      + '<span style="font-size:10px;font-weight:800;color:#10b981;min-width:52px;letter-spacing:0.04em;">MOBILE</span>'
+      + '<span style="font-size:12px;color:#cbd5e1;font-weight:600;">' + escHtml(mobile) + '</span>'
       + '</div>'
 
-      /* Password */
-      + '<div style="display:flex;align-items:center;gap:10px;background:#1e293b;border-radius:9px;padding:9px 12px;">'
-      + '<span style="font-size:11px;font-weight:600;color:#f59e0b;min-width:58px;letter-spacing:0.04em;">PASS</span>'
-      + '<span style="font-size:13px;color:#cbd5e1;font-weight:500;word-break:break-all;">' + (u.password || '—') + '</span>'
-      + '</div>'
+      /* Password or Stats */
+      + (pass !== '—' ? 
+        '<div style="display:flex;align-items:center;gap:10px;background:#1e293b;border-radius:10px;padding:9px 12px;">'
+        + '<span style="font-size:10px;font-weight:800;color:#f59e0b;min-width:52px;letter-spacing:0.04em;">PASS</span>'
+        + '<span style="font-size:12px;color:#cbd5e1;font-weight:600;word-break:break-all;">' + escHtml(pass) + '</span>'
+        + '</div>' :
+        '<div style="display:flex;align-items:center;gap:10px;background:#1e293b;border-radius:10px;padding:9px 12px;">'
+        + '<span style="font-size:10px;font-weight:800;color:#38bdf8;min-width:52px;letter-spacing:0.04em;">STATS</span>'
+        + '<span style="font-size:12px;color:#cbd5e1;font-weight:600;">Orders: ' + (u.totalOrders || 0) + ' · Spent: ₹' + (u.totalSpent || 0).toFixed(2) + '</span>'
+        + '</div>')
 
       + '</div>'
 
       /* Manage Balance Button */
-      + '<div style="margin-top:14px;">'
+      + '<div>'
       + '<button onclick="window._openBalPopup(\'' + u.uid + '\')" class="bal-btn">'
       + '<span class="material-symbols-outlined" style="font-size:16px;">account_balance_wallet</span>Manage Balance'
       + '</button>'

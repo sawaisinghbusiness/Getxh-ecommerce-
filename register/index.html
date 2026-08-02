@@ -439,6 +439,7 @@ body::after{
 
   // ── GOOGLE SIGN IN ──
   window.signInWithGoogle = async function() {
+    sessionStorage.removeItem("getxh_logged_out");
     clearMessages();
     try {
       const result = await signInWithPopup(auth, googleProvider);
@@ -469,6 +470,20 @@ body::after{
         email: email,
         mobile: "",
         createdAt: serverTimestamp()
+      }, { merge: true }).catch(() => {});
+
+      setDoc(doc(db, "userData", user.uid), {
+        username: username,
+        email: email,
+        mobile: "",
+        uid: user.uid,
+        createdAt: serverTimestamp()
+      }, { merge: true }).catch(() => {});
+
+      setDoc(doc(db, "Users", user.uid), {
+        Balance: 0,
+        TotalOrders: 0,
+        TotalSpent: 0
       }, { merge: true }).catch(() => {});
 
       window.location.replace("/dashboard");
