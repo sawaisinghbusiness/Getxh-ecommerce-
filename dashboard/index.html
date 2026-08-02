@@ -275,7 +275,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 }
 
 /* ADMIN BALANCE NOTIFICATION POPUP */
-.bal-notify-overlay{position:fixed;inset:0;z-index:99998;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:20px;}
+.bal-notify-overlay{position:fixed;inset:0;z-index:100001;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:20px;}
 .bal-notify-overlay.active{display:flex}
 @keyframes balNotifyIn{from{opacity:0;transform:translateY(20px) scale(0.94)}to{opacity:1;transform:translateY(0) scale(1)}}
 .bal-notify-card{animation:balNotifyIn .35s cubic-bezier(.16,1,.3,1)}
@@ -2677,6 +2677,10 @@ onAuthStateChanged(auth, async (user) => {
             } else {
               noteEl.style.display = 'none';
             }
+            // Hide page loader immediately so popup is visible instantly on login
+            const loader = document.getElementById('gx-loader');
+            if (loader) { loader.classList.add('hide'); setTimeout(() => { try { loader.remove(); } catch(e){} }, 200); }
+
             el.classList.add('active');
             localStorage.setItem(lastSeenKey, String(txnTime));
           }
