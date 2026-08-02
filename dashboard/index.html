@@ -2275,6 +2275,22 @@ async function placeOrder(serviceId) {
         }
         window._addDoc(window._collection(window.db, 'orders'), dbOrderData)
           .catch(e => console.error('Order save error:', e));
+
+        // Deduct balance, increment TotalOrders & TotalSpent on Firestore Users collection
+        if (window._updateDoc && window._doc) {
+          const oldBal = window._currentBalance || 0;
+          const newBal = Math.max(0, oldBal - orderPrice);
+          window._updateDoc(window._doc(window.db, "Users", window.currentUid), {
+            Balance: window._increment(-orderPrice),
+            TotalOrders: window._increment(1),
+            TotalSpent: window._increment(orderPrice)
+          }).catch(e => console.error('Firestore balance deduction error:', e));
+
+          // Trigger red count-down animation for order placement deduction
+          if (typeof window.animateDashboardBalance === 'function') {
+            window.animateDashboardBalance(oldBal, newBal, false);
+          }
+        }
       }
       document.getElementById('smOrderId').textContent  = orderId ? '#' + orderId : 'Confirmed';
       document.getElementById('smService').textContent  = _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—';
@@ -2829,6 +2845,26 @@ onAuthStateChanged(auth, async (user) => {
           const el = document.getElementById('balNotifyOverlay');
           if (el) {
             window._hasPendingNotify = true;
+
+            // Compute exact old and new balance mathematically
+            const currentBal = window._currentBalance || 0;
+            let oldBal, newBal;
+            if (isCredit) {
+              newBal = currentBal;
+              oldBal = Math.max(0, currentBal - amt);
+            } else {
+              newBal = currentBal;
+              oldBal = currentBal + amt;
+            }
+
+            // Immediately set DOM text to display oldBal while notification is open!
+            const oldBalStr = `\u20b9${oldBal.toFixed(2)}`;
+            const userBalEl = document.getElementById("userBalance");
+            const topBalEl  = document.getElementById("walletBalanceTop");
+            if (userBalEl) userBalEl.textContent = oldBalStr;
+            if (topBalEl)  topBalEl.textContent  = oldBalStr;
+
+            window._pendingAnimData = { oldBal, newBal, isCredit };
 
             document.getElementById('balNotifyTitle').textContent = isCredit
               ? 'Balance Added' : 'Balance Deducted';
