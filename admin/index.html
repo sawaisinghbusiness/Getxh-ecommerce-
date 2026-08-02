@@ -1370,18 +1370,22 @@ window._addBalance = async function() {
     try {
       await updateDoc(doc(db, 'Users', _balPopupUid), { Balance: increment(amount) });
     } catch(e) {
-      await setDoc(doc(db, 'Users', _balPopupUid), { Balance: amount, TotalOrders: 0, TotalSpent: 0 });
+      await setDoc(doc(db, 'Users', _balPopupUid), { Balance: amount, TotalOrders: 0, TotalSpent: 0 }, { merge: true });
     }
 
-    await addDoc(collection(db, 'walletTxns'), {
-      uid: _balPopupUid,
-      amount: amount,
-      type: 'credit',
-      method: 'admin',
-      status: 'success',
-      reason: reason || 'Admin added balance',
-      createdAt: Date.now()
-    });
+    try {
+      await addDoc(collection(db, 'walletTxns'), {
+        uid: _balPopupUid,
+        amount: amount,
+        type: 'credit',
+        method: 'admin',
+        status: 'success',
+        reason: reason || 'Admin added balance',
+        createdAt: Date.now()
+      });
+    } catch(txnErr) {
+      console.warn("walletTxns error:", txnErr);
+    }
 
     const snap = await getDoc(doc(db, 'Users', _balPopupUid));
     const newBal = snap.exists() ? (snap.data().Balance || 0) : 0;
@@ -1390,6 +1394,7 @@ window._addBalance = async function() {
     document.getElementById('balAmountInput').value = '';
     document.getElementById('balReasonInput').value = '';
   } catch(e) {
+    console.error("Add balance error:", e);
     _showBalStatus('Failed: ' + (e.message || 'Unknown error'), false);
   } finally {
     addBtn.disabled = false; deductBtn.disabled = false;
@@ -1420,15 +1425,19 @@ window._deductBalance = async function() {
 
     await updateDoc(doc(db, 'Users', _balPopupUid), { Balance: increment(-amount) });
 
-    await addDoc(collection(db, 'walletTxns'), {
-      uid: _balPopupUid,
-      amount: amount,
-      type: 'debit',
-      method: 'admin',
-      status: 'success',
-      reason: reason || 'Admin deducted balance',
-      createdAt: Date.now()
-    });
+    try {
+      await addDoc(collection(db, 'walletTxns'), {
+        uid: _balPopupUid,
+        amount: amount,
+        type: 'debit',
+        method: 'admin',
+        status: 'success',
+        reason: reason || 'Admin deducted balance',
+        createdAt: Date.now()
+      });
+    } catch(txnErr) {
+      console.warn("walletTxns error:", txnErr);
+    }
 
     const snap2 = await getDoc(doc(db, 'Users', _balPopupUid));
     const newBal = snap2.exists() ? (snap2.data().Balance || 0) : 0;
@@ -1437,6 +1446,7 @@ window._deductBalance = async function() {
     document.getElementById('balAmountInput').value = '';
     document.getElementById('balReasonInput').value = '';
   } catch(e) {
+    console.error("Deduct balance error:", e);
     _showBalStatus('Failed: ' + (e.message || 'Unknown error'), false);
   } finally {
     addBtn.disabled = false; deductBtn.disabled = false;

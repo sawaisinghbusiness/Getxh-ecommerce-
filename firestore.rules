@@ -8,7 +8,7 @@ service cloud.firestore {
 
     function isAdmin() {
       return isSignedIn() &&
-        request.auth.uid == "XVQ4WNIRyKbJz7HCDUmU0Lv9squ2";
+        (request.auth.uid == "XVQ4WNIRyKbJz7HCDUmU0Lv9squ2" || request.auth.token.email == "agency@getxh.in");
     }
 
     function isOwner(userId) {
