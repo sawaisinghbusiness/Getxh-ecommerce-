@@ -820,7 +820,7 @@ function renderUsersList(users) {
   if (!el) return;
 
   if (!users.length) {
-    el.innerHTML = '<div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:32px;text-align:center;color:#71717a;"><p style="font-size:14px;font-weight:500;margin:0;">No users found</p></div>';
+    el.innerHTML = '<div style="background:#0f172a;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:36px;text-align:center;color:#64748b;"><p style="font-size:14px;font-weight:600;margin:0;">No users found</p></div>';
     return;
   }
 
@@ -844,44 +844,43 @@ function renderUsersList(users) {
     var totalOrders = u.totalOrders !== undefined ? u.totalOrders : (info.totalOrders || 0);
     var totalSpent = u.totalSpent !== undefined ? u.totalSpent : (info.totalSpent || 0);
 
-    return '<div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:16px 20px;margin-bottom:10px;">'
+    return '<div style="background:linear-gradient(145deg, #131b2e 0%, #0d1525 100%);border:1px solid rgba(255,255,255,0.08);box-shadow:inset 0 1px 0 0 rgba(255,255,255,0.08), 0 10px 28px rgba(0,0,0,0.35);border-radius:16px;padding:18px 20px;margin-bottom:12px;transition:all 0.2s ease;">'
 
       /* Top Row: Avatar + Name & Email + Balance & Action Button */
       + '<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;">'
 
       /* Left: Avatar + Name + Email */
       + '<div style="display:flex;align-items:center;gap:12px;min-width:0;flex:1;">'
-      + '<div style="width:40px;height:40px;border-radius:10px;background:#27272a;border:1px solid #3f3f46;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:#f4f4f5;flex-shrink:0;">' + initial + '</div>'
+      + '<div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg, #1e293b, #0f172a);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#38bdf8;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">' + initial + '</div>'
       + '<div style="min-width:0;flex:1;">'
       + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
-      + '<h4 style="margin:0;font-size:15px;font-weight:600;color:#ffffff;">' + escHtml(name) + '</h4>'
-      + (date !== '—' ? '<span style="font-size:11px;color:#71717a;">· Joined ' + date + '</span>' : '')
+      + '<h4 style="margin:0;font-size:15px;font-weight:700;color:#f8fafc;letter-spacing:-0.01em;">' + escHtml(name) + '</h4>'
+      + (date !== '—' ? '<span style="font-size:11px;color:#64748b;background:rgba(255,255,255,0.04);padding:2px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);">Joined ' + date + '</span>' : '')
       + '</div>'
-      + '<p style="margin:1px 0 0;font-size:13px;color:#a1a1aa;font-weight:400;word-break:break-all;">' + escHtml(email) + '</p>'
+      + '<p style="margin:2px 0 0;font-size:13px;color:#38bdf8;font-weight:600;word-break:break-all;">' + escHtml(email) + '</p>'
       + '</div>'
       + '</div>'
 
       /* Right: Balance + Action Button */
-      + '<div style="display:flex;align-items:center;gap:16px;flex-shrink:0;">'
-      + '<div style="text-align:right;">'
-      + '<p style="margin:0;font-size:10px;font-weight:700;color:#71717a;text-transform:uppercase;letter-spacing:0.05em;">Balance</p>'
-      + '<p style="margin:0;font-size:17px;font-weight:700;color:#10b981;">&#8377;' + Number(liveBal).toFixed(2) + '</p>'
+      + '<div style="display:flex;align-items:center;gap:14px;flex-shrink:0;">'
+      + '<div style="background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(5,150,105,0.06));border:1px solid rgba(16,185,129,0.25);border-radius:12px;padding:6px 14px;text-align:right;">'
+      + '<p style="margin:0;font-size:9px;font-weight:800;color:#10b981;text-transform:uppercase;letter-spacing:0.08em;">Balance</p>'
+      + '<p style="margin:1px 0 0;font-size:18px;font-weight:900;color:#34d399;letter-spacing:-0.02em;">&#8377;' + Number(liveBal).toFixed(2) + '</p>'
       + '</div>'
-      + '<button onclick="window._openBalPopup(\'' + u.uid + '\')" style="padding:8px 14px;border-radius:8px;border:1px solid #3f3f46;background:#27272a;color:#f4f4f5;font-weight:600;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s;" onmouseover="this.style.background=\'#3f3f46\'" onmouseout="this.style.background=\'#27272a\'">'
-      + '<span class="material-symbols-outlined" style="font-size:15px;color:#a1a1aa;">account_balance_wallet</span>Manage Balance'
+      + '<button onclick="window._openBalPopup(\'' + u.uid + '\')" style="padding:9px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,#10b981,#059669);color:#ffffff;font-weight:700;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 4px 14px rgba(16,185,129,0.3);transition:transform .15s,opacity .15s;" onmousedown="this.style.transform=\'scale(0.97)\'" onmouseup="this.style.transform=\'\'">'
+      + '<span class="material-symbols-outlined" style="font-size:16px;">account_balance_wallet</span>Manage Balance'
       + '</button>'
       + '</div>'
 
       + '</div>'
 
       /* Bottom Row: Metadata (UID, Phone, Password, Orders, Spent) */
-      + '<div style="border-top:1px solid #27272a;margin-top:12px;padding-top:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:#71717a;">'
-      + '<div>UID: <span style="color:#a1a1aa;font-family:monospace;">' + escHtml(u.uid) + '</span></div>'
+      + '<div style="border-top:1px solid rgba(255,255,255,0.06);margin-top:14px;padding-top:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:#94a3b8;">'
+      + '<div>UID: <span style="color:#64748b;font-family:monospace;">' + escHtml(u.uid) + '</span></div>'
       + '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">'
-      + (mobile !== '—' ? '<span>Mobile: <b style="color:#e4e4e7;font-weight:500;">' + escHtml(mobile) + '</b></span>' : '')
-      + (pass !== '—' ? '<span>Pass: <b style="color:#e4e4e7;font-weight:500;">' + escHtml(pass) + '</b></span>' : '')
-      + '<span>Orders: <b style="color:#e4e4e7;font-weight:500;">' + totalOrders + '</b></span>'
-      + '<span>Spent: <b style="color:#e4e4e7;font-weight:500;">&#8377;' + Number(totalSpent).toFixed(2) + '</b></span>'
+      + (mobile !== '—' ? '<span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;">call</span> <b style="color:#e2e8f0;font-weight:600;">' + escHtml(mobile) + '</b></span>' : '')
+      + (pass !== '—' ? '<span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:14px;color:#f59e0b;">key</span> Pass: <b style="color:#e2e8f0;font-weight:600;">' + escHtml(pass) + '</b></span>' : '')
+      + '<span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:14px;color:#38bdf8;">shopping_bag</span> Orders: <b style="color:#e2e8f0;font-weight:600;">' + totalOrders + '</b> · Spent: <b style="color:#e2e8f0;font-weight:600;">&#8377;' + Number(totalSpent).toFixed(2) + '</b></span>'
       + '</div>'
       + '</div>'
 
