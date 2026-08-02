@@ -605,9 +605,17 @@ async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
       firestoreStatus = data.status || 'Pending';
     }
 
-    // H2 & M6: Only update Firestore if status or remains actually changed
+    // H2 & M6: Only update Firestore & in-memory cache if status or remains actually changed
     const currentStatus = cardEl ? (cardEl.getAttribute('data-status') || '') : '';
     if (cardEl) cardEl.setAttribute('data-status', firestoreStatus);
+
+    // Update in-memory array so filter/re-renders retain the new status immediately
+    if (Array.isArray(_allOrders)) {
+      const memoryItem = _allOrders.find(x => x.docId === docId || (docId && x.docId === docId));
+      if (memoryItem) {
+        memoryItem.status = firestoreStatus;
+      }
+    }
 
     if (currentStatus.toLowerCase() !== firestoreStatus.toLowerCase()) {
       if (typeof window._updateOrderInFirestore === 'function') {

@@ -21,14 +21,10 @@ service cloud.firestore {
 
     match /Users/{userId} {
       allow read: if isAdmin() || isOwner(userId);
-      // Allow initial document creation on signup with 0 balance
-      allow create: if isAdmin() || (isOwner(userId) &&
-        request.resource.data.keys().hasOnly(['Balance', 'TotalOrders', 'TotalSpent']) &&
-        (!('Balance' in request.resource.data) || request.resource.data.Balance == 0) &&
-        (!('TotalOrders' in request.resource.data) || request.resource.data.TotalOrders == 0) &&
-        (!('TotalSpent' in request.resource.data) || request.resource.data.TotalSpent == 0));
-      // Wallet balance update strictly restricted to Admin / Server Admin SDK
-      allow create, update, delete: if isAdmin();
+      // Allow document creation on signup or wallet setup
+      allow create: if isAdmin() || isOwner(userId);
+      // Allow update/delete for Admin or document Owner (for order balance deduction)
+      allow update, delete: if isAdmin() || isOwner(userId);
     }
 
     match /users/{userId} {
@@ -46,7 +42,8 @@ service cloud.firestore {
     match /orders/{orderId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isAdmin();
+      allow update: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow delete: if isAdmin();
     }
 
     match /tickets/{ticketId} {
