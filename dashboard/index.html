@@ -2611,19 +2611,191 @@ onAuthStateChanged(auth, async (user) => {
     if (loader) { loader.classList.add('hide'); setTimeout(() => loader.remove(), 450); }
   }, 5000);
 
+  // ── SOUND SYNTHESIZER (Web Audio API - 0 external files) ──
+  window._playWalletSound = function(type) {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      if (!window._walletAudioCtx) window._walletAudioCtx = new AudioCtx();
+      const ctx = window._walletAudioCtx;
+      if (ctx.state === 'suspended') ctx.resume();
+
+      const masterGain = ctx.createGain();
+      masterGain.gain.setValueAtTime(0.35, ctx.currentTime); // ~35% volume (pleasant)
+      masterGain.connect(ctx.destination);
+
+      if (type === 'tick') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.03);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.03);
+        osc.connect(gain);
+        gain.connect(masterGain);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.03);
+      } else if (type === 'credit_complete') {
+        // Cha-Ching / Money collect ascending chord
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.06);
+          gain.gain.setValueAtTime(0, ctx.currentTime + idx * 0.06);
+          gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + idx * 0.06 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.06 + 0.25);
+          osc.connect(gain);
+          gain.connect(masterGain);
+          osc.start(ctx.currentTime + idx * 0.06);
+          osc.stop(ctx.currentTime + idx * 0.06 + 0.25);
+        });
+      } else if (type === 'debit_complete') {
+        // Soft deduction descending tone
+        const notes = [659.25, 523.25, 392.00];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.07);
+          gain.gain.setValueAtTime(0, ctx.currentTime + idx * 0.07);
+          gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + idx * 0.07 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.07 + 0.2);
+          osc.connect(gain);
+          gain.connect(masterGain);
+          osc.start(ctx.currentTime + idx * 0.07);
+          osc.stop(ctx.currentTime + idx * 0.07 + 0.2);
+        });
+      }
+    } catch(e) {}
+  };
+
+  // ── ANIMATED DASHBOARD BALANCE COUNTER (2 SECONDS + SOUND) ──
+  window.animateDashboardBalance = function(startVal, endVal, isCredit, onComplete) {
+    const elements = [
+      document.getElementById("userBalance"),
+      document.getElementById("walletBalanceTop")
+    ].filter(Boolean);
+
+    if (!elements.length) return;
+
+    const duration = 2000; // Exactly 2 seconds animation as requested
+    const startTime = performance.now();
+    const diff = endVal - startVal;
+    const activeColor = isCredit ? '#34d399' : '#f87171'; // Green for credit, Red for debit
+
+    let lastTickTime = 0;
+
+    elements.forEach(el => {
+      el.style.transition = 'color 0.3s ease, transform 0.2s ease';
+      el.style.color = activeColor;
+    });
+
+    function step(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      const currentVal = startVal + (diff * easeProgress);
+
+      const valStr = `\u20b9${currentVal.toFixed(2)}`;
+      elements.forEach(el => {
+        el.textContent = valStr;
+      });
+
+      if (now - lastTickTime > 120 && progress < 0.95) {
+        lastTickTime = now;
+        window._playWalletSound('tick');
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        const finalStr = `\u20b9${endVal.toFixed(2)}`;
+        elements.forEach(el => {
+          el.textContent = finalStr;
+          el.style.transform = 'scale(1.18)'; // Scale up slightly at completion
+        });
+
+        // Play completion sound (Cha-Ching for credit, Soft tone for debit)
+        window._playWalletSound(isCredit ? 'credit_complete' : 'debit_complete');
+
+        setTimeout(() => {
+          elements.forEach(el => {
+            el.style.transform = 'scale(1.0)';
+            setTimeout(() => {
+              el.style.color = '';
+            }, 800);
+          });
+          if (onComplete) onComplete();
+        }, 400);
+      }
+    }
+
+    requestAnimationFrame(step);
+  };
+
+  window._balAutoCloseTimer = null;
+  window._pendingAnimData = null;
+  window._hasPendingNotify = false;
+
+  window._closeBalNotifyAndAnimate = function() {
+    if (window._balAutoCloseTimer) {
+      clearTimeout(window._balAutoCloseTimer);
+      window._balAutoCloseTimer = null;
+    }
+    window._hasPendingNotify = false;
+    const el = document.getElementById('balNotifyOverlay');
+    if (el) el.classList.remove('active');
+
+    if (window._pendingAnimData) {
+      const data = window._pendingAnimData;
+      window._pendingAnimData = null;
+      setTimeout(() => {
+        window.animateDashboardBalance(data.oldBal, data.newBal, data.isCredit);
+      }, 250);
+    }
+  };
+
   // ── REAL-TIME: user stats (balance, orders) ──
+  let _lastNumBalance = null;
+
   if (_unsubStats) _unsubStats();
   _unsubStats = onSnapshot(doc(db, "Users", currentUid), (snap) => {
     const data = snap.exists() ? snap.data() : {};
     const balance     = Number(data.Balance || 0);
     const totalOrders = Number(data.TotalOrders || 0);
     window._currentBalance = balance;
-    const balStr = `₹${balance.toFixed(2)}`;
-    document.getElementById("userBalance").textContent      = balStr;
-    document.getElementById("walletBalanceTop").textContent = balStr;
-    document.getElementById("userOrders").textContent       = totalOrders.toLocaleString();
-    localStorage.setItem(_balCacheKey, balStr);
+
+    document.getElementById("userOrders").textContent = totalOrders.toLocaleString();
     localStorage.setItem(_ordCacheKey, totalOrders.toLocaleString());
+
+    if (_lastNumBalance === null) {
+      // First load on login: show initial balance without animation
+      _lastNumBalance = balance;
+      const balStr = `\u20b9${balance.toFixed(2)}`;
+      document.getElementById("userBalance").textContent      = balStr;
+      document.getElementById("walletBalanceTop").textContent = balStr;
+      localStorage.setItem(_balCacheKey, balStr);
+    } else if (balance !== _lastNumBalance) {
+      // Balance updated in real-time!
+      const isCredit = balance > _lastNumBalance;
+      const oldBal = _lastNumBalance;
+      _lastNumBalance = balance;
+
+      const el = document.getElementById('balNotifyOverlay');
+      const isPopupActive = el && el.classList.contains('active');
+
+      if (isPopupActive || window._hasPendingNotify) {
+        // Notification popup is active! Store values to animate upon popup close
+        window._pendingAnimData = { oldBal, newBal: balance, isCredit };
+      } else {
+        // Direct balance change (e.g. order placed or add funds returned)
+        window.animateDashboardBalance(oldBal, balance, isCredit);
+      }
+    }
+
     // Hide loader after first data load
     const loader = document.getElementById('gx-loader');
     if (loader && !loader.classList.contains('hide')) {
@@ -2656,6 +2828,8 @@ onAuthStateChanged(auth, async (user) => {
           const note = txn.reason || '';
           const el = document.getElementById('balNotifyOverlay');
           if (el) {
+            window._hasPendingNotify = true;
+
             document.getElementById('balNotifyTitle').textContent = isCredit
               ? 'Balance Added' : 'Balance Deducted';
 
@@ -2682,6 +2856,7 @@ onAuthStateChanged(auth, async (user) => {
               (isCredit ? '+ ' : '- ') + '\u20b9' + amt.toFixed(2);
             document.getElementById('balNotifyAmount').style.color = isCredit
               ? '#4ade80' : '#f87171';
+
             const noteEl = document.getElementById('balNotifyNote');
             if (note) {
               noteEl.style.display = 'block';
@@ -2689,12 +2864,21 @@ onAuthStateChanged(auth, async (user) => {
             } else {
               noteEl.style.display = 'none';
             }
+
             // Hide page loader immediately so popup is visible instantly on login
             const loader = document.getElementById('gx-loader');
             if (loader) { loader.classList.add('hide'); setTimeout(() => { try { loader.remove(); } catch(e){} }, 200); }
 
             el.classList.add('active');
             localStorage.setItem(lastSeenKey, String(txnTime));
+
+            // Clear any existing auto-close timer
+            if (window._balAutoCloseTimer) clearTimeout(window._balAutoCloseTimer);
+
+            // AUTO-CLOSE POPUP IN 5 SECONDS IF USER DOESN'T CLICK "OKAY, GOT IT"
+            window._balAutoCloseTimer = setTimeout(() => {
+              window._closeBalNotifyAndAnimate();
+            }, 5000);
           }
         }
       }
@@ -2841,7 +3025,7 @@ const _OTP  = "https://getxh.online";
 </div>
 
 <!-- Admin Balance Notification Popup -->
-<div id="balNotifyOverlay" class="bal-notify-overlay" onclick="if(event.target===this)document.getElementById('balNotifyOverlay').classList.remove('active')">
+<div id="balNotifyOverlay" class="bal-notify-overlay" onclick="if(event.target===this)window._closeBalNotifyAndAnimate()">
   <div class="bal-notify-card" style="background:#0e1726;border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:32px 24px 24px;width:340px;max-width:90vw;box-shadow:0 32px 80px rgba(0,0,0,0.65),0 0 0 1px rgba(255,255,255,0.04) inset;text-align:center;">
 
     <!-- Icon: Circular checkmark / icon -->
@@ -2869,7 +3053,7 @@ const _OTP  = "https://getxh.online";
     </div>
 
     <!-- OK Button -->
-    <button onclick="document.getElementById('balNotifyOverlay').classList.remove('active')"
+    <button onclick="window._closeBalNotifyAndAnimate()"
       style="width:100%;padding:14px;border-radius:14px;border:none;font-weight:700;font-size:15px;color:#ffffff;cursor:pointer;background:#6366f1;box-shadow:0 4px 20px rgba(99,102,241,0.35);transition:opacity .15s;"
       onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'"
       onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform=''">
