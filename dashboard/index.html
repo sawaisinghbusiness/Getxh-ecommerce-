@@ -1170,46 +1170,50 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)"
   onclick="if(event.target===this)closeAccountPopup()">
   <div class="w-full max-w-md mx-auto animate-slideUp"
-       style="background:#0b1525;
-              border-radius:20px 20px 0 0;
-              border-top:1px solid rgba(255,255,255,0.08);
-              padding:0 0 32px;">
+       style="background:linear-gradient(180deg,#0e1f3d 0%,#0a1628 100%);
+              border-radius:24px 24px 0 0;
+              border-top:1px solid rgba(33,150,243,0.25);
+              padding:0 0 32px;
+              touch-action:none;
+              overscroll-behavior:none;"
+       ontouchmove="event.preventDefault();event.stopPropagation();"
+       onclick="event.stopPropagation()">
     <div class="flex justify-center pt-3 pb-2">
-      <div class="w-9 h-1 rounded-full" style="background:rgba(255,255,255,0.12)"></div>
+      <div class="w-10 h-1 rounded-full" style="background:rgba(255,255,255,0.15)"></div>
     </div>
     <div id="accViewHome">
-    <div class="mx-4 mb-4 rounded-xl p-4 flex items-center gap-3"
-         style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07)">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-semibold text-lg"
-           style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.11);color:#94a3b8" id="popupAvatar">U</div>
-      <div class="min-w-0 flex-1">
-        <p id="popupUsername" class="font-semibold text-base truncate" style="color:#ffffff">User</p>
-        <p id="popupEmail" class="text-xs truncate mt-0.5" style="color:#94a3b8">—</p>
+      <div class="mx-4 mb-4 rounded-2xl p-4 flex items-center gap-3"
+           style="background:rgba(33,150,243,0.08);border:1px solid rgba(33,150,243,0.2)">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-black text-lg text-white"
+             style="background:linear-gradient(135deg,#2196f3,#00bcd4)" id="popupAvatar">U</div>
+        <div class="min-w-0 flex-1">
+          <p id="popupUsername" class="text-white font-black text-base truncate">User</p>
+          <p id="popupEmail" class="text-xs truncate mt-0.5" style="color:#2196f3">—</p>
+        </div>
+      </div>
+      <div class="px-4 space-y-3">
+        <button onclick="closeAccountPopup();window.location.href='/account'"
+          class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-white text-sm active:scale-[0.98] transition-all"
+          style="background:linear-gradient(135deg,#2196f3,#00bcd4);box-shadow:0 4px 20px rgba(33,150,243,0.3)">
+          <span class="material-symbols-outlined" style="font-size:18px">manage_accounts</span>
+          My Account
+          <span class="material-symbols-outlined ml-auto" style="font-size:16px">chevron_right</span>
+        </button>
+        <button onclick="closeAccountPopup();window.location.href='/wallet'"
+          class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all"
+          style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);color:#00e676">
+          <span class="material-symbols-outlined" style="font-size:18px">account_balance_wallet</span>
+          Add Funds
+          <span class="material-symbols-outlined ml-auto" style="font-size:16px">chevron_right</span>
+        </button>
+        <button onclick="logout()"
+          class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] transition-all"
+          style="background:rgba(244,67,54,0.08);border:1px solid rgba(244,67,54,0.2);color:#ef5350">
+          <span class="material-symbols-outlined" style="font-size:18px">logout</span>
+          Sign Out
+        </button>
       </div>
     </div>
-    <div class="px-4 flex flex-col gap-2.5">
-      <button onclick="closeAccountPopup();window.location.href='/account'"
-        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
-        style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.28);color:#93c5fd">
-        <span class="material-symbols-outlined" style="font-size:18px;color:#60a5fa">manage_accounts</span>
-        My Account
-        <span class="material-symbols-outlined ml-auto" style="font-size:16px;color:#3b82f6">chevron_right</span>
-      </button>
-      <button onclick="closeAccountPopup();window.location.href='/wallet'"
-        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
-        style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.28);color:#6ee7b7">
-        <span class="material-symbols-outlined" style="font-size:18px">account_balance_wallet</span>
-        Add Funds
-        <span class="material-symbols-outlined ml-auto" style="font-size:16px;opacity:0.7">chevron_right</span>
-      </button>
-      <button onclick="logout()"
-        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
-        style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.28);color:#f87171">
-        <span class="material-symbols-outlined" style="font-size:18px">logout</span>
-        Sign Out
-      </button>
-    </div>
-    </div><!-- end accViewHome -->
 
   <!-- VIEW 2: MY ACCOUNT (inside popup) -->
   <div id="accViewAccount" style="display:none">
