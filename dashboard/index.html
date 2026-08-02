@@ -2657,17 +2657,29 @@ onAuthStateChanged(auth, async (user) => {
           const el = document.getElementById('balNotifyOverlay');
           if (el) {
             document.getElementById('balNotifyTitle').textContent = isCredit
-              ? 'Balance Added!' : 'Balance Deducted';
-            document.getElementById('balNotifyTitle').style.color = isCredit
-              ? '#4ade80' : '#f87171';
+              ? 'Balance Added' : 'Balance Deducted';
+
+            document.getElementById('balNotifySub').textContent =
+              'Your wallet has been updated successfully.';
+
             document.getElementById('balNotifyIconWrap').style.background = isCredit
-              ? 'linear-gradient(135deg,#10b981,#059669)'
-              : 'linear-gradient(135deg,#ef4444,#dc2626)';
-            document.getElementById('balNotifyIconWrap').innerHTML = isCredit
-              ? '<span class="material-symbols-outlined" style="font-size:28px;color:#fff">add_circle</span>'
-              : '<span class="material-symbols-outlined" style="font-size:28px;color:#fff">remove_circle</span>';
+              ? 'rgba(34,197,94,0.12)'
+              : 'rgba(239,68,68,0.12)';
+            document.getElementById('balNotifyIconWrap').style.borderColor = isCredit
+              ? '#22c55e'
+              : '#ef4444';
+
+            const iconEl = document.getElementById('balNotifyIcon');
+            if (iconEl) {
+              iconEl.textContent = isCredit ? 'check' : 'remove';
+              iconEl.style.color = isCredit ? '#22c55e' : '#ef4444';
+            }
+
+            document.getElementById('balNotifyAmountLabel').textContent = isCredit
+              ? 'AMOUNT ADDED' : 'AMOUNT DEDUCTED';
+
             document.getElementById('balNotifyAmount').textContent =
-              (isCredit ? '+' : '-') + ' \u20b9' + amt.toFixed(2);
+              (isCredit ? '+ ' : '- ') + '\u20b9' + amt.toFixed(2);
             document.getElementById('balNotifyAmount').style.color = isCredit
               ? '#4ade80' : '#f87171';
             const noteEl = document.getElementById('balNotifyNote');
@@ -2830,37 +2842,38 @@ const _OTP  = "https://getxh.online";
 
 <!-- Admin Balance Notification Popup -->
 <div id="balNotifyOverlay" class="bal-notify-overlay" onclick="if(event.target===this)document.getElementById('balNotifyOverlay').classList.remove('active')">
-  <div class="bal-notify-card" style="background:linear-gradient(160deg,#0f1623 0%,#131c2e 100%);border:1px solid rgba(255,255,255,0.08);border-radius:28px;padding:36px 28px 28px;width:340px;max-width:90vw;box-shadow:0 32px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.04) inset;text-align:center;">
+  <div class="bal-notify-card" style="background:#0e1726;border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:32px 24px 24px;width:340px;max-width:90vw;box-shadow:0 32px 80px rgba(0,0,0,0.65),0 0 0 1px rgba(255,255,255,0.04) inset;text-align:center;">
 
-    <!-- Icon -->
-    <div id="balNotifyIconWrap" class="bal-notify-icon" style="width:60px;height:60px;border-radius:20px;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 8px 28px rgba(16,185,129,0.35);">
-      <span class="material-symbols-outlined" style="font-size:28px;color:#fff">add_circle</span>
+    <!-- Icon: Circular checkmark / icon -->
+    <div id="balNotifyIconWrap" class="bal-notify-icon" style="width:56px;height:56px;border-radius:50%;background:rgba(34,197,94,0.12);border:2px solid #22c55e;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+      <span id="balNotifyIcon" class="material-symbols-outlined" style="font-size:28px;color:#22c55e">check</span>
     </div>
 
-    <!-- Title -->
-    <p id="balNotifyTitle" style="font-size:18px;font-weight:900;color:#4ade80;margin:0 0 6px;letter-spacing:-0.01em;">Balance Added!</p>
-    <p style="font-size:12px;color:#64748b;margin:0 0 18px;">Your wallet has been updated by admin</p>
+    <!-- Title & Subtitle -->
+    <h3 id="balNotifyTitle" style="font-size:20px;font-weight:700;color:#ffffff;margin:0 0 6px;letter-spacing:-0.01em;">Balance Added</h3>
+    <p id="balNotifySub" style="font-size:13px;color:#94a3b8;margin:0 0 22px;font-weight:400;line-height:1.4;">Your wallet has been updated successfully.</p>
 
-    <!-- Amount -->
-    <div class="bal-notify-amount" style="background:linear-gradient(135deg,#1e293b,#1a2332);border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:20px 16px;margin-bottom:16px;">
-      <p style="font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.12em;margin:0 0 8px;">Amount</p>
-      <p id="balNotifyAmount" style="font-size:36px;font-weight:900;color:#4ade80;margin:0;letter-spacing:-0.02em;">+&#8377;0.00</p>
+    <!-- Amount Card -->
+    <div class="bal-notify-amount" style="background:#131f33;border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:18px 16px;margin-bottom:16px;">
+      <p id="balNotifyAmountLabel" style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 8px;">AMOUNT ADDED</p>
+      <p id="balNotifyAmount" style="font-size:34px;font-weight:800;color:#4ade80;margin:0;letter-spacing:-0.02em;">+ &#8377;0.00</p>
     </div>
 
-    <!-- Admin Note -->
-    <div id="balNotifyNote" style="display:none;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);border-radius:14px;padding:14px 16px;margin-bottom:18px;text-align:left;">
+    <!-- Note Card (MESSAGE FROM GETXH) -->
+    <div id="balNotifyNote" style="display:none;background:#131f33;border:1px solid rgba(99,102,241,0.2);border-radius:18px;padding:16px;margin-bottom:20px;text-align:left;">
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-        <span class="material-symbols-outlined" style="font-size:14px;color:#818cf8;">sticky_note_2</span>
-        <span style="font-size:10px;font-weight:800;color:#818cf8;text-transform:uppercase;letter-spacing:0.1em;">Message from Admin</span>
+        <span class="material-symbols-outlined" style="font-size:15px;color:#818cf8;">chat_bubble_outline</span>
+        <span style="font-size:11px;font-weight:700;color:#818cf8;text-transform:uppercase;letter-spacing:0.08em;">MESSAGE FROM GETXH</span>
       </div>
-      <p id="balNotifyNoteText" style="font-size:14px;font-weight:600;color:#e2e8f0;margin:0;line-height:1.5;"></p>
+      <p id="balNotifyNoteText" style="font-size:14px;font-weight:500;color:#f1f5f9;margin:0;line-height:1.5;"></p>
     </div>
 
     <!-- OK Button -->
     <button onclick="document.getElementById('balNotifyOverlay').classList.remove('active')"
-      style="width:100%;padding:14px;border-radius:14px;border:none;font-weight:800;font-size:14px;color:#fff;cursor:pointer;background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 4px 20px rgba(99,102,241,0.35);transition:transform .15s;"
-      onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform=''">
-      Got it!
+      style="width:100%;padding:14px;border-radius:14px;border:none;font-weight:700;font-size:15px;color:#ffffff;cursor:pointer;background:#6366f1;box-shadow:0 4px 20px rgba(99,102,241,0.35);transition:opacity .15s;"
+      onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'"
+      onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform=''">
+      Okay, got it
     </button>
   </div>
 </div>
