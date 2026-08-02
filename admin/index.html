@@ -421,14 +421,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     <div id="usersTab" class="hidden flex-1 p-4 lg:p-6">
 
       <!-- Sub-Tab Header Buttons -->
-      <div class="mb-4 flex flex-wrap gap-2 border-b border-white/8 pb-3">
+      <div class="mb-4 flex flex-wrap gap-2 border-b border-zinc-800/80 pb-3">
         <button id="userSubTabApp" onclick="switchUserSubTab('app')"
-          class="flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition">
+          class="flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold bg-zinc-800 text-white border border-zinc-700 transition">
           <span class="material-symbols-outlined" style="font-size:16px">group</span>
           App Registered Users (<span id="appUsersCount">0</span>)
         </button>
         <button id="userSubTabFirebase" onclick="switchUserSubTab('firebase')"
-          class="flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black bg-white/5 text-slate-400 border border-white/8 transition hover:bg-white/10">
+          class="flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold bg-transparent text-zinc-400 border border-transparent transition hover:bg-zinc-800/50 hover:text-zinc-200">
           <span class="material-symbols-outlined" style="font-size:16px">account_balance_wallet</span>
           All Firebase Wallet Users (<span id="firebaseUsersCount">0</span>)
         </button>
@@ -436,24 +436,24 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
       <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <div class="relative flex-1">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
                 style="font-size:18px">search</span>
           <input id="userSearch" oninput="searchUsers()" type="text"
             placeholder="Search by email, username, or UID…"
             class="adm-field w-full pl-10"/>
         </div>
         <button onclick="loadAllUsers()"
-          class="flex-shrink-0 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-bold text-slate-200 transition hover:bg-white/10">
+          class="flex-shrink-0 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-xs font-semibold text-zinc-300 transition hover:bg-zinc-800">
           Refresh
         </button>
       </div>
       <div class="mb-3 flex items-center justify-between">
-        <p class="text-xs text-slate-500"><span id="userCountLabel">0</span> users showing</p>
-        <p id="subTabDesc" class="text-xs text-emerald-400 font-medium">App Registered Users (with login details)</p>
+        <p class="text-xs text-zinc-500"><span id="userCountLabel">0</span> users showing</p>
+        <p id="subTabDesc" class="text-xs text-zinc-400 font-normal">App Registered Users (with login details)</p>
       </div>
       <div id="usersList" class="space-y-2">
-        <div class="order-card px-4 py-10 text-center text-slate-400">
-          <p class="text-sm font-semibold">Loading users…</p>
+        <div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:32px;text-align:center;color:#71717a;">
+          <p style="font-size:14px;font-weight:500;margin:0;">Loading users…</p>
         </div>
       </div>
     </div><!-- /usersTab -->
@@ -707,18 +707,18 @@ function switchUserSubTab(tab) {
   var fbBtn  = document.getElementById('userSubTabFirebase');
   
   if (appBtn) {
-    appBtn.className = 'flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black transition ' +
-      (isApp ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-white/5 text-slate-400 border border-white/8 hover:bg-white/10');
+    appBtn.className = 'flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition ' +
+      (isApp ? 'bg-zinc-800 text-white border border-zinc-700' : 'bg-transparent text-zinc-400 border border-transparent hover:bg-zinc-800/50 hover:text-zinc-200');
   }
   if (fbBtn) {
-    fbBtn.className = 'flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black transition ' +
-      (!isApp ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-white/5 text-slate-400 border border-white/8 hover:bg-white/10');
+    fbBtn.className = 'flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition ' +
+      (!isApp ? 'bg-zinc-800 text-white border border-zinc-700' : 'bg-transparent text-zinc-400 border border-transparent hover:bg-zinc-800/50 hover:text-zinc-200');
   }
   
   var desc = document.getElementById('subTabDesc');
   if (desc) {
     desc.textContent = isApp ? 'App Registered Users (with login details)' : 'All Firebase Wallet Users (from Firestore Users collection)';
-    desc.className = isApp ? 'text-xs text-emerald-400 font-medium' : 'text-xs text-indigo-400 font-medium';
+    desc.className = 'text-xs text-zinc-400 font-normal';
   }
 
   searchUsers();
@@ -726,7 +726,7 @@ function switchUserSubTab(tab) {
 
 function loadAllUsers() {
   var el = document.getElementById('usersList');
-  if (el) el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">Loading users…</p></div>';
+  if (el) el.innerHTML = '<div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:32px;text-align:center;color:#71717a;"><p style="font-size:14px;font-weight:500;margin:0;">Loading users…</p></div>';
 
   if (_unsubAppUsers) { _unsubAppUsers(); _unsubAppUsers = null; }
   if (_unsubFbUsers)  { _unsubFbUsers();  _unsubFbUsers = null; }
@@ -820,11 +820,9 @@ function renderUsersList(users) {
   if (!el) return;
 
   if (!users.length) {
-    el.innerHTML = '<div class="order-card px-4 py-10 text-center text-slate-400"><p class="text-sm font-semibold">No users found</p></div>';
+    el.innerHTML = '<div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:32px;text-align:center;color:#71717a;"><p style="font-size:14px;font-weight:500;margin:0;">No users found</p></div>';
     return;
   }
-
-  var isApp = _activeUserSubTab === 'app';
 
   el.innerHTML = users.map(function(u) {
     var info = (window._masterUserMap && window._masterUserMap[u.uid]) ? window._masterUserMap[u.uid] : {};
@@ -840,54 +838,51 @@ function renderUsersList(users) {
     var date = _dateObj && !isNaN(_dateObj) ? _dateObj.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
     var initial = (name || email || '?')[0].toUpperCase();
 
-    // Ensure _userDataMap has resolved values for manage balance popup header
     if (!window._userDataMap) window._userDataMap = {};
     window._userDataMap[u.uid] = { uid: u.uid, email: email, username: name, mobile: mobile, password: pass };
 
     var totalOrders = u.totalOrders !== undefined ? u.totalOrders : (info.totalOrders || 0);
     var totalSpent = u.totalSpent !== undefined ? u.totalSpent : (info.totalSpent || 0);
 
-    return '<div style="background:linear-gradient(180deg,#0e1628 0%,#111c30 100%);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:20px 22px;margin-bottom:14px;box-shadow:0 12px 32px rgba(0,0,0,0.3);">'
+    return '<div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:16px 20px;margin-bottom:10px;">'
 
-      /* ── Top Header Row ── */
-      + '<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;flex-wrap:wrap;">'
-      
-      /* Left Identity */
-      + '<div style="display:flex;align-items:center;gap:14px;min-width:0;flex:1;">'
-      + '<div style="width:48px;height:48px;border-radius:16px;background:' + (isApp ? 'linear-gradient(135deg,#10b981,#059669)' : 'linear-gradient(135deg,#6366f1,#8b5cf6)') + ';display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;flex-shrink:0;box-shadow:0 6px 18px rgba(0,0,0,0.25);">' + initial + '</div>'
+      /* Top Row: Avatar + Name & Email + Balance & Action Button */
+      + '<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;">'
+
+      /* Left: Avatar + Name + Email */
+      + '<div style="display:flex;align-items:center;gap:12px;min-width:0;flex:1;">'
+      + '<div style="width:40px;height:40px;border-radius:10px;background:#27272a;border:1px solid #3f3f46;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:#f4f4f5;flex-shrink:0;">' + initial + '</div>'
       + '<div style="min-width:0;flex:1;">'
       + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
-      + '<h4 style="margin:0;font-size:16px;font-weight:800;color:#f8fafc;letter-spacing:-0.01em;">' + escHtml(name) + '</h4>'
-      + (date !== '—' ? '<span style="font-size:11px;color:#64748b;background:rgba(255,255,255,0.04);padding:2px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);">Joined ' + date + '</span>' : '')
+      + '<h4 style="margin:0;font-size:15px;font-weight:600;color:#ffffff;">' + escHtml(name) + '</h4>'
+      + (date !== '—' ? '<span style="font-size:11px;color:#71717a;">· Joined ' + date + '</span>' : '')
       + '</div>'
-      + '<p style="margin:3px 0 0;font-size:13px;color:#38bdf8;font-weight:600;word-break:break-all;">' + escHtml(email) + '</p>'
-      + '<p style="margin:2px 0 0;font-size:11px;color:#64748b;font-family:monospace;">UID: ' + escHtml(u.uid) + '</p>'
+      + '<p style="margin:1px 0 0;font-size:13px;color:#a1a1aa;font-weight:400;word-break:break-all;">' + escHtml(email) + '</p>'
       + '</div>'
-      + '</div>'
-
-      /* Right Balance Badge */
-      + '<div style="background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(5,150,105,0.06));border:1px solid rgba(16,185,129,0.25);border-radius:16px;padding:10px 18px;text-align:right;flex-shrink:0;">'
-      + '<p style="margin:0;font-size:9px;font-weight:800;color:#10b981;text-transform:uppercase;letter-spacing:0.12em;">Balance</p>'
-      + '<p style="margin:1px 0 0;font-size:22px;font-weight:900;color:#34d399;letter-spacing:-0.02em;">&#8377;' + Number(liveBal).toFixed(2) + '</p>'
       + '</div>'
 
+      /* Right: Balance + Action Button */
+      + '<div style="display:flex;align-items:center;gap:16px;flex-shrink:0;">'
+      + '<div style="text-align:right;">'
+      + '<p style="margin:0;font-size:10px;font-weight:700;color:#71717a;text-transform:uppercase;letter-spacing:0.05em;">Balance</p>'
+      + '<p style="margin:0;font-size:17px;font-weight:700;color:#10b981;">&#8377;' + Number(liveBal).toFixed(2) + '</p>'
       + '</div>'
-
-      /* ── Bottom Info Bar + Action ── */
-      + '<div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.05);border-radius:14px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
-      
-      /* Meta Fields */
-      + '<div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-size:12px;color:#94a3b8;">'
-      + (mobile !== '—' ? '<span style="display:inline-flex;align-items:center;gap:5px;"><span class="material-symbols-outlined" style="font-size:15px;color:#10b981;">call</span> <b style="color:#cbd5e1">' + escHtml(mobile) + '</b></span>' : '')
-      + (pass !== '—' ? '<span style="display:inline-flex;align-items:center;gap:5px;"><span class="material-symbols-outlined" style="font-size:15px;color:#f59e0b;">key</span> Pass: <b style="color:#cbd5e1">' + escHtml(pass) + '</b></span>' : '')
-      + '<span style="display:inline-flex;align-items:center;gap:5px;"><span class="material-symbols-outlined" style="font-size:15px;color:#38bdf8;">shopping_bag</span> Orders: <b style="color:#cbd5e1">' + totalOrders + '</b> · Spent: <b style="color:#cbd5e1">&#8377;' + Number(totalSpent).toFixed(2) + '</b></span>'
-      + '</div>'
-
-      /* Action Button */
-      + '<button onclick="window._openBalPopup(\'' + u.uid + '\')" style="padding:9px 18px;border-radius:12px;border:none;font-weight:800;font-size:12px;color:#fff;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 14px rgba(16,185,129,0.3);display:inline-flex;align-items:center;gap:6px;transition:transform .15s,opacity .15s;" onmousedown="this.style.transform=\'scale(0.97)\'" onmouseup="this.style.transform=\'\'">'
-      + '<span class="material-symbols-outlined" style="font-size:16px;">account_balance_wallet</span>Manage Balance'
+      + '<button onclick="window._openBalPopup(\'' + u.uid + '\')" style="padding:8px 14px;border-radius:8px;border:1px solid #3f3f46;background:#27272a;color:#f4f4f5;font-weight:600;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s;" onmouseover="this.style.background=\'#3f3f46\'" onmouseout="this.style.background=\'#27272a\'">'
+      + '<span class="material-symbols-outlined" style="font-size:15px;color:#a1a1aa;">account_balance_wallet</span>Manage Balance'
       + '</button>'
+      + '</div>'
 
+      + '</div>'
+
+      /* Bottom Row: Metadata (UID, Phone, Password, Orders, Spent) */
+      + '<div style="border-top:1px solid #27272a;margin-top:12px;padding-top:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:#71717a;">'
+      + '<div>UID: <span style="color:#a1a1aa;font-family:monospace;">' + escHtml(u.uid) + '</span></div>'
+      + '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">'
+      + (mobile !== '—' ? '<span>Mobile: <b style="color:#e4e4e7;font-weight:500;">' + escHtml(mobile) + '</b></span>' : '')
+      + (pass !== '—' ? '<span>Pass: <b style="color:#e4e4e7;font-weight:500;">' + escHtml(pass) + '</b></span>' : '')
+      + '<span>Orders: <b style="color:#e4e4e7;font-weight:500;">' + totalOrders + '</b></span>'
+      + '<span>Spent: <b style="color:#e4e4e7;font-weight:500;">&#8377;' + Number(totalSpent).toFixed(2) + '</b></span>'
+      + '</div>'
       + '</div>'
 
       + '</div>';
