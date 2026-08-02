@@ -22,13 +22,13 @@ service cloud.firestore {
     match /Users/{userId} {
       allow read: if isAdmin() || isOwner(userId);
       // Allow initial document creation on signup with 0 balance
-      allow create: if isOwner(userId) &&
+      allow create: if isAdmin() || (isOwner(userId) &&
         request.resource.data.keys().hasOnly(['Balance', 'TotalOrders', 'TotalSpent']) &&
         (!('Balance' in request.resource.data) || request.resource.data.Balance == 0) &&
         (!('TotalOrders' in request.resource.data) || request.resource.data.TotalOrders == 0) &&
-        (!('TotalSpent' in request.resource.data) || request.resource.data.TotalSpent == 0);
+        (!('TotalSpent' in request.resource.data) || request.resource.data.TotalSpent == 0));
       // Wallet balance update strictly restricted to Admin / Server Admin SDK
-      allow update, delete: if isAdmin();
+      allow create, update, delete: if isAdmin();
     }
 
     match /users/{userId} {
