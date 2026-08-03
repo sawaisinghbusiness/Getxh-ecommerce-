@@ -233,6 +233,7 @@ async function sendOTP() {
     const data = await res.json().catch(() => ({}));
 
     if (res.ok && (data.success || data.status === "success" || data.message === "OTP sent")) {
+      try { sessionStorage.setItem("gx_reset_email", email); } catch(e){}
       showInfo("OTP sent! Redirecting to verification…");
       setTimeout(() => {
         window.location.href = `/verify-otp?email=${encodeURIComponent(email)}&type=reset`;

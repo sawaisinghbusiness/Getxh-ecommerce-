@@ -267,6 +267,18 @@ async function verifyOTP() {
   btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;animation:spin 0.7s linear infinite;display:inline-block"></span>Verifying…</span>';
 
   try {
+    if (type === "reset") {
+      try {
+        sessionStorage.setItem("gx_reset_email", email);
+        sessionStorage.setItem("gx_reset_otp", otp);
+      } catch(e){}
+      showInfo("OTP verified! Redirecting to password reset…");
+      setTimeout(() => {
+        window.location.href = `/reset-password?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`;
+      }, 500);
+      return;
+    }
+
     const res = await fetch("https://getxh.online/verify-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

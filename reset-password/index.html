@@ -216,7 +216,7 @@ body::before{
 
 <script>
 const params = new URLSearchParams(window.location.search);
-const email  = String(params.get("email") || "").trim().toLowerCase();
+const email  = String(params.get("email") || sessionStorage.getItem("gx_reset_email") || "").trim().toLowerCase();
 const otp    = String(params.get("otp") || sessionStorage.getItem("gx_reset_otp") || "").trim();
 
 if (!email) {
