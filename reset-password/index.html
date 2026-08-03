@@ -222,7 +222,7 @@ const params = new URLSearchParams(window.location.search);
 const email  = String(params.get("email") || sessionStorage.getItem("gx_reset_email") || "").trim().toLowerCase();
 const otp    = String(params.get("otp") || sessionStorage.getItem("gx_reset_otp") || "").trim();
 
-if (!email) {
+if (!email || !otp) {
   window.location.href = "/forgot-password";
 }
 
@@ -358,12 +358,14 @@ async function resetPassword() {
 
   try {
     // 1. Try Backend API Reset Endpoint with email, otp, newPassword, confirmPassword
+    const cleanEmail = String(email || "").trim().toLowerCase();
+    const cleanOtp = String(otp || "").trim();
     const res = await fetch("https://getxh.online/api/reset-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: email,
-        otp: otp,
+        email: cleanEmail,
+        otp: cleanOtp,
         newPassword: pwd,
         confirmPassword: conf
       })
