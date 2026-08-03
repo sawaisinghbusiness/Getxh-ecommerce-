@@ -151,23 +151,30 @@ body::after{
 .live-dot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 6px rgba(52,211,153,0.7);animation:livePulse 1.6s ease-in-out infinite;}
 @keyframes livePulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.35);opacity:0.6;}}
 
-.left-heading{font-size:clamp(28px,3.2vw,46px);font-weight:800;line-height:1.12;letter-spacing:-0.025em;margin-bottom:16px;color:#ffffff;text-shadow:0 0 40px rgba(99,102,241,0.3);animation:fadeUpSoft 0.7s 0.2s both;}
-.left-heading .grad-text{background:linear-gradient(135deg,#a78bfa 0%,#38bdf8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.left-sub{font-size:14.5px;color:#94a3b8;line-height:1.8;max-width:400px;margin-bottom:36px;animation:fadeUpSoft 0.7s 0.25s both;}
+.left-heading{font-size:clamp(36px,4.5vw,52px);font-weight:800;line-height:1.15;letter-spacing:-0.03em;margin-bottom:16px;color:#ffffff;animation:fadeUpSoft 0.7s 0.2s both;}
+.left-heading .grad-text{background:linear-gradient(135deg,#60a5fa 0%,#38bdf8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.left-sub{font-size:15px;color:#94a3b8;line-height:1.65;max-width:440px;margin-bottom:28px;animation:fadeUpSoft 0.7s 0.25s both;}
 
-.feat-cards{display:flex;flex-direction:column;gap:10px;animation:fadeUpSoft 0.7s 0.3s both;}
-.feat-card{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:13px 16px;transition:background 0.25s,border-color 0.25s,transform 0.25s;}
-.feat-card:hover{background:rgba(139,92,246,0.07);border-color:rgba(139,92,246,0.22);transform:translateX(4px);}
-.feat-icon{width:38px;height:38px;border-radius:11px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.24);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.feat-icon svg{width:17px;height:17px;filter:drop-shadow(0 0 8px rgba(139,92,246,0.5));}
-.feat-label{font-size:13px;font-weight:600;color:#e2e8f0;}
-.feat-desc{font-size:11px;color:#64748b;margin-top:2px;}
+.feat-cards{display:flex;flex-direction:column;gap:12px;max-width:480px;animation:fadeUpSoft 0.7s 0.3s both;}
+.feat-card{display:flex;align-items:center;gap:16px;background:rgba(15,23,42,0.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 18px;transition:all 0.25s ease;}
+.feat-card:hover{background:rgba(15,23,42,0.85);border-color:rgba(255,255,255,0.15);transform:translateX(4px);}
+.feat-icon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.feat-icon-purple{background:rgba(99,102,241,0.14);border:1px solid rgba(99,102,241,0.25);}
+.feat-icon-green{background:rgba(16,185,129,0.14);border:1px solid rgba(16,185,129,0.25);}
+.feat-icon-amber{background:rgba(245,158,11,0.14);border:1px solid rgba(245,158,11,0.25);}
+.feat-label{font-size:15px;font-weight:600;color:#ffffff;}
+.feat-desc{font-size:13px;color:#94a3b8;margin-top:2px;}
 
-.stats{display:flex;gap:0;margin-top:36px;padding-top:28px;border-top:1px solid rgba(255,255,255,0.06);animation:fadeUpSoft 0.7s 0.4s both;}
-.stat-item{flex:1;text-align:center;padding:0 8px;}
-.stat-item:not(:last-child){border-right:1px solid rgba(255,255,255,0.06);}
-.stat-val{font-size:21px;font-weight:800;background:linear-gradient(135deg,#e2e8f0,#94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.stat-lbl{font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:0.09em;margin-top:3px;}
+/* unified stats card */
+.stats-card{display:flex;align-items:center;justify-content:space-between;max-width:480px;background:rgba(15,23,42,0.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:16px 20px;margin-top:20px;animation:fadeUpSoft 0.7s 0.4s both;}
+.stat-unit{display:flex;align-items:center;gap:12px;}
+.stat-unit-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.stat-icon-purple{background:rgba(99,102,241,0.14);border:1px solid rgba(99,102,241,0.25);}
+.stat-icon-green{background:rgba(16,185,129,0.14);border:1px solid rgba(16,185,129,0.25);}
+.stat-icon-amber{background:rgba(245,158,11,0.14);border:1px solid rgba(245,158,11,0.25);}
+.stat-unit-text{display:flex;flex-direction:column;}
+.stat-unit-val{font-size:18px;font-weight:800;color:#ffffff;line-height:1.2;}
+.stat-unit-lbl{font-size:12px;color:#94a3b8;margin-top:1px;font-weight:500;}
 
 /* ── RIGHT ── */
 .right{width:560px;min-width:560px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;position:relative;}
@@ -832,12 +839,6 @@ body::after{
   <div class="left">
     <div class="left-content">
 
-      <!-- Live stat -->
-      <div class="live-stat">
-        <span class="live-dot"></span>
-        120+ orders placed today
-      </div>
-
       <h1 class="left-heading">
         Join Thousands<br/>
         Growing with <span class="grad-text">GETXH</span>
@@ -850,9 +851,9 @@ body::after{
       <div class="feat-cards">
 
         <div class="feat-card">
-          <div class="feat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          <div class="feat-icon feat-icon-purple">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
             </svg>
           </div>
           <div class="feat-text">
@@ -862,9 +863,10 @@ body::after{
         </div>
 
         <div class="feat-card">
-          <div class="feat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <div class="feat-icon feat-icon-green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <polyline points="9 12 11 14 15 10"/>
             </svg>
           </div>
           <div class="feat-text">
@@ -874,10 +876,11 @@ body::after{
         </div>
 
         <div class="feat-card">
-          <div class="feat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
+          <div class="feat-icon feat-icon-amber">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
             </svg>
           </div>
           <div class="feat-text">
@@ -888,18 +891,45 @@ body::after{
 
       </div>
 
-      <div class="stats">
-        <div class="stat-item">
-          <div class="stat-val">50K+</div>
-          <div class="stat-lbl">Orders Served</div>
+      <!-- Unified Stats Card Container -->
+      <div class="stats-card">
+        <div class="stat-unit">
+          <div class="stat-unit-icon stat-icon-purple">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+          </div>
+          <div class="stat-unit-text">
+            <div class="stat-unit-val">50K+</div>
+            <div class="stat-unit-lbl">Orders Served</div>
+          </div>
         </div>
-        <div class="stat-item">
-          <div class="stat-val">99.9%</div>
-          <div class="stat-lbl">Uptime</div>
+
+        <div class="stat-unit">
+          <div class="stat-unit-icon stat-icon-green">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <div class="stat-unit-text">
+            <div class="stat-unit-val">99.9%</div>
+            <div class="stat-unit-lbl">Uptime</div>
+          </div>
         </div>
-        <div class="stat-item">
-          <div class="stat-val">24/7</div>
-          <div class="stat-lbl">Support</div>
+
+        <div class="stat-unit">
+          <div class="stat-unit-icon stat-icon-amber">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+              <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+            </svg>
+          </div>
+          <div class="stat-unit-text">
+            <div class="stat-unit-val">24/7</div>
+            <div class="stat-unit-lbl">Support</div>
+          </div>
         </div>
       </div>
 
