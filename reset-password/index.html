@@ -381,7 +381,7 @@ async function resetPassword() {
     if (window._firebaseAuth && window._firebaseAuth.currentUser && typeof window._updatePassword === "function") {
       try {
         await window._updatePassword(window._firebaseAuth.currentUser, pwd);
-        showInfo("✓ Password updated successfully via Firebase! Redirecting…");
+        showInfo("✓ Password updated successfully! Redirecting to sign in…");
         setTimeout(() => { window.location.href = "/"; }, 1500);
         return;
       } catch(sdkErr) {
@@ -389,20 +389,8 @@ async function resetPassword() {
       }
     }
 
-    // 3. Fallback: Send Firebase Password Reset Link directly to user's email if OTP expired
-    if (window._firebaseAuth && typeof window._sendPasswordResetEmail === "function") {
-      try {
-        await window._sendPasswordResetEmail(window._firebaseAuth, email);
-        showInfo("Password reset link sent to " + email + ". Check your email inbox!");
-        setTimeout(() => { window.location.href = "/"; }, 3000);
-        return;
-      } catch(fbErr) {
-        console.warn("Firebase Reset Link error:", fbErr);
-      }
-    }
-
-    const msg = data.message || data.error || "Failed to update password. Please check your OTP and try again.";
-    showError(msg);
+    const msg = data.message || data.error || "Invalid or expired OTP. Please try again or request a new OTP.";
+    showError(msg + ' <a href="/forgot-password" style="text-decoration:underline;margin-left:6px;color:#60a5fa">Request new OTP</a>');
     shake("password");
     btn.disabled = false;
     btn.textContent = "Update Password";
