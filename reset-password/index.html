@@ -354,6 +354,7 @@ async function resetPassword() {
   btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;animation:spin 0.7s linear infinite;display:inline-block"></span>Updating Password…</span>';
 
   try {
+    // 1. Try Backend API Reset Endpoint with email, otp, newPassword, confirmPassword
     const res = await fetch("https://getxh.online/api/reset-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -368,17 +369,44 @@ async function resetPassword() {
     const data = await res.json().catch(() => ({}));
 
     if (res.ok && (data.success || data.status === "success" || data.status === "ok" || (data.message && data.message.toLowerCase().includes("success")))) {
-      showInfo("Password updated successfully! Redirecting to sign in…");
+      showInfo("✓ Password updated successfully! Redirecting to sign in…");
+      try { sessionStorage.removeItem("gx_reset_otp"); } catch(e){}
       setTimeout(() => {
         window.location.href = "/";
-      }, 2000);
-    } else {
-      const msg = data.message || data.error || "Failed to update password. Please try again.";
-      showError(msg);
-      shake("password");
-      btn.disabled = false;
-      btn.textContent = "Update Password";
+      }, 1500);
+      return;
     }
+
+    // 2. Firebase Auth SDK Fallback: If user is logged in, update via Firebase Auth SDK directly (like account page)
+    if (window._firebaseAuth && window._firebaseAuth.currentUser && typeof window._updatePassword === "function") {
+      try {
+        await window._updatePassword(window._firebaseAuth.currentUser, pwd);
+        showInfo("✓ Password updated successfully via Firebase! Redirecting…");
+        setTimeout(() => { window.location.href = "/"; }, 1500);
+        return;
+      } catch(sdkErr) {
+        console.warn("Firebase Auth SDK update failed:", sdkErr);
+      }
+    }
+
+    // 3. Fallback: Send Firebase Password Reset Link directly to user's email if OTP expired
+    if (window._firebaseAuth && typeof window._sendPasswordResetEmail === "function") {
+      try {
+        await window._sendPasswordResetEmail(window._firebaseAuth, email);
+        showInfo("Password reset link sent to " + email + ". Check your email inbox!");
+        setTimeout(() => { window.location.href = "/"; }, 3000);
+        return;
+      } catch(fbErr) {
+        console.warn("Firebase Reset Link error:", fbErr);
+      }
+    }
+
+    const msg = data.message || data.error || "Failed to update password. Please check your OTP and try again.";
+    showError(msg);
+    shake("password");
+    btn.disabled = false;
+    btn.textContent = "Update Password";
+
   } catch (err) {
     showError("Cannot reach server. Please check your internet connection.");
     shake("password");
@@ -387,6 +415,29 @@ async function resetPassword() {
   }
 }
 </script>
+
+<!-- FIREBASE AUTH SDK MODULE (Same as Account Page) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, updatePassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window._firebaseAuth = auth;
+window._updatePassword = updatePassword;
+window._sendPasswordResetEmail = sendPasswordResetEmail;
+</script>
+
 <style>@keyframes spin{to{transform:rotate(360deg);}}</style>
 </body>
 </html>
