@@ -1800,8 +1800,8 @@ function selectService(svc) {
   const pBtn = document.getElementById('placeOrderBtn');
   if(pBtn) pBtn.disabled=false;
 
-  // Reset and show/hide drip feed container based on service ID
-  const isDripSvc = svc && (svc.id === 5832 || svc.id === 5210);
+  // Reset and show/hide drip feed container based on service ID / name
+  const isDripSvc = svc && (svc.id === 5832 || svc.id === 5210 || (svc.name && svc.name.toLowerCase().includes('drip feed')));
   const dripContainer = document.getElementById('dripFieldsContainer');
   if (dripContainer) {
     if (isDripSvc) {
@@ -2007,7 +2007,7 @@ function validateOrderForm() {
       }
     }
 
-    const isDrip = _selSvc.id === 5832 || _selSvc.id === 5210;
+    const isDrip = _selSvc && (_selSvc.id === 5832 || _selSvc.id === 5210 || (_selSvc.name && _selSvc.name.toLowerCase().includes('drip feed')));
     if (isDrip) {
       const runsVal = document.getElementById("dripRuns").value.trim();
       const runs = parseInt(runsVal) || 0;
@@ -2054,7 +2054,7 @@ function updateTotalPrice() {
   const qtyInput = document.getElementById('quantityInput');
   const qty = parseInt(qtyInput.value) || 0;
 
-  const isDrip = _selSvc.id === 5832 || _selSvc.id === 5210;
+  const isDrip = _selSvc && (_selSvc.id === 5832 || _selSvc.id === 5210 || (_selSvc.name && _selSvc.name.toLowerCase().includes('drip feed')));
   const runsInput = document.getElementById('dripRuns');
   const runs = parseInt(runsInput.value) || 0;
 
@@ -2176,7 +2176,7 @@ async function placeOrder(serviceId) {
   }
 
   // Drip feed variables
-  const isDrip = _selSvc && (_selSvc.id === 5832 || _selSvc.id === 5210);
+  const isDrip = _selSvc && (_selSvc.id === 5832 || _selSvc.id === 5210 || (_selSvc.name && _selSvc.name.toLowerCase().includes('drip feed')));
   const runs = isDrip ? (parseInt(document.getElementById('dripRuns').value) || 0) : null;
   const interval = isDrip ? (parseInt(document.getElementById('dripInterval').value) || 0) : null;
 
