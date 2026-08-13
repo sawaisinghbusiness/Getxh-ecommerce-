@@ -6,3 +6,7 @@ Getxh-ecommerce--main/
 .DS_Store
 Thumbs.db
 **/.git_backup/
+scratch/
+.agents/
+services_page.html
+

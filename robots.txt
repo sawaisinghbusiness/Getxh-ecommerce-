@@ -1,6 +1,12 @@
+# robots.txt for GETXH (https://getxh.in)
+# India's #1 & Cheapest SMM Panel
+
 User-agent: *
 Allow: /
+Allow: /services/
 Allow: /about/
+Allow: /blogs/
+Allow: /blog/
 Allow: /contact/
 Allow: /register/
 Allow: /privacy/
@@ -8,6 +14,7 @@ Allow: /terms/
 Allow: /refund/
 Allow: /cancellation/
 
+# Disallow private/account/admin areas
 Disallow: /dashboard/
 Disallow: /orders/
 Disallow: /wallet/
@@ -20,4 +27,23 @@ Disallow: /verify-otp/
 Disallow: /forgot-password/
 Disallow: /reset-password/
 
+# Dedicated Search Engine Directives
+User-agent: Googlebot
+Allow: /
+Allow: /services/
+Allow: /about/
+Allow: /blogs/
+Allow: /blog/
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+# Host & Sitemap specification
+Host: https://getxh.in
 Sitemap: https://getxh.in/sitemap.xml
