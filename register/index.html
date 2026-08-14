@@ -127,12 +127,19 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 .navbar{
   position:fixed;top:0;left:0;right:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 40px;height:62px;
-  background:rgba(9,10,15,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  padding:0 40px;height:64px;
+  background:rgba(3,7,18,0.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid rgba(255,255,255,0.08);
 }
-.nav-logo{display:flex;align-items:center;}
-.nav-logo img{height:36px;width:auto;}
+.nav-logo{
+  display:flex;align-items:center;
+  mix-blend-mode:screen;
+  text-decoration:none;
+}
+.nav-logo img{
+  height:52px;width:auto;
+  filter:invert(1) hue-rotate(180deg) brightness(1.1);
+}
 .nav-links{display:flex;align-items:center;gap:6px;}
 .nav-link{font-size:13.5px;font-weight:500;color:#94a3b8;text-decoration:none;padding:6px 14px;border-radius:8px;}
 .nav-link:hover{color:#e2e8f0;background:rgba(255,255,255,0.06);}
@@ -142,7 +149,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 .nav-btn-demo:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.35);transform:none;}
 .nav-ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:none;border:none;}
 .nav-ham span{width:22px;height:2px;background:#94a3b8;border-radius:2px;display:block;}
-.nav-drawer{display:none;position:fixed;top:62px;left:0;right:0;z-index:99;background:rgba(9,10,15,0.98);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.08);padding:16px 20px 20px;flex-direction:column;gap:6px;}
+.nav-drawer{display:none;position:fixed;top:64px;left:0;right:0;z-index:99;background:rgba(9,10,15,0.98);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.08);padding:16px 20px 20px;flex-direction:column;gap:6px;}
 .nav-drawer.open{display:flex;}
 .nav-drawer .nav-link{padding:11px 14px;font-size:14px;border-radius:10px;}
 .nav-drawer .nav-btn{margin:6px 0 0;text-align:center;padding:12px;border-radius:10px;font-size:14px;}
@@ -150,19 +157,14 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 /* ── PAGE CONTAINER ── */
 .page{
   display:flex;align-items:center;justify-content:center;
-  min-height:calc(100vh - 70px);
-  padding:86px 20px 40px;
+  min-height:100vh;
+  padding:80px 20px 40px;
   position:relative;z-index:2;
 }
 
-/* ── RIGHT / CARD CONTAINER ── */
-.right{
-  width:100%;max-width:480px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  position:relative;
-}
+/* ── CARD CONTAINER ── */
 .card-shine-wrap{
-  position:relative;width:100%;max-width:460px;
+  position:relative;width:100%;max-width:480px;
   border-radius:24px;padding:1px;
   background:linear-gradient(135deg,rgba(139,92,246,0.45),rgba(59,130,246,0.25),rgba(255,255,255,0.08));
   box-shadow:0 24px 60px rgba(0,0,0,0.6);
@@ -278,33 +280,17 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 @keyframes barFill{to{width:100%;}}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* ── SITE FOOTER ── */
-.site-footer{
-  position:relative;z-index:2;
-  background:rgba(3,7,18,0.95);
-  border-top:1px solid rgba(255,255,255,0.08);
-  padding:24px 40px;
-}
-.footer-bottom{
-  max-width:1140px;margin:0 auto;
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;
-  font-size:12px;color:#94a3b8;
-}
-
 /* ── RESPONSIVE ── */
 @media(max-width:960px){
   .navbar{padding:0 20px;}
   .nav-links{display:none;}
   .nav-ham{display:flex;}
-  .page{padding:78px 16px 36px;min-height:calc(100vh - 90px);}
-  .right{width:100%;max-width:100%;}
+  .page{padding:78px 16px 36px;}
   .card-shine-wrap{max-width:100%;}
   .card{padding:26px 18px;}
   .card-title{font-size:20px;}
   .finput{height:42px;font-size:13px;}
   .btn{height:42px;font-size:13.5px;}
-  .site-footer{padding:20px 16px;}
-  .footer-bottom{flex-direction:column;text-align:center;gap:6px;}
 }
 </style>
 
@@ -674,8 +660,8 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 
 <!-- ════ NAVBAR ════ -->
 <nav class="navbar">
-  <a href="/" class="nav-logo">
-    <img src="/getxh new logo.png" alt="GETXH"/>
+  <a href="/" class="nav-logo" title="GETXH - #1 Cheapest SMM Panel India">
+    <img src="/getxh new logo.png" alt="GETXH Logo - SMM Panel India" width="160" height="52"/>
   </a>
   <div class="nav-links">
     <a href="/" class="nav-link">Home</a>
@@ -700,9 +686,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 
 <div class="page">
 
-  <!-- ════ RIGHT PANEL ════ -->
-  <div class="right">
-    <div class="card-shine-wrap">
+  <div class="card-shine-wrap">
     <div class="card">
 
 
@@ -884,19 +868,9 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
         </a>
       </div>
 
-    </div>
-    </div>
-
-
+    </div><!-- /.card -->
+  </div><!-- /.card-shine-wrap -->
 </div><!-- /.page -->
-
-<!-- ════ SITE FOOTER ════ -->
-<footer class="site-footer">
-  <div class="footer-bottom">
-    <div>&copy; 2026 GETXH™ (getxh.in). All rights reserved. India's #1 Cheapest SMM Panel.</div>
-    <div>100% Secure Payments • UPI • Cards • Instant Delivery</div>
-  </div>
-</footer>
 
 
 
