@@ -344,27 +344,32 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
         })
       }).catch(() => {});
 
-      // Save user to Firestore in background
-      setDoc(doc(db, "users", user.uid), {
-        username: username,
-        email: email,
-        mobile: "",
-        createdAt: serverTimestamp()
-      }, { merge: true }).catch(() => {});
-
-      setDoc(doc(db, "userData", user.uid), {
-        username: username,
-        email: email,
-        mobile: "",
-        uid: user.uid,
-        createdAt: serverTimestamp()
-      }, { merge: true }).catch(() => {});
-
-      setDoc(doc(db, "Users", user.uid), {
-        Balance: 0,
-        TotalOrders: 0,
-        TotalSpent: 0
-      }, { merge: true }).catch(() => {});
+      // Save user to Firestore with await so it is not cancelled on redirect
+      try {
+        await Promise.allSettled([
+          setDoc(doc(db, "users", user.uid), {
+            username: username,
+            email: email,
+            mobile: "",
+            uid: user.uid,
+            createdAt: serverTimestamp()
+          }, { merge: true }),
+          setDoc(doc(db, "userData", user.uid), {
+            username: username,
+            email: email,
+            mobile: "",
+            uid: user.uid,
+            createdAt: serverTimestamp()
+          }, { merge: true }),
+          setDoc(doc(db, "Users", user.uid), {
+            Balance: 0,
+            TotalOrders: 0,
+            TotalSpent: 0
+          }, { merge: true })
+        ]);
+      } catch(e) {
+        console.warn("Firestore Google Sign-In sync warning:", e);
+      }
 
       window.location.replace("/dashboard");
     } catch (err) {
@@ -569,31 +574,35 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
         body: JSON.stringify({ uid: cred.user.uid, email, mobile: document.getElementById("mobile").value.trim(), username })
       }).catch(() => {});
 
-      /* Firestore + profile update in background — don't block redirect */
+      /* Firestore + profile update */
       updateProfile(cred.user, { displayName: username }).catch(() => {});
-      setDoc(doc(db, "users", cred.user.uid), {
-        username,
-        email,
-        uid:       cred.user.uid,
-        createdAt: serverTimestamp(),
-        balance:   0
-      }, { merge: true }).catch(() => {});
 
-      // Save full user data for admin panel
-      setDoc(doc(db, "userData", cred.user.uid), {
-        username,
-        email,
-        mobile:    document.getElementById("mobile").value.trim(),
-        password,
-        uid:       cred.user.uid,
-        createdAt: serverTimestamp()
-      }, { merge: true }).catch(() => {});
-
-      setDoc(doc(db, "Users", cred.user.uid), {
-        Balance: 0,
-        TotalOrders: 0,
-        TotalSpent: 0
-      }, { merge: true }).catch(() => {});
+      try {
+        await Promise.allSettled([
+          setDoc(doc(db, "users", cred.user.uid), {
+            username,
+            email,
+            uid:       cred.user.uid,
+            createdAt: serverTimestamp(),
+            balance:   0
+          }, { merge: true }),
+          setDoc(doc(db, "userData", cred.user.uid), {
+            username,
+            email,
+            mobile:    document.getElementById("mobile").value.trim(),
+            password,
+            uid:       cred.user.uid,
+            createdAt: serverTimestamp()
+          }, { merge: true }),
+          setDoc(doc(db, "Users", cred.user.uid), {
+            Balance: 0,
+            TotalOrders: 0,
+            TotalSpent: 0
+          }, { merge: true })
+        ]);
+      } catch(e) {
+        console.warn("Firestore registration write error:", e);
+      }
 
       /* ── 2e: redirect ── */
       window.location.replace("/dashboard");

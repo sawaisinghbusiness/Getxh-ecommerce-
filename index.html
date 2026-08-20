@@ -1075,6 +1075,28 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
     signInWithEmailAndPassword(auth, email, password)
     .then(async(cred)=>{
       saveSession(cred.user, email);
+      const username = cred.user.displayName || email.split("@")[0];
+      try {
+        await Promise.allSettled([
+          setDoc(doc(db, "users", cred.user.uid), {
+            username: username,
+            email: email,
+            uid: cred.user.uid,
+            createdAt: serverTimestamp()
+          }, { merge: true }),
+          setDoc(doc(db, "userData", cred.user.uid), {
+            username: username,
+            email: email,
+            uid: cred.user.uid,
+            createdAt: serverTimestamp()
+          }, { merge: true }),
+          setDoc(doc(db, "Users", cred.user.uid), {
+            Balance: 0,
+            TotalOrders: 0,
+            TotalSpent: 0
+          }, { merge: true })
+        ]);
+      } catch(e) {}
       window.location.replace("/dashboard");
     })
     .catch((err)=>{
@@ -1102,18 +1124,48 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
-      saveSession(user, user.email);
+      const email = normalizeEmail(user.email);
+      const username = user.displayName || (email ? email.split("@")[0] : "User");
+      saveSession(user, email);
 
+      // Save user to MongoDB in background
       fetch("https://getxh.online/save-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           uid: user.uid,
-          email: user.email,
+          email: email,
           mobile: "",
-          username: user.displayName || (user.email ? user.email.split("@")[0] : "User")
+          username: username
         })
       }).catch(() => {});
+
+      // Ensure Firestore records exist for Admin Panel & Dashboard
+      try {
+        await Promise.allSettled([
+          setDoc(doc(db, "users", user.uid), {
+            username: username,
+            email: email,
+            mobile: "",
+            uid: user.uid,
+            createdAt: serverTimestamp()
+          }, { merge: true }),
+          setDoc(doc(db, "userData", user.uid), {
+            username: username,
+            email: email,
+            mobile: "",
+            uid: user.uid,
+            createdAt: serverTimestamp()
+          }, { merge: true }),
+          setDoc(doc(db, "Users", user.uid), {
+            Balance: 0,
+            TotalOrders: 0,
+            TotalSpent: 0
+          }, { merge: true })
+        ]);
+      } catch(e) {
+        console.warn("Firestore user sync warning:", e);
+      }
 
       window.location.replace("/dashboard");
     } catch (err) {

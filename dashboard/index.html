@@ -2594,7 +2594,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
   getFirestore, collection, query, where, orderBy, limit,
-  doc, onSnapshot, updateDoc, increment, addDoc, serverTimestamp, getDocs
+  doc, getDoc, setDoc, onSnapshot, updateDoc, increment, addDoc, serverTimestamp, getDocs
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -2644,6 +2644,42 @@ onAuthStateChanged(auth, async (user) => {
   window.currentEmail = currentEmail;
   window._formUid = user.uid;
   if (typeof window._restoreFormForUser === 'function') window._restoreFormForUser(user.uid);
+
+  // Fail-safe: Ensure user document exists in Firestore for Admin Panel visibility
+  const username = user.displayName || (currentEmail ? currentEmail.split('@')[0] : 'User');
+  try {
+    getDoc(doc(db, "Users", currentUid)).then((snap) => {
+      if (!snap.exists()) {
+        setDoc(doc(db, "Users", currentUid), {
+          Balance: 0,
+          TotalOrders: 0,
+          TotalSpent: 0
+        }, { merge: true }).catch(() => {});
+      }
+    }).catch(() => {});
+
+    getDoc(doc(db, "userData", currentUid)).then((snap) => {
+      if (!snap.exists()) {
+        setDoc(doc(db, "userData", currentUid), {
+          username: username,
+          email: currentEmail,
+          uid: currentUid,
+          createdAt: serverTimestamp()
+        }, { merge: true }).catch(() => {});
+      }
+    }).catch(() => {});
+
+    getDoc(doc(db, "users", currentUid)).then((snap) => {
+      if (!snap.exists()) {
+        setDoc(doc(db, "users", currentUid), {
+          username: username,
+          email: currentEmail,
+          uid: currentUid,
+          createdAt: serverTimestamp()
+        }, { merge: true }).catch(() => {});
+      }
+    }).catch(() => {});
+  } catch(e) {}
 
   // Admin check — hard-coded: only agency@getxh.in sees admin button
   if ((user.email || '').toLowerCase() === 'agency@getxh.in') {

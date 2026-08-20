@@ -1467,6 +1467,9 @@ function initAdminData() {
     } catch { if (input) input.value = text; }
   };
 
+  // Initialize real-time user listeners immediately
+  loadAllUsers();
+
   window.addEventListener('beforeunload', () => {
     if (unsubOrders)  unsubOrders();
     if (unsubTickets) unsubTickets();

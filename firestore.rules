@@ -33,7 +33,7 @@ service cloud.firestore {
         (!('balance' in request.resource.data) || request.resource.data.balance == 0);
       allow update: if isOwner(userId) &&
         !('password' in request.resource.data) &&
-        onlyChanged(['username', 'mobile']);
+        onlyChanged(['username', 'mobile', 'email', 'uid', 'createdAt']);
       allow delete: if isAdmin();
     }
 
