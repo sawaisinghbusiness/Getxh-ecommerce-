@@ -2266,8 +2266,13 @@ async function placeOrder(serviceId) {
       email: window.currentEmail
     };
     if (isDrip) {
-      requestBody.runs = runs;
-      requestBody.interval = interval;
+      requestBody.runs = parseInt(runs);
+      requestBody.interval = parseInt(interval);
+      requestBody.total_quantity = parseInt(totalQty);
+      requestBody.totalQuantity = parseInt(totalQty);
+      requestBody.dripfeed = 1;
+      requestBody.drip_feed = 1;
+      requestBody.isDrip = true;
     }
     if (isCustomComment && customComments) {
       requestBody.comments = customComments;
