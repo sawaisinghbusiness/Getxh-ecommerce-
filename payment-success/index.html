@@ -133,8 +133,7 @@
 
   // Get payment_id — from URL query param (Zerotize appends it) or localStorage
   const urlParams  = new URLSearchParams(window.location.search);
-  const urlKeys    = [...urlParams.keys()];
-  const payment_id = urlKeys.length > 0 ? urlKeys[0] : localStorage.getItem("gxpay_pending_id");
+  const payment_id = urlParams.get("payment_id") || urlParams.get("id") || urlParams.get("order_id") || localStorage.getItem("gxpay_pending_id");
 
   document.getElementById("pidBox").textContent = payment_id ? `Payment ID: ${payment_id}` : "Payment ID not found";
 

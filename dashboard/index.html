@@ -285,12 +285,6 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 .bal-notify-amount{animation:balAmountPop .4s cubic-bezier(.34,1.56,.64,1) .35s both}
 </style>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
-<script>
-  history.pushState(null, '', location.href);
-  window.addEventListener('popstate', function() {
-    history.pushState(null, '', location.href);
-  });
-</script>
   <style>body{opacity:0;transition:opacity .18s ease}</style>
 
 <!-- Brand Loader CSS -->
@@ -1660,10 +1654,11 @@ if(_email){
 
 // ── TABS & PILLS ──
 function switchOrderTab(t) {
-
   const isNew=t==='new';
-  document.getElementById('tabNewOrder').className='flex-1 py-3 text-sm font-bold transition-all '+(isNew?'bg-[#2196f3] text-white':'bg-[#0e1629] text-gray-400');
-  document.getElementById('tabSubscription').className='flex-1 py-3 text-sm font-bold transition-all '+(!isNew?'bg-[#2196f3] text-white':'bg-[#0e1629] text-gray-400');
+  const tabNew = document.getElementById('tabNewOrder');
+  if (tabNew) tabNew.className='flex-1 py-3 text-sm font-bold transition-all '+(isNew?'bg-[#2196f3] text-white':'bg-[#0e1629] text-gray-400');
+  const tabSub = document.getElementById('tabSubscription');
+  if (tabSub) tabSub.className='flex-1 py-3 text-sm font-bold transition-all '+(!isNew?'bg-[#2196f3] text-white':'bg-[#0e1629] text-gray-400');
 }
 function filterPlatform(el) {
   
@@ -2024,6 +2019,17 @@ function validateOrderForm() {
         if (!firstInvalid) dbShake("dripInterval");
         firstInvalid = firstInvalid || "dripInterval";
       }
+
+      const qtyVal = document.getElementById("quantityInput").value.trim();
+      const qty = parseInt(qtyVal) || 0;
+      if (qty > 0 && runs > 0 && _selSvc.max) {
+        const totalQty = qty * runs;
+        if (totalQty > _selSvc.max) {
+          dbSetErr("dripRuns", "err-dripRuns", "Total quantity (qty × runs) exceeds max limit of " + _selSvc.max);
+          if (!firstInvalid) dbShake("dripRuns");
+          firstInvalid = firstInvalid || "dripRuns";
+        }
+      }
     }
 
     const cb = document.getElementById("policyAcceptCb");
@@ -2067,7 +2073,7 @@ function updateTotalPrice() {
       priceEl.textContent = '';
       return;
     }
-    const orderPrice = parseFloat(((lines / 1000) * _selSvc.price).toFixed(2));
+    const orderPrice = Math.max(0.01, parseFloat(((lines / 1000) * _selSvc.price).toFixed(2)));
     priceEl.textContent = '₹' + orderPrice.toFixed(2) + '  ';
     return;
   }
@@ -2090,7 +2096,7 @@ function updateTotalPrice() {
     totalQtyEl.value = '';
   }
 
-  const orderPrice = parseFloat(((totalQty / 1000) * _selSvc.price).toFixed(2));
+  const orderPrice = Math.max(0.01, parseFloat(((totalQty / 1000) * _selSvc.price).toFixed(2)));
   priceEl.textContent = '₹' + orderPrice.toFixed(2) + '  ';
 }
 
@@ -2185,9 +2191,13 @@ async function placeOrder(serviceId) {
     return;
   }
 
+  // Custom comments
+  const isCustomComment = _selSvc && _selSvc.name && _selSvc.name.toLowerCase().includes('custom');
+  const customComments = isCustomComment ? document.getElementById('customCommentsInput').value.trim() : null;
+
   // Calculate order price
-  const totalQty = isDrip ? (parseInt(quantity) * runs) : parseInt(quantity);
-  const orderPrice = parseFloat(((totalQty / 1000) * (_selSvc ? _selSvc.price : 0)).toFixed(2));
+  const totalQty = isDrip ? (parseInt(quantity) * runs) : (isCustomComment ? (customComments ? customComments.split('\n').filter(l => l.trim() !== '').length : parseInt(quantity)) : parseInt(quantity));
+  const orderPrice = Math.max(0.01, parseFloat(((totalQty / 1000) * (_selSvc ? _selSvc.price : 0)).toFixed(2)));
 
   // ── Balance check ──
   if (_currentBalance < orderPrice) {
@@ -2223,6 +2233,9 @@ async function placeOrder(serviceId) {
     if (isDrip) {
       requestBody.runs = runs;
       requestBody.interval = interval;
+    }
+    if (isCustomComment && customComments) {
+      requestBody.comments = customComments;
     }
 
     const res = await fetch('https://getxh.online/api/order', {
@@ -2275,6 +2288,9 @@ async function placeOrder(serviceId) {
           dbOrderData.interval = interval;
           dbOrderData.isDrip = true;
           dbOrderData.totalQuantity = totalQty;
+        }
+        if (isCustomComment && customComments) {
+          dbOrderData.comments = customComments;
         }
         window._addDoc(window._collection(window.db, 'orders'), dbOrderData)
           .catch(e => console.error('Order save error:', e));
@@ -2400,7 +2416,8 @@ function closeSuccessModal(){
   if(_selSvc){
     const qty=parseInt(document.getElementById('quantityInput').value);
     if(qty&&qty>=_selSvc.min&&qty<=_selSvc.max){
-      document.getElementById('totalPrice').textContent='₹'+fmtPrice((qty/1000)*_selSvc.price)+'  ';
+      const orderPrice = Math.max(0.01, parseFloat(((qty / 1000) * _selSvc.price).toFixed(2)));
+      document.getElementById('totalPrice').textContent='₹'+orderPrice.toFixed(2)+'  ';
     } else {
       document.getElementById('totalPrice').textContent='';
     }

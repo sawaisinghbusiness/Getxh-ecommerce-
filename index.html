@@ -1460,10 +1460,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim,.orb{
       </div>
     </div>
 
-    <div class="reviews-nav" id="reviewsNav">
-      <button class="rev-dot active" onclick="goReview(0)" aria-label="Review page 1"></button>
-      <button class="rev-dot" onclick="goReview(1)" aria-label="Review page 2"></button>
-    </div>
+    <div class="reviews-nav" id="reviewsNav"></div>
   </div>
 </section>
 
@@ -1655,19 +1652,106 @@ function toggleFaq(el){
   if(!track || !nav) return;
 
   const cards = track.querySelectorAll('.review-card');
-  const perView = window.innerWidth < 700 ? 1 : window.innerWidth < 1000 ? 2 : 3;
-  const pages = Math.ceil(cards.length / perView);
+  if(!cards.length) return;
+
   let cur = 0;
+  let autoTimer = null;
+
+  function getPerView(){
+    if (window.innerWidth <= 960) return 1;
+    return 3;
+  }
+
+  function getPages(){
+    const perView = getPerView();
+    return Math.max(1, Math.ceil(cards.length / perView));
+  }
+
+  function renderDots(){
+    const pages = getPages();
+    nav.innerHTML = '';
+    for (let i = 0; i < pages; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'rev-dot' + (i === cur ? ' active' : '');
+      btn.setAttribute('aria-label', `Review slide ${i + 1}`);
+      btn.addEventListener('click', () => {
+        goReview(i);
+        restartAuto();
+      });
+      nav.appendChild(btn);
+    }
+  }
 
   function goReview(idx){
+    const pages = getPages();
+    const perView = getPerView();
     cur = Math.max(0, Math.min(idx, pages - 1));
-    const cardW = cards[0].offsetWidth + 18;
-    track.style.transform = `translateX(-${cur * perView * cardW}px)`;
-    nav.querySelectorAll('.rev-dot').forEach((d,i)=>d.classList.toggle('active', i===cur));
+    const cardW = cards[0].offsetWidth;
+    const gap = 18;
+    const shift = cur * perView * (cardW + gap);
+    track.style.transform = `translateX(-${shift}px)`;
+    nav.querySelectorAll('.rev-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === cur);
+    });
   }
   window.goReview = goReview;
 
-  setInterval(()=>goReview((cur+1) % pages), 5000);
+  function startAuto(){
+    stopAuto();
+    autoTimer = setInterval(() => {
+      const pages = getPages();
+      if (pages > 1) {
+        goReview((cur + 1) % pages);
+      }
+    }, 5000);
+  }
+
+  function stopAuto(){
+    if (autoTimer) {
+      clearInterval(autoTimer);
+      autoTimer = null;
+    }
+  }
+
+  function restartAuto(){
+    stopAuto();
+    startAuto();
+  }
+
+  // Touch swipe support for mobile
+  let startX = 0;
+  track.addEventListener('touchstart', (e) => {
+    if (e.touches && e.touches[0]) startX = e.touches[0].clientX;
+  }, { passive: true });
+  track.addEventListener('touchend', (e) => {
+    if (!e.changedTouches || !e.changedTouches[0]) return;
+    const diff = startX - e.changedTouches[0].clientX;
+    const pages = getPages();
+    if (Math.abs(diff) > 40) {
+      if (diff > 0 && cur < pages - 1) {
+        goReview(cur + 1);
+        restartAuto();
+      } else if (diff < 0 && cur > 0) {
+        goReview(cur - 1);
+        restartAuto();
+      }
+    }
+  }, { passive: true });
+
+  renderDots();
+  goReview(0);
+  startAuto();
+
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      const pages = getPages();
+      if (cur >= pages) cur = pages - 1;
+      renderDots();
+      goReview(cur);
+    }, 100);
+  });
 })();
 </script>
 

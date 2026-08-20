@@ -589,6 +589,12 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
         createdAt: serverTimestamp()
       }, { merge: true }).catch(() => {});
 
+      setDoc(doc(db, "Users", cred.user.uid), {
+        Balance: 0,
+        TotalOrders: 0,
+        TotalSpent: 0
+      }, { merge: true }).catch(() => {});
+
       /* ── 2e: redirect ── */
       window.location.replace("/dashboard");
 

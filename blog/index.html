@@ -394,33 +394,62 @@ function estimateReadTime(text) {
 }
 
 function escHtml(str) {
-  return String(str)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
-// Simple markdown-like renderer for the body field
+// Safe markdown renderer for the body field
 function renderBody(content) {
   if (!content) return '';
-  // If content is already HTML (starts with a tag), render as-is (sanitized)
-  if (content.trimStart().startsWith('<')) {
-    return content; // admin-provided HTML
+  // Always escape HTML entities first to prevent Stored XSS
+  const safe = escHtml(content);
+
+  // Normalize newlines
+  const normalized = safe.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+  // Ensure block elements have double-newline separation
+  const preprocessed = normalized
+    .replace(/^(\s*#{1,3}\s+[^\n]+)/gm, '\n\n$1\n\n')
+    .replace(/^(\s*---+\s*)$/gm, '\n\n$1\n\n');
+
+  const rawBlocks = preprocessed.split(/\n{2,}/);
+  const htmlBlocks = [];
+
+  function formatInline(text) {
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/`(.+?)`/g, '<code>$1</code>');
   }
-  // Otherwise treat as plain text with basic markdown
-  return content
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h2>$1</h2>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g, '<code>$1</code>')
-    .replace(/^\> (.+)$/gm, '<blockquote>$1</blockquote>')
-    .replace(/^---$/gm, '<hr>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br>')
-    .replace(/^(.)/,'<p>$1')
-    .replace(/(.)$/,'$1</p>');
+
+  for (let block of rawBlocks) {
+    block = block.trim();
+    if (!block) continue;
+
+    // Headings
+    if (/^###\s+(.+)$/.test(block)) {
+      htmlBlocks.push(block.replace(/^###\s+(.+)$/gm, (_, t) => `<h3>${formatInline(t.trim())}</h3>`));
+    } else if (/^##\s+(.+)$/.test(block)) {
+      htmlBlocks.push(block.replace(/^##\s+(.+)$/gm, (_, t) => `<h2>${formatInline(t.trim())}</h2>`));
+    } else if (/^#\s+(.+)$/.test(block)) {
+      htmlBlocks.push(block.replace(/^#\s+(.+)$/gm, (_, t) => `<h2>${formatInline(t.trim())}</h2>`));
+    } else if (/^---+$/.test(block)) {
+      htmlBlocks.push('<hr>');
+    } else if (/^(?:&gt;|>)/.test(block)) {
+      const quoteContent = block.split('\n').map(l => l.replace(/^(?:&gt;|>)\s?/, '')).join('<br>');
+      htmlBlocks.push(`<blockquote>${formatInline(quoteContent)}</blockquote>`);
+    } else {
+      // Paragraph block with <br> for intra-paragraph newlines
+      const formatted = formatInline(block).replace(/\n/g, '<br>');
+      htmlBlocks.push(`<p>${formatted}</p>`);
+    }
+  }
+
+  return htmlBlocks.join('\n');
 }
 
 function showNotFound() {

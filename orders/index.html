@@ -43,9 +43,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 @media (max-width: 1023px) { aside.desktop-sidebar { display: none !important; } }
 @media (min-width: 1024px) {
   aside.desktop-sidebar { display: flex !important; flex-direction: column !important; }
-  .lg\:pl-72 { padding-left: 288px !important; }
+  .lg\:pl-72 { padding-left: 250px !important; }
 }
-aside.desktop-sidebar { position:fixed;top:0;left:0;bottom:0;width:288px;z-index:30;overflow:hidden;border-right:1px solid rgba(255,255,255,0.1);background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);flex-direction:column; }
+aside.desktop-sidebar { position:fixed;top:0;left:0;bottom:0;width:250px;z-index:30;overflow:hidden;border-right:1px solid rgba(255,255,255,0.1);background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);flex-direction:column; }
 aside.desktop-sidebar .flex-1 { flex:1;overflow-y:auto;padding:12px; }
 aside.desktop-sidebar .flex-1 > a, aside.desktop-sidebar .flex-1 > button { display:flex !important;align-items:center !important;gap:12px !important;width:100%;text-align:left;text-decoration:none; }
 .order-card { }
@@ -118,92 +118,104 @@ button:focus-visible, input:focus-visible, a:focus-visible, select:focus-visible
 
 <body class="bg-[#0b1220] text-white min-h-screen">
 
-<aside class="desktop-sidebar hidden">
-  <div class="px-5 pt-8 pb-5 border-b border-white/10" style="background:linear-gradient(135deg,#0e1f3d,#162844);flex-shrink:0;">
-    <div class="flex items-center gap-3 mb-4" style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-      <div style="width:40px;height:40px;min-width:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#2196f3,#00bcd4);">
+<aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-[250px] lg:flex-col lg:overflow-hidden lg:border-r lg:border-white/10 desktop-sidebar"
+  style="background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);">
+  <div class="px-5 pt-8 pb-5 border-b border-white/10" style="background:linear-gradient(135deg,#0e1f3d,#162844);">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#2196f3,#00bcd4);width:40px;height:40px;min-width:40px;display:flex;align-items:center;justify-content:center;border-radius:12px;flex-shrink:0;">
         <span class="material-symbols-outlined text-white" style="font-size:20px">verified_user</span>
       </div>
       <div>
         <p class="font-black text-white text-base tracking-wide">GETXH<span style="color:#2196f3">.IN</span></p>
-        <div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
-          <div style="width:6px;height:6px;border-radius:50%;background:#4ade80;flex-shrink:0;"></div>
+        <div class="flex items-center gap-1 mt-0.5" style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+          <div class="h-1.5 w-1.5 rounded-full bg-green-400" style="width:6px;height:6px;border-radius:50%;background:#4ade80;flex-shrink:0;"></div>
           <p class="text-xs font-semibold" style="color:#2196f3">Online</p>
         </div>
       </div>
     </div>
   </div>
-  <div class="flex-1">
-    <a href="/dashboard" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#7aabdf;">dashboard</span>
+  <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:3px;padding:10px;">
+    <a href="/dashboard" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;text-decoration:none;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#8b5cf6,#6d28d9);">
+        <span class="material-symbols-outlined" style="font-size:15px;color:#fff;">dashboard</span>
       </div>
-      <span style="font-weight:700;color:#d1d5db;font-size:14px;">Dashboard</span>
-      <span class="material-symbols-outlined" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">Dashboard</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="/dashboard" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#7aabdf;">add_shopping_cart</span>
+    <a href="/dashboard" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;width:100%;text-align:left;text-decoration:none;background:transparent;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#9ca3af,#6b7280);">
+        <span class="material-symbols-outlined" style="font-size:15px;color:#fff;">add_shopping_cart</span>
       </div>
-      <span style="font-weight:700;color:#d1d5db;font-size:14px;">New Order</span>
-      <span class="material-symbols-outlined" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">New Order</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="/orders" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#b8a050;">list_alt</span>
+    <a href="/orders" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 transition-all active:scale-[0.98]" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;text-decoration:none;background:#1e2c43;border:1px solid rgba(255,255,255,0.06);color:#fff;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#3b82f6,#ec4899);">
+        <span class="material-symbols-outlined" style="font-size:15px;color:#fff;">list_alt</span>
       </div>
-      <span style="font-weight:700;color:white;font-size:14px;">Orders</span>
-      <span class="material-symbols-outlined" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-white text-sm" style="font-size:16px;">Orders</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="/support" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#9d82d4;">support_agent</span>
+    <a href="/support" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;text-decoration:none;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#22c55e,#16a34a);">
+        <span class="material-symbols-outlined" style="font-size:15px;color:#fff;">support_agent</span>
       </div>
-      <span style="font-weight:700;color:#d1d5db;font-size:14px;">Support</span>
-      <span class="material-symbols-outlined" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">Support</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="/wallet" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#6ab890;">account_balance_wallet</span>
+    <a href="/wallet" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;text-decoration:none;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#e5e7eb,#9ca3af);">
+        <span class="material-symbols-outlined" style="font-size:15px;color:#333;">account_balance_wallet</span>
       </div>
-      <span style="font-weight:700;color:#d1d5db;font-size:14px;">Add Funds</span>
-      <span class="material-symbols-outlined" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">Add Funds</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="/coming-soon" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#c07840;">person_add</span>
+    <a href="/coming-soon" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;text-decoration:none;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#fb923c,#ea580c);">
+        <span class="material-symbols-outlined" style="font-size:15px;color:#fff;">person_add</span>
       </div>
-      <span style="font-weight:700;color:#d1d5db;font-size:14px;">Affiliates</span>
-      <span class="material-symbols-outlined" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">Affiliates</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;text-decoration:none;border:1px solid transparent;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
-        <span style="color:#6ab890;font-weight:700;font-size:18px;line-height:1;">W</span>
+    <a href="/coming-soon" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;width:100%;text-align:left;text-decoration:none;background:transparent;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#94a3b8,#64748b);">
+        <span class="material-symbols-outlined" style="font-size:15px;color:#fff;">autorenew</span>
       </div>
-      <span style="font-weight:700;color:#d1d5db;font-size:14px;">WhatsApp</span>
-      <span class="material-symbols-outlined" style="font-size:18px;color:#6b7280;margin-left:auto;">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">Subscriptions</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <div style="height:1px;background:rgba(255,255,255,0.1);margin:12px 8px;"></div>
-    <button onclick="logout()" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;margin-bottom:6px;width:100%;text-align:left;background:transparent;border:1px solid transparent;cursor:pointer;">
-      <div style="width:44px;height:44px;min-width:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.15);">
-        <span class="material-symbols-outlined" style="font-size:22px;color:#e07070;">logout</span>
+    <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer"
+      class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;text-decoration:none;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#25D366,#128C7E);">
+        <span style="color:#fff;font-weight:700;font-size:12px;line-height:1;">W</span>
       </div>
-      <span style="font-weight:700;color:#f87171;font-size:14px;">Logout</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">WhatsApp</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <div class="h-px bg-white/10 my-3 mx-2" style="height:1px;background:rgba(255,255,255,0.1);margin:12px 8px;"></div>
+    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;width:100%;text-align:left;background:transparent;border:1px solid transparent;color:#f87171;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.15);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#f87171;">logout</span>
+      </div>
+      <span class="font-bold text-red-400 text-sm" style="font-size:16px;">Logout</span>
     </button>
   </div>
-  <div style="padding:16px 20px;flex-shrink:0;border-top:1px solid rgba(255,255,255,0.1);">
-    <div style="display:grid;gap:8px;font-size:12px;">
-      <a href="/privacy" style="color:#9ca3af;text-decoration:none;">Privacy Policy</a>
-      <a href="/terms" style="color:#9ca3af;text-decoration:none;">Terms</a>
-      <a href="/refund" style="color:#9ca3af;text-decoration:none;">Refund Policy</a>
+  <div class="px-5 py-4 border-t border-white/10">
+    <div class="grid gap-2 text-xs">
+      <a href="/privacy" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+      <a href="/terms" class="text-gray-400 hover:text-white transition">Terms</a>
+      <a href="/refund" class="text-gray-400 hover:text-white transition">Refund Policy</a>
+      <a href="/cancellation" class="text-gray-400 hover:text-white transition">Cancellation</a>
+      <a href="/about" class="text-gray-400 hover:text-white transition">About</a>
+      <a href="/contact" class="text-gray-400 hover:text-white transition">Contact</a>
     </div>
-    <p style="font-size:12px;color:#4b5563;text-align:center;margin-top:8px;">GETXH.IN © 2026 · All rights reserved</p>
+    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2026 · All rights reserved</p>
   </div>
 </aside>
 
 <span id="walletBalanceTop" class="hidden"></span>
 
-<div class="lg:pl-72">
+<div class="lg:pl-[250px]">
 
 <!-- MAIN CONTENT -->
 <div class="w-full px-4 py-4 pb-[120px] lg:px-8 lg:py-8">
@@ -738,7 +750,7 @@ async function cancelOrder(apiOrderId, docId, eid) {
     });
     const data = await res.json();
 
-    if (res.ok) {
+    if (res.ok && data && (data.cancel || data.status === 'Cancelled' || data.success) && !data.error) {
       // Update Firestore order status → Cancelled
       if (typeof window._updateOrderInFirestore === 'function') {
         await window._updateOrderInFirestore(docId, 'Cancelled');
@@ -761,7 +773,7 @@ async function cancelOrder(apiOrderId, docId, eid) {
     } else {
       btn.disabled = false;
       btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#f87171">cancel</span> Cancel Order';
-      showToast('error', 'Cancellation Failed', data.message || 'Could not cancel this order.');
+      showToast('error', 'Cancellation Failed', (data && (data.error || data.message)) || 'Could not cancel this order.');
     }
   } catch(err) {
     btn.disabled = false;

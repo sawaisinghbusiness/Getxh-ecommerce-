@@ -437,12 +437,12 @@ function renderCards(posts) {
   grid.innerHTML = posts.map(post => {
     const slug = post.slug || slugify(post.title || post.id);
     const imgHtml = post.coverImage
-      ? `<img class="blog-card-img" src="${post.coverImage}" alt="${escHtml(post.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+      ? `<img class="blog-card-img" src="${escHtml(post.coverImage)}" alt="${escHtml(post.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
         + `<div class="blog-card-img-placeholder" style="display:none">📝</div>`
       : `<div class="blog-card-img-placeholder">📝</div>`;
 
     return `
-    <a href="/blog/?id=${post.id}" class="blog-card">
+    <a href="/blog/?id=${encodeURIComponent(post.id)}" class="blog-card">
       ${imgHtml}
       <div class="blog-card-body">
         ${post.category ? `<div class="blog-card-category">${escHtml(post.category)}</div>` : ''}
@@ -463,9 +463,9 @@ function renderCards(posts) {
 }
 
 function escHtml(str) {
-  return String(str)
+  return String(str || '')
     .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
 async function loadBlogs() {

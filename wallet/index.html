@@ -403,14 +403,42 @@ function renderTxList(txs) {
     return;
   }
   el.innerHTML = txs.map(t => {
-    const date  = t.createdAt ? new Date(t.createdAt).toLocaleDateString("en-IN", {day:"2-digit",month:"short",year:"numeric"}) : "—";
+    let date = "—";
+    try {
+      if (t.createdAt?.toDate && typeof t.createdAt.toDate === "function") {
+        date = t.createdAt.toDate().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+      } else if (t.createdAt?.seconds) {
+        date = new Date(t.createdAt.seconds * 1000).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+      } else if (t.createdAt) {
+        const d = new Date(t.createdAt);
+        if (!isNaN(d.getTime())) {
+          date = d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+        }
+      }
+    } catch (e) {
+      date = "—";
+    }
+
+    const isDebit = t.type === 'debit' ||
+      (typeof t.amount === 'number' && t.amount < 0) ||
+      (t.description && /debit|deduct/i.test(t.description)) ||
+      (t.reason && /debit|deduct/i.test(t.reason));
+
+    const title = isDebit
+      ? (t.method === 'admin' || (t.reason && /admin/i.test(t.reason)) ? "Admin Debit" : "Balance Adjustment")
+      : (t.title || (t.type === 'credit' && t.method === 'admin' ? "Admin Credit" : "Wallet Recharge"));
+
+    const rawAmt = Math.abs(Number(t.amount) || 0);
+    const amtStr = (isDebit ? "-₹" : "₹") + rawAmt.toFixed(2);
+    const amtColor = isDebit ? "text-red-400" : "text-white";
+
     const color = t.status === "success" ? "text-green-400" : t.status === "failed" ? "text-red-400" : "text-yellow-400";
     const badge = t.status === "success" ? "bg-green-500/10 border-green-500/20" : t.status === "failed" ? "bg-red-500/10 border-red-500/20" : "bg-yellow-500/10 border-yellow-500/20";
     return `<div class="flex items-center justify-between bg-white/3 border border-white/6 rounded-2xl px-4 py-3 mb-3">
-      <div><p class="text-sm font-bold">Wallet Recharge</p><p class="text-xs text-gray-500">${date}</p></div>
+      <div><p class="text-sm font-bold">${title}</p><p class="text-xs text-gray-500">${date}</p></div>
       <div class="text-right">
-        <p class="text-sm font-black">₹${t.amount.toFixed(2)}</p>
-        <span class="text-xs font-bold px-2 py-0.5 rounded-lg border ${badge} ${color}">${t.status}</span>
+        <p class="text-sm font-black ${amtColor}">${amtStr}</p>
+        <span class="text-xs font-bold px-2 py-0.5 rounded-lg border ${badge} ${color}">${t.status || 'success'}</span>
       </div>
     </div>`;
   }).join("");

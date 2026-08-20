@@ -953,19 +953,19 @@ function renderOrderList(orders) {
           '</div>' +
         '</div>' +
         '<div class="mb-3 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-slate-400">' +
-          '<span>Qty: <b class="font-bold text-slate-200">' + (o.quantity || o.qty || '—') + '</b></span>' +
+          '<span>Qty: <b class="font-bold text-slate-200">' + escHtml(String(o.quantity || o.qty || '—')) + '</b></span>' +
           '<span>User: <b class="font-bold text-slate-200">' + escHtml(uidShort) + '</b></span>' +
           (o.apiOrderId ? '<span>API: <b class="font-bold text-slate-200">' + escHtml(String(o.apiOrderId)) + '</b></span>' : '') +
         '</div>' +
         '<div class="flex flex-wrap items-center gap-2">' +
           '<span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Status:</span>' +
-          '<select class="status-sel" onchange="window.updateOrderStatus(\'' + o.id + '\',this.value)">' +
+          '<select class="status-sel" onchange="window.updateOrderStatus(\'' + escHtml(o.id) + '\',this.value)">' +
             '<option value="pending"'    + (st === 'pending'    ? ' selected' : '') + '>Pending</option>' +
             '<option value="processing"' + (st === 'processing' ? ' selected' : '') + '>Processing</option>' +
             '<option value="completed"'  + (st === 'completed'  ? ' selected' : '') + '>Completed</option>' +
             '<option value="cancelled"'  + (st === 'cancelled'  ? ' selected' : '') + '>Cancelled</option>' +
           '</select>' +
-          (o.link ? '<a href="' + escHtml(o.link) + '" target="_blank" rel="noopener noreferrer" class="ml-auto max-w-[150px] truncate text-xs font-semibold text-sky-400 hover:underline">' + escHtml(o.link) + '</a>' : '') +
+          (o.link ? (/^https?:\/\//i.test(o.link) ? '<a href="' + escHtml(o.link) + '" target="_blank" rel="noopener noreferrer" class="ml-auto max-w-[150px] truncate text-xs font-semibold text-sky-400 hover:underline">' + escHtml(o.link) + '</a>' : '<span class="ml-auto max-w-[150px] truncate text-xs font-semibold text-slate-400">' + escHtml(o.link) + '</span>') : '') +
         '</div>' +
       '</div>' +
       '</div>';
@@ -1126,6 +1126,27 @@ function escHtml(v) {
   return String(v || '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+var _adminToastTimer = null;
+function showAdminToast(msg, isError) {
+  var t = document.getElementById('adminToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'adminToast';
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,0.5);transition:all 0.3s ease;pointer-events:none;max-width:90vw;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.background = isError ? 'rgba(239,68,68,0.95)' : 'rgba(16,185,129,0.95)';
+  t.style.color = '#fff';
+  t.style.border = isError ? '1px solid rgba(239,68,68,0.3)' : '1px solid rgba(16,185,129,0.3)';
+  t.style.opacity = '1';
+  t.style.transform = 'translateY(0)';
+  clearTimeout(_adminToastTimer);
+  _adminToastTimer = setTimeout(function() {
+    t.style.opacity = '0';
+    t.style.transform = 'translateY(10px)';
+  }, 3000);
 }
 </script>
 
@@ -1411,7 +1432,13 @@ function initAdminData() {
   };
 
   window.updateOrderStatus = async function(orderId, status) {
-    try { await updateDoc(doc(db, 'orders', orderId), { status, adminOverride: true }); } catch {}
+    try {
+      await updateDoc(doc(db, 'orders', orderId), { status, adminOverride: true });
+      showAdminToast('Order status updated → ' + status, false);
+    } catch (err) {
+      console.error('updateOrderStatus error:', err);
+      showAdminToast('Failed to update status: ' + (err.message || 'Unknown error'), true);
+    }
   };
 
   window.adminCloseTicket = async function() {

@@ -259,8 +259,24 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);
   font-size:12px;color:#c4b5fd;margin-bottom:16px;
 }
 
+.mobile-toggle-btn{
+  display:none;background:none;border:none;color:var(--text);cursor:pointer;padding:6px;border-radius:8px;
+  align-items:center;justify-content:center;
+}
+.mobile-toggle-btn:hover{background:var(--surface2);}
+.sidebar-backdrop{
+  display:none;position:fixed;inset:0;top:58px;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:55;
+}
+
 @media(max-width:700px){
-  .sidebar{display:none;}
+  .mobile-toggle-btn{display:flex;}
+  .sidebar{
+    display:none;position:fixed;top:58px;left:0;bottom:0;width:240px;
+    background:var(--surface);z-index:60;border-right:1px solid var(--border);
+    box-shadow:4px 0 24px rgba(0,0,0,0.5);
+  }
+  .sidebar.open{display:flex;}
+  .sidebar-backdrop.open{display:block;}
   .main-content{padding:20px;}
   .form-row{grid-template-columns:1fr;}
   .topbar{padding:0 16px;}
@@ -287,7 +303,16 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);
 <div id="appScreen">
   <!-- TOPBAR -->
   <div class="topbar">
-    <div class="topbar-logo">GETXH <span>Blog</span> Admin</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button class="mobile-toggle-btn" onclick="toggleMobileSidebar()" aria-label="Toggle navigation">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <div class="topbar-logo">GETXH <span>Blog</span> Admin</div>
+    </div>
     <div class="topbar-right">
       <span class="topbar-email" id="topbarEmail"></span>
       <button class="btn-sm" onclick="doLogout()">Sign Out</button>
@@ -295,9 +320,11 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);
     </div>
   </div>
 
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleMobileSidebar(false)"></div>
+
   <div class="app-layout">
     <!-- SIDEBAR -->
-    <div class="sidebar">
+    <div class="sidebar" id="mainSidebar">
       <button class="sidebar-item active" id="sideAll" onclick="showSection('list')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
@@ -520,10 +547,14 @@ function renderPostsList() {
   }
   list.innerHTML = `<div class="posts-list">${allPosts.map(post => {
     const isPubl = post.published === true;
-    const date = post.publishedAt?.toDate ? post.publishedAt.toDate().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '—';
+    const postDate = post.publishedAt || post.createdAt;
+    const date = postDate?.toDate
+      ? postDate.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+      : (postDate ? new Date(postDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—');
     const thumb = post.coverImage
-      ? `<img class="post-row-thumb" src="${post.coverImage}" alt="" onerror="this.style.display='none'">`
+      ? `<img class="post-row-thumb" src="${escHtml(post.coverImage)}" alt="" onerror="this.style.display='none'">`
       : `<div class="post-row-thumb-ph">📝</div>`;
+    const safeId = escHtml(post.id);
     return `
     <div class="post-row">
       ${thumb}
@@ -536,15 +567,26 @@ function renderPostsList() {
         </div>
       </div>
       <div class="post-row-actions">
-        <button class="btn-icon" onclick="openEditPost('${post.id}')">Edit</button>
-        <button class="btn-icon danger" onclick="openDeleteModal('${post.id}')">Delete</button>
+        <button class="btn-icon" onclick="openEditPost('${safeId}')">Edit</button>
+        <button class="btn-icon danger" onclick="openDeleteModal('${safeId}')">Delete</button>
       </div>
     </div>`;
   }).join('')}</div>`;
 }
 
+// ── MOBILE NAVIGATION ──
+window.toggleMobileSidebar = function(force) {
+  const sb = document.getElementById('mainSidebar');
+  const bd = document.getElementById('sidebarBackdrop');
+  if (!sb || !bd) return;
+  const isOpen = force !== undefined ? force : !sb.classList.contains('open');
+  sb.classList.toggle('open', isOpen);
+  bd.classList.toggle('open', isOpen);
+};
+
 // ── EDITOR ──
 window.showSection = function(section) {
+  window.toggleMobileSidebar(false);
   document.getElementById('listSection').style.display   = section === 'list'   ? 'block' : 'none';
   document.getElementById('editorSection').style.display = section === 'editor' ? 'block' : 'none';
   document.getElementById('sideAll').classList.toggle('active', section === 'list');
@@ -553,6 +595,7 @@ window.showSection = function(section) {
 };
 
 window.openNewPost = function() {
+  window.toggleMobileSidebar(false);
   editingId = null;
   isPublished = false;
   document.getElementById('editorTitle').textContent = 'New Post';
@@ -568,6 +611,7 @@ window.openNewPost = function() {
 };
 
 window.openEditPost = function(id) {
+  window.toggleMobileSidebar(false);
   const post = allPosts.find(p => p.id === id);
   if (!post) return;
   editingId = id;
@@ -679,7 +723,7 @@ function showToast(msg, type='success') {
 }
 
 function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
 // Init

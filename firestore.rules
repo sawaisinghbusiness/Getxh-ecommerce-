@@ -21,10 +21,8 @@ service cloud.firestore {
 
     match /Users/{userId} {
       allow read: if isAdmin() || isOwner(userId);
-      // Allow document creation on signup or wallet setup
-      allow create: if isAdmin() || isOwner(userId);
-      // Allow update/delete for Admin or document Owner (for order balance deduction)
-      allow update, delete: if isAdmin() || isOwner(userId);
+      allow create: if isAdmin() || (isOwner(userId) && (!('Balance' in request.resource.data) || request.resource.data.Balance == 0));
+      allow update, delete: if isAdmin();
     }
 
     match /users/{userId} {
@@ -62,7 +60,12 @@ service cloud.firestore {
     }
 
     match /otp_codes/{docId} {
-      allow read, write: if isSignedIn();
+      allow read, write: if isAdmin();
+    }
+
+    match /blogs/{blogId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /walletTxns/{txnId} {

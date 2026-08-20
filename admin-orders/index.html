@@ -353,7 +353,9 @@ function renderTable(orders) {
       '<td><span class="text-slate-200 font-medium" title="' + escAttr(o.serviceName || o.service || '') + '">' + svc + '</span></td>' +
       // Link
       '<td>' + (link
-        ? '<a href="' + escHtml(link) + '" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:underline text-[11px]" title="' + escHtml(link) + '">' + escHtml(linkShort) + '</a>'
+        ? (/^https?:\/\//i.test(link)
+            ? '<a href="' + escHtml(link) + '" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:underline text-[11px]" title="' + escHtml(link) + '">' + escHtml(linkShort) + '</a>'
+            : '<span class="text-slate-400 text-[11px]" title="' + escHtml(link) + '">' + escHtml(linkShort) + '</span>')
         : '<span class="text-slate-600">—</span>') +
       '</td>' +
       // Qty
@@ -419,7 +421,7 @@ function renderCards(orders) {
               escHtml(uid.length > 18 ? uid.slice(0,18)+'…' : uid) +
             '</span>' +
           '</div>' +
-          (link ? '<div class="col-span-2"><span class="text-slate-500">Link: </span><a href="' + escHtml(link) + '" target="_blank" rel="noopener noreferrer" class="text-sky-400 text-[11px] hover:underline">' + escHtml(link.length > 30 ? link.slice(0,30)+'…':link) + '</a></div>' : '') +
+          (link ? '<div class="col-span-2"><span class="text-slate-500">Link: </span>' + (/^https?:\/\//i.test(link) ? '<a href="' + escHtml(link) + '" target="_blank" rel="noopener noreferrer" class="text-sky-400 text-[11px] hover:underline">' + escHtml(link.length > 30 ? link.slice(0,30)+'…':link) + '</a>' : '<span class="text-slate-400 text-[11px]">' + escHtml(link.length > 30 ? link.slice(0,30)+'…':link) + '</span>') + '</div>' : '') +
         '</div>' +
         // Status dropdown
         '<div class="flex items-center gap-2">' +
