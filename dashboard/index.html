@@ -283,6 +283,46 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 .bal-notify-icon{animation:balCoinDrop .5s cubic-bezier(.34,1.56,.64,1) .15s both}
 @keyframes balAmountPop{0%{transform:scale(0.5);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
 .bal-notify-amount{animation:balAmountPop .4s cubic-bezier(.34,1.56,.64,1) .35s both}
+
+/* NEW ORDER & TOTAL AMOUNT BADGE GRADIENTS & ANIMATIONS */
+.tab-new-order-badge {
+  background: linear-gradient(135deg, #E1306C 0%, #F77737 50%, #FCAF45 100%) !important;
+  background-size: 180% 180% !important;
+  animation: tabBannerFlow 7s ease-in-out infinite alternate !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 18px rgba(225, 48, 108, 0.35);
+}
+@keyframes tabBannerFlow {
+  0% { background-position: 0% 40%; }
+  100% { background-position: 100% 60%; }
+}
+
+.order-btn-badge {
+  width: 100%;
+  border-radius: 10px !important;
+  font-weight: 900;
+  font-size: 16px;
+  padding: 14px 0 !important;
+  background: linear-gradient(90deg, #C13584 0%, #E1306C 45%, #F77737 80%, #C13584 100%) !important;
+  background-size: 220% auto !important;
+  animation: btnOrderShimmer 5s linear infinite !important;
+  color: #FFFFFF !important;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  border: none !important;
+  box-shadow: 0 8px 24px rgba(225, 48, 108, 0.35) !important;
+}
+.order-btn-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(225, 48, 108, 0.55) !important;
+}
+@keyframes btnOrderShimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 220% center; }
+}
 </style>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
   <style>body{opacity:0;transition:opacity .18s ease}</style>
@@ -418,20 +458,6 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">Add Funds</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="/coming-soon" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;text-decoration:none;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
-      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#fb923c,#ea580c);">
-        <span class="material-symbols-outlined" style="font-size:15px;color:#fff;">person_add</span>
-      </div>
-      <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">Affiliates</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
-    </a>
-    <button onclick="window.location.href='/coming-soon'" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;width:100%;text-align:left;background:transparent;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
-      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#94a3b8,#64748b);">
-        <span class="material-symbols-outlined" style="font-size:15px;color:#fff;">autorenew</span>
-      </div>
-      <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">Subscriptions</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
-    </button>
     <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer"
       class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;text-decoration:none;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
       <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#25D366,#128C7E);">
@@ -583,7 +609,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   <!-- Tabs -->
   <div class="flex rounded-xl overflow-hidden border border-white/10 mb-3">
     <button id="tabNewOrder" onclick="switchOrderTab('new')"
-      class="flex-1 py-2.5 text-sm font-bold bg-[#2196f3] text-white transition-all">
+      class="flex-1 py-2.5 text-sm font-bold tab-new-order-badge transition-all">
       New Order
     </button>
   </div>
@@ -784,10 +810,9 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         </div>
 
         <!-- ORDER BUTTON -->
-        <button id="placeOrderBtn"
-          style="width:100%;border-radius:10px;font-weight:900;font-size:16px;padding:14px 0;background:linear-gradient(to right,#2196f3,#00bcd4);color:#fff;position:relative;overflow:hidden;cursor:pointer;transition:all 0.2s;box-sizing:border-box;border:none;">
+        <button id="placeOrderBtn" class="order-btn-badge">
           <div class="flex items-center justify-between px-2">
-            <span class="text-xs font-bold uppercase tracking-widest opacity-80">TOTAL AMOUNT</span>
+            <span class="text-xs font-bold uppercase tracking-widest opacity-90">TOTAL AMOUNT</span>
             <div class="flex items-center gap-2">
               <span id="totalPrice" class="text-lg font-black"></span>
               <span class="font-black text-base tracking-wide order-label">ORDER</span>
@@ -1081,28 +1106,6 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg>
       </div>
       <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Add Funds</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
-    </button>
-
-    <!-- Affiliates -->
-    <button onclick="closeMenu();window.location.href='/coming-soon'"
-      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
-      style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;width:100%;text-align:left;background:transparent;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
-      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#f97316,#ea580c);">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      </div>
-      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Affiliates</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
-    </button>
-
-    <!-- Subscriptions -->
-    <button onclick="closeMenu();window.location.href='/coming-soon'"
-      class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
-      style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;width:100%;text-align:left;background:transparent;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
-      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#06b6d4,#0891b2);">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-      </div>
-      <span class="font-bold text-gray-300 text-sm" style="font-weight:700;color:#d1d5db;font-size:15px;">Subscriptions</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </button>
 
@@ -1656,9 +1659,7 @@ if(_email){
 function switchOrderTab(t) {
   const isNew=t==='new';
   const tabNew = document.getElementById('tabNewOrder');
-  if (tabNew) tabNew.className='flex-1 py-3 text-sm font-bold transition-all '+(isNew?'bg-[#2196f3] text-white':'bg-[#0e1629] text-gray-400');
-  const tabSub = document.getElementById('tabSubscription');
-  if (tabSub) tabSub.className='flex-1 py-3 text-sm font-bold transition-all '+(!isNew?'bg-[#2196f3] text-white':'bg-[#0e1629] text-gray-400');
+  if (tabNew) tabNew.className='flex-1 py-2.5 text-sm font-bold transition-all '+(isNew?'tab-new-order-badge':'bg-[#0e1629] text-gray-400');
 }
 function filterPlatform(el) {
   
