@@ -142,34 +142,21 @@
 
 html {
   background-color: #060810 !important;
-  overscroll-behavior: none !important;
-  overscroll-behavior-y: none !important;
-  -webkit-overscroll-behavior: none !important;
-}
-
-html, body {
-  font-family: 'Inter', 'Outfit', 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  overflow-x: hidden !important;
-  max-width: 100vw;
-  overscroll-behavior: none !important;
-  overscroll-behavior-y: none !important;
-  -webkit-overscroll-behavior: none !important;
-  touch-action: pan-y;
+  overscroll-behavior-y: none;
 }
 
 body {
+  font-family: 'Inter', 'Outfit', 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background-color: #060810 !important;
   min-height: 100vh;
   min-height: 100dvh;
-  overscroll-behavior: none !important;
-  overscroll-behavior-y: none !important;
-  -webkit-overscroll-behavior: none !important;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
   background-image: 
     radial-gradient(ellipse 90% 50% at 50% 0%, rgba(18, 30, 55, 0.5) 0%, transparent 70%),
     url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E") !important;
   background-repeat: repeat;
   background-size: auto, 160px 160px;
-  background-attachment: fixed;
 }
 
 /* BRAND BADGE */
@@ -590,6 +577,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 #gx-loader.hide {
   opacity: 0;
   pointer-events: none;
+  visibility: hidden;
+  display: none !important;
 }
 #gx-loader img {
   width: 72px;
@@ -2789,15 +2778,32 @@ function restoreFormState(uid) {
   const savedCat   = sessionStorage.getItem(_fk(uid,'cat'));
   const savedSvcId = sessionStorage.getItem(_fk(uid,'svc'));
   const savedQty   = sessionStorage.getItem(_fk(uid,'qty'));
-  if (!savedCat) return;
+  if (!savedCat) {
+    initDefaultSelection();
+    return;
+  }
   const cat = CATEGORIES.find(c => c.id === savedCat);
-  if (!cat) return;
+  if (!cat) {
+    initDefaultSelection();
+    return;
+  }
   selectCategory(cat);
   if (savedSvcId) {
     const svc = (SERVICES[savedCat] || []).find(s => s.id === parseInt(savedSvcId));
     if (svc) {
       selectService(svc);
       if (savedQty) { document.getElementById('quantityInput').value = savedQty; document.getElementById('quantityInput').dispatchEvent(new Event('input')); }
+    }
+  }
+}
+
+// Helper to auto-select default category and first service instantly
+function initDefaultSelection() {
+  if (typeof CATEGORIES !== 'undefined' && CATEGORIES.length > 0) {
+    if (!_selCat) {
+      selectCategory(CATEGORIES[0]);
+    } else if (!_selSvc && SERVICES[_selCat] && SERVICES[_selCat].length > 0) {
+      selectService(SERVICES[_selCat][0]);
     }
   }
 }
@@ -2809,6 +2815,12 @@ const _origSelectService = selectService;
 selectService = function(svc) { _origSelectService(svc); saveFormState(); };
 document.getElementById('quantityInput').addEventListener('change', saveFormState);
 // link input is intentionally NOT hooked — never persisted
+
+// Auto-select immediately without waiting for images or network
+initDefaultSelection();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initDefaultSelection);
+}
 
 // Called from module auth callback once UID is known
 window._restoreFormForUser = restoreFormState;
@@ -2884,8 +2896,7 @@ function startTracking() {
 }
 
 window.addEventListener('load', () => {
-  const defaultCat = CATEGORIES[0];
-  if(defaultCat) selectCategory(defaultCat);
+  initDefaultSelection();
   startTracking();
 });
 // Close dropdowns on outside click
