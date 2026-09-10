@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign In – GETXH™ | India's #1 Cheapest SMM Panel (getxh.in)</title>
+<meta name="description" content="Sign in to GETXH (getxh.in) — manage orders, wallet balance & live growth. India's most trusted automated SMM panel.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Sign In – GETXH™ | India's #1 Cheapest SMM Panel (getxh.in)">
+<meta property="og:description" content="Sign in to GETXH (getxh.in) — manage orders, wallet balance &amp; live growth. India's most trusted automated SMM panel.">
+<meta property="og:image" content="assets/phone-mockup.png">
+<meta property="og:type" content="website">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sign In – GETXH™ | India's #1 Cheapest SMM Panel (getxh.in)">
+<meta name="twitter:description" content="Sign in to GETXH (getxh.in) — manage orders, wallet balance &amp; live growth. India's most trusted automated SMM panel.">
+<meta name="twitter:image" content="assets/phone-mockup.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ GETXH DESIGN CONSTITUTION v1 — TOKENS ============ */
+:root{
+  --bg-deep:#0B0F16;        /* nav / ticker / footer */
+  --bg-hero:#0E1626;        /* stage top */
+  --bg-slate:#46586E;       /* crypto-style gradient tail */
+  --bg-card:#121B26;        /* login card */
+  --bg-input:#0B0F16;
+  --border:rgba(255,255,255,.08);
+  --primary:#0073FF;        /* GETXH brand blue */
+  --link:#4DA3FF;
+  --up:#0ECB81;
+  --chip-pink:#FF2E93;
+  --text:#FFFFFF;
+  --text-2:#9AA9BD;
+  --text-3:#6C7A8D;
+  --font-display:"Sora",sans-serif;
+  --font-body:"Manrope",sans-serif;
+  --font-mono:"JetBrains Mono",monospace;
+  --r-card:16px; --r-btn:10px;
+  --h-btn:48px; --h-input:48px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg-deep);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:16px; line-height:1.65;
+  overflow-x:hidden;
+}
+img{display:block;max-width:100%}
+a{color:var(--link);text-decoration:none}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:4px}
+.container{max-width:1160px;margin-inline:auto;padding-inline:20px}
+@media(min-width:900px){.container{padding-inline:32px}}
+.mono{font-family:var(--font-mono)}
+
+/* ============ NAV ============ */
+.nav{background:var(--bg-deep);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{display:flex;align-items:center;gap:8px;color:var(--text)}
+.brand svg{width:22px;height:22px;flex:none}
+.wordmark{font-family:var(--font-display);font-weight:800;font-size:19px;letter-spacing:-.02em}
+.wordmark .x{color:var(--primary)}
+.wordmark .tld{color:var(--text-3);font-weight:600}
+.nav-cta{display:flex;gap:10px;align-items:center}
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  height:var(--h-btn);padding-inline:22px;border:0;border-radius:var(--r-btn);
+  font-family:var(--font-body);font-weight:700;font-size:15px;cursor:pointer;
+  transition:box-shadow .18s ease,background .18s ease,border-color .18s ease;
+}
+.btn.sm{height:38px;padding-inline:16px;font-size:14px}
+.btn.lg{height:50px;padding-inline:28px}
+.btn.pill{border-radius:999px;text-transform:uppercase;letter-spacing:.05em;font-size:14px}
+.btn.primary{background:var(--primary);color:#fff}
+.btn.primary:hover{box-shadow:0 8px 24px rgba(0,115,255,.35)}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn.ghost:hover{border-color:rgba(255,255,255,.22)}
+.btn.surface{background:#18222F;color:var(--text);border:1px solid var(--border)}
+.btn.surface:hover{border-color:rgba(255,255,255,.22)}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.75;cursor:default;box-shadow:none}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;display:none;animation:spin .7s linear infinite}
+.btn.is-loading .spinner{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ============ STAGE / SPLIT ============ */
+.stage{background:linear-gradient(180deg,var(--bg-hero) 0%,var(--bg-hero) 55%,var(--bg-slate) 100%);padding-block:56px 72px}
+@media(min-width:900px){.stage{padding-block:72px 96px}}
+.split{display:grid;gap:40px;grid-template-areas:"hero" "card" "mock"}
+@media(min-width:960px){
+  .split{grid-template-areas:"hero card" "mock card";grid-template-columns:1.08fr .92fr;column-gap:56px;row-gap:48px;align-items:start}
+}
+.area-hero{grid-area:hero}
+.area-card{grid-area:card}
+.area-mock{grid-area:mock}
+
+/* ============ HERO ============ */
+h1{
+  font-family:var(--font-display);font-weight:800;
+  font-size:32px;line-height:1.14;letter-spacing:-.02em;
+}
+@media(min-width:600px){h1{font-size:42px}}
+@media(min-width:960px){h1{font-size:52px}}
+.strike{position:relative;color:var(--text-2);white-space:nowrap}
+.strike::after{
+  content:"";position:absolute;left:-2%;right:-2%;top:54%;height:3px;
+  background:var(--link);border-radius:2px;transform:rotate(-3deg);
+}
+.sub{margin-top:16px;color:var(--text-2);font-size:16px;max-width:52ch}
+mark{background:var(--primary);color:#fff;padding:1px 8px;border-radius:4px;font-weight:700}
+.cta-row{margin-top:28px;display:flex;flex-wrap:wrap;gap:12px}
+.proof{margin-top:26px;display:flex;align-items:center;gap:14px}
+.stack{display:flex}
+.stack img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--bg-hero);margin-left:-10px}
+.stack img:first-child{margin-left:0}
+.proof p{font-size:14px;color:var(--text-2)}
+.proof strong{color:var(--text)}
+
+/* ============ LOGIN CARD ============ */
+.card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--r-card);padding:26px 22px;
+}
+@media(min-width:600px){.card{padding:30px 28px}}
+.card h2{font-family:var(--font-display);font-size:19px;font-weight:700;letter-spacing:-.01em}
+.card-sub{margin-top:4px;font-size:13.5px;color:var(--text-2)}
+.card label,.label-row label{
+  display:block;margin:18px 0 6px;
+  font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-2);
+}
+.label-row{display:flex;align-items:end;justify-content:space-between}
+.label-row a{font-size:13px;font-weight:600;margin-bottom:8px}
+.field{position:relative}
+.field > svg.lead{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  width:18px;height:18px;color:var(--text-3);pointer-events:none;
+}
+.field input{
+  width:100%;height:var(--h-input);
+  background:var(--bg-input);border:1px solid var(--border);border-radius:var(--r-btn);
+  color:var(--text);font-family:var(--font-body);font-size:15px;
+  padding-left:42px;padding-right:14px;
+}
+.field input::placeholder{color:var(--text-3)}
+.field input:focus{outline:none;border-color:var(--link);box-shadow:0 0 0 3px rgba(77,163,255,.16)}
+.field.has-eye input{padding-right:44px}
+.eye{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  width:32px;height:32px;display:grid;place-items:center;
+  background:none;border:0;border-radius:8px;color:var(--text-3);cursor:pointer;
+}
+.eye:hover{color:var(--text-2)}
+.eye svg{width:18px;height:18px}
+.switch-row{display:flex;align-items:center;gap:10px;margin-top:16px;font-size:14px;color:var(--text-2);cursor:pointer;text-transform:none;letter-spacing:normal;font-weight:500}
+.switch{position:relative;width:40px;height:22px;flex:none}
+.switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+.knob{
+  position:absolute;inset:0;background:#2A3646;border-radius:999px;transition:background .18s ease;
+}
+.knob::after{
+  content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;
+  background:#fff;transition:transform .18s ease;
+}
+.switch input:checked + .knob{background:var(--primary)}
+.switch input:checked + .knob::after{transform:translateX(18px)}
+.switch input:focus-visible + .knob{outline:2px solid var(--link);outline-offset:2px}
+.btn-submit{margin-top:20px}
+.form-note{margin-top:10px;font-size:13px;color:var(--up);min-height:18px}
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--text-3);font-size:11px;letter-spacing:.12em}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--border)}
+.micro{margin-top:14px;font-size:12px;color:var(--text-3);text-align:center}
+.alt{margin-top:10px;font-size:13.5px;color:var(--text-2);text-align:center}
+.alt a{font-weight:700}
+.pay-row{
+  list-style:none;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px;
+}
+.pay-row li{
+  font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--text-2);
+  border:1px solid var(--border);border-radius:999px;padding:5px 12px;background:rgba(11,15,22,.55);
+}
+
+/* ============ MOCKUP + CHIPS ============ */
+.mock{position:relative;border-radius:20px;overflow:hidden;border:1px solid var(--border);background:var(--bg-card)}
+.mock img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.chip{
+  position:absolute;left:var(--x);top:var(--y);
+  font-weight:700;font-size:12.5px;padding:8px 12px;border-radius:8px;white-space:nowrap;
+  box-shadow:0 10px 26px rgba(0,0,0,.35);
+  animation:float 5.5s ease-in-out infinite alternate;
+}
+.chip.blue{background:var(--primary);color:#fff}
+.chip.pink{background:var(--chip-pink);color:#fff;animation-delay:.8s}
+.chip.green{background:var(--up);color:#062B1F;animation-delay:1.6s}
+@keyframes float{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+@media(max-width:420px){.chip{font-size:11px;padding:6px 10px}.chip.green{display:none}}
+
+/* ============ TICKER ============ */
+.ticker{background:var(--bg-deep);border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden}
+.track{display:flex;gap:56px;width:max-content;padding:10px 0;animation:marquee 42s linear infinite}
+.t{font-family:var(--font-mono);font-size:12.5px;color:var(--text-3);white-space:nowrap}
+.t b{font-weight:600;color:var(--text-2)}
+.t .up{color:var(--up);font-weight:600}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ============ FOOTER ============ */
+.foot{background:var(--bg-deep);padding-block:22px}
+.foot-in{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between;font-size:12.5px;color:var(--text-3)}
+
+/* ============ REDUCED MOTION ============ */
+@media (prefers-reduced-motion: reduce){
+  .track,.chip,.spinner{animation:none}
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="container nav-in">
+    <a class="brand" href="/" aria-label="GETXH home">
+      <!-- Replace this lockup with the official dark-variant logo asset when ready -->
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M13.5 2.5c3 1.2 5 4 5 7.5 0 1.6-.5 3.1-1.3 4.4l-2.4-1.4c.5-.9.8-1.9.8-3 0-2.3-1.3-4.3-3.2-5.3l1.1-2.2Z" fill="#0073FF"/>
+        <path d="M10 8.5 4.5 14l3 1 1 3L14 12.5l-4-4Z" fill="#4DA3FF"/>
+      </svg>
+      <span class="wordmark">get<span class="x">X</span>h<span class="tld">.in</span></span>
+    </a>
+    <nav class="nav-cta">
+      <a class="btn ghost sm" href="https://youtube.com/shorts/5uHqBSYV_7o" target="_blank" rel="noopener">Watch Demo</a>
+      <a class="btn primary sm pill" href="/register">Register</a>
+    </nav>
+  </div>
+</header>
+
+<main class="stage">
+  <div class="container split">
+
+    <section class="area-hero">
+      <h1>The <span class="strike">harder</span> smarter way<br>to grow on Social Media</h1>
+      <p class="sub">India's most trusted automated SMM panel — real followers, views &amp; likes at wholesale rates from <mark>₹0.10/1K</mark>.</p>
+      <div class="cta-row">
+        <a href="/register" class="btn primary pill lg">Start Growing</a>
+      </div>
+      <div class="proof">
+        <div class="stack">
+          <img src="assets/creator-01.png" alt="GETXH creator">
+          <img src="assets/creator-02.png" alt="GETXH creator">
+          <img src="assets/creator-03.png" alt="GETXH creator">
+        </div>
+        <p>Loved by <strong>10,000+</strong> creators across India</p>
+      </div>
+    </section>
+
+    <aside class="area-card">
+      <form class="card" id="loginForm" novalidate>
+        <h2>Sign in to GETXH</h2>
+        <p class="card-sub">Manage orders, wallet balance &amp; live growth.</p>
+
+        <label for="email">Email</label>
+        <div class="field">
+          <svg class="lead" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+        </div>
+
+        <div class="label-row">
+          <label for="password">Password</label>
+          <a href="/forgot-password">Forgot?</a>
+        </div>
+        <div class="field has-eye">
+          <svg class="lead" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required minlength="6">
+          <button type="button" class="eye" data-eye="password" aria-label="Show password" aria-pressed="false">
+            <svg class="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="2.6"/></svg>
+            <svg class="i-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="display:none" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="2.6"/><path d="M4 4l16 16"/></svg>
+          </button>
+        </div>
+
+        <label class="switch-row">
+          <span class="switch"><input type="checkbox" name="remember"><span class="knob"></span></span>
+          Remember me
+        </label>
+
+        <button class="btn primary block btn-submit" type="submit" id="submitBtn">
+          <span class="btn-label">Sign In</span><span class="spinner" aria-hidden="true"></span>
+        </button>
+        <p class="form-note" id="formNote" role="status"></p>
+
+        <div class="divider"><span>OR</span></div>
+        <!-- TODO: Connect to Google OAuth route when available (e.g. /oauth/google) -->
+        <button class="btn surface block" type="button">
+          <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.5 6.1 29.5 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C36.9 39.2 44 34 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>
+          Continue with Google
+        </button>
+
+        <p class="micro">256-bit SSL · No social passwords · 2FA available</p>
+        <p class="alt">New to GETXH? <a href="/register">Create free account</a></p>
+      </form>
+
+      <ul class="pay-row" aria-label="Accepted payment methods">
+        <li>UPI</li><li>Google Pay</li><li>PhonePe</li><li>Paytm</li><li>Cards</li>
+      </ul>
+    </aside>
+
+    <section class="area-mock">
+      <div class="mock">
+        <img src="assets/phone-mockup.png" alt="GETXH growth dashboard preview on a smartphone">
+        <span class="chip blue"  style="--x:5%;--y:16%">+3,359 Real followers</span>
+        <span class="chip pink"  style="--x:50%;--y:6%">+1,117 Likes per post</span>
+        <span class="chip green" style="--x:34%;--y:66%">+86% Engagement rate</span>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<div class="ticker" aria-hidden="true">
+  <div class="track">
+    <span class="t">ORDER #48211 · IG FOLLOWERS +1,000 · <b class="up">COMPLETED</b></span>
+    <span class="t">UPI TOPUP ₹499 · <b class="up">CREDITED</b></span>
+    <span class="t">ORDER #48214 · YT VIEWS +5,000 · <b>RUNNING</b></span>
+    <span class="t">ORDER #48217 · TG MEMBERS +500 · <b class="up">COMPLETED</b></span>
+    <span class="t">ORDER #48220 · IG REELS VIEWS +10,000 · <b>RUNNING</b></span>
+    <span class="t">UPI TOPUP ₹1,000 · <b class="up">CREDITED</b></span>
+    <span class="t">ORDER #48211 · IG FOLLOWERS +1,000 · <b class="up">COMPLETED</b></span>
+    <span class="t">UPI TOPUP ₹499 · <b class="up">CREDITED</b></span>
+    <span class="t">ORDER #48214 · YT VIEWS +5,000 · <b>RUNNING</b></span>
+    <span class="t">ORDER #48217 · TG MEMBERS +500 · <b class="up">COMPLETED</b></span>
+    <span class="t">ORDER #48220 · IG REELS VIEWS +10,000 · <b>RUNNING</b></span>
+    <span class="t">UPI TOPUP ₹1,000 · <b class="up">CREDITED</b></span>
+  </div>
+</div>
+
+<footer class="foot">
+  <div class="container foot-in">
+    <p>© 2026 GETXH™ (getxh.in). All rights reserved.</p>
+    <p class="mono">100% Secure Payments • UPI • Cards • Instant Delivery</p>
+  </div>
+</footer>
+
+<script>
+// Password visibility toggle
+document.querySelectorAll('[data-eye]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var input = document.getElementById(btn.dataset.eye);
+    var show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.setAttribute('aria-pressed', String(show));
+    btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    btn.querySelector('.i-eye').style.display = show ? 'none' : '';
+    btn.querySelector('.i-eye-off').style.display = show ? '' : 'none';
+    input.focus();
+  });
+});
+
+// Auth wiring: Real fetch POST to panel login endpoint
+var form = document.getElementById('loginForm');
+var submitBtn = document.getElementById('submitBtn');
+var note = document.getElementById('formNote');
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+  if(!form.reportValidity()) return;
+  submitBtn.classList.add('is-loading');
+  submitBtn.disabled = true;
+  submitBtn.querySelector('.btn-label').textContent = 'Signing in…';
+  note.textContent = '';
+  note.style.color = '';
+
+  var email = form.email.value.trim();
+  var password = form.password.value;
+  var remember = form.remember.checked;
+
+  // TODO: Replace '/api/auth/login' placeholder with live panel auth endpoint
+  fetch('/api/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email: email,
+      password: password,
+      remember: remember
+    })
+  })
+  .then(function(res){
+    return res.json().then(function(data){
+      return { ok: res.ok, status: res.status, data: data };
+    }).catch(function(){
+      return { ok: res.ok, status: res.status, data: {} };
+    });
+  })
+  .then(function(result){
+    if(result.ok){
+      note.style.color = 'var(--up)';
+      note.textContent = 'Verified. Redirecting to dashboard…';
+      window.location.href = result.data.redirect || '/dashboard';
+    } else {
+      submitBtn.classList.remove('is-loading');
+      submitBtn.disabled = false;
+      submitBtn.querySelector('.btn-label').textContent = 'Sign In';
+      note.style.color = '#F6465D';
+      note.textContent = result.data.message || result.data.error || 'Invalid email or password. Please try again.';
+    }
+  })
+  .catch(function(err){
+    submitBtn.classList.remove('is-loading');
+    submitBtn.disabled = false;
+    submitBtn.querySelector('.btn-label').textContent = 'Sign In';
+    note.style.color = '#F6465D';
+    note.textContent = 'Network error. Please check your connection and try again.';
+  });
+});
+</script>
+</body>
+</html>

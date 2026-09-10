@@ -6,18 +6,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Wallet | GETXH</title>
   <meta name="robots" content="noindex, nofollow"/>
+  <meta name="theme-color" content="#060b14">
   <link rel="preload" as="image" href="/payment-qr-bharatpe.jpg">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
   <style>
-    :root { color-scheme: dark; }
+    :root {
+      color-scheme: dark;
+      --dur-1: 150ms;
+      --dur-2: 240ms;
+      --dur-3: 320ms;
+      --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+      --ease-out: cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+    html {
+      background-color: #060b14 !important;
+      overscroll-behavior: none !important;
+      overscroll-behavior-y: none !important;
+      -webkit-overscroll-behavior: none !important;
+    }
     body {
+      background-color: #060b14 !important;
       background:
         radial-gradient(circle at top, rgba(34, 211, 238, 0.12), transparent 30%),
         radial-gradient(circle at 85% 15%, rgba(59, 130, 246, 0.18), transparent 28%),
         linear-gradient(180deg, #08101d 0%, #0b1220 45%, #060b14 100%);
       font-family: 'Inter', sans-serif;
       min-height: 100vh;
+      min-height: 100dvh;
+      overscroll-behavior: none !important;
+      overscroll-behavior-y: none !important;
+      -webkit-overscroll-behavior: none !important;
+    }
+
+    @keyframes sheetUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes sheetDown {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(100%); opacity: 0; }
+    }
+    @keyframes alertIn {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    @keyframes shimmer {
+      0% { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.8); opacity: 0.5; }
+    }
+    @keyframes popNum {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+    @keyframes rowSlideDown {
+      from { transform: translateY(-8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes stepFadeIn {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .balance-card {
@@ -49,23 +111,47 @@
     .pay-btn:active:not(:disabled) { transform: scale(0.99); }
     .pay-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    .chip {
+    .chip, .amount-chip {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.1);
-      transition: border-color 150ms, background 150ms, transform 150ms;
+      transition: border-color 200ms var(--ease-out), background 200ms var(--ease-out), transform 200ms var(--ease-spring);
     }
-    .chip:hover { border-color: rgba(99,102,241,0.5); background: rgba(99,102,241,0.1); transform: translateY(-1px); }
-    .chip.selected { border-color: #6366f1; background: rgba(99,102,241,0.15); }
+    .chip:hover, .amount-chip:hover { border-color: rgba(99,102,241,0.5); background: rgba(99,102,241,0.1); transform: translateY(-1px); }
+    .chip:active, .amount-chip:active { transform: scale(0.95); }
+    .chip.selected, .amount-chip.selected { border-color: #6366f1; background: rgba(99,102,241,0.15); }
 
-    @keyframes shimmer {
-      0% { background-position: -400px 0 }
-      100% { background-position: 400px 0 }
-    }
     .skeleton {
       background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
       background-size: 800px 100%;
       animation: shimmer 1.4s infinite linear;
       border-radius: 8px;
+    }
+
+    #addFundsSection {
+      animation: sheetUp 300ms var(--ease-spring) both;
+    }
+
+    .step-item {
+      animation: stepFadeIn var(--dur-2) var(--ease-out) both;
+      animation-delay: calc(var(--i) * 60ms);
+    }
+
+    .qr-code-img {
+      animation: fadeIn 200ms var(--ease-out) both;
+    }
+
+    .scanner-pulse-icon {
+      animation: pulseDot 2s infinite ease-in-out;
+      display: inline-block;
+    }
+
+    .pop-num-active {
+      animation: popNum 300ms var(--ease-spring) forwards !important;
+      display: inline-block;
+    }
+
+    .new-tx-row {
+      animation: rowSlideDown 250ms var(--ease-spring) both;
     }
 
     /* Verify Payment Popup */
@@ -87,6 +173,9 @@
       padding: 36px 28px 28px;
       text-align: center;
       width: 300px;
+    }
+    .verify-popup.active .verify-popup-box {
+      animation: alertIn 300ms var(--ease-spring) both;
     }
     .verify-spinner {
       border: 2.5px solid rgba(255,255,255,0.06);
@@ -161,6 +250,14 @@
       font-size: 26px; margin: 0 auto 16px;
       background: rgba(239,68,68,0.1); border: 2px solid rgba(239,68,68,0.25);
     }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .skeleton { animation: none !important; }
+    }
   </style>
   <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
   <style>body{opacity:0;transition:opacity .18s ease}</style>
@@ -222,7 +319,7 @@
       <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">How it works</p>
       <div class="flex flex-col gap-0">
 
-        <div class="flex gap-4 items-stretch">
+        <div class="step-item flex gap-4 items-stretch" style="--i: 0;">
           <div class="flex flex-col items-center">
             <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">1</div>
             <div class="w-px flex-1 mt-1" style="background:rgba(99,102,241,0.25)"></div>
@@ -233,7 +330,7 @@
           </div>
         </div>
 
-        <div class="flex gap-4 items-stretch">
+        <div class="step-item flex gap-4 items-stretch" style="--i: 1;">
           <div class="flex flex-col items-center">
             <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">2</div>
             <div class="w-px flex-1 mt-1" style="background:rgba(99,102,241,0.25)"></div>
@@ -244,7 +341,7 @@
           </div>
         </div>
 
-        <div class="flex gap-4 items-start">
+        <div class="step-item flex gap-4 items-start" style="--i: 2;">
           <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">3</div>
           <div>
             <p class="text-sm font-bold text-white">Verify below</p>
@@ -297,12 +394,12 @@
     <div class="flex flex-col items-center">
       <div class="rounded-3xl p-4 mb-3" style="background:#ffffff;box-shadow:0 8px 32px rgba(0,0,0,0.35);border:3px solid rgba(99,102,241,0.3)">
         <img src="/payment-qr-bharatpe.jpg" alt="UPI QR Code"
-          class="rounded-2xl object-contain"
+          class="qr-code-img rounded-2xl object-contain"
           fetchpriority="high" loading="eager"
           style="width:200px;height:200px;image-rendering:crisp-edges;display:block"/>
       </div>
       <div class="flex items-center gap-2 mt-1">
-        <span class="material-symbols-outlined text-indigo-400" style="font-size:16px">qr_code_scanner</span>
+        <span class="material-symbols-outlined text-indigo-400 scanner-pulse-icon" style="font-size:16px">qr_code_scanner</span>
         <p class="text-sm font-black text-indigo-300 tracking-wide">Scan &amp; Pay via UPI</p>
       </div>
       <p class="text-xs text-gray-500 mt-1">PhonePe · GPay · Paytm · Any UPI app</p>
@@ -321,8 +418,8 @@
 </main>
 
 <!-- Verify Payment Popup -->
-<div id="verifyPopup" class="verify-popup">
-  <div class="verify-popup-box">
+<div id="verifyPopup" class="verify-popup" onclick="handleVerifyPopupBackdrop(event)">
+  <div class="verify-popup-box" onclick="event.stopPropagation()">
 
     <!-- State: Loading -->
     <div id="popupLoading">
@@ -390,13 +487,51 @@ let currentUser = null;
 let _unsubBalance = null;
 let _unsubTxns = null;
 
+function animateCountUp(element, startVal, endVal, duration = 300, prefix = "₹", decimals = 2) {
+  if (!element) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    element.textContent = prefix + endVal.toFixed(decimals);
+    return;
+  }
+  const startTime = performance.now();
+  const diff = endVal - startVal;
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const easeOut = 1 - Math.pow(1 - progress, 3);
+    const currentVal = startVal + (diff * easeOut);
+    element.textContent = prefix + currentVal.toFixed(decimals);
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      element.textContent = prefix + endVal.toFixed(decimals);
+    }
+  }
+  requestAnimationFrame(update);
+}
+
+function triggerPopNum(element) {
+  if (!element) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  element.classList.remove("pop-num-active");
+  void element.offsetWidth;
+  element.classList.add("pop-num-active");
+  setTimeout(() => element.classList.remove("pop-num-active"), 300);
+}
+
+window.handleVerifyPopupBackdrop = function(e) {
+  if (e.target === document.getElementById("verifyPopup")) {
+    window.closeVerifyPopup();
+  }
+};
+
 function renderTxList(txs) {
   const el = document.getElementById("txList");
   if (!txs.length) {
     el.innerHTML = '<p class="text-sm text-gray-500 text-center py-6">No transactions yet.</p>';
     return;
   }
-  el.innerHTML = txs.map(t => {
+  el.innerHTML = txs.map((t, index) => {
     let date = "—";
     try {
       if (t.createdAt?.toDate && typeof t.createdAt.toDate === "function") {
@@ -428,7 +563,8 @@ function renderTxList(txs) {
 
     const color = t.status === "success" ? "text-green-400" : t.status === "failed" ? "text-red-400" : "text-yellow-400";
     const badge = t.status === "success" ? "bg-green-500/10 border-green-500/20" : t.status === "failed" ? "bg-red-500/10 border-red-500/20" : "bg-yellow-500/10 border-yellow-500/20";
-    return `<div class="flex items-center justify-between bg-white/3 border border-white/6 rounded-2xl px-4 py-3 mb-3">
+    const animClass = index === 0 ? " new-tx-row" : "";
+    return `<div class="flex items-center justify-between bg-white/3 border border-white/6 rounded-2xl px-4 py-3 mb-3${animClass}">
       <div><p class="text-sm font-bold">${title}</p><p class="text-xs text-gray-500">${date}</p></div>
       <div class="text-right">
         <p class="text-sm font-black ${amtColor}">${amtStr}</p>
@@ -444,17 +580,31 @@ onAuthStateChanged(auth, user => {
 
 
   const _balCacheKey = "gx_wallet_bal_" + user.uid;
+  let prevBalance = null;
 
   // Show cached balance instantly (UID-specific key)
   const cachedBal = localStorage.getItem(_balCacheKey);
-  if (cachedBal) document.getElementById("walletBalance").textContent = cachedBal;
+  if (cachedBal) {
+    document.getElementById("walletBalance").textContent = cachedBal;
+    prevBalance = parseFloat(cachedBal.replace(/[^0-9.-]+/g, "")) || 0;
+  }
 
   // Real-time balance from Firestore
   if (_unsubBalance) _unsubBalance();
   _unsubBalance = onSnapshot(doc(db, "Users", user.uid), (snap) => {
     const balance = Number(snap.exists() ? (snap.data().Balance || 0) : 0);
+    const balEl = document.getElementById("walletBalance");
     const balStr  = "₹" + balance.toFixed(2);
-    document.getElementById("walletBalance").textContent = balStr;
+    if (prevBalance !== null && prevBalance !== balance) {
+      animateCountUp(balEl, prevBalance, balance, 300);
+      triggerPopNum(balEl);
+    } else if (prevBalance === null) {
+      animateCountUp(balEl, 0, balance, 300);
+      triggerPopNum(balEl);
+    } else {
+      balEl.textContent = balStr;
+    }
+    prevBalance = balance;
     localStorage.setItem(_balCacheKey, balStr);
   });
 
@@ -595,7 +745,9 @@ window.verifyPayment = async function() {
         }
       }
       // Populate success popup
-      document.getElementById("popupAmount").textContent = "₹" + amount.toFixed(2);
+      const popupAmt = document.getElementById("popupAmount");
+      popupAmt.textContent = "₹0.00";
+      animateCountUp(popupAmt, 0, amount, 300);
       document.getElementById("popupUtr").textContent = "UTR: " + utr;
       document.getElementById("popupNewBal").textContent = "Updating...";
       showPopupState("success");

@@ -47,12 +47,24 @@
     ]
   }
   </script>
+  <meta name="theme-color" content="#090a0f">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Inter',sans-serif;background:#090a0f;color:#cbd5e1;min-height:100vh;line-height:1.7;}
+    html{
+      background-color:#090a0f !important;
+      overscroll-behavior:none !important;
+      overscroll-behavior-y:none !important;
+      -webkit-overscroll-behavior:none !important;
+    }
+    html,body{
+      overscroll-behavior:none !important;
+      overscroll-behavior-y:none !important;
+      -webkit-overscroll-behavior:none !important;
+    }
+    body{font-family:'Inter',sans-serif;background:#090a0f;color:#cbd5e1;min-height:100vh;min-height:100dvh;line-height:1.7;}
     body::before{
       content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
       background:

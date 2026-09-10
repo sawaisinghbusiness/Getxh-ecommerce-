@@ -71,11 +71,21 @@
   ]
 }
 </script>
+<meta name="theme-color" content="#090a0f">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
+html{
+  background-color:#090a0f !important;
+  overscroll-behavior:none !important;
+  overscroll-behavior-y:none !important;
+  -webkit-overscroll-behavior:none !important;
+}
 html,body{
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:#090a0f;color:#e2e8f0;min-height:100vh;
+  background:#090a0f;color:#e2e8f0;min-height:100vh;min-height:100dvh;
+  overscroll-behavior:none !important;
+  overscroll-behavior-y:none !important;
+  -webkit-overscroll-behavior:none !important;
 }
 body::before{
   content:'';position:fixed;inset:0;z-index:0;pointer-events:none;

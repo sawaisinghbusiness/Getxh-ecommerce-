@@ -9,6 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>GETXH Dashboard</title>
 <meta name="robots" content="noindex, nofollow"/>
+<meta name="theme-color" content="#060810">
 
 <!-- Asset Preloading -->
 <link rel="preconnect" href="https://firestore.googleapis.com">
@@ -24,12 +25,151 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Lexend:wght@100..900&display=swap" rel="stylesheet">
 
 <style>
+:root {
+  --dur-1: 150ms;
+  --dur-2: 240ms;
+  --dur-3: 320ms;
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+@keyframes sheetDown {
+  from { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(100%); opacity: 0; }
+}
+@keyframes alertIn {
+  from { transform: scale(0.92); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+@keyframes pulseDot {
+  0%   { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6); }
+  50%  { transform: scale(1.18); box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+@keyframes popNum {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+@keyframes dropSlideFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes statSlideFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Motion system classes */
+.skeleton-shimmer, .gx-skeleton {
+  background: linear-gradient(90deg, #1a2d45 25%, #1e3550 50%, #1a2d45 75%) !important;
+  background-size: 200% 100% !important;
+  animation: shimmer 1.5s infinite linear !important;
+}
+
+.motion-press, #placeOrderBtn, .bnav-item, .bnav-fab, .wc-stat {
+  transition: transform var(--dur-1) var(--ease-out) !important;
+}
+.motion-press:active, #placeOrderBtn:active, .bnav-item:active, .bnav-fab:active, .wc-stat:active {
+  transform: scale(0.97) !important;
+}
+
+#searchClearBtn {
+  transition: opacity var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out) !important;
+}
+
+#catArrow, #svcArrow {
+  transition: transform 200ms var(--ease-out) !important;
+  display: inline-block;
+}
+
+.stat-fade-enter {
+  animation: statSlideFade var(--dur-1) var(--ease-out) forwards !important;
+}
+
+.sheet-spring-enter {
+  animation: sheetUp var(--dur-3) var(--ease-spring) forwards !important;
+}
+.sheet-spring-exit {
+  animation: sheetDown var(--dur-3) var(--ease-spring) forwards !important;
+}
+
+.alert-scale-enter {
+  animation: alertIn 200ms var(--ease-out) forwards !important;
+}
+
+.pulse-dot, #orderStatus.pending::before, #orderStatus.inprogress::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  margin-right: 6px;
+  animation: pulseDot 2s infinite ease-in-out !important;
+}
+
+#orderProgress {
+  width: 100% !important;
+  transform-origin: left !important;
+  transform: scaleX(0);
+  transition: transform 300ms var(--ease-out) !important;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .skeleton-shimmer, .gx-skeleton { animation: none !important; }
+  .pulse-dot, #orderStatus.pending::before, #orderStatus.inprogress::before { animation: none !important; }
+}
+
+html {
+  background-color: #060810 !important;
+  overscroll-behavior: none !important;
+  overscroll-behavior-y: none !important;
+  -webkit-overscroll-behavior: none !important;
+}
+
 html, body {
   font-family: 'Inter', 'Outfit', 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   overflow-x: hidden !important;
   max-width: 100vw;
-  overscroll-behavior-x: none;
+  overscroll-behavior: none !important;
+  overscroll-behavior-y: none !important;
+  -webkit-overscroll-behavior: none !important;
   touch-action: pan-y;
+}
+
+body {
+  background-color: #060810 !important;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overscroll-behavior: none !important;
+  overscroll-behavior-y: none !important;
+  -webkit-overscroll-behavior: none !important;
+  background-image: 
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(18, 30, 55, 0.5) 0%, transparent 70%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E") !important;
+  background-repeat: repeat;
+  background-size: auto, 160px 160px;
+  background-attachment: fixed;
 }
 
 /* BRAND BADGE */
@@ -71,12 +211,55 @@ html, body {
 .logout-confirm-stay{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);}
 .logout-confirm-leave{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.28);color:#fca5a5;}
 
-/* ACCOUNT POPUP ANIMATION */
+/* ACCOUNT POPUP ANIMATION & CARD */
 @keyframes slideUp {
   from { transform: translateY(100%); opacity: 0; }
   to   { transform: translateY(0); opacity: 1; }
 }
 .animate-slideUp { animation: slideUp 0.32s cubic-bezier(0.32,0.72,0,1); }
+
+#accountPopup {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: rgba(0, 0, 0, 0.62);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  touch-action: none;
+  overscroll-behavior: contain;
+}
+#accountPopup.hidden {
+  display: none !important;
+}
+
+.account-popup-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border-radius: 16px 16px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  box-shadow: 0 -16px 48px rgba(0, 0, 0, 0.85);
+  background-color: #0b1528 !important;
+  background-image: 
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(18, 30, 55, 0.5) 0%, transparent 70%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E") !important;
+  background-repeat: repeat;
+  background-size: auto, 160px 160px;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+@media (min-width: 1024px) {
+  .account-popup-card {
+    max-width: 380px !important;
+    margin-bottom: 24px !important;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+}
 
 .dashboard-footer-card {
   background: linear-gradient(180deg, rgba(18, 28, 51, 0.96) 0%, rgba(10, 22, 40, 0.98) 100%);
@@ -274,18 +457,77 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   animation: shake 0.36s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
-/* ADMIN BALANCE NOTIFICATION POPUP */
-.bal-notify-overlay{position:fixed;inset:0;z-index:100001;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:20px;}
-.bal-notify-overlay.active{display:flex}
-@keyframes balNotifyIn{from{opacity:0;transform:translateY(20px) scale(0.94)}to{opacity:1;transform:translateY(0) scale(1)}}
-.bal-notify-card{animation:balNotifyIn .35s cubic-bezier(.16,1,.3,1)}
-@keyframes balCoinDrop{0%{transform:translateY(-30px) scale(0.5);opacity:0}50%{transform:translateY(4px) scale(1.08)}100%{transform:translateY(0) scale(1);opacity:1}}
-.bal-notify-icon{animation:balCoinDrop .5s cubic-bezier(.34,1.56,.64,1) .15s both}
-@keyframes balAmountPop{0%{transform:scale(0.5);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
-.bal-notify-amount{animation:balAmountPop .4s cubic-bezier(.34,1.56,.64,1) .35s both}
+/* ADMIN BALANCE ANNOUNCEMENT TOP BANNER */
+.bal-notify-overlay {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-160%);
+  z-index: 100001;
+  width: calc(100% - 24px);
+  max-width: 520px;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+.bal-notify-overlay.active {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.bal-notify-card {
+  position: relative;
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 10px 14px;
+  box-shadow: 0 16px 40px -6px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+}
+.bal-notify-accent-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #22c55e;
+  box-shadow: 0 0 12px #22c55e;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.bal-notify-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(34, 197, 94, 0.14);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  transition: background 0.3s, border-color 0.3s;
+}
 
 /* NEW ORDER & TOTAL AMOUNT BADGE GRADIENTS & ANIMATIONS */
+#newOrderSection {
+  padding: 16px !important;
+}
+@media (min-width: 768px) {
+  #newOrderSection {
+    padding: 20px !important;
+  }
+}
+
 .tab-new-order-badge {
+  height: 42px !important;
+  font-size: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   background: linear-gradient(135deg, #E1306C 0%, #F77737 50%, #FCAF45 100%) !important;
   background-size: 180% 180% !important;
   animation: tabBannerFlow 7s ease-in-out infinite alternate !important;
@@ -299,10 +541,14 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 
 .order-btn-badge {
   width: 100%;
-  border-radius: 10px !important;
+  height: 42px !important;
+  border-radius: 6px !important;
   font-weight: 900;
-  font-size: 16px;
-  padding: 14px 0 !important;
+  font-size: 14px !important;
+  padding: 0 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
   background: linear-gradient(90deg, #C13584 0%, #E1306C 45%, #F77737 80%, #C13584 100%) !important;
   background-size: 220% auto !important;
   animation: btnOrderShimmer 5s linear infinite !important;
@@ -481,8 +727,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       <span class="font-bold text-red-400 text-sm" style="font-size:16px;">Logout</span>
     </button>
   </div>
-  <div class="px-5 py-4 border-t border-white/10">
-    <div class="grid gap-2 text-xs">
+  <div class="px-5 py-3 border-t border-white/10">
+    <div class="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[11px]">
       <a href="/privacy" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
       <a href="/terms" class="text-gray-400 hover:text-white transition">Terms</a>
       <a href="/refund" class="text-gray-400 hover:text-white transition">Refund Policy</a>
@@ -490,7 +736,6 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       <a href="/about" class="text-gray-400 hover:text-white transition">About</a>
       <a href="/contact" class="text-gray-400 hover:text-white transition">Contact</a>
     </div>
-    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2026 · All rights reserved</p>
   </div>
 </aside>
 
@@ -602,14 +847,15 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 <div style="height:14px;"></div>
 
 <div id="newOrderSection" class="w-full"
-  style="background:#0b1422;border-radius:15px;padding:15px;
+  style="background:#0b1422;border-radius:8px;padding:16px;
          border:1px solid rgba(255,255,255,0.06);
          box-shadow:0 4px 24px rgba(0,0,0,0.3);">
 
   <!-- Tabs -->
-  <div class="flex rounded-xl overflow-hidden border border-white/10 mb-3">
+  <div class="flex rounded-md overflow-hidden border border-white/10 mb-3" style="height:42px;">
     <button id="tabNewOrder" onclick="switchOrderTab('new')"
-      class="flex-1 py-2.5 text-sm font-bold tab-new-order-badge transition-all">
+      style="height:42px;font-size:14px;"
+      class="flex-1 text-sm font-bold tab-new-order-badge transition-all flex items-center justify-center">
       New Order
     </button>
   </div>
@@ -621,17 +867,17 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     <input type="text" id="searchService" placeholder="Search"
       autocomplete="new-password" readonly
       onfocus="this.removeAttribute('readonly')"
-      style="width:100%;padding:12px 16px;padding-left:40px;padding-right:36px;background:#0e1629;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
+      style="width:100%;height:42px;padding:0 36px 0 40px;background:#0e1629;border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
     <button id="searchClearBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-all" style="font-size:18px;line-height:1">✕</button>
     <!-- Global Search Results -->
     <div id="globalSearchDrop"
-      class="hidden absolute left-0 right-0 top-full mt-1 rounded-xl overflow-hidden shadow-2xl"
-      style="background:#0e1629;border:1px solid rgba(33,150,243,0.3);z-index:999;max-height:300px;overflow-y:auto">
+      class="hidden absolute left-0 right-0 top-full mt-1 rounded-lg overflow-hidden shadow-2xl"
+      style="background:#0e1629;border:1px solid rgba(33,150,243,0.3);z-index:50;max-height:300px;overflow-y:auto">
     </div>
   </div>
 
   <!-- FORM CARD -->
-  <div style="background:#0e1629;border:1px solid rgba(255,255,255,0.06);border-radius:15px;margin-bottom:16px;">
+  <div style="background:#0e1629;border:1px solid rgba(255,255,255,0.06);border-radius:8px;margin-bottom:16px;">
     <div style="padding:10px;">
 
       <!-- CATEGORY -->
@@ -639,14 +885,14 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Category</p>
         <div class="relative" id="categoryWrapper">
           <button type="button" id="catBtn" onclick="toggleCategoryDropdown()"
-            style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px 16px;text-align:left;cursor:pointer;transition:all 0.2s;box-sizing:border-box;">
+            style="width:100%;height:42px;display:flex;align-items:center;justify-content:space-between;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:0 14px;font-size:14px;text-align:left;cursor:pointer;transition:all 0.2s;box-sizing:border-box;">
             <div class="flex items-center gap-3">
               <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
                    id="catIcon" class="w-5 h-5 rounded hidden" alt=""/>
-              <div id="catIconWelcome" style="display:none;width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#f97316,#ec4899);flex-shrink:0;align-items:center;justify-content:center;">
+              <div id="catIconWelcome" style="display:none;width:22px;height:22px;border-radius:4px;background:linear-gradient(135deg,#f97316,#ec4899);flex-shrink:0;align-items:center;justify-content:center;">
                 <span class="material-symbols-outlined" style="font-size:14px;color:#fff;line-height:22px;text-align:center;display:block;">redeem</span>
               </div>
-              <span id="catLabel" class="text-gray-400 text-sm font-semibold">
+              <span id="catLabel" class="text-gray-400 font-semibold" style="font-size:14px;">
                 — Select a category —
               </span>
             </div>
@@ -654,7 +900,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
           </button>
           <div id="categoryDropdown"
             class="hidden absolute left-0 right-0 top-full mt-1 bg-[#0e1629]
-                   border border-white/10 rounded-xl z-50 shadow-2xl
+                   border border-white/10 rounded-lg z-50 shadow-2xl
                    overflow-y-auto" style="max-height:260px;">
           </div>
         </div>
@@ -666,12 +912,12 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Service</p>
         <div class="relative" id="serviceDropdownWrapper">
           <button type="button" id="svcBtn" onclick="toggleServiceDropdown()"
-            style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px 16px;text-align:left;cursor:pointer;transition:all 0.2s;box-sizing:border-box;">
+            style="width:100%;height:42px;display:flex;align-items:center;justify-content:space-between;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:0 14px;font-size:14px;text-align:left;cursor:pointer;transition:all 0.2s;box-sizing:border-box;">
             <div class="flex items-center gap-3 min-w-0">
               <span id="svcNumBadge"
-                class="h-6 min-w-[44px] px-2 rounded-lg bg-[#2196f3] text-white text-xs
+                class="h-6 min-w-[44px] px-2 rounded bg-[#2196f3] text-white text-xs
                        font-black flex items-center justify-center flex-shrink-0 hidden"></span>
-              <span id="svcLabel" class="text-gray-400 text-sm font-semibold truncate">
+              <span id="svcLabel" class="text-gray-400 font-semibold truncate" style="font-size:14px;">
                 — Select a service —
               </span>
             </div>
@@ -679,7 +925,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
           </button>
           <div id="serviceDropdown"
             class="hidden absolute left-0 right-0 top-full mt-1 bg-[#0e1629]
-                   border border-white/10 rounded-xl overflow-hidden z-50 shadow-2xl
+                   border border-white/10 rounded-lg overflow-hidden z-50 shadow-2xl
                    max-h-64 overflow-y-auto">
           </div>
         </div>
@@ -692,37 +938,37 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         <!-- 6 STAT CARDS -->
         <div style="margin-bottom:15px;">
           <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Description</p>
-          <div class="rounded-xl p-3" style="background:#152234;border:1px solid rgba(255,255,255,0.08);">
-            <div class="grid grid-cols-3 gap-1.5 mb-2.5">
+          <div class="p-3" style="background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;">
+            <div class="grid grid-cols-3 mb-2.5" style="gap:8px;">
 
-              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:6px 6px;text-align:center;">
-                <p style="color:rgba(255,255,255,0.6);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Start Time</p>
-                <p id="dStartTime" style="color:#ffffff;font-size:11px;font-weight:800;line-height:1.2;">INSTANT</p>
+              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:8px 10px;text-align:center;">
+                <p style="color:rgba(255,255,255,0.6);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Start Time</p>
+                <p id="dStartTime" style="color:#ffffff;font-size:12px;font-weight:800;line-height:1.2;">INSTANT</p>
               </div>
 
-              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:6px 6px;text-align:center;">
-                <p style="color:rgba(255,255,255,0.6);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Speed</p>
-                <p id="dSpeed" style="color:#ffffff;font-size:11px;font-weight:800;line-height:1.2;">—</p>
+              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:8px 10px;text-align:center;">
+                <p style="color:rgba(255,255,255,0.6);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Speed</p>
+                <p id="dSpeed" style="color:#ffffff;font-size:12px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
-              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:6px 6px;text-align:center;">
-                <p style="color:rgba(255,255,255,0.6);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Refill</p>
-                <p id="dRefill" style="color:#ffffff;font-size:11px;font-weight:800;line-height:1.2;">—</p>
+              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:8px 10px;text-align:center;">
+                <p style="color:rgba(255,255,255,0.6);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Refill</p>
+                <p id="dRefill" style="color:#ffffff;font-size:12px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
-              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:6px 6px;text-align:center;">
-                <p style="color:rgba(255,255,255,0.6);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Cancel</p>
-                <p id="dCancel" style="color:#ffffff;font-size:11px;font-weight:800;line-height:1.2;">—</p>
+              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:8px 10px;text-align:center;">
+                <p style="color:rgba(255,255,255,0.6);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Cancel</p>
+                <p id="dCancel" style="color:#ffffff;font-size:12px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
-              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:6px 6px;text-align:center;">
-                <p style="color:rgba(255,255,255,0.6);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Drop</p>
-                <p id="dDrop" style="color:#ffffff;font-size:11px;font-weight:800;line-height:1.2;">—</p>
+              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:8px 10px;text-align:center;">
+                <p style="color:rgba(255,255,255,0.6);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Drop</p>
+                <p id="dDrop" style="color:#ffffff;font-size:12px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
-              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:6px 6px;text-align:center;">
-                <p style="color:rgba(255,255,255,0.6);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Quality</p>
-                <p id="dQuality" style="color:#ffffff;font-size:11px;font-weight:800;line-height:1.2;">—</p>
+              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:8px 10px;text-align:center;">
+                <p style="color:rgba(255,255,255,0.6);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Quality</p>
+                <p id="dQuality" style="color:#ffffff;font-size:12px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
             </div>
@@ -739,7 +985,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         <div style="margin-bottom:15px;">
           <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Link</p>
           <input type="text" id="linkInput" placeholder="Paste your link" autocomplete="off"
-            style="width:100%;padding:12px 16px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
+            style="width:100%;height:42px;padding:0 14px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:6px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
           <div class="field-err" id="err-link"></div>
         </div>
 
@@ -752,7 +998,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
           <textarea id="customCommentsInput"
             placeholder="Type each comment on a new line&#10;Press Enter for next comment..."
             rows="5"
-            class="w-full px-4 py-3 bg-[#0e1629] border border-white/10 rounded-xl
+            class="w-full px-4 py-3 bg-[#0e1629] border border-white/10 rounded-lg
                    text-white placeholder-gray-500 text-sm resize-none
                    focus:outline-none focus:border-[#2196f3] transition-all leading-relaxed"></textarea>
           <p id="customCommentsCount" class="text-xs text-gray-500 mt-1.5 font-semibold">0 comments entered</p>
@@ -763,7 +1009,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         <div style="margin-bottom:15px;">
           <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Quantity</p>
           <input type="number" id="quantityInput" placeholder="Min: 0 - Max: 0" autocomplete="off"
-            style="width:100%;padding:12px 16px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
+            style="width:100%;height:42px;padding:0 14px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:6px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
           <div class="field-err" id="err-quantity"></div>
         </div>
 
@@ -772,19 +1018,19 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
           <div style="margin-bottom:15px;">
             <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Runs</p>
             <input type="number" id="dripRuns" placeholder="Number of Runs" autocomplete="off" min="1"
-              style="width:100%;padding:12px 16px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
+              style="width:100%;height:42px;padding:0 14px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:6px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
             <div class="field-err" id="err-dripRuns"></div>
           </div>
           <div style="margin-bottom:15px;">
             <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Interval (minutes)</p>
             <input type="number" id="dripInterval" placeholder="Interval in minutes" autocomplete="off" min="1"
-              style="width:100%;padding:12px 16px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
+              style="width:100%;height:42px;padding:0 14px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:6px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;"/>
             <div class="field-err" id="err-dripInterval"></div>
           </div>
           <div style="margin-bottom:15px;">
             <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Total Quantity</p>
             <input type="number" id="dripTotalQty" placeholder="Total Quantity" disabled
-              style="width:100%;padding:12px 16px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;opacity:0.75;cursor:not-allowed;"/>
+              style="width:100%;height:42px;padding:0 14px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:6px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;opacity:0.75;cursor:not-allowed;"/>
           </div>
           <div class="field-err" id="err-dripGeneral"></div>
         </div>
@@ -795,14 +1041,14 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
             Delivery Time
             <span class="material-symbols-outlined text-gray-500" style="font-size:13px">info</span>
           </p>
-          <div style="background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px 16px;">
+          <div style="background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:6px;height:42px;padding:0 14px;display:flex;align-items:center;">
             <p id="dDeliveryTime" class="text-white font-bold text-sm">—</p>
           </div>
         </div>
 
         <!-- T&C ACCEPTANCE CHECKBOX -->
         <div id="policyAcceptWrap" style="margin-bottom:12px;margin-top:4px;">
-          <label id="policyAcceptLabel" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;user-select:none;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);transition:border-color 0.2s;">
+          <label id="policyAcceptLabel" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;user-select:none;padding:10px 12px;border-radius:6px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);transition:border-color 0.2s;">
             <input type="checkbox" id="policyAcceptCb" style="margin-top:2px;width:16px;height:16px;accent-color:#2196f3;cursor:pointer;flex-shrink:0;" />
             <span style="font-size:12px;color:#94a3b8;line-height:1.6;">I have read and agree to the <a href="/terms/" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'" onfocus="this.style.color='#93c5fd'" onblur="this.style.color='#60a5fa'">Terms & Conditions</a> and <a href="/privacy/" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'" onfocus="this.style.color='#93c5fd'" onblur="this.style.color='#60a5fa'">Privacy Policy</a>.</span>
           </label>
@@ -811,13 +1057,11 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 
         <!-- ORDER BUTTON -->
         <button id="placeOrderBtn" class="order-btn-badge">
-          <div class="flex items-center justify-between px-2">
-            <span class="text-xs font-bold uppercase tracking-widest opacity-90">TOTAL AMOUNT</span>
-            <div class="flex items-center gap-2">
-              <span id="totalPrice" class="text-lg font-black"></span>
-              <span class="font-black text-base tracking-wide order-label">ORDER</span>
-              <span class="material-symbols-outlined" style="font-size:18px">chevron_right</span>
-            </div>
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;opacity:0.85;flex-shrink:0;text-align:left;">TOTAL AMOUNT</span>
+          <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+            <span id="totalPrice" style="font-size:16px;font-weight:900;"></span>
+            <span class="font-black text-sm tracking-wide order-label">ORDER</span>
+            <span class="material-symbols-outlined" style="font-size:18px">chevron_right</span>
           </div>
           <div id="rippleEl"
             class="absolute rounded-full bg-white/20 pointer-events-none scale-0 transition-all duration-500"
@@ -984,12 +1228,13 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 <!-- BOTTOM NAV -->
 <style>
 .bnav {
-  position:fixed;bottom:0;left:0;right:0;z-index:40;
-  background:rgba(9,14,26,0.92);
+  position:fixed;bottom:0;left:0;right:0;z-index:130 !important;
+  background:rgba(9,14,26,0.96);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-top:1px solid rgba(255,255,255,0.06);
+  border-top:1px solid rgba(255,255,255,0.08);
   padding:8px 16px 12px;
   display:flex;align-items:center;justify-content:space-around;
+  height:58px;box-sizing:border-box;
 }
 @media(min-width:1024px){.bnav{display:none}}
 .bnav-item {
@@ -1013,14 +1258,13 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 .bnav-fab {
   width:52px;height:52px;border-radius:16px;border:none;cursor:pointer;
   background:linear-gradient(135deg,#2196f3,#00bcd4);
-  box-shadow:0 4px 20px rgba(33,150,243,0.4);
+  box-shadow:none !important;
   display:flex;align-items:center;justify-content:center;
   margin-top:-18px;
-  transition:transform .2s,box-shadow .2s;
   flex-shrink:0;
 }
-.bnav-fab:hover { transform:translateY(-2px);box-shadow:0 8px 28px rgba(33,150,243,0.5); }
-.bnav-fab:active { transform:scale(.95); }
+.bnav-fab:hover { transform:none !important;box-shadow:none !important; }
+.bnav-fab:active { transform:none !important; }
 </style>
 <div class="bnav">
   <button onclick="openMenu()" class="bnav-item active">
@@ -1049,7 +1293,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 </div>
 
 <!-- SIDE MENU -->
-<div id="menuOverlay" class="fixed inset-0 bg-black/60 hidden z-40 backdrop-blur-sm" onclick="closeMenu()"></div>
+<div id="menuOverlay" class="fixed inset-0 bg-black/60 hidden z-[140] backdrop-blur-sm" onclick="closeMenu()"></div>
 
 <div id="sideMenu"
   class="fixed top-0 left-0 h-full w-[250px] z-[150]
@@ -1146,8 +1390,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   </div>
 
   <!-- MENU FOOTER -->
-  <div class="px-5 py-4 border-t border-white/10">
-    <div class="grid gap-2 text-xs mb-3">
+  <div class="px-5 py-3 border-t border-white/10">
+    <div class="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[11px]">
       <a href="/privacy" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
       <a href="/terms" class="text-gray-400 hover:text-white transition">Terms</a>
       <a href="/refund" class="text-gray-400 hover:text-white transition">Refund Policy</a>
@@ -1155,58 +1399,61 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       <a href="/about" class="text-gray-400 hover:text-white transition">About</a>
       <a href="/contact" class="text-gray-400 hover:text-white transition">Contact</a>
     </div>
-    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2026 · All rights reserved</p>
   </div>
 
 </div>
 
 
-  <!-- ACCOUNT POPUP -->
+<!-- ACCOUNT POPUP (MYFAME STYLE) -->
 <div id="accountPopup"
-  class="fixed inset-0 z-50 hidden items-end justify-center"
-  style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)"
+  class="hidden"
+  style="display: none;"
+  touch-action="none"
+  ontouchmove="event.preventDefault();"
+  onwheel="event.preventDefault();"
   onclick="if(event.target===this)closeAccountPopup()">
-  <div class="w-full max-w-md mx-auto animate-slideUp"
-       style="background:#0b1525;
-              border-radius:20px 20px 0 0;
-              border-top:1px solid rgba(255,255,255,0.08);
-              padding:0 0 32px;">
-    <div class="flex justify-center pt-3 pb-2">
-      <div class="w-9 h-1 rounded-full" style="background:rgba(255,255,255,0.12)"></div>
-    </div>
-    <div id="accViewHome">
-    <div class="mx-4 mb-4 rounded-xl p-4 flex items-center gap-3"
-         style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07)">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-semibold text-lg"
-           style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.11);color:#94a3b8" id="popupAvatar">U</div>
-      <div class="min-w-0 flex-1">
-        <p id="popupUsername" class="font-semibold text-base truncate" style="color:#ffffff">User</p>
-        <p id="popupEmail" class="text-xs truncate mt-0.5" style="color:#94a3b8">—</p>
-      </div>
-    </div>
-    <div class="px-4 flex flex-col gap-2.5">
+  <div class="account-popup-card w-full mx-auto animate-slideUp"
+       touch-action="none"
+       ontouchmove="event.preventDefault();event.stopPropagation();"
+       onclick="event.stopPropagation()">
+    <!-- Header with Username & Email -->
+    <div style="padding: 18px 20px 14px;">
+      <p id="popupUsername" style="font-size: 15px; font-weight: 700; color: #ffffff; margin: 0; line-height: 1.3;">User</p>
+      <p id="popupEmail" style="font-size: 13px; color: #8fa0b8; margin: 3px 0 0; line-height: 1.3;">—</p>
+      <span id="popupAvatar" style="display:none">U</span>
+
+      <!-- My Account Primary Action Button (Green like Add Funds Badge) -->
       <button onclick="closeAccountPopup();window.location.href='/account'"
-        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
-        style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.28);color:#93c5fd">
-        <span class="material-symbols-outlined" style="font-size:18px;color:#60a5fa">manage_accounts</span>
+        style="width: 100%; margin-top: 14px; height: 42px; background: #38a820; border: none; border-radius: 10px; color: #ffffff; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;"
+        onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
         My Account
-        <span class="material-symbols-outlined ml-auto" style="font-size:16px;color:#3b82f6">chevron_right</span>
-      </button>
-      <button onclick="closeAccountPopup();window.location.href='/wallet'"
-        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
-        style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.28);color:#6ee7b7">
-        <span class="material-symbols-outlined" style="font-size:18px">account_balance_wallet</span>
-        Add Funds
-        <span class="material-symbols-outlined ml-auto" style="font-size:16px;opacity:0.7">chevron_right</span>
-      </button>
-      <button onclick="logout()"
-        class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
-        style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.28);color:#f87171">
-        <span class="material-symbols-outlined" style="font-size:18px">logout</span>
-        Sign Out
       </button>
     </div>
-    </div><!-- end accViewHome -->
+
+    <!-- Menu Items List -->
+    <div style="border-top: 1px solid rgba(255, 255, 255, 0.08);">
+      <button onclick="closeAccountPopup();window.location.href='/wallet'"
+        style="width: 100%; display: flex; align-items: center; gap: 14px; padding: 13px 20px; background: none; border: none; border-bottom: 1px solid rgba(255, 255, 255, 0.07); color: #ffffff; font-size: 14px; font-weight: 600; cursor: pointer; text-align: left; transition: background 0.15s;"
+        onmouseover="this.style.background='rgba(255, 255, 255, 0.04)'" onmouseout="this.style.background='none'">
+        <span class="material-symbols-outlined" style="font-size: 20px; color: #cbd5e1;">account_balance_wallet</span>
+        Wallet
+      </button>
+
+      <button onclick="closeAccountPopup();window.location.href='/support'"
+        style="width: 100%; display: flex; align-items: center; gap: 14px; padding: 13px 20px; background: none; border: none; border-bottom: 1px solid rgba(255, 255, 255, 0.07); color: #ffffff; font-size: 14px; font-weight: 600; cursor: pointer; text-align: left; transition: background 0.15s;"
+        onmouseover="this.style.background='rgba(255, 255, 255, 0.04)'" onmouseout="this.style.background='none'">
+        <span class="material-symbols-outlined" style="font-size: 20px; color: #cbd5e1;">headset_mic</span>
+        Support
+      </button>
+
+      <button onclick="closeAccountPopup();logout()"
+        style="width: 100%; display: flex; align-items: center; gap: 14px; padding: 13px 20px 24px; background: none; border: none; color: #f87171; font-size: 14px; font-weight: 600; cursor: pointer; text-align: left; transition: background 0.15s;"
+        onmouseover="this.style.background='rgba(239, 68, 68, 0.06)'" onmouseout="this.style.background='none'">
+        <span class="material-symbols-outlined" style="font-size: 20px; color: #f87171;">logout</span>
+        Logout
+      </button>
+    </div>
+  </div><!-- end account-popup-card -->
 
   <!-- VIEW 2: MY ACCOUNT (inside popup) -->
   <div id="accViewAccount" style="display:none">
@@ -1350,10 +1597,12 @@ body.is-admin #adminBtn, body.is-admin #desktopAdminBtn { display:flex !importan
 }
 .progress {
   height: 100%;
-  width: 0%;
+  width: 100%;
+  transform-origin: left;
+  transform: scaleX(0);
   background: linear-gradient(90deg, #2196f3, #00bcd4);
   border-radius: 999px;
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 300ms var(--ease-out);
   box-shadow: 0 0 12px rgba(33,150,243,0.5);
 }
 /* ── TOAST ── */
@@ -1603,6 +1852,13 @@ function openAccountPopup() {
   const popup = document.getElementById('accountPopup');
   popup.classList.remove('hidden');
   popup.style.display='flex';
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.touchAction = 'none';
+  const card = popup.querySelector('.account-popup-card');
+  if (card) {
+    card.style.animation = 'sheetUp 200ms var(--ease-spring) forwards';
+  }
   // Set avatar letter
   const name = document.getElementById('popupUsername').textContent || 'U';
   const av = document.getElementById('popupAvatar');
@@ -1610,8 +1866,17 @@ function openAccountPopup() {
 }
 function closeAccountPopup() {
   const p=document.getElementById('accountPopup');
-  p.classList.add('hidden');
-  p.style.display='none';
+  const card = p.querySelector('.account-popup-card');
+  if (card) {
+    card.style.animation = 'sheetDown 200ms var(--ease-spring) forwards';
+  }
+  setTimeout(() => {
+    p.classList.add('hidden');
+    p.style.display='none';
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    document.body.style.touchAction = '';
+  }, 200);
 }
 function scrollToNewOrder() { document.getElementById('newOrderSection').scrollIntoView({behavior:'smooth'}); closeMenu(); }
 function logout() {
@@ -1619,6 +1884,9 @@ function logout() {
   clearTimeout(p._logoutTimer);
   p.classList.remove('hidden', 'is-closing');
   p.style.display='flex';
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.touchAction = 'none';
   requestAnimationFrame(() => p.classList.add('is-visible'));
 }
 function _doLogout() {
@@ -1635,6 +1903,9 @@ function cancelLogout() {
     p.classList.add('hidden');
     p.classList.remove('is-closing');
     p.style.display='none';
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    document.body.style.touchAction = '';
   }, 240);
 }
 // ── READ USER DATA ──
@@ -1695,7 +1966,7 @@ function buildCategoryDropdown() {
 function toggleCategoryDropdown() {
   _catOpen=!_catOpen;
   const dd=document.getElementById('categoryDropdown'),arr=document.getElementById('catArrow');
-  if(_catOpen){buildCategoryDropdown();dd.classList.remove('hidden');dd.style.animation='slideDown 0.22s ease forwards';arr.style.transform='rotate(180deg)';closeSvcDrop();}
+  if(_catOpen){buildCategoryDropdown();dd.classList.remove('hidden');dd.style.animation='dropSlideFade var(--dur-1) var(--ease-out) forwards';arr.style.transform='rotate(180deg)';closeSvcDrop();}
   else{dd.classList.add('hidden');arr.style.transform='rotate(0deg)';}
 }
 function closeCatDrop(){document.getElementById('categoryDropdown').classList.add('hidden');document.getElementById('catArrow').style.transform='rotate(0deg)';_catOpen=false;}
@@ -1746,7 +2017,7 @@ function buildServiceDropdown() {
 function toggleServiceDropdown() {
   if(!_selCat)return;_svcOpen=!_svcOpen;
   const dd=document.getElementById('serviceDropdown'),arr=document.getElementById('svcArrow');
-  if(_svcOpen){buildServiceDropdown();dd.classList.remove('hidden');dd.style.animation='slideDown 0.22s ease forwards';arr.style.transform='rotate(180deg)';closeCatDrop();}
+  if(_svcOpen){buildServiceDropdown();dd.classList.remove('hidden');dd.style.animation='dropSlideFade var(--dur-1) var(--ease-out) forwards';arr.style.transform='rotate(180deg)';closeCatDrop();}
   else closeSvcDrop();
 }
 function closeSvcDrop(){document.getElementById('serviceDropdown').classList.add('hidden');document.getElementById('svcArrow').style.transform='rotate(0deg)';_svcOpen=false;}
@@ -1766,7 +2037,15 @@ function selectService(svc) {
 
   closeSvcDrop();
 
-  const setElText = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val || '—'; };
+  const setElText = (id, val) => {
+    const el = document.getElementById(id);
+    if(el) {
+      el.textContent = val || '—';
+      el.classList.remove('stat-fade-enter');
+      void el.offsetWidth;
+      el.classList.add('stat-fade-enter');
+    }
+  };
   setElText('dStartTime', svc.startTime);
   setElText('dSpeed', svc.speed);
   setElText('dRefill', svc.refill);
@@ -2177,14 +2456,28 @@ function showInsufficientModal(orderPrice) {
   const box   = document.getElementById("insufficientModalBox");
   modal.classList.remove("hidden");
   modal.style.display = "flex";
-  setTimeout(() => { box.style.transform = "scale(1)"; box.style.opacity = "1"; }, 10);
+  box.style.transform = '';
+  box.style.opacity = '';
+  box.classList.remove("alert-scale-enter");
+  void box.offsetWidth;
+  box.classList.add("alert-scale-enter");
 }
 function closeInsufficientModal() {
   const modal = document.getElementById("insufficientModal");
   const box   = document.getElementById("insufficientModalBox");
-  box.style.transform = "scale(0.75)"; box.style.opacity = "0";
-  setTimeout(() => { modal.style.display = "none"; modal.classList.add("hidden"); }, 250);
+  box.style.transition = 'transform 200ms var(--ease-out), opacity 200ms var(--ease-out)';
+  box.style.transform = "scale(0.92)";
+  box.style.opacity = "0";
+  setTimeout(() => {
+    modal.style.display = "none";
+    modal.classList.add("hidden");
+    box.classList.remove("alert-scale-enter");
+    box.style.transition = '';
+  }, 200);
 }
+document.getElementById('insufficientModal').addEventListener('click', function(e) {
+  if (e.target === this) closeInsufficientModal();
+});
 
 // ── TOAST ──
 function showToast(type, title, msg) {
@@ -2369,11 +2662,11 @@ async function placeOrder(serviceId) {
       const modal = document.getElementById('successModal');
       modal.classList.remove('hidden');
       modal.style.display = 'flex';
-      setTimeout(() => {
-        const box = document.getElementById('successModalBox');
-        box.style.transform = 'scale(1)';
-        box.style.opacity   = '1';
-      }, 10);
+      const box = document.getElementById('successModalBox');
+      box.style.transform = '';
+      box.style.opacity = '';
+      box.classList.remove('sheet-spring-exit');
+      box.classList.add('sheet-spring-enter');
 
       if (orderId) {
         localStorage.setItem('lastOrderId', orderId);
@@ -2445,14 +2738,19 @@ document.getElementById('viewOrdersBtn').addEventListener('click',()=>{
   closeSuccessModal();
   window.location.href='/orders';
 });
+document.getElementById('successModal').addEventListener('click', function(e) {
+  if (e.target === this) closeSuccessModal();
+});
 function closeSuccessModal(){
   const box=document.getElementById('successModalBox');
-  box.style.transform='scale(0.75)';box.style.opacity='0';
+  box.classList.remove('sheet-spring-enter');
+  box.classList.add('sheet-spring-exit');
   setTimeout(()=>{
-  const m=document.getElementById('successModal');
-  m.classList.add('hidden');
-  m.style.display='none';
-},300);
+    const m=document.getElementById('successModal');
+    m.classList.add('hidden');
+    m.style.display='none';
+    box.classList.remove('sheet-spring-exit');
+  }, 320);
   // Reset only link — category, service, quantity stay same
   document.getElementById('linkInput').value='';
   dbClearErr('linkInput', 'err-link');
@@ -2549,19 +2847,19 @@ async function checkStatus(orderId) {
 
     if (status === 'completed') {
       statusEl.classList.add('completed');
-      progressEl.style.width = '100%';
+      progressEl.style.transform = 'scaleX(1)';
     } else if (status === 'inprogress' || status === 'in progress' || status === 'processing') {
       statusEl.classList.add('inprogress');
-      progressEl.style.width = '70%';
+      progressEl.style.transform = 'scaleX(0.7)';
     } else if (status === 'partial') {
       statusEl.classList.add('partial');
-      progressEl.style.width = '85%';
+      progressEl.style.transform = 'scaleX(0.85)';
     } else if (status === 'canceled' || status === 'cancelled' || status === 'failed') {
       statusEl.classList.add('canceled');
-      progressEl.style.width = '0%';
+      progressEl.style.transform = 'scaleX(0)';
     } else {
       statusEl.classList.add('pending');
-      progressEl.style.width = '20%';
+      progressEl.style.transform = 'scaleX(0.2)';
     }
   } catch {
     // silent fail — tracking is non-critical
@@ -2881,6 +3179,47 @@ onAuthStateChanged(auth, async (user) => {
     }
   };
 
+  window.testBalanceAnnouncement = function(amt = 50, isCredit = true, note = "Cashback bonus added by admin") {
+    const el = document.getElementById('balNotifyOverlay');
+    if (!el) return;
+    const accentBar = document.getElementById('balNotifyAccentBar');
+    if (accentBar) {
+      accentBar.style.background = isCredit ? '#22c55e' : '#ef4444';
+      accentBar.style.boxShadow = isCredit ? '0 0 12px #22c55e' : '0 0 12px #ef4444';
+    }
+    const iconWrap = document.getElementById('balNotifyIconWrap');
+    if (iconWrap) {
+      iconWrap.style.background = isCredit ? 'rgba(34,197,94,0.14)' : 'rgba(239,68,68,0.14)';
+      iconWrap.style.borderColor = isCredit ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
+    }
+    const iconEl = document.getElementById('balNotifyIcon');
+    if (iconEl) {
+      iconEl.textContent = 'campaign';
+      iconEl.style.color = isCredit ? '#22c55e' : '#ef4444';
+    }
+    document.getElementById('balNotifyTitle').textContent = isCredit ? 'Balance Added' : 'Balance Deducted';
+    document.getElementById('balNotifySub').textContent = 'Your wallet has been updated successfully.';
+    const amtEl = document.getElementById('balNotifyAmount');
+    if (amtEl) {
+      amtEl.textContent = (isCredit ? '+ ' : '- ') + '\u20b9' + amt.toFixed(2);
+      amtEl.style.color = isCredit ? '#4ade80' : '#f87171';
+      amtEl.style.background = isCredit ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)';
+      amtEl.style.borderColor = isCredit ? 'rgba(34,197,94,0.28)' : 'rgba(239,68,68,0.28)';
+    }
+    const noteEl = document.getElementById('balNotifyNote');
+    if (note) {
+      noteEl.style.display = 'block';
+      document.getElementById('balNotifyNoteText').textContent = note;
+    } else {
+      noteEl.style.display = 'none';
+    }
+    el.classList.add('active');
+    if (window._balAutoCloseTimer) clearTimeout(window._balAutoCloseTimer);
+    window._balAutoCloseTimer = setTimeout(() => {
+      window._closeBalNotifyAndAnimate();
+    }, 6000);
+  };
+
   // ── REAL-TIME: user stats (balance, orders) ──
   let _lastNumBalance = null;
 
@@ -2986,26 +3325,36 @@ onAuthStateChanged(auth, async (user) => {
             document.getElementById('balNotifySub').textContent =
               'Your wallet has been updated successfully.';
 
-            document.getElementById('balNotifyIconWrap').style.background = isCredit
-              ? 'rgba(34,197,94,0.12)'
-              : 'rgba(239,68,68,0.12)';
-            document.getElementById('balNotifyIconWrap').style.borderColor = isCredit
-              ? '#22c55e'
-              : '#ef4444';
+            const accentBar = document.getElementById('balNotifyAccentBar');
+            if (accentBar) {
+              accentBar.style.background = isCredit ? '#22c55e' : '#ef4444';
+              accentBar.style.boxShadow = isCredit ? '0 0 12px #22c55e' : '0 0 12px #ef4444';
+            }
+
+            const iconWrap = document.getElementById('balNotifyIconWrap');
+            if (iconWrap) {
+              iconWrap.style.background = isCredit ? 'rgba(34,197,94,0.14)' : 'rgba(239,68,68,0.14)';
+              iconWrap.style.borderColor = isCredit ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
+            }
 
             const iconEl = document.getElementById('balNotifyIcon');
             if (iconEl) {
-              iconEl.textContent = isCredit ? 'check' : 'remove';
+              iconEl.textContent = 'campaign';
               iconEl.style.color = isCredit ? '#22c55e' : '#ef4444';
             }
 
-            document.getElementById('balNotifyAmountLabel').textContent = isCredit
-              ? 'AMOUNT ADDED' : 'AMOUNT DEDUCTED';
+            const amtLbl = document.getElementById('balNotifyAmountLabel');
+            if (amtLbl) {
+              amtLbl.textContent = isCredit ? 'AMOUNT ADDED' : 'AMOUNT DEDUCTED';
+            }
 
-            document.getElementById('balNotifyAmount').textContent =
-              (isCredit ? '+ ' : '- ') + '\u20b9' + amt.toFixed(2);
-            document.getElementById('balNotifyAmount').style.color = isCredit
-              ? '#4ade80' : '#f87171';
+            const amtEl = document.getElementById('balNotifyAmount');
+            if (amtEl) {
+              amtEl.textContent = (isCredit ? '+ ' : '- ') + '\u20b9' + amt.toFixed(2);
+              amtEl.style.color = isCredit ? '#4ade80' : '#f87171';
+              amtEl.style.background = isCredit ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)';
+              amtEl.style.borderColor = isCredit ? 'rgba(34,197,94,0.28)' : 'rgba(239,68,68,0.28)';
+            }
 
             const noteEl = document.getElementById('balNotifyNote');
             if (note) {
@@ -3015,7 +3364,7 @@ onAuthStateChanged(auth, async (user) => {
               noteEl.style.display = 'none';
             }
 
-            // Hide page loader immediately so popup is visible instantly on login
+            // Hide page loader immediately so banner is visible instantly
             const loader = document.getElementById('gx-loader');
             if (loader) { loader.classList.add('hide'); setTimeout(() => { try { loader.remove(); } catch(e){} }, 200); }
 
@@ -3024,10 +3373,10 @@ onAuthStateChanged(auth, async (user) => {
             // Clear any existing auto-close timer
             if (window._balAutoCloseTimer) clearTimeout(window._balAutoCloseTimer);
 
-            // AUTO-CLOSE POPUP IN 5 SECONDS IF USER DOESN'T CLICK "OKAY, GOT IT"
+            // AUTO-CLOSE TOP BANNER IN 6 SECONDS IF USER DOESN'T CLICK CLOSE "X"
             window._balAutoCloseTimer = setTimeout(() => {
               window._closeBalNotifyAndAnimate();
-            }, 5000);
+            }, 6000);
           }
       }
     }, (err) => {
@@ -3172,40 +3521,39 @@ const _OTP  = "https://getxh.online";
   </div>
 </div>
 
-<!-- Admin Balance Notification Popup -->
-<div id="balNotifyOverlay" class="bal-notify-overlay" onclick="if(event.target===this)window._closeBalNotifyAndAnimate()">
-  <div class="bal-notify-card" style="background:#0e1726;border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:32px 24px 24px;width:340px;max-width:90vw;box-shadow:0 32px 80px rgba(0,0,0,0.65),0 0 0 1px rgba(255,255,255,0.04) inset;text-align:center;">
+<!-- Admin Balance Announcement Top Banner -->
+<div id="balNotifyOverlay" class="bal-notify-overlay">
+  <div class="bal-notify-card">
+    <!-- Top accent glow bar -->
+    <div id="balNotifyAccentBar" class="bal-notify-accent-bar"></div>
 
-    <!-- Icon: Circular checkmark / icon -->
-    <div id="balNotifyIconWrap" class="bal-notify-icon" style="width:56px;height:56px;border-radius:50%;background:rgba(34,197,94,0.12);border:2px solid #22c55e;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-      <span id="balNotifyIcon" class="material-symbols-outlined" style="font-size:28px;color:#22c55e">check</span>
+    <!-- Icon Wrap (Megaphone / Notification) -->
+    <div id="balNotifyIconWrap" class="bal-notify-icon-wrap">
+      <span id="balNotifyIcon" class="material-symbols-outlined" style="font-size:20px;color:#22c55e;">campaign</span>
     </div>
 
-    <!-- Title & Subtitle -->
-    <h3 id="balNotifyTitle" style="font-size:20px;font-weight:700;color:#ffffff;margin:0 0 6px;letter-spacing:-0.01em;">Balance Added</h3>
-    <p id="balNotifySub" style="font-size:13px;color:#94a3b8;margin:0 0 22px;font-weight:400;line-height:1.4;">Your wallet has been updated successfully.</p>
-
-    <!-- Amount Card -->
-    <div class="bal-notify-amount" style="background:#131f33;border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:18px 16px;margin-bottom:16px;">
-      <p id="balNotifyAmountLabel" style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 8px;">AMOUNT ADDED</p>
-      <p id="balNotifyAmount" style="font-size:34px;font-weight:800;color:#4ade80;margin:0;letter-spacing:-0.02em;">+ &#8377;0.00</p>
-    </div>
-
-    <!-- Note Card (MESSAGE FROM GETXH) -->
-    <div id="balNotifyNote" style="display:none;background:#131f33;border:1px solid rgba(99,102,241,0.2);border-radius:18px;padding:16px;margin-bottom:20px;text-align:left;">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-        <span class="material-symbols-outlined" style="font-size:15px;color:#818cf8;">chat_bubble_outline</span>
-        <span style="font-size:11px;font-weight:700;color:#818cf8;text-transform:uppercase;letter-spacing:0.08em;">MESSAGE FROM GETXH</span>
+    <!-- Center Content -->
+    <div style="flex:1;min-width:0;">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <h4 id="balNotifyTitle" style="font-size:13px;font-weight:700;color:#ffffff;margin:0;letter-spacing:-0.01em;">Balance Added</h4>
+        <span id="balNotifyAmount" style="font-size:12px;font-weight:800;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;color:#4ade80;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.28);padding:1px 6px;border-radius:6px;letter-spacing:0.01em;">+ &#8377;0.00</span>
+        <span id="balNotifyAmountLabel" style="display:none;">AMOUNT ADDED</span>
       </div>
-      <p id="balNotifyNoteText" style="font-size:14px;font-weight:500;color:#f1f5f9;margin:0;line-height:1.5;"></p>
+      <p id="balNotifySub" style="font-size:12px;color:#94a3b8;margin:2px 0 0;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Your wallet has been updated successfully.</p>
+      
+      <!-- Admin Note (if any) -->
+      <div id="balNotifyNote" style="display:none;margin-top:5px;padding:4px 8px;background:rgba(255,255,255,0.04);border-radius:6px;border-left:2px solid #818cf8;font-size:11px;color:#cbd5e1;line-height:1.4;">
+        <span style="color:#818cf8;font-weight:600;">Note: </span><span id="balNotifyNoteText"></span>
+      </div>
     </div>
 
-    <!-- OK Button -->
-    <button onclick="window._closeBalNotifyAndAnimate()"
-      style="width:100%;padding:14px;border-radius:14px;border:none;font-weight:700;font-size:15px;color:#ffffff;cursor:pointer;background:#6366f1;box-shadow:0 4px 20px rgba(99,102,241,0.35);transition:opacity .15s;"
-      onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'"
-      onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform=''">
-      Okay, got it
+    <!-- Right Close Button -->
+    <button type="button" onclick="window._closeBalNotifyAndAnimate()"
+      style="flex-shrink:0;width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#94a3b8;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;"
+      onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#ffffff'"
+      onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.color='#94a3b8'"
+      aria-label="Close notification">
+      <span class="material-symbols-outlined" style="font-size:16px;">close</span>
     </button>
   </div>
 </div>

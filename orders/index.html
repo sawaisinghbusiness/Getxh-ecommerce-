@@ -6,10 +6,117 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Orders – GETXH</title>
 <meta name="robots" content="noindex, nofollow"/>
+<meta name="theme-color" content="#0b1220">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
 <style>
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+:root {
+  --dur-1: 150ms;
+  --dur-2: 240ms;
+  --dur-3: 320ms;
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+@keyframes sheetDown {
+  from { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(100%); opacity: 0; }
+}
+@keyframes alertIn {
+  from { transform: scale(0.92); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+@keyframes popNum {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.22); }
+  100% { transform: scale(1); }
+}
+@keyframes dropSlideFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulseDot {
+  0%   { transform: scale(1); box-shadow: 0 0 0 0 rgba(96, 143, 224, 0.6); }
+  50%  { transform: scale(1.25); box-shadow: 0 0 0 6px rgba(96, 143, 224, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(96, 143, 224, 0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.skeleton-shimmer-box {
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%) !important;
+  background-size: 200% 100% !important;
+  animation: shimmer 1.5s infinite linear !important;
+}
+
+.order-card {
+  transition: transform var(--dur-1) var(--ease-out) !important;
+}
+.order-card:active {
+  transform: scale(0.98) !important;
+}
+.order-card.motion-card-stagger {
+  animation: cardEnter var(--dur-2) var(--ease-out) both;
+  animation-delay: calc(var(--i) * 40ms);
+}
+
+.status-processing span[id^="statusDot-"] {
+  animation: pulseDot 2s infinite ease-in-out !important;
+}
+
+.empty-fade-in {
+  animation: fadeIn var(--dur-2) var(--ease-out) forwards;
+}
+
+#filterArrow {
+  transition: transform var(--dur-1) var(--ease-out) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .skeleton-shimmer-box { animation: none !important; }
+  .status-processing span[id^="statusDot-"] { animation: none !important; }
+  .order-card.motion-card-stagger { animation: none !important; }
+}
+
+html {
+  background-color: #0b1220 !important;
+  overscroll-behavior: none !important;
+  overscroll-behavior-y: none !important;
+  -webkit-overscroll-behavior: none !important;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #0b1220 !important;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overscroll-behavior: none !important;
+  overscroll-behavior-y: none !important;
+  -webkit-overscroll-behavior: none !important;
+}
 .brand-badge {
   display:inline-flex; align-items:center; gap:6px;
   padding:6px 14px;
@@ -111,9 +218,59 @@ button:focus-visible, input:focus-visible, a:focus-visible, select:focus-visible
 .toast-info .toast-icon { color: #60a5fa; }
 .toast-title { font-size: 13px; font-weight: 700; color: #fff; }
 .toast-msg { font-size: 12px; color: #94a3b8; margin-top: 1px; }
+
+/* ACCOUNT POPUP CARD */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+.animate-slideUp { animation: slideUp 0.32s cubic-bezier(0.32,0.72,0,1); }
+
+#accountPopup {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: rgba(0, 0, 0, 0.62);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  touch-action: none;
+  overscroll-behavior: contain;
+}
+#accountPopup.hidden {
+  display: none !important;
+}
+
+.account-popup-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border-radius: 16px 16px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  box-shadow: 0 -16px 48px rgba(0, 0, 0, 0.85);
+  background-color: #0b1528 !important;
+  background-image: 
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(18, 30, 55, 0.5) 0%, transparent 70%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E") !important;
+  background-repeat: repeat;
+  background-size: auto, 160px 160px;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+@media (min-width: 1024px) {
+  .account-popup-card {
+    max-width: 380px !important;
+    margin-bottom: 24px !important;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+}
 </style>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
-  <style>html,body{overflow-x:hidden !important;max-width:100vw;overscroll-behavior-x:none;}body{opacity:0;transition:opacity .18s ease;}</style>
+  <style>html,body{overflow-x:hidden !important;max-width:100vw;overscroll-behavior:none !important;overscroll-behavior-y:none !important;-webkit-overscroll-behavior:none !important;}body{opacity:0;transition:opacity .18s ease;}</style>
 </head>
 
 <body class="bg-[#0b1220] text-white min-h-screen">
@@ -186,8 +343,8 @@ button:focus-visible, input:focus-visible, a:focus-visible, select:focus-visible
       <span class="font-bold text-red-400 text-sm" style="font-size:16px;">Logout</span>
     </button>
   </div>
-  <div class="px-5 py-4 border-t border-white/10">
-    <div class="grid gap-2 text-xs">
+  <div class="px-5 py-3 border-t border-white/10">
+    <div class="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[11px]">
       <a href="/privacy" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
       <a href="/terms" class="text-gray-400 hover:text-white transition">Terms</a>
       <a href="/refund" class="text-gray-400 hover:text-white transition">Refund Policy</a>
@@ -195,7 +352,6 @@ button:focus-visible, input:focus-visible, a:focus-visible, select:focus-visible
       <a href="/about" class="text-gray-400 hover:text-white transition">About</a>
       <a href="/contact" class="text-gray-400 hover:text-white transition">Contact</a>
     </div>
-    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2026 · All rights reserved</p>
   </div>
 </aside>
 
@@ -259,16 +415,16 @@ button:focus-visible, input:focus-visible, a:focus-visible, select:focus-visible
 
 <!-- BOTTOM NAV -->
 <style>
-.bnav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(9,14,26,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.06);padding:8px 16px 12px;display:flex;align-items:center;justify-content:space-around;}
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:130 !important;background:rgba(9,14,26,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.08);padding:8px 16px 12px;display:flex;align-items:center;justify-content:space-around;height:58px;box-sizing:border-box;}
 @media(min-width:1024px){.bnav{display:none}}
 .bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:#4b5563;text-decoration:none;padding:6px 10px;border-radius:12px;transition:color .2s,background .2s;min-width:48px;}
 .bnav-item:hover,.bnav-item.active{color:#fff;}
 .bnav-item.active{background:rgba(33,150,243,0.12);color:#60a5fa;}
 .bnav-icon{width:22px;height:22px;font-size:20px;line-height:1;}
 .bnav-label{font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1;}
-.bnav-fab{width:52px;height:52px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#2196f3,#00bcd4);box-shadow:0 4px 20px rgba(33,150,243,0.4);display:flex;align-items:center;justify-content:center;margin-top:-18px;transition:transform .2s,box-shadow .2s;flex-shrink:0;text-decoration:none;}
-.bnav-fab:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(33,150,243,0.5);}
-.bnav-fab:active{transform:scale(.95);}
+.bnav-fab{width:52px;height:52px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#2196f3,#00bcd4);box-shadow:none !important;display:flex;align-items:center;justify-content:center;margin-top:-18px;flex-shrink:0;text-decoration:none;}
+.bnav-fab:hover{transform:none !important;box-shadow:none !important;}
+.bnav-fab:active{transform:none !important;}
 </style>
 <div class="bnav">
   <button onclick="openMenu()" class="bnav-item">
@@ -292,55 +448,54 @@ button:focus-visible, input:focus-visible, a:focus-visible, select:focus-visible
   </button>
 </div>
 
-<!-- ACCOUNT POPUP -->
+<!-- ACCOUNT POPUP (MYFAME STYLE) -->
 <div id="accountPopup"
-  class="fixed inset-0 z-50 hidden items-end justify-center"
-  style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)"
+  class="hidden"
+  style="display: none;"
+  touch-action="none"
+  ontouchmove="event.preventDefault();"
+  onwheel="event.preventDefault();"
   onclick="if(event.target===this)closeAccountPopup()">
-  <div class="w-full max-w-md mx-auto animate-slideUp"
-       style="background:#0b1525;
-              border-radius:20px 20px 0 0;
-              border-top:1px solid rgba(255,255,255,0.08);
-              padding:0 0 32px;
-              touch-action:none;
-              overscroll-behavior:none;"
+  <div class="account-popup-card w-full mx-auto animate-slideUp"
+       touch-action="none"
        ontouchmove="event.preventDefault();event.stopPropagation();"
        onclick="event.stopPropagation()">
-    <div class="flex justify-center pt-3 pb-2">
-      <div class="w-9 h-1 rounded-full" style="background:rgba(255,255,255,0.12)"></div>
+    <!-- Header with Username & Email -->
+    <div style="padding: 18px 20px 14px;">
+      <p id="popupUsername" style="font-size: 15px; font-weight: 700; color: #ffffff; margin: 0; line-height: 1.3;">User</p>
+      <p id="popupEmail" style="font-size: 13px; color: #8fa0b8; margin: 3px 0 0; line-height: 1.3;">—</p>
+      <span id="popupAvatar" style="display:none">U</span>
+
+      <!-- My Account Primary Action Button (Green like Add Funds Badge) -->
+      <button onclick="closeAccountPopup();window.location.href='/account'"
+        style="width: 100%; margin-top: 14px; height: 42px; background: #38a820; border: none; border-radius: 10px; color: #ffffff; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;"
+        onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+        My Account
+      </button>
     </div>
-    <div id="accViewHome">
-      <div class="mx-4 mb-4 rounded-xl p-4 flex items-center gap-3"
-           style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07)">
-        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-semibold text-lg"
-             style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.11);color:#94a3b8" id="popupAvatar">U</div>
-        <div class="min-w-0 flex-1">
-          <p id="popupUsername" class="font-semibold text-base truncate" style="color:#ffffff">User</p>
-          <p id="popupEmail" class="text-xs truncate mt-0.5" style="color:#94a3b8">—</p>
-        </div>
-      </div>
-      <div class="px-4 flex flex-col gap-2.5">
-        <button onclick="closeAccountPopup();window.location.href='/account'"
-          class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
-          style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.28);color:#93c5fd">
-          <span class="material-symbols-outlined" style="font-size:18px;color:#60a5fa">manage_accounts</span>
-          My Account
-          <span class="material-symbols-outlined ml-auto" style="font-size:16px;color:#3b82f6">chevron_right</span>
-        </button>
-        <button onclick="closeAccountPopup();window.location.href='/wallet'"
-          class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
-          style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.28);color:#6ee7b7">
-          <span class="material-symbols-outlined" style="font-size:18px">account_balance_wallet</span>
-          Add Funds
-          <span class="material-symbols-outlined ml-auto" style="font-size:16px;opacity:0.7">chevron_right</span>
-        </button>
-        <button onclick="logout()"
-          class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all active:opacity-70"
-          style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.28);color:#f87171">
-          <span class="material-symbols-outlined" style="font-size:18px">logout</span>
-          Sign Out
-        </button>
-      </div>
+
+    <!-- Menu Items List -->
+    <div style="border-top: 1px solid rgba(255, 255, 255, 0.08);">
+      <button onclick="closeAccountPopup();window.location.href='/wallet'"
+        style="width: 100%; display: flex; align-items: center; gap: 14px; padding: 13px 20px; background: none; border: none; border-bottom: 1px solid rgba(255, 255, 255, 0.07); color: #ffffff; font-size: 14px; font-weight: 600; cursor: pointer; text-align: left; transition: background 0.15s;"
+        onmouseover="this.style.background='rgba(255, 255, 255, 0.04)'" onmouseout="this.style.background='none'">
+        <span class="material-symbols-outlined" style="font-size: 20px; color: #cbd5e1;">account_balance_wallet</span>
+        Wallet
+      </button>
+
+      <button onclick="closeAccountPopup();window.location.href='/support'"
+        style="width: 100%; display: flex; align-items: center; gap: 14px; padding: 13px 20px; background: none; border: none; border-bottom: 1px solid rgba(255, 255, 255, 0.07); color: #ffffff; font-size: 14px; font-weight: 600; cursor: pointer; text-align: left; transition: background 0.15s;"
+        onmouseover="this.style.background='rgba(255, 255, 255, 0.04)'" onmouseout="this.style.background='none'">
+        <span class="material-symbols-outlined" style="font-size: 20px; color: #cbd5e1;">headset_mic</span>
+        Support
+      </button>
+
+      <button onclick="closeAccountPopup();logout()"
+        style="width: 100%; display: flex; align-items: center; gap: 14px; padding: 13px 20px 24px; background: none; border: none; color: #f87171; font-size: 14px; font-weight: 600; cursor: pointer; text-align: left; transition: background 0.15s;"
+        onmouseover="this.style.background='rgba(239, 68, 68, 0.06)'" onmouseout="this.style.background='none'">
+        <span class="material-symbols-outlined" style="font-size: 20px; color: #f87171;">logout</span>
+        Logout
+      </button>
     </div>
   </div>
 </div>
@@ -443,8 +598,8 @@ button:focus-visible, input:focus-visible, a:focus-visible, select:focus-visible
   </div>
 
   <!-- MENU FOOTER -->
-  <div class="px-5 py-4 border-t border-white/10">
-    <div class="grid gap-2 text-xs mb-3">
+  <div class="px-5 py-3 border-t border-white/10">
+    <div class="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[11px]">
       <a href="/privacy" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
       <a href="/terms" class="text-gray-400 hover:text-white transition">Terms</a>
       <a href="/refund" class="text-gray-400 hover:text-white transition">Refund Policy</a>
@@ -452,7 +607,6 @@ button:focus-visible, input:focus-visible, a:focus-visible, select:focus-visible
       <a href="/about" class="text-gray-400 hover:text-white transition">About</a>
       <a href="/contact" class="text-gray-400 hover:text-white transition">Contact</a>
     </div>
-    <p class="text-xs text-gray-600 text-center">GETXH.IN © 2026 · All rights reserved</p>
   </div>
 
 </div>
@@ -485,17 +639,26 @@ function closeMenu() {
 function openAccountPopup() {
   const p = document.getElementById('accountPopup');
   p.classList.remove('hidden'); p.style.display='flex';
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.touchAction = 'none';
   document.getElementById('popupAvatar').textContent = _n.charAt(0).toUpperCase();
 }
 function closeAccountPopup() {
   const p = document.getElementById('accountPopup');
   p.classList.add('hidden'); p.style.display='none';
+  document.body.style.overflow = '';
+  document.documentElement.style.overflow = '';
+  document.body.style.touchAction = '';
 }
 function logout() {
   const p = document.getElementById('logoutConfirmPopup');
   clearTimeout(p._logoutTimer);
   p.classList.remove('hidden', 'is-closing');
   p.style.display='flex';
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.touchAction = 'none';
   requestAnimationFrame(() => p.classList.add('is-visible'));
 }
 function _doLogout() {
@@ -512,6 +675,9 @@ function cancelLogout() {
     p.classList.add('hidden');
     p.classList.remove('is-closing');
     p.style.display='none';
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    document.body.style.touchAction = '';
   }, 240);
 }
 
@@ -777,8 +943,14 @@ function toggleFilter() {
   const dd = document.getElementById('filterDropdown');
   const arr = document.getElementById('filterArrow');
   const isOpen = !dd.classList.contains('hidden');
-  dd.classList.toggle('hidden');
-  arr.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+  if (isOpen) {
+    dd.classList.add('hidden');
+    arr.style.transform = 'rotate(0deg)';
+  } else {
+    dd.classList.remove('hidden');
+    dd.style.animation = 'dropSlideFade var(--dur-1) var(--ease-out) forwards';
+    arr.style.transform = 'rotate(180deg)';
+  }
 }
 function setFilter(status, label, dotClass) {
   _currentFilter = status;
@@ -836,21 +1008,21 @@ function renderOrders(orders) {
   const list = document.getElementById('ordersList');
   if(!orders || orders.length === 0) {
     list.innerHTML = `
-      <div class="flex flex-col items-center justify-center py-16 text-gray-500">
+      <div class="flex flex-col items-center justify-center py-16 text-gray-500 empty-fade-in">
         <span class="material-symbols-outlined mb-3" style="font-size:48px">receipt_long</span>
         <p class="text-sm font-semibold">No orders found</p>
       </div>`;
     return;
   }
-  list.innerHTML = orders.map(o => {
+  list.innerHTML = orders.map((o, idx) => {
     const eid = o.docId || o.orderId || Math.random().toString(36).slice(2);
     return `
-    <div class="order-card rounded-2xl mb-3 overflow-hidden"
+    <div class="order-card motion-card-stagger rounded-2xl mb-3 overflow-hidden"
+         style="--i: ${idx}; background:#121c33; border:1px solid rgba(255,255,255,0.06);"
          data-order-id="${o.apiOrderId || ''}"
          data-eid="${eid}"
          data-doc-id="${o.docId || ''}"
-         data-status="${o.status || 'Pending'}"
-         style="background:#121c33; border:1px solid rgba(255,255,255,0.06);">
+         data-status="${o.status || 'Pending'}">
 
       <!-- Order Header -->
       <div class="flex items-center justify-between px-4 py-3"
@@ -1003,16 +1175,16 @@ window._logoutUser = async function() {
 
 // Skeleton loader
 function showSkeleton() {
-  document.getElementById('ordersList').innerHTML = [1,2,3].map(() => `
-    <div class="rounded-2xl mb-3 overflow-hidden animate-pulse" style="background:#121c33;border:1px solid rgba(255,255,255,0.06)">
+  document.getElementById('ordersList').innerHTML = [1,2,3,4].map(() => `
+    <div class="rounded-2xl mb-3 overflow-hidden" style="background:#121c33;border:1px solid rgba(255,255,255,0.06)">
       <div class="flex items-center justify-between px-4 py-3" style="border-bottom:1px solid rgba(255,255,255,0.06)">
-        <div class="h-4 w-24 rounded" style="background:rgba(255,255,255,0.08)"></div>
-        <div class="h-6 w-20 rounded-full" style="background:rgba(255,255,255,0.06)"></div>
+        <div class="h-4 w-24 rounded skeleton-shimmer-box" style="background:rgba(255,255,255,0.08)"></div>
+        <div class="h-6 w-20 rounded-full skeleton-shimmer-box" style="background:rgba(255,255,255,0.06)"></div>
       </div>
       <div class="px-4 py-3 space-y-3">
-        <div class="h-3 w-3/4 rounded" style="background:rgba(255,255,255,0.06)"></div>
-        <div class="h-3 w-1/2 rounded" style="background:rgba(255,255,255,0.05)"></div>
-        <div class="h-3 w-1/3 rounded" style="background:rgba(255,255,255,0.04)"></div>
+        <div class="h-3 w-3/4 rounded skeleton-shimmer-box" style="background:rgba(255,255,255,0.06)"></div>
+        <div class="h-3 w-1/2 rounded skeleton-shimmer-box" style="background:rgba(255,255,255,0.05)"></div>
+        <div class="h-3 w-1/3 rounded skeleton-shimmer-box" style="background:rgba(255,255,255,0.04)"></div>
       </div>
     </div>`).join('');
 }
