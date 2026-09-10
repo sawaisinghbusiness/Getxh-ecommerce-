@@ -629,6 +629,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
 </style>
 </head>
 
@@ -735,58 +736,36 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 <!-- MAIN CONTENT -->
 <main class="w-full px-4 pt-5 pb-[120px] lg:px-8 lg:py-8 lg:pb-10">
 <div class="lg:mx-auto lg:max-w-6xl">
-<!-- WELCOME CARD — Glass Navy -->
+<!-- WELCOME CARD — Solid Slate #1A2436 -->
 <style>
-@keyframes glassShimmer {
-  0%   { transform: translateX(-100%) skewX(-12deg); }
-  100% { transform: translateX(260%) skewX(-12deg); }
-}
 .welcome-card {
   position: relative;
-  border-radius:8px;
-  padding:16px;
-  margin-bottom:16px;
-  overflow: hidden;
-  background: #0F172A;
-  border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
-}
-.welcome-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 80% 0%, rgba(34,197,94,0.1) 0%, transparent 55%),
-    radial-gradient(ellipse at 10% 100%, rgba(34,197,94,0.06) 0%, transparent 50%);
-  pointer-events: none;
-}
-.welcome-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -60%;
-  width: 32%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
-  animation: glassShimmer 6s ease-in-out infinite;
-  pointer-events: none;
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  background: #1A2436;
+  border: none;
+  box-shadow: none;
 }
 .wc-stat {
-  flex:1;
-  border-radius:7px;
-  padding:7px 10px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+  flex: 1;
+  background: #141B29;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: none;
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
+.wc-stat:hover { opacity: 0.95; }
+.wc-stat:active { transform: scale(0.98); }
 </style>
 
 <div class="welcome-card">
-  <!-- subtle green glow top right -->
-  <div style="position:absolute;width:200px;height:200px;border-radius:50%;
-              background:radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%);
-              top:-80px;right:-60px;pointer-events:none"></div>
-
   <!-- Top row: avatar + username + Add Funds btn -->
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;position:relative;z-index:1;">
     <div style="display:flex;align-items:center;gap:13px;">
@@ -796,8 +775,8 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         <span class="material-symbols-outlined" style="font-size:20px;color:#22C55E">person</span>
       </div>
       <div>
-        <p style="margin:0;font-size:14px;color:#ffffff99;">Welcome,</p>
-        <p id="userName" style="color:#fff;font-weight:600;text-transform:uppercase;font-size:16px;display:block;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">User</p>
+        <p style="margin:0;font-size:14px;color:#9AA9BD;">Welcome,</p>
+        <p id="userName" style="color:#FFFFFF;font-weight:700;text-transform:uppercase;font-size:16px;display:block;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0;">User</p>
       </div>
     </div>
     <button onclick="window.location.href='/wallet'"
@@ -812,26 +791,25 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   <!-- Stats row -->
   <div style="display:flex;gap:10px;position:relative;z-index:1;">
 
-    <div class="wc-stat" style="background:#1a2d45;border:1px solid #2a3f5a;padding:7px 10px;display:flex;align-items:center;flex:1;border-radius:7px;line-height:1;gap:10px;cursor:pointer;" onclick="window.location.href='/wallet'">
-      <span class="material-symbols-outlined" style="font-size:20px;color:#22C55E;flex-shrink:0;">account_balance_wallet</span>
+    <div class="wc-stat" onclick="window.location.href='/wallet'">
+      <span class="material-symbols-outlined" style="font-size:20px;color:#0ECB81;flex-shrink:0;">account_balance_wallet</span>
       <div>
-        <p style="margin:0;font-weight:600;color:#ffffff99;margin-bottom:5px;font-size:13px;">Balance</p>
-        <p id="userBalance" style="font-weight:bold;font-size:16px;color:#22C55E;margin:0;"><span class="gx-skeleton" style="width:60px;height:16px;display:inline-block;">&nbsp;</span></p>
+        <p style="margin:0;font-weight:600;color:#9AA9BD;margin-bottom:5px;font-size:12px;">Balance</p>
+        <p id="userBalance" style="font-weight:700;font-size:16px;color:#0ECB81;margin:0;"><span class="gx-skeleton" style="width:60px;height:16px;display:inline-block;">&nbsp;</span></p>
       </div>
     </div>
 
-    <div class="wc-stat" style="background:#1a2d45;border:1px solid #2a3f5a;padding:7px 10px;display:flex;align-items:center;flex:1;border-radius:7px;line-height:1;gap:10px;cursor:pointer;" onclick="window.location.href='/orders'">
-      <span class="material-symbols-outlined" style="font-size:20px;color:#22C55E;flex-shrink:0;">shopping_bag</span>
+    <div class="wc-stat" onclick="window.location.href='/orders'">
+      <span class="material-symbols-outlined" style="font-size:20px;color:#0ECB81;flex-shrink:0;">shopping_bag</span>
       <div>
-        <p style="margin:0;font-weight:600;color:#ffffff99;margin-bottom:5px;font-size:13px;">Your Orders</p>
-        <p id="userOrders" style="font-weight:bold;font-size:16px;color:#22C55E;margin:0;"><span class="gx-skeleton" style="width:40px;height:16px;display:inline-block;">&nbsp;</span></p>
+        <p style="margin:0;font-weight:600;color:#9AA9BD;margin-bottom:5px;font-size:12px;">Your Orders</p>
+        <p id="userOrders" style="font-weight:700;font-size:16px;color:#0ECB81;margin:0;"><span class="gx-skeleton" style="width:40px;height:16px;display:inline-block;">&nbsp;</span></p>
       </div>
     </div>
 
   </div>
 </div>
 
-    
 <!-- ================= NEW ORDER SECTION ================= -->
 <div style="height:14px;"></div>
 
@@ -1093,6 +1071,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     </div>
   </div>
 </div>
+
 
 <!-- SUCCESS MODAL -->
 <style>
