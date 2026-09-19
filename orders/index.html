@@ -689,7 +689,7 @@ async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
   // Skip API polling if admin has manually overridden this order's status
   if (docId && window._adminOverriddenOrders.has(docId)) return;
   try {
-    const res  = await fetch('https://getxh.online/api/status/' + apiOrderId);
+    const res  = await fetch('https://backend-for-api-connect-5kr9.onrender.com/status/' + apiOrderId);
     if (!res.ok) return;
     const data = await res.json();
 
@@ -842,7 +842,7 @@ async function refillOrder(apiOrderId, eid) {
     btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#38bdf8;animation:spin 0.7s linear infinite">sync</span> Requesting...';
   }
   try {
-    const res  = await fetch('https://getxh.online/api/refill', {
+    const res  = await fetch('https://backend-for-api-connect-5kr9.onrender.com/refill', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({order: apiOrderId})
@@ -873,7 +873,7 @@ async function cancelOrder(apiOrderId, docId, eid) {
   btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#f87171;animation:spin 0.7s linear infinite">sync</span> Cancelling...';
 
   try {
-    const res  = await fetch('https://getxh.online/api/cancel', {
+    const res  = await fetch('https://backend-for-api-connect-5kr9.onrender.com/cancel', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({order: apiOrderId})
