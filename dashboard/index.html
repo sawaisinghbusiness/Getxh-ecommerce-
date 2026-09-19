@@ -769,10 +769,22 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   <!-- Top row: avatar + username + Add Funds btn -->
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;position:relative;z-index:1;">
     <div style="display:flex;align-items:center;gap:13px;">
-      <div style="width:38px;height:38px;border-radius:12px;flex-shrink:0;
-                  background:rgba(34,197,94,0.12);border:1.5px solid rgba(34,197,94,0.3);
-                  display:flex;align-items:center;justify-content:center;">
-        <span class="material-symbols-outlined" style="font-size:20px;color:#22C55E">person</span>
+      <div id="userAvatarContainer"
+           style="width:50px;height:50px;border-radius:50%;border:2px solid rgba(255,255,255,0.25);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#243447;">
+        <svg viewBox="0 0 100 100" width="100%" height="100%" style="display:block;">
+          <circle cx="50" cy="50" r="50" fill="#243447"/>
+          <!-- Green Shirt / Torso -->
+          <path d="M12 100 C12 74, 26 66, 50 66 C74 66, 88 74, 88 100 Z" fill="#22C55E"/>
+          <!-- Neck -->
+          <rect x="42" y="50" width="16" height="20" rx="4" fill="#E0A97C"/>
+          <!-- Face -->
+          <ellipse cx="50" cy="42" rx="18" ry="20" fill="#E0A97C"/>
+          <!-- Beard & Mustache -->
+          <path d="M33 42 C33 58, 40 65, 50 65 C60 65, 67 58, 67 42 C65 46, 60 53, 50 53 C40 53, 35 46, 33 42 Z" fill="#231B15"/>
+          <path d="M42 49 Q50 46 58 49 Q50 53 42 49 Z" fill="#231B15"/>
+          <!-- Hair -->
+          <path d="M32 38 C32 23, 40 18, 50 18 C60 18, 68 23, 68 38 C68 32, 63 24, 50 24 C37 24, 32 32, 32 38 Z" fill="#231B15"/>
+        </svg>
       </div>
       <div>
         <p style="margin:0;font-size:14px;color:#9AA9BD;">Welcome,</p>
@@ -780,11 +792,10 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       </div>
     </div>
     <button onclick="window.location.href='/wallet'"
-      style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:30px;cursor:pointer;background:#38a820;border:1px solid #2588d7;color:#fff;font-size:12px;font-weight:600;transition:all 0.2s ease;"
+      style="display:inline-flex;align-items:center;justify-content:center;gap:4px;height:44px;padding:0 16px;border-radius:9999px;cursor:pointer;background:transparent;border:1px solid rgba(255,255,255,0.30);color:#ffffff;font-size:14px;font-weight:600;white-space:nowrap;flex-shrink:0;transition:all 0.2s ease;"
       onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'"
       ontouchstart="this.style.transform='scale(0.95)'" ontouchend="this.style.transform='scale(1)'">
-      <span class="material-symbols-outlined" style="font-size:16px">add</span>
-      Add Funds
+      + Add Funds
     </button>
   </div>
 
@@ -792,18 +803,18 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   <div style="display:flex;gap:10px;position:relative;z-index:1;">
 
     <div class="wc-stat" onclick="window.location.href='/wallet'">
-      <span class="material-symbols-outlined" style="font-size:20px;color:#0ECB81;flex-shrink:0;">account_balance_wallet</span>
+      <span class="material-symbols-outlined" style="font-size:20px;color:#94A3B8;flex-shrink:0;">account_balance_wallet</span>
       <div>
         <p style="margin:0;font-weight:600;color:#9AA9BD;margin-bottom:5px;font-size:12px;">Balance</p>
-        <p id="userBalance" style="font-weight:700;font-size:16px;color:#0ECB81;margin:0;"><span class="gx-skeleton" style="width:60px;height:16px;display:inline-block;">&nbsp;</span></p>
+        <p id="userBalance" style="font-weight:700;font-size:16px;color:#FFFFFF;margin:0;"><span class="gx-skeleton" style="width:60px;height:16px;display:inline-block;">&nbsp;</span></p>
       </div>
     </div>
 
     <div class="wc-stat" onclick="window.location.href='/orders'">
-      <span class="material-symbols-outlined" style="font-size:20px;color:#0ECB81;flex-shrink:0;">shopping_bag</span>
+      <span class="material-symbols-outlined" style="font-size:20px;color:#94A3B8;flex-shrink:0;">shopping_bag</span>
       <div>
         <p style="margin:0;font-weight:600;color:#9AA9BD;margin-bottom:5px;font-size:12px;">Your Orders</p>
-        <p id="userOrders" style="font-weight:700;font-size:16px;color:#0ECB81;margin:0;"><span class="gx-skeleton" style="width:40px;height:16px;display:inline-block;">&nbsp;</span></p>
+        <p id="userOrders" style="font-weight:700;font-size:16px;color:#FFFFFF;margin:0;"><span class="gx-skeleton" style="width:40px;height:16px;display:inline-block;">&nbsp;</span></p>
       </div>
     </div>
 
@@ -879,11 +890,11 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Service</p>
         <div class="relative" id="serviceDropdownWrapper">
           <button type="button" id="svcBtn" onclick="toggleServiceDropdown()"
-            style="width:100%;height:42px;display:flex;align-items:center;justify-content:space-between;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:0 14px;font-size:14px;text-align:left;cursor:pointer;transition:all 0.2s;box-sizing:border-box;">
+            style="width:100%;min-height:48px;display:flex;align-items:center;justify-content:space-between;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:4px 12px;font-size:14px;text-align:left;cursor:pointer;transition:all 0.2s;box-sizing:border-box;">
             <div class="flex items-center gap-3 min-w-0">
-              <span id="svcNumBadge"
-                class="h-6 min-w-[44px] px-2 rounded bg-[#2196f3] text-white text-xs
-                       font-black flex items-center justify-center flex-shrink-0 hidden"></span>
+              <span id="svcNumBadge" data-id=""
+                class="hidden flex-shrink-0"
+                style="width:40px;height:40px;min-width:40px;min-height:40px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:none;align-items:center;justify-content:center;box-sizing:border-box;pointer-events:none;"></span>
               <span id="svcLabel" class="text-gray-400 font-semibold truncate" style="font-size:14px;">
                 — Select a service —
               </span>
@@ -1224,15 +1235,16 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   text-transform:uppercase;line-height:1;
 }
 .bnav-fab {
-  width:52px;height:52px;border-radius:16px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,#2196f3,#00bcd4);
-  box-shadow:none !important;
+  width:62px;height:62px;border-radius:50%;border:none;cursor:pointer;
+  background:#3F51B5;
+  box-shadow:0 8px 20px rgba(63,81,181,0.35), 0 2px 6px rgba(0,0,0,0.2);
   display:flex;align-items:center;justify-content:center;
-  margin-top:-18px;
+  margin-top:-24px;
   flex-shrink:0;
+  transition:transform 0.15s ease, box-shadow 0.15s ease;
 }
-.bnav-fab:hover { transform:none !important;box-shadow:none !important; }
-.bnav-fab:active { transform:none !important; }
+.bnav-fab:hover { transform:scale(1.03); }
+.bnav-fab:active { transform:scale(0.96); }
 </style>
 <div class="bnav">
   <button onclick="openMenu()" class="bnav-item active">
@@ -1246,7 +1258,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   </a>
 
   <button onclick="scrollToNewOrder()" class="bnav-fab" aria-label="New Order">
-    <span class="material-symbols-outlined" style="font-size:24px;color:#fff">add</span>
+    <span class="material-symbols-outlined" style="font-size:28px;color:#fff;display:block;line-height:1;">add</span>
   </button>
 
   <a href="/support" class="bnav-item">
@@ -1888,6 +1900,8 @@ if(username){
   const muDesktop = document.getElementById('menuUsernameDesktop');
   if(muDesktop) muDesktop.textContent=username;
 }
+const savedPhoto = localStorage.getItem('getxh_user_photo');
+if(savedPhoto) { const av = document.getElementById('userAvatarContainer'); if(av) av.innerHTML = `<img src="${savedPhoto}" style="width:100%;height:100%;object-fit:cover;display:block;" />`; }
 if(_email){ 
   document.getElementById('popupEmail').innerText=_email;
   const me = document.getElementById('menuEmail');
@@ -1962,7 +1976,8 @@ function selectCategory(cat) {
   document.getElementById('serviceWrapper').style.display='block';
   document.getElementById('svcLabel').textContent='— Select a service —';
   document.getElementById('svcLabel').className='text-gray-400 text-sm font-semibold truncate';
-  document.getElementById('svcNumBadge').classList.add('hidden');
+  const bBadge = document.getElementById('svcNumBadge');
+  if(bBadge){ bBadge.classList.add('hidden'); bBadge.style.display='none'; }
   document.getElementById('serviceDetails').classList.add('hidden');
   document.getElementById('totalPrice').textContent='';
 
@@ -1973,6 +1988,37 @@ function selectCategory(cat) {
 
 
 // ── SERVICE DROPDOWN ──
+function getPlatformBadgeHTML(catId, svc) {
+  const cid = String(catId || '').toLowerCase();
+  const sName = String((svc && svc.name) || '').toLowerCase();
+
+  let platform = 'instagram';
+  if (cid.startsWith('yt-') || sName.includes('youtube')) {
+    platform = 'youtube';
+  } else if (cid.startsWith('fb-') || sName.includes('facebook')) {
+    platform = 'facebook';
+  } else if (cid.startsWith('tg-') || sName.includes('telegram')) {
+    platform = 'telegram';
+  } else if (cid.startsWith('wa-') || sName.includes('whatsapp')) {
+    platform = 'whatsapp';
+  } else {
+    platform = 'instagram';
+  }
+
+  if (platform === 'youtube') {
+    return `<svg width="22" height="22" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
+  } else if (platform === 'telegram') {
+    return `<svg width="22" height="22" viewBox="0 0 24 24" fill="#24A1DE"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18.872-1.785 7.49-2.597 11.233-.343 1.583-.928 1.83-1.492 1.849-.808.028-1.423-.535-2.208-1.049-1.228-.804-1.921-1.305-3.111-2.09-1.375-.907-.484-1.406.3-2.222.206-.214 3.778-3.463 3.847-3.757.009-.037.017-.174-.065-.246-.082-.072-.203-.048-.29-.028-.124.028-2.102 1.336-5.932 3.924-.561.386-1.069.574-1.523.564-.5-.011-1.463-.283-2.179-.516-.879-.285-1.577-.436-1.517-.92.031-.252.38-.51 1.045-.776 4.098-1.785 6.833-2.962 8.205-3.533 3.908-1.626 4.72-1.908 5.25-1.918.116-.002.376.027.545.165.143.116.183.272.202.382.02.112.016.233.007.36z"/></svg>`;
+  } else if (platform === 'facebook') {
+    return `<svg width="22" height="22" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`;
+  } else if (platform === 'whatsapp') {
+    return `<svg width="22" height="22" viewBox="0 0 24 24" fill="#25D366"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2z"/></svg>`;
+  } else {
+    // Instagram gradient logo
+    return `<img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" width="22" height="22" style="width:22px;height:22px;object-fit:contain;display:block;" alt="Instagram"/>`;
+  }
+}
+
 function buildServiceDropdown() {
   const dd=document.getElementById('serviceDropdown'),q=(document.getElementById('searchService').value||'').toLowerCase();
   dd.innerHTML='';
@@ -1998,7 +2044,12 @@ function selectService(svc) {
   dbClearErr("customCommentsInput", "err-customComments");
 
   const bBadge = document.getElementById('svcNumBadge');
-  if(bBadge){ bBadge.textContent=svc.id; bBadge.classList.remove('hidden'); }
+  if(bBadge){
+    bBadge.setAttribute('data-id', svc.id);
+    bBadge.innerHTML = getPlatformBadgeHTML(_selCat, svc);
+    bBadge.classList.remove('hidden');
+    bBadge.style.display = 'inline-flex';
+  }
 
   const sLbl = document.getElementById('svcLabel');
   if(sLbl){ sLbl.textContent=svc.name; sLbl.className='text-white text-sm font-semibold truncate'; }
@@ -2948,6 +2999,11 @@ onAuthStateChanged(auth, async (user) => {
 
   // Fail-safe: Ensure user document exists in Firestore for Admin Panel visibility
   const username = user.displayName || (currentEmail ? currentEmail.split('@')[0] : 'User');
+  if (user && user.photoURL) {
+    const av = document.getElementById('userAvatarContainer');
+    if (av) av.innerHTML = `<img src="${user.photoURL}" style="width:100%;height:100%;object-fit:cover;display:block;" />`;
+    localStorage.setItem('getxh_user_photo', user.photoURL);
+  }
   try {
     getDoc(doc(db, "Users", currentUid)).then((snap) => {
       if (!snap.exists()) {
