@@ -364,7 +364,7 @@ async function resetPassword() {
     // 1. Try Backend API Reset Endpoint with email, otp, newPassword, confirmPassword
     const cleanEmail = String(email || "").trim().toLowerCase();
     const cleanOtp = String(otp || "").trim();
-    const res = await fetch("https://getxh.online/api/reset-password", {
+    const res = await fetch("https://backend-for-email-verification-code-oelj.onrender.com/api/reset-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
