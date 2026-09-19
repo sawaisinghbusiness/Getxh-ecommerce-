@@ -169,13 +169,37 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
   background:linear-gradient(135deg,rgba(139,92,246,0.45),rgba(59,130,246,0.25),rgba(255,255,255,0.08));
   box-shadow:0 24px 60px rgba(0,0,0,0.6);
 }
+
+/* Card internal Plexus spiderweb background */
+.card-plexus{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:0;
+  overflow:hidden;
+  border-radius:inherit;
+  opacity:0.38;
+}
+.card-plexus svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+.card > *:not(.card-plexus){
+  position:relative;
+  z-index:2;
+}
+
 .card{
   position:relative;z-index:2;width:100%;
-  background:rgba(15,23,42,0.85);
+  background:linear-gradient(180deg, rgba(18,26,42,0.80) 0%, rgba(12,18,30,0.88) 100%);
   backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
   border-radius:23px;
   padding:32px 28px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);
+  overflow:hidden;
 }
 
 /* Card Header */
@@ -703,6 +727,95 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 
   <div class="card-shine-wrap">
     <div class="card">
+      <!-- Plexus / Spiderweb Network Background inside Card -->
+      <div class="card-plexus" aria-hidden="true">
+        <svg viewBox="0 0 500 800" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <g stroke="#38BDF8" stroke-width="1.2" stroke-opacity="0.4">
+            <!-- Top section lines -->
+            <line x1="40" y1="50" x2="160" y2="90" />
+            <line x1="160" y1="90" x2="300" y2="40" />
+            <line x1="300" y1="40" x2="440" y2="80" />
+            <line x1="160" y1="90" x2="220" y2="180" />
+            <line x1="40" y1="50" x2="90" y2="190" />
+            <line x1="90" y1="190" x2="220" y2="180" />
+            <line x1="220" y1="180" x2="360" y2="160" />
+            <line x1="300" y1="40" x2="360" y2="160" />
+            <line x1="440" y1="80" x2="460" y2="210" />
+            <line x1="360" y1="160" x2="460" y2="210" />
+
+            <!-- Upper-mid section lines -->
+            <line x1="220" y1="180" x2="150" y2="300" />
+            <line x1="90" y1="190" x2="150" y2="300" />
+            <line x1="360" y1="160" x2="280" y2="290" />
+            <line x1="220" y1="180" x2="280" y2="290" />
+            <line x1="150" y1="300" x2="280" y2="290" />
+            <line x1="280" y1="290" x2="420" y2="280" />
+            <line x1="460" y1="210" x2="420" y2="280" />
+
+            <!-- Center section lines -->
+            <line x1="150" y1="300" x2="80" y2="420" />
+            <line x1="80" y1="420" x2="210" y2="410" />
+            <line x1="280" y1="290" x2="210" y2="410" />
+            <line x1="280" y1="290" x2="350" y2="430" />
+            <line x1="420" y1="280" x2="350" y2="430" />
+            <line x1="420" y1="280" x2="470" y2="400" />
+            <line x1="350" y1="430" x2="470" y2="400" />
+            <line x1="210" y1="410" x2="350" y2="430" />
+
+            <!-- Lower-mid section lines -->
+            <line x1="80" y1="420" x2="130" y2="550" />
+            <line x1="210" y1="410" x2="260" y2="560" />
+            <line x1="130" y1="550" x2="260" y2="560" />
+            <line x1="260" y1="560" x2="390" y2="540" />
+            <line x1="350" y1="430" x2="390" y2="540" />
+            <line x1="470" y1="400" x2="450" y2="550" />
+            <line x1="390" y1="540" x2="450" y2="550" />
+
+            <!-- Bottom section lines -->
+            <line x1="130" y1="550" x2="70" y2="680" />
+            <line x1="260" y1="560" x2="200" y2="690" />
+            <line x1="70" y1="680" x2="200" y2="690" />
+            <line x1="200" y1="690" x2="330" y2="670" />
+            <line x1="390" y1="540" x2="330" y2="670" />
+            <line x1="330" y1="670" x2="440" y2="680" />
+            <line x1="450" y1="550" x2="440" y2="680" />
+            <line x1="70" y1="680" x2="160" y2="760" />
+            <line x1="200" y1="690" x2="280" y2="770" />
+            <line x1="160" y1="760" x2="280" y2="770" />
+            <line x1="280" y1="770" x2="410" y2="750" />
+            <line x1="440" y1="680" x2="410" y2="750" />
+          </g>
+          <!-- Spiderweb node points -->
+          <g fill="#38BDF8">
+            <circle cx="40" cy="50" r="3" />
+            <circle cx="160" cy="90" r="3.5" />
+            <circle cx="300" cy="40" r="3" />
+            <circle cx="440" cy="80" r="3.5" />
+            <circle cx="90" cy="190" r="3" />
+            <circle cx="220" cy="180" r="4" />
+            <circle cx="360" cy="160" r="3.5" />
+            <circle cx="460" cy="210" r="3" />
+            <circle cx="150" cy="300" r="3.5" />
+            <circle cx="280" cy="290" r="4" />
+            <circle cx="420" cy="280" r="3.5" />
+            <circle cx="80" cy="420" r="3" />
+            <circle cx="210" cy="410" r="3.5" />
+            <circle cx="350" cy="430" r="4" />
+            <circle cx="470" cy="400" r="3" />
+            <circle cx="130" cy="550" r="3" />
+            <circle cx="260" cy="560" r="3.5" />
+            <circle cx="390" cy="540" r="3.5" />
+            <circle cx="450" cy="550" r="3" />
+            <circle cx="70" cy="680" r="3" />
+            <circle cx="200" cy="690" r="3.5" />
+            <circle cx="330" cy="670" r="3.5" />
+            <circle cx="440" cy="680" r="3" />
+            <circle cx="160" cy="760" r="3" />
+            <circle cx="280" cy="770" r="3.5" />
+            <circle cx="410" cy="750" r="3" />
+          </g>
+        </svg>
+      </div>
 
 
       <!-- Card header -->
