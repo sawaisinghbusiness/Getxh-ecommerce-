@@ -634,45 +634,37 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 }
 .stats-bar-inner{
   max-width:1080px;margin:0 auto;
-  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
-}
-.sbar-card{
-  background:rgba(15,23,42,0.65);
   border:1px solid rgba(255,255,255,0.08);
   border-radius:16px;
-  padding:16px 14px;
-  text-align:center;
+  background:rgba(10,14,22,0.6);
   backdrop-filter:blur(16px);
   -webkit-backdrop-filter:blur(16px);
-  transition:all 0.3s ease;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  padding:22px 0;
+}
+.sbar-card{
+  background:transparent;
+  border:none;
+  border-radius:0;
+  padding:4px 16px;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
   position:relative;
-  overflow:hidden;
 }
-.sbar-card::before{
-  content:'';position:absolute;top:0;left:20%;right:20%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(139,92,246,0.6),transparent);
-}
-.sbar-card:hover{
-  background:rgba(255,255,255,0.04);
-  border-color:rgba(139,92,246,0.3);
-  transform:translateY(-2px);
+.sbar-card:not(:last-child){
+  border-right:1px solid rgba(255,255,255,0.08);
 }
 .sbar-val{
-  font-size:22px;font-weight:900;letter-spacing:-0.02em;
+  font-size:26px;font-weight:700;letter-spacing:-0.02em;
   color:#ffffff;display:flex;align-items:center;justify-content:center;
-  gap:6px;margin-bottom:4px;
-}
-.sbar-val.purple{color:#a78bfa;}
-.sbar-val.cyan{color:#38bdf8;}
-.sbar-val.green{color:#34d399;}
-.live-dot-s{
-  display:inline-block;width:7px;height:7px;border-radius:50%;
-  background:#10b981;box-shadow:0 0 8px #10b981;
-  animation:livePulse 1.6s ease-in-out infinite;
+  margin-bottom:6px;line-height:1.2;
 }
 .sbar-lbl{
-  font-size:10.5px;color:#94a3b8;text-transform:uppercase;
-  letter-spacing:0.08em;font-weight:700;
+  font-size:11px;color:#94a3b8;text-transform:uppercase;
+  letter-spacing:0.08em;font-weight:700;line-height:1.3;
 }
 
 /* ══════════════════════════════════════════
@@ -743,37 +735,68 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 /* ══════════════════════════════════════════
    5. HOW IT WORKS (VERTICAL TIMELINE)
 ══════════════════════════════════════════ */
+.how-it-works-section{
+  position:relative;
+  overflow:hidden;
+}
+.hiw-plexus-bg{
+  position:absolute;top:50%;right:-20px;
+  transform:translateY(-45%);width:650px;max-width:58%;
+  height:auto;opacity:0.08;pointer-events:none;z-index:1;
+}
+.hiw-sparkle{
+  position:absolute;bottom:48px;right:64px;
+  width:48px;height:48px;color:#CBD5E1;
+  opacity:0.25;pointer-events:none;z-index:1;
+}
 .timeline-flow{
   position:relative;margin-top:36px;
-  max-width:680px;padding-left:10px;
+  max-width:680px;padding-left:0;z-index:2;
 }
 .timeline-item{
-  display:flex;gap:22px;position:relative;
-  padding-bottom:34px;
+  display:flex;gap:20px;position:relative;
+  padding:14px 18px;border-radius:14px;
+  border:1px solid transparent;
+  transition:all 200ms ease;
+  margin-bottom:18px;
 }
-.timeline-item:last-child{padding-bottom:0;}
+.timeline-item:last-child{margin-bottom:0;}
+.timeline-item:hover,
+.timeline-item.active{
+  background:rgba(255,255,255,0.04);
+  border-color:rgba(255,255,255,0.06);
+  box-shadow:0 0 24px rgba(148,163,184,0.12);
+}
 .timeline-left{
   display:flex;flex-direction:column;
   align-items:center;position:relative;
+  flex-shrink:0;
 }
 .timeline-icon{
   width:44px;height:44px;border-radius:50%;
-  background:rgba(139,92,246,0.12);border:2px solid #8b5cf6;
-  box-shadow:0 0 16px rgba(139,92,246,0.35);
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.16);
   display:flex;align-items:center;justify-content:center;
-  color:#c4b5fd;flex-shrink:0;z-index:2;
+  color:#CBD5E1;flex-shrink:0;z-index:2;
+  box-shadow:none;transition:all 200ms ease;
 }
-.timeline-icon svg{width:18px;height:18px;}
+.timeline-item.active .timeline-icon,
+.timeline-item:hover .timeline-icon{
+  border-color:rgba(255,255,255,0.35);
+  box-shadow:0 0 16px rgba(255,255,255,0.15);
+}
+.timeline-icon svg{width:18px;height:18px;stroke:#CBD5E1;}
 .timeline-line{
-  position:absolute;top:44px;bottom:0;width:2px;
-  background:linear-gradient(180deg,#8b5cf6 0%,rgba(139,92,246,0.2) 100%);
+  position:absolute;top:48px;width:1px;height:24px;
+  background:rgba(255,255,255,0.10);
+  left:50%;transform:translateX(-50%);
   z-index:1;
 }
 .timeline-item:last-child .timeline-line{display:none;}
-.timeline-content{padding-top:4px;}
+.timeline-content{padding-top:2px;}
 .timeline-step{
   font-size:11px;font-weight:800;letter-spacing:0.12em;
-  text-transform:uppercase;color:#a78bfa;margin-bottom:6px;
+  text-transform:uppercase;color:#94A3B8;margin-bottom:6px;
 }
 .timeline-title{
   font-size:17.5px;font-weight:800;color:#f1f5f9;
@@ -784,33 +807,95 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 }
 
 /* ══════════════════════════════════════════
-   7. REVIEWS SLIDER
+   7. REVIEWS SLIDER / TESTIMONIALS
 ══════════════════════════════════════════ */
-.reviews-outer{margin-top:36px;overflow:hidden;position:relative;}
+.testimonials-section{position:relative;overflow:hidden;}
+.testimonials-section .section-label{color:#94A3B8;}
+.reviews-outer{margin-top:36px;overflow:hidden;position:relative;z-index:2;}
 .reviews-track{display:flex;gap:18px;transition:transform 0.5s cubic-bezier(0.22,1,0.36,1);}
 .review-card{
   flex:0 0 calc(33.333% - 12px);
-  background:rgba(15,23,42,0.75);
-  border:1px solid rgba(255,255,255,0.07);
-  border-radius:18px;padding:26px 22px;
+  background:linear-gradient(160deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 40%, rgba(10,14,22,0.40) 100%);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:20px;
+  padding:26px 22px;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  box-shadow:0 20px 40px rgba(0,0,0,0.3);
 }
 .review-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
 .review-avatar{
-  width:40px;height:40px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:15px;font-weight:800;color:#fff;
+  width:46px;height:46px;border-radius:50%;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,0.15);
+  display:block;
+  flex-shrink:0;
 }
 .review-name{font-size:14.5px;font-weight:700;color:#f1f5f9;}
 .review-role{font-size:11.5px;color:#64748b;margin-top:2px;}
-.review-stars{display:flex;gap:3px;margin-bottom:12px;}
-.review-stars svg{width:14px;height:14px;fill:#f59e0b;}
-.review-text{font-size:13px;color:#94a3b8;line-height:1.75;font-style:italic;}
-.reviews-nav{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:24px;}
+.verif-badge{
+  margin-left:auto;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  flex-shrink:0;
+  text-align:left;
+}
+.verif-icon{
+  width:15px;
+  height:15px;
+  color:#94A3B8;
+  flex-shrink:0;
+}
+.verif-text{
+  font-size:11.5px;
+  font-weight:500;
+  color:#94A3B8;
+  line-height:1.25;
+  white-space:normal;
+}
+.review-stars{display:flex;gap:3px;margin-bottom:14px;}
+.review-stars svg{width:14px;height:14px;fill:#B45309;opacity:0.75;}
+.review-text{
+  font-size:13px;
+  color:#C3CBD8;
+  line-height:1.7;
+  font-style:italic;
+}
+.reviews-nav{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:24px;position:relative;z-index:2;}
 .rev-dot{
   width:8px;height:8px;border-radius:50%;
   background:rgba(167,139,250,0.25);cursor:pointer;border:none;
 }
 .rev-dot.active{background:#8b5cf6;transform:scale(1.3);}
+
+/* Testimonials background plexus & sparkle */
+.testi-plexus{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:0;
+  overflow:hidden;
+  opacity:0.08;
+}
+.testi-plexus svg{width:100%;height:100%;display:block;}
+.testi-sparkle{
+  position:absolute;
+  right:5%;
+  bottom:24px;
+  color:#93C5FD;
+  opacity:0.25;
+  pointer-events:none;
+  z-index:1;
+}
+@media(max-width:480px){
+  .review-top{flex-wrap:wrap;row-gap:8px;}
+  .verif-badge{margin-left:58px;width:calc(100% - 58px);}
+  .testi-plexus{display:none;}
+  .testi-sparkle{right:16px;bottom:16px;width:36px;height:36px;}
+}
 
 /* ══════════════════════════════════════════
    8. FAQ ACCORDION SECTION
@@ -936,22 +1021,21 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   .feat-desc{white-space:normal;}
   .right{width:100%;min-width:unset;padding:16px 16px 40px;display:flex;align-items:center;justify-content:center;}
   .card-stack{width:100%;max-width:440px;}
-  .stats-bar{padding:10px 16px 30px;}
-  .stats-bar-inner{grid-template-columns:repeat(2,1fr);gap:10px;}
-  .sbar-card{padding:14px 10px;}
-  .sbar-val{font-size:18px;}
-  .sbar-lbl{font-size:9.5px;}
+  .stats-bar{padding:10px 20px 35px;}
+  .stats-bar-inner{padding:18px 0;}
+  .sbar-val{font-size:22px;}
+  .sbar-lbl{font-size:10px;}
   .why-cards-stack{max-width:100%;}
   .timeline-flow{max-width:100%;padding-left:0;}
-  .timeline-item{gap:16px;padding-bottom:28px;}
-  .timeline-icon{width:38px;height:38px;}
+  .timeline-item{gap:16px;padding:12px 14px;margin-bottom:14px;}
+  .timeline-icon{width:40px;height:40px;}
   .timeline-icon svg{width:16px;height:16px;}
-  .timeline-line{top:38px;}
+  .timeline-line{top:44px;height:20px;}
   .review-card{flex:0 0 100%;}
   .footer-grid{grid-template-columns:1fr 1fr;gap:30px;}
   .lp-section{padding:45px 20px;}
 }
-@media(max-width:600px){
+@media(max-width:640px){
   .left{padding:20px 16px 16px;}
   .left-heading{font-size:32px;}
   .left-sub{font-size:14px;}
@@ -961,15 +1045,25 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   .right{padding:10px 14px 36px;}
   .card-stack{max-width:100%;}
   .card{padding:24px 18px 22px;}
-  .stats-bar-inner{grid-template-columns:repeat(2,1fr);gap:8px;}
-  .sbar-card{padding:12px 8px;}
-  .sbar-val{font-size:16px;}
-  .sbar-lbl{font-size:8.5px;}
+  .lp-section{padding:35px 16px;}
+  .stats-bar{padding:10px 14px 28px;}
+  .stats-bar-inner{grid-template-columns:repeat(2,1fr);padding:14px 0;}
+  .sbar-card{padding:14px 8px;border-right:none;}
+  .sbar-card:nth-child(1),
+  .sbar-card:nth-child(3){border-right:1px solid rgba(255,255,255,0.08);}
+  .sbar-card:nth-child(1),
+  .sbar-card:nth-child(2){border-bottom:1px solid rgba(255,255,255,0.08);}
+  .sbar-card:nth-child(3),
+  .sbar-card:nth-child(4){border-bottom:none;}
+  .sbar-val{font-size:20px;}
+  .sbar-lbl{font-size:9.5px;}
   .why-card{padding:20px 18px;}
   .why-card-title{font-size:16px;}
   .why-card-desc{font-size:13px;}
   .timeline-title{font-size:16px;}
   .timeline-desc{font-size:12.5px;}
+  .hiw-plexus-bg{display:none;}
+  .hiw-sparkle{right:20px;bottom:20px;width:36px;height:36px;}
   .footer-grid{grid-template-columns:1fr;}
   .cta-inner{padding:36px 20px;}
 }
@@ -1520,27 +1614,120 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 <div class="stats-bar">
   <div class="stats-bar-inner">
     <div class="sbar-card">
-      <span class="sbar-val"><span class="live-dot-s"></span>50,000+</span>
+      <span class="sbar-val">50,000+</span>
       <span class="sbar-lbl">Orders Delivered</span>
     </div>
     <div class="sbar-card">
-      <span class="sbar-val purple">10,000+</span>
+      <span class="sbar-val">10,000+</span>
       <span class="sbar-lbl">Active Creators</span>
     </div>
     <div class="sbar-card">
-      <span class="sbar-val green">₹0.10 / 1K</span>
+      <span class="sbar-val">₹0.10 / 1K</span>
       <span class="sbar-lbl">Prices From</span>
     </div>
     <div class="sbar-card">
-      <span class="sbar-val cyan">99.9%</span>
+      <span class="sbar-val">99.9%</span>
       <span class="sbar-lbl">Automated Uptime</span>
     </div>
   </div>
 </div>
 
 <!-- ════ HOW IT WORKS (TIMELINE) ════ -->
-<section class="lp-section">
-  <div class="lp-inner">
+<section class="lp-section how-it-works-section">
+  <!-- Plexus / Constellation Background -->
+  <div class="hiw-plexus-bg" aria-hidden="true">
+    <svg viewBox="0 0 700 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#93C5FD" stroke-width="1" stroke-opacity="0.85">
+        <line x1="260" y1="140" x2="390" y2="70" />
+        <line x1="390" y1="70" x2="520" y2="120" />
+        <line x1="520" y1="120" x2="620" y2="220" />
+        <line x1="620" y1="220" x2="640" y2="340" />
+        <line x1="640" y1="340" x2="560" y2="440" />
+        <line x1="560" y1="440" x2="430" y2="470" />
+        <line x1="430" y1="470" x2="310" y2="420" />
+        <line x1="310" y1="420" x2="220" y2="320" />
+        <line x1="220" y1="320" x2="260" y2="140" />
+        <line x1="260" y1="140" x2="370" y2="190" />
+        <line x1="390" y1="70" x2="370" y2="190" />
+        <line x1="390" y1="70" x2="470" y2="180" />
+        <line x1="520" y1="120" x2="470" y2="180" />
+        <line x1="520" y1="120" x2="550" y2="250" />
+        <line x1="620" y1="220" x2="550" y2="250" />
+        <line x1="620" y1="220" x2="540" y2="330" />
+        <line x1="640" y1="340" x2="540" y2="330" />
+        <line x1="640" y1="340" x2="480" y2="390" />
+        <line x1="560" y1="440" x2="480" y2="390" />
+        <line x1="560" y1="440" x2="410" y2="380" />
+        <line x1="430" y1="470" x2="410" y2="380" />
+        <line x1="430" y1="470" x2="330" y2="350" />
+        <line x1="310" y1="420" x2="330" y2="350" />
+        <line x1="220" y1="320" x2="330" y2="350" />
+        <line x1="220" y1="320" x2="300" y2="230" />
+        <line x1="260" y1="140" x2="300" y2="230" />
+        <line x1="370" y1="190" x2="470" y2="180" />
+        <line x1="470" y1="180" x2="550" y2="250" />
+        <line x1="550" y1="250" x2="540" y2="330" />
+        <line x1="540" y1="330" x2="480" y2="390" />
+        <line x1="480" y1="390" x2="410" y2="380" />
+        <line x1="410" y1="380" x2="330" y2="350" />
+        <line x1="330" y1="350" x2="300" y2="230" />
+        <line x1="300" y1="230" x2="370" y2="190" />
+        <line x1="420" y1="270" x2="370" y2="190" />
+        <line x1="420" y1="270" x2="470" y2="180" />
+        <line x1="420" y1="270" x2="550" y2="250" />
+        <line x1="420" y1="270" x2="540" y2="330" />
+        <line x1="420" y1="270" x2="480" y2="390" />
+        <line x1="420" y1="270" x2="410" y2="380" />
+        <line x1="420" y1="270" x2="330" y2="350" />
+        <line x1="420" y1="270" x2="300" y2="230" />
+        <line x1="390" y1="70" x2="460" y2="20" stroke-dasharray="3 3" />
+        <line x1="520" y1="120" x2="610" y2="60" stroke-dasharray="3 3" />
+        <line x1="620" y1="220" x2="680" y2="170" stroke-dasharray="3 3" />
+        <line x1="640" y1="340" x2="690" y2="390" stroke-dasharray="3 3" />
+        <line x1="560" y1="440" x2="620" y2="480" stroke-dasharray="3 3" />
+        <line x1="310" y1="420" x2="250" y2="460" stroke-dasharray="3 3" />
+        <line x1="220" y1="320" x2="160" y2="300" stroke-dasharray="3 3" />
+        <line x1="260" y1="140" x2="200" y2="110" stroke-dasharray="3 3" />
+      </g>
+      <g fill="#38BDF8">
+        <circle cx="260" cy="140" r="3" />
+        <circle cx="390" cy="70" r="3.5" />
+        <circle cx="520" cy="120" r="3" />
+        <circle cx="620" cy="220" r="3" />
+        <circle cx="640" cy="340" r="3" />
+        <circle cx="560" cy="440" r="3" />
+        <circle cx="430" cy="470" r="3.5" />
+        <circle cx="310" cy="420" r="3" />
+        <circle cx="220" cy="320" r="3" />
+        <circle cx="370" cy="190" r="2.5" />
+        <circle cx="470" cy="180" r="2.5" />
+        <circle cx="550" cy="250" r="2.5" />
+        <circle cx="540" cy="330" r="2.5" />
+        <circle cx="480" cy="390" r="2.5" />
+        <circle cx="410" cy="380" r="2.5" />
+        <circle cx="330" cy="350" r="2.5" />
+        <circle cx="300" cy="230" r="2.5" />
+        <circle cx="420" cy="270" r="4" />
+        <circle cx="460" cy="20" r="2" />
+        <circle cx="610" cy="60" r="2" />
+        <circle cx="680" cy="170" r="2" />
+        <circle cx="690" cy="390" r="2" />
+        <circle cx="620" cy="480" r="2" />
+        <circle cx="250" cy="460" r="2" />
+        <circle cx="160" cy="300" r="2" />
+        <circle cx="200" cy="110" r="2" />
+      </g>
+    </svg>
+  </div>
+
+  <!-- Sparkle Star at lower-right -->
+  <div class="hiw-sparkle" aria-hidden="true">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/>
+    </svg>
+  </div>
+
+  <div class="lp-inner" style="position:relative;z-index:2;">
     <span class="section-label">SIMPLE PROCESS</span>
     <h2 class="section-title">How It Works</h2>
     <p class="section-sub">Get started in minutes — no complicated setup, no waiting.</p>
@@ -1563,7 +1750,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
         </div>
       </div>
 
-      <div class="timeline-item">
+      <div class="timeline-item active">
         <div class="timeline-left">
           <div class="timeline-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1616,8 +1803,69 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 </section>
 
 <!-- ════ REVIEWS / TESTIMONIALS ════ -->
-<section class="lp-section">
-  <div class="lp-inner">
+<section class="lp-section testimonials-section">
+  <!-- Plexus / Constellation Background Overlay -->
+  <div class="testi-plexus" aria-hidden="true">
+    <svg viewBox="0 0 1000 500" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <g stroke="#93C5FD" stroke-width="1" stroke-opacity="0.8">
+        <line x1="200" y1="120" x2="350" y2="80" />
+        <line x1="350" y1="80" x2="520" y2="130" />
+        <line x1="520" y1="130" x2="680" y2="90" />
+        <line x1="680" y1="90" x2="850" y2="140" />
+        <line x1="850" y1="140" x2="980" y2="100" />
+        <line x1="200" y1="120" x2="280" y2="260" />
+        <line x1="350" y1="80" x2="420" y2="220" />
+        <line x1="520" y1="130" x2="420" y2="220" />
+        <line x1="520" y1="130" x2="600" y2="270" />
+        <line x1="680" y1="90" x2="760" y2="230" />
+        <line x1="850" y1="140" x2="760" y2="230" />
+        <line x1="850" y1="140" x2="920" y2="280" />
+        <line x1="980" y1="100" x2="920" y2="280" />
+        <line x1="280" y1="260" x2="420" y2="220" />
+        <line x1="420" y1="220" x2="600" y2="270" />
+        <line x1="600" y1="270" x2="760" y2="230" />
+        <line x1="760" y1="230" x2="920" y2="280" />
+        <line x1="280" y1="260" x2="360" y2="400" />
+        <line x1="420" y1="220" x2="500" y2="380" />
+        <line x1="600" y1="270" x2="500" y2="380" />
+        <line x1="600" y1="270" x2="690" y2="410" />
+        <line x1="760" y1="230" x2="840" y2="370" />
+        <line x1="920" y1="280" x2="840" y2="370" />
+        <line x1="920" y1="280" x2="970" y2="420" />
+        <line x1="360" y1="400" x2="500" y2="380" />
+        <line x1="500" y1="380" x2="690" y2="410" />
+        <line x1="690" y1="410" x2="840" y2="370" />
+        <line x1="840" y1="370" x2="970" y2="420" />
+      </g>
+      <g fill="#38BDF8">
+        <circle cx="200" cy="120" r="2.5" />
+        <circle cx="350" cy="80" r="3" />
+        <circle cx="520" cy="130" r="3" />
+        <circle cx="680" cy="90" r="2.5" />
+        <circle cx="850" cy="140" r="3.5" />
+        <circle cx="980" cy="100" r="2.5" />
+        <circle cx="280" cy="260" r="3" />
+        <circle cx="420" cy="220" r="3" />
+        <circle cx="600" cy="270" r="3.5" />
+        <circle cx="760" cy="230" r="3" />
+        <circle cx="920" cy="280" r="3" />
+        <circle cx="360" cy="400" r="2.5" />
+        <circle cx="500" cy="380" r="3" />
+        <circle cx="690" cy="410" r="3" />
+        <circle cx="840" cy="370" r="3.5" />
+        <circle cx="970" cy="420" r="2.5" />
+      </g>
+    </svg>
+  </div>
+
+  <!-- Sparkle Star at lower-right -->
+  <div class="testi-sparkle" aria-hidden="true">
+    <svg width="52" height="52" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/>
+    </svg>
+  </div>
+
+  <div class="lp-inner" style="position:relative;z-index:2;">
     <span class="section-label">Real Testimonials</span>
     <h2 class="section-title">Loved by Creators Across India</h2>
     <p class="section-sub">Here is what our happy creators, digital agencies, and resellers say about GETXH (getxh.in).</p>
@@ -1626,10 +1874,14 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
       <div class="reviews-track" id="reviewsTrack">
         <div class="review-card">
           <div class="review-top">
-            <div class="review-avatar" style="background:linear-gradient(135deg,#8b5cf6,#3b82f6);">R</div>
+            <img class="review-avatar" src="/assets/creator-01.png" alt="Rahul Verma" width="46" height="46"/>
             <div>
               <div class="review-name">Rahul Verma</div>
               <div class="review-role">Digital Marketer, Delhi</div>
+            </div>
+            <div class="verif-badge">
+              <svg class="verif-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              <span class="verif-text">Verified YouTube<br/>Partner</span>
             </div>
           </div>
           <div class="review-stars">
@@ -1644,10 +1896,14 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 
         <div class="review-card">
           <div class="review-top">
-            <div class="review-avatar" style="background:linear-gradient(135deg,#34d399,#0891b2);">P</div>
+            <img class="review-avatar" src="/assets/creator-02.png" alt="Priya Sharma" width="46" height="46"/>
             <div>
               <div class="review-name">Priya Sharma</div>
               <div class="review-role">Fashion Creator, Mumbai</div>
+            </div>
+            <div class="verif-badge">
+              <svg class="verif-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+              <span class="verif-text">Verified Instagram<br/>Creator</span>
             </div>
           </div>
           <div class="review-stars">
@@ -1662,10 +1918,14 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 
         <div class="review-card">
           <div class="review-top">
-            <div class="review-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">A</div>
+            <img class="review-avatar" src="/INFLUNCER IMAGE FOR GETXH LOGIN HEAD 02.avif" alt="Amit Patel" width="46" height="46" style="object-position:center 20%;"/>
             <div>
               <div class="review-name">Amit Patel</div>
               <div class="review-role">YouTube Creator, Ahmedabad</div>
+            </div>
+            <div class="verif-badge">
+              <svg class="verif-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              <span class="verif-text">Verified YouTube<br/>Creator</span>
             </div>
           </div>
           <div class="review-stars">
