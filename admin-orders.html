@@ -147,8 +147,7 @@ tbody td {
 /* Pulse dot for live indicator */
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 .pulse { animation:pulse 2s ease-in-out infinite; }
-</style>
-<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
   <style>body{opacity:0;transition:opacity .18s ease}</style>
 </head>
 <body class="bg-[#0b1220] text-white min-h-screen">
@@ -312,10 +311,10 @@ var allOrders = [];
 // ── Stats update ──────────────────────────────────
 function updateStats(orders) {
   document.getElementById('stTotal').textContent      = orders.length;
-  document.getElementById('stPending').textContent    = orders.filter(function(o){ return (o.status||'pending')==='pending'; }).length;
-  document.getElementById('stProcessing').textContent = orders.filter(function(o){ return o.status==='processing'; }).length;
-  document.getElementById('stCompleted').textContent  = orders.filter(function(o){ return o.status==='completed'; }).length;
-  document.getElementById('stCancelled').textContent  = orders.filter(function(o){ return o.status==='cancelled'; }).length;
+  document.getElementById('stPending').textContent    = orders.filter(function(o){ return (String(o.status||'pending')).toLowerCase()==='pending'; }).length;
+  document.getElementById('stProcessing').textContent = orders.filter(function(o){ return (String(o.status||'')).toLowerCase()==='processing'; }).length;
+  document.getElementById('stCompleted').textContent  = orders.filter(function(o){ return (String(o.status||'')).toLowerCase()==='completed'; }).length;
+  document.getElementById('stCancelled').textContent  = orders.filter(function(o){ return (String(o.status||'')).toLowerCase()==='cancelled'; }).length;
 }
 
 // ── Master render — called by onSnapshot ─────────
@@ -328,14 +327,16 @@ function renderOrders(orders) {
 // ── Filter + render ───────────────────────────────
 function applyFilter() {
   var q  = (document.getElementById('searchInput').value || '').toLowerCase();
-  var sf = document.getElementById('statusFilter').value;
+  var sf = (document.getElementById('statusFilter').value || '').toLowerCase();
 
   var list = allOrders.filter(function(o) {
-    var ms = !sf || (o.status || 'pending') === sf;
+    var rawSt = (String(o.status || 'pending')).toLowerCase();
+    var ms = !sf || rawSt === sf;
     var mq = !q ||
       (o.orderId  || '').toLowerCase().includes(q) ||
       (o.serviceName || o.service || '').toLowerCase().includes(q) ||
       (o.userId   || '').toLowerCase().includes(q) ||
+      (o.email || o.userEmail || '').toLowerCase().includes(q) ||
       String(o.apiOrderId || '').toLowerCase().includes(q) ||
       (o.link     || '').toLowerCase().includes(q);
     return ms && mq;
@@ -354,7 +355,7 @@ function renderTable(orders) {
     return;
   }
   tbody.innerHTML = orders.map(function(o) {
-    var st  = o.status || 'pending';
+    var st  = (String(o.status || 'pending')).toLowerCase();
     var bcl = { pending:'badge-pending', processing:'badge-processing', completed:'badge-completed', cancelled:'badge-cancelled' }[st] || 'badge-pending';
     var svc = escHtml(o.serviceName || o.service || '—');
     if (svc.length > 38) svc = svc.slice(0, 38) + '…';
@@ -413,7 +414,7 @@ function renderCards(orders) {
     return;
   }
   el.innerHTML = orders.map(function(o) {
-    var st   = o.status || 'pending';
+    var st   = (String(o.status || 'pending')).toLowerCase();
     var bcl  = { pending:'badge-pending', processing:'badge-processing', completed:'badge-completed', cancelled:'badge-cancelled' }[st] || 'badge-pending';
     var svc  = escHtml(o.serviceName || o.service || '—');
     if (svc.length > 55) svc = svc.slice(0, 55) + '…';
@@ -514,7 +515,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 // ── Admin identity ────────────────────────────────
-const ADMIN_UID = 'XVQ4WNIRyKbJz7HCDUmU0Lv9squ2';
+const ADMIN_UID   = 'XVQ4WNIRyKbJz7HCDUmU0Lv9squ2';
+const ADMIN_EMAIL = 'agency@getxh.in';
 
 const firebaseConfig = {
   apiKey:            "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -537,9 +539,8 @@ onAuthStateChanged(auth, async user => {
     return;
   }
 
-  // Admin check — UID only (server-verified, cannot be faked)
-  const tokenResult = await getIdTokenResult(user, true);
-  const isAdmin = user.uid === ADMIN_UID && tokenResult.claims.admin === true;
+  // Admin check — UID + Email matching Firestore security rules
+  const isAdmin = user.uid === ADMIN_UID && (user.email || '').toLowerCase() === ADMIN_EMAIL;
 
   if (!isAdmin) {
     window.location.replace('/dashboard');

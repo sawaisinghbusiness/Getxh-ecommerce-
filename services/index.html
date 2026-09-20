@@ -418,10 +418,11 @@ const PLATFORM_ICONS={
 };
 
 // ── DATA ──
-const CATS=[
+let CATS=[
   {id:'welcome-offer',   label:'Welcome Offer',                         p:'instagram'},
   {id:'cheap_followers', label:'Cheapest Instagram Followers',          p:'instagram'},
   {id:'reel-views',      label:'Instagram — Reel / Post Views',         p:'instagram'},
+  {id:'post-views',      label:'Instagram — Post Views',                p:'instagram'},
   {id:'followers',       label:'Instagram — Followers',                 p:'instagram'},
   {id:'likes',           label:'Instagram — Likes',                     p:'instagram'},
   {id:'comments',        label:'Instagram — Comments',                  p:'instagram'},
@@ -441,7 +442,7 @@ const CATS=[
   {id:'wa-members',      label:'WhatsApp — Members',                    p:'whatsapp'},
 ];
 
-const SVCS={
+let SVCS={
   'welcome-offer': [
     {id:6166,name:'Instagram Followers',price:37.45,min:100,max:100000,d:["⏱ Start time: 0-10 Mins","🚄 Speed: 10K+ Day","👑 Quality: Old Accounts","📉 Drop: 0-10%","♻ Refill: 30 Days Refill","🔗 Link Type Example: Instagram Profile Link","❌ Cancel Button Enabled","📝 Note: If in future Account Username Changed No Refil/Refund In Any Case","● Account Must Be Public Otherwise No Refund In Any Case","• In case of high demand for the service, there may be changes in speed and start time.","• Do not place the second order on the same link before your order is completed in the system."]},
     {id:5857,name:'Instagram Followers',price:68.25,min:50,max:100000,d:["🔗 Link Type Example: Instagram Profile Link or Username","🔓 Make sure your account is PUBLIC before placing order","• In case of high demand for the service, there may be changes in speed and start time.","• Do not place the second order on the same link before your order is completed in the system."]},
@@ -565,12 +566,37 @@ const SVCS={
 
 // Build SVC_MAP — use composite key catId+svcIndex to allow duplicate IDs
 const SVC_KEY_MAP={};
-Object.keys(SVCS).forEach(catId=>{
-  SVCS[catId].forEach((s,i)=>{
-    const key=catId+'_'+i;
-    SVC_KEY_MAP[key]=s;
+function rebuildSvcKeyMap() {
+  Object.keys(SVC_KEY_MAP).forEach(k => delete SVC_KEY_MAP[k]);
+  Object.keys(SVCS).forEach(catId=>{
+    (SVCS[catId] || []).forEach((s,i)=>{
+      const key=catId+'_'+i;
+      SVC_KEY_MAP[key]=s;
+    });
   });
-});
+}
+
+// Instant sync with cached catalog from Admin / Dashboard if available
+try {
+  const _savedCat = localStorage.getItem('getxh_services_catalog');
+  if (_savedCat) {
+    const _parsed = JSON.parse(_savedCat);
+    if (Array.isArray(_parsed.categories) && _parsed.categories.length) {
+      CATS = _parsed.categories.map(c => {
+        let p = c.p;
+        if (!p) {
+          const cid = (c.id || '').toLowerCase();
+          p = cid.startsWith('yt-') ? 'youtube' : cid.startsWith('fb-') ? 'facebook' : cid.startsWith('tg-') ? 'telegram' : cid.startsWith('wa-') ? 'whatsapp' : 'instagram';
+        }
+        return { ...c, p };
+      });
+    }
+    if (_parsed.services && typeof _parsed.services === 'object' && Object.keys(_parsed.services).length) {
+      SVCS = _parsed.services;
+    }
+  }
+} catch(e) {}
+rebuildSvcKeyMap();
 
 // ── HELPERS ──
 function fmtN(n){
@@ -599,6 +625,7 @@ function render(){
   CATS.forEach(cat=>{
     if(activePlatform!=='all'&&cat.p!==activePlatform) return;
     const svcs=(SVCS[cat.id]||[]).filter(s=>{
+      if (s.status === 'inactive') return false;
       if(!searchQ) return true;
       const q=searchQ.trim().toLowerCase();
       const idQ = q.replace(/^[#\s]*(id\s*[:\-\s]*)?/i, '').trim();
@@ -682,7 +709,8 @@ function openModal(key){
   document.getElementById('mPrice').textContent=fmtP(s.price)+' per 1000';
   document.getElementById('mMin').textContent=fmtN(s.min);
   document.getElementById('mMax').textContent=fmtN(s.max);
-  document.getElementById('mDesc').innerHTML=s.d.map(x=>`<li>${esc(x)}</li>`).join('');
+  const descList = Array.isArray(s.d) ? s.d : (Array.isArray(s.details) ? s.details : []);
+  document.getElementById('mDesc').innerHTML=descList.map(x=>`<li>${esc(x)}</li>`).join('');
   document.getElementById('modalBg').classList.add('open');
   document.body.style.overflow='hidden';
 }

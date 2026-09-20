@@ -23,6 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+<script src="/assets/default-services.js"></script>
 
 <style>
 :root {
@@ -1666,7 +1667,7 @@ body.is-admin #adminBtn, body.is-admin #desktopAdminBtn { display:flex !importan
 <!-- MAIN SCRIPT -->
 <script>
 // ── SERVICES DATA ──
-const CATEGORIES = [
+let CATEGORIES = (window.DEFAULT_CATEGORIES && window.DEFAULT_CATEGORIES.length) ? window.DEFAULT_CATEGORIES : [
   {id:'welcome-offer',   label:'Welcome Offer'},
   {id:'cheap_followers', label:'Cheapest Instagram Followers', subtitle:'Cheapest in The World 🌍'},
   {id:'reel-views',      label:'Instagram - Reel/Post Views'},
@@ -1689,7 +1690,7 @@ const CATEGORIES = [
   {id:'wa-members',      label:'WhatsApp - Members'},
 ];
 function fmtPrice(p) { const n = parseFloat(p.toFixed(2)); return Number.isInteger(n) ? String(n) : String(n); }
-const SERVICES = {
+let SERVICES = (window.DEFAULT_SERVICES && typeof window.DEFAULT_SERVICES === 'object') ? window.DEFAULT_SERVICES : {
   'welcome-offer': [
     {id:6166,name:'Instagram Followers',price:37.45,min:100,max:100000,startTime:'0-10 Mins',speed:'10K+/Day',refill:'30 Days Refill ♻',cancel:'YES',drop:'0-10%',quality:'Old Accounts',delivery:'0-10 minutes',details:["🔗 Link Type Example: Instagram Profile Link","❌ Cancel Button Enabled","📝 Note: If in future Account Username Changed No Refil/Refund In Any Case","● Account Must Be Public Otherwise No Refund In Any Case","• In case of high demand for the service, there may be changes in speed and start time.","• Do not place the second order on the same link before your order is completed in the system."]},
     {id:5857,name:'Instagram Followers',price:68.25,min:50,max:100000,startTime:'0-10 Mins',speed:'20K-50K/Day',refill:'Lifetime Refill ♻',cancel:'NO',drop:'Low Drop',quality:'HQ Real Accounts',delivery:'0-10 minutes',details:["🔗 Link Type Example: Instagram Profile Link or Username","🔓 Make sure your account is PUBLIC before placing order","• In case of high demand for the service, there may be changes in speed and start time.","• Do not place the second order on the same link before your order is completed in the system."]},
@@ -1814,6 +1815,55 @@ const SERVICES = {
     {id:5947,name:'Facebook Live Stream Views - 240 Minutes',price:825.15,min:10,max:5000,startTime:'Instant',speed:'Concurrent',refill:'No Refill ⚠',cancel:'NO',drop:'Non Drop',quality:'100% Concurrent',delivery:'Instant',details:["⏱ Service Time: 240 Minutes","🔗 Facebook Live Stream Link"]},
     {id:5950,name:'Facebook Live Stream Views - 360 Minutes',price:1152.25,min:10,max:5000,startTime:'Instant',speed:'Concurrent',refill:'No Refill ⚠',cancel:'NO',drop:'Non Drop',quality:'100% Concurrent',delivery:'Instant',details:["⏱ Service Time: 360 Minutes","🔗 Facebook Live Stream Link"]},
   ],
+};
+
+// ── RESTORE CACHED CATALOG INSTANTLY (0ms) ──────────
+try {
+  const _savedCat = localStorage.getItem('getxh_services_catalog');
+  if (_savedCat) {
+    const _parsed = JSON.parse(_savedCat);
+    if (Array.isArray(_parsed.categories) && _parsed.categories.length) {
+      CATEGORIES = _parsed.categories;
+    }
+    if (_parsed.services && typeof _parsed.services === 'object' && Object.keys(_parsed.services).length) {
+      SERVICES = _parsed.services;
+    }
+  }
+} catch (e) {
+  console.warn('Could not restore cached catalog:', e);
+}
+
+// ── DYNAMIC CATALOG UPDATE FUNCTION ────────────────
+window.applyDynamicServicesCatalog = function(newCategories, newServices) {
+  if (Array.isArray(newCategories) && newCategories.length) {
+    CATEGORIES = newCategories;
+  }
+  if (newServices && typeof newServices === 'object') {
+    SERVICES = newServices;
+  }
+  try {
+    localStorage.setItem('getxh_services_catalog', JSON.stringify({
+      categories: CATEGORIES,
+      services: SERVICES,
+      cachedAt: Date.now()
+    }));
+  } catch (e) {}
+
+  if (typeof buildCategoryDropdown === 'function') {
+    buildCategoryDropdown();
+  }
+  if (_selCat && SERVICES[_selCat]) {
+    if (typeof buildServiceDropdown === 'function') {
+      buildServiceDropdown();
+    }
+    if (_selSvc) {
+      const stillActive = SERVICES[_selCat].find(s => String(s.id) === String(_selSvc.id) && s.status !== 'inactive');
+      if (!stillActive) {
+        const firstActive = SERVICES[_selCat].find(s => s.status !== 'inactive');
+        if (firstActive) selectService(firstActive);
+      }
+    }
+  }
 };
 
 // ── STATE ──
@@ -1981,8 +2031,8 @@ function selectCategory(cat) {
   document.getElementById('serviceDetails').classList.add('hidden');
   document.getElementById('totalPrice').textContent='';
 
-  // ⭐ AUTO SELECT FIRST SERVICE — myfame.in jaisa
-  const firstSvc = (SERVICES[cat.id]||[])[0];
+  // ⭐ AUTO SELECT FIRST ACTIVE SERVICE
+  const firstSvc = (SERVICES[cat.id]||[]).find(s => s.status !== 'inactive') || (SERVICES[cat.id]||[])[0];
   if(firstSvc) selectService(firstSvc);
 }
 
@@ -2022,7 +2072,7 @@ function getPlatformBadgeHTML(catId, svc) {
 function buildServiceDropdown() {
   const dd=document.getElementById('serviceDropdown'),q=(document.getElementById('searchService').value||'').toLowerCase();
   dd.innerHTML='';
-  (SERVICES[_selCat]||[]).filter(s=>!q||s.name.toLowerCase().includes(q)).forEach(s=>{
+  (SERVICES[_selCat]||[]).filter(s=>s.status !== 'inactive' && (!q||s.name.toLowerCase().includes(q))).forEach(s=>{
     const d=document.createElement('div');d.className='svc-item'+(_selSvc&&_selSvc.id===s.id?' selected':'');
     d.innerHTML=`<div class="svc-num-badge">${s.id}</div><span class="flex-1 leading-snug">${s.name}</span><span class="text-[#2196f3] font-black text-xs flex-shrink-0 ml-2">₹${fmtPrice(s.price)}/1K</span>`;
     d.onclick=()=>selectService(s);dd.appendChild(d);
@@ -2974,12 +3024,30 @@ let currentUid     = null;
 let currentEmail   = null;
 let _unsubStats    = null;
 let _unsubOrders   = null;
+let _unsubCatalog  = null;
 window._currentBalance = null;
+
+// ── REAL-TIME SERVICES CATALOG LISTENER ─────────────
+try {
+  _unsubCatalog = onSnapshot(doc(db, 'app_config', 'services_catalog'), (snap) => {
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data && data.categories && data.services && typeof window.applyDynamicServicesCatalog === 'function') {
+        window.applyDynamicServicesCatalog(data.categories, data.services);
+      }
+    }
+  }, (err) => {
+    console.warn('Services catalog snapshot warning:', err);
+  });
+} catch(err) {
+  console.warn('Could not initialize services catalog listener:', err);
+}
 
 // ── LOGOUT ──
 window._logoutUser = async function() {
-  if (_unsubStats)  _unsubStats();
-  if (_unsubOrders) _unsubOrders();
+  if (_unsubStats)   _unsubStats();
+  if (_unsubOrders)  _unsubOrders();
+  if (_unsubCatalog) _unsubCatalog();
   try { await signOut(auth); } catch(_) {}
   sessionStorage.setItem("getxh_logged_out", "yes");
   localStorage.clear();
@@ -3496,8 +3564,9 @@ window._saveOrder = null;
 
 // ── CLEANUP on page leave ──
 window.addEventListener('beforeunload', () => {
-  if (_unsubStats)  _unsubStats();
-  if (_unsubOrders) _unsubOrders();
+  if (_unsubStats)   _unsubStats();
+  if (_unsubOrders)  _unsubOrders();
+  if (_unsubCatalog) _unsubCatalog();
 });
 </script>
 

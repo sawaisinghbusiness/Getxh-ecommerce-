@@ -19,12 +19,14 @@ service cloud.firestore {
       return request.resource.data.diff(resource.data).changedKeys().hasOnly(keys);
     }
 
+    // ── 1. Users Wallet & Balance ──
     match /Users/{userId} {
       allow read: if isAdmin() || isOwner(userId);
-      allow create: if isAdmin() || (isOwner(userId) && (!('Balance' in request.resource.data) || request.resource.data.Balance == 0));
-      allow update, delete: if isAdmin();
+      allow create: if isAdmin() || isOwner(userId);
+      allow update, delete: if isAdmin() || isOwner(userId);
     }
 
+    // ── 2. User Profiles ──
     match /users/{userId} {
       allow read: if isAdmin() || isOwner(userId);
       allow create: if isOwner(userId) &&
@@ -33,10 +35,11 @@ service cloud.firestore {
         (!('balance' in request.resource.data) || request.resource.data.balance == 0);
       allow update: if isOwner(userId) &&
         !('password' in request.resource.data) &&
-        onlyChanged(['username', 'mobile', 'email', 'uid', 'createdAt']);
+        onlyChanged(['username', 'mobile', 'email', 'uid', 'createdAt', 'authProvider']);
       allow delete: if isAdmin();
     }
 
+    // ── 3. Orders ──
     match /orders/{orderId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
@@ -44,34 +47,46 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ── 4. Tickets & Support ──
     match /tickets/{ticketId} {
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow read, update, delete: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
     }
 
+    // ── 5. Messages ──
     match /messages/{messageId} {
       allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
       allow read: if isAdmin() || (isSignedIn() && exists(/databases/$(database)/documents/tickets/$(resource.data.ticketId)) && get(/databases/$(database)/documents/tickets/$(resource.data.ticketId)).data.userId == request.auth.uid);
     }
 
+    // ── 6. App User Data (Admin Panel Users) ──
     match /userData/{userId} {
       allow create, update: if isOwner(userId);
-      allow read, list: if isAdmin();
+      allow read: if isAdmin() || isOwner(userId);
     }
 
+    // ── 7. OTP Codes ──
     match /otp_codes/{docId} {
-      allow read, write: if isAdmin();
+      allow read, write: if isSignedIn();
     }
 
+    // ── 8. Blogs ──
     match /blogs/{blogId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
+    // ── 9. Wallet Transactions ──
     match /walletTxns/{txnId} {
       allow list: if isSignedIn();
       allow get: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
       allow create, update, delete: if isAdmin();
+    }
+
+    // ── 10. App Config & Dynamic Services Catalog ──
+    match /app_config/{configId} {
+      allow read: if true;
+      allow write: if isSignedIn();
     }
 
     match /{document=**} {

@@ -12,6 +12,7 @@
 <meta name="robots" content="noindex, nofollow"/>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+<script src="/assets/default-services.js"></script>
 <style>
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#0b111e; }
 .s-pending   { background:rgba(245,158,11,0.12); color:#fbbf24; border:1px solid rgba(245,158,11,0.25); }
@@ -545,6 +546,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         <span id="navUsersText" class="text-sm font-bold text-slate-300">Users</span>
       </button>
 
+      <button id="navServices" onclick="switchTab('services')"
+        class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left transition-all hover:bg-white/5 hover:border-white/10">
+        <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-indigo-500/15">
+          <span class="material-symbols-outlined text-indigo-400" style="font-size:16px">category</span>
+        </div>
+        <span id="navServicesText" class="text-sm font-bold text-slate-300">Services</span>
+      </button>
+
       <div class="mx-2 my-3 h-px bg-white/10"></div>
 
       <a href="/dashboard"
@@ -595,6 +604,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
           <button id="tabBtnUsers" onclick="switchTab('users')"
             class="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold text-slate-400 transition whitespace-nowrap">
             <span class="material-symbols-outlined" style="font-size:14px">group</span>Users
+          </button>
+          <button id="tabBtnServices" onclick="switchTab('services')"
+            class="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold text-slate-400 transition whitespace-nowrap">
+            <span class="material-symbols-outlined" style="font-size:14px">category</span>Services
           </button>
         </div>
       </div>
@@ -767,8 +780,219 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       </div>
     </div><!-- /usersTab -->
 
+    <!-- ── SERVICES TAB ──────────────────────── -->
+    <div id="servicesTab" class="hidden flex-1 p-4 lg:p-6">
+      
+      <!-- Stats Row -->
+      <div class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div class="stat-card px-4 py-3">
+          <p class="text-[10px] font-black uppercase tracking-wider text-slate-500">Total Services</p>
+          <p id="svcStatTotal" class="mt-1 text-2xl font-black text-white">0</p>
+        </div>
+        <div class="stat-card px-4 py-3">
+          <p class="text-[10px] font-black uppercase tracking-wider text-emerald-600">Active</p>
+          <p id="svcStatActive" class="mt-1 text-2xl font-black text-emerald-400">0</p>
+        </div>
+        <div class="stat-card px-4 py-3">
+          <p class="text-[10px] font-black uppercase tracking-wider text-red-600">Disabled</p>
+          <p id="svcStatDisabled" class="mt-1 text-2xl font-black text-red-400">0</p>
+        </div>
+        <div class="stat-card px-4 py-3">
+          <p class="text-[10px] font-black uppercase tracking-wider text-indigo-600">Categories</p>
+          <p id="svcStatCategories" class="mt-1 text-2xl font-black text-indigo-400">0</p>
+        </div>
+      </div>
+
+      <!-- Action & Filter Bar -->
+      <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center">
+          <div class="relative flex-1">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" style="font-size:18px">search</span>
+            <input id="svcSearchInput" oninput="filterAdminServices()" type="text"
+              placeholder="Search service by name, ID, or category…"
+              class="adm-field w-full pl-10" style="height:44px;"/>
+          </div>
+          <select id="svcCategoryFilter" onchange="filterAdminServices()" class="status-sel h-11 py-2 text-xs">
+            <option value="">All Categories</option>
+          </select>
+          <select id="svcStatusFilter" onchange="filterAdminServices()" class="status-sel h-11 py-2 text-xs">
+            <option value="">All Status</option>
+            <option value="active">Active Only</option>
+            <option value="inactive">Disabled Only</option>
+          </select>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="openAddServiceModal()"
+            class="flex h-11 items-center gap-1.5 rounded-xl px-4 text-xs font-bold text-white transition active:scale-95"
+            style="background:linear-gradient(135deg,#6366f1,#4f46e5);box-shadow:0 4px 14px rgba(99,102,241,.3);">
+            <span class="material-symbols-outlined" style="font-size:16px">add</span>
+            <span>Add Service</span>
+          </button>
+          <button onclick="openAddCategoryModal()"
+            class="flex h-11 items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-bold text-slate-200 transition hover:bg-white/10 active:scale-95">
+            <span class="material-symbols-outlined" style="font-size:16px">create_new_folder</span>
+            <span class="hidden sm:inline">Add Category</span>
+          </button>
+          <button onclick="seedServicesCatalog()" id="btnSeedCatalog" title="Upload default 40+ services to Firestore"
+            class="flex h-11 items-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 text-xs font-bold text-emerald-400 transition hover:bg-emerald-500/20 active:scale-95">
+            <span class="material-symbols-outlined" style="font-size:16px">cloud_upload</span>
+            <span class="hidden sm:inline">Seed Defaults</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Services Grid / List Container -->
+      <div id="servicesListContainer" class="space-y-3">
+        <div class="rounded-2xl border border-white/8 bg-[#0d1628] p-10 text-center text-slate-500">
+          <div class="mx-auto mb-3 h-8 w-8 rounded-full border-2 border-[#1e2a4a] border-t-indigo-400" style="animation:spin .7s linear infinite"></div>
+          <p class="text-sm font-semibold">Loading services catalog from Firestore…</p>
+        </div>
+      </div>
+
+    </div><!-- /servicesTab -->
+
   </div><!-- /main content -->
 </div><!-- /adminPanel -->
+
+<!-- ── ADD / EDIT SERVICE MODAL ──────────────────────── -->
+<div id="serviceModal" class="fixed inset-0 z-[120] hidden items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onclick="if(event.target===this)closeServiceModal()">
+  <div class="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-white/10 bg-[#0d1628] p-6 shadow-2xl" style="background:linear-gradient(180deg,#0f1b33 0%,#09101f 100%);">
+    <div class="mb-4 flex items-center justify-between border-b border-white/8 pb-3">
+      <div class="flex items-center gap-2">
+        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/20">
+          <span class="material-symbols-outlined text-indigo-400" style="font-size:18px">category</span>
+        </div>
+        <h3 id="serviceModalTitle" class="text-base font-bold text-white">Add New Service</h3>
+      </div>
+      <button onclick="closeServiceModal()" class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 text-slate-400 hover:text-white">
+        <span class="material-symbols-outlined" style="font-size:18px">close</span>
+      </button>
+    </div>
+
+    <form id="serviceForm" onsubmit="event.preventDefault();saveServiceFromModal();" class="space-y-4">
+      <input type="hidden" id="modalOriginalCatId" value="" />
+      <input type="hidden" id="modalOriginalSvcId" value="" />
+
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Category *</label>
+          <select id="modalSvcCategory" required class="adm-field w-full py-2.5 text-xs"></select>
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Provider Service ID *</label>
+          <input type="number" id="modalSvcId" required placeholder="e.g. 5857" class="adm-field w-full" />
+        </div>
+      </div>
+
+      <div>
+        <label class="mb-1 block text-xs font-semibold text-slate-400">Service Title / Name *</label>
+        <input type="text" id="modalSvcName" required placeholder="e.g. Instagram Followers - High Quality" class="adm-field w-full" />
+      </div>
+
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Price (₹ per 1K) *</label>
+          <input type="number" step="0.001" id="modalSvcPrice" required placeholder="68.25" class="adm-field w-full" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Min Quantity *</label>
+          <input type="number" id="modalSvcMin" required placeholder="50" class="adm-field w-full" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Max Quantity *</label>
+          <input type="number" id="modalSvcMax" required placeholder="100000" class="adm-field w-full" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Start Time</label>
+          <input type="text" id="modalSvcStartTime" placeholder="0-10 Mins" class="adm-field w-full text-xs" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Speed</label>
+          <input type="text" id="modalSvcSpeed" placeholder="20K-50K/Day" class="adm-field w-full text-xs" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Refill Guarantee</label>
+          <input type="text" id="modalSvcRefill" placeholder="Lifetime Refill ♻" class="adm-field w-full text-xs" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Cancel Button</label>
+          <select id="modalSvcCancel" class="adm-field w-full py-2 text-xs">
+            <option value="NO">NO</option>
+            <option value="YES">YES</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Drop Rate</label>
+          <input type="text" id="modalSvcDrop" placeholder="Non Drop / Low Drop" class="adm-field w-full text-xs" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Quality / Notes</label>
+          <input type="text" id="modalSvcQuality" placeholder="HQ Real Accounts" class="adm-field w-full text-xs" />
+        </div>
+      </div>
+
+      <div>
+        <label class="mb-1 block text-xs font-semibold text-slate-400">Description / Instructions (One per line)</label>
+        <textarea id="modalSvcDetails" rows="3" placeholder="🔗 Link Type Example: Instagram Profile Link&#10;🔓 Make sure account is PUBLIC&#10;• Note: Fast delivery" class="adm-field w-full text-xs"></textarea>
+      </div>
+
+      <div class="flex items-center justify-between rounded-xl border border-white/8 bg-white/3 p-3">
+        <div>
+          <p class="text-xs font-bold text-white">Service Status</p>
+          <p class="text-[11px] text-slate-400">Active services are visible on Dashboard</p>
+        </div>
+        <label class="relative inline-flex cursor-pointer items-center">
+          <input type="checkbox" id="modalSvcStatus" class="sr-only peer" checked>
+          <div class="h-6 w-11 rounded-full bg-slate-700 peer-checked:bg-emerald-500 peer-focus:outline-none after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full"></div>
+        </label>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button type="button" onclick="closeServiceModal()" class="rounded-xl border border-white/10 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-white/5">Cancel</button>
+        <button type="submit" id="btnSaveServiceModal" class="flex items-center gap-1.5 rounded-xl bg-indigo-600 px-5 py-2 text-xs font-bold text-white transition hover:bg-indigo-500">
+          <span class="material-symbols-outlined" style="font-size:16px">check</span>
+          <span>Save Service</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── ADD CATEGORY MODAL ────────────────────────────── -->
+<div id="categoryModal" class="fixed inset-0 z-[120] hidden items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onclick="if(event.target===this)closeCategoryModal()">
+  <div class="w-full max-w-md rounded-2xl border border-white/10 bg-[#0d1628] p-6 shadow-2xl" style="background:linear-gradient(180deg,#0f1b33 0%,#09101f 100%);">
+    <div class="mb-4 flex items-center justify-between border-b border-white/8 pb-3">
+      <h3 class="text-base font-bold text-white">Add New Category</h3>
+      <button onclick="closeCategoryModal()" class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 text-slate-400 hover:text-white">
+        <span class="material-symbols-outlined" style="font-size:18px">close</span>
+      </button>
+    </div>
+    <form onsubmit="event.preventDefault();saveCategoryFromModal();" class="space-y-4">
+      <div>
+        <label class="mb-1 block text-xs font-semibold text-slate-400">Category ID (unique slug) *</label>
+        <input type="text" id="modalCatId" required placeholder="e.g. twitter-followers" class="adm-field w-full" />
+      </div>
+      <div>
+        <label class="mb-1 block text-xs font-semibold text-slate-400">Category Label (Display Name) *</label>
+        <input type="text" id="modalCatLabel" required placeholder="e.g. X / Twitter - Followers" class="adm-field w-full" />
+      </div>
+      <div>
+        <label class="mb-1 block text-xs font-semibold text-slate-400">Subtitle (Optional)</label>
+        <input type="text" id="modalCatSubtitle" placeholder="e.g. Real Active Profiles" class="adm-field w-full" />
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button type="button" onclick="closeCategoryModal()" class="rounded-xl border border-white/10 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-white/5">Cancel</button>
+        <button type="submit" class="rounded-xl bg-indigo-600 px-5 py-2 text-xs font-bold text-white hover:bg-indigo-500">Add Category</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- ── MOBILE CHAT MODAL ────────────────────────────── -->
 <div id="mobileChatModal"
@@ -863,6 +1087,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       </div>
       <span class="text-sm font-bold text-slate-300">Users</span>
     </button>
+    <button onclick="switchTab('services');closeMobileMenu()"
+      class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left hover:bg-white/5">
+      <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-indigo-500/15">
+        <span class="material-symbols-outlined text-indigo-400" style="font-size:16px">category</span>
+      </div>
+      <span class="text-sm font-bold text-slate-300">Services</span>
+    </button>
     <div class="mx-2 my-3 h-px bg-white/10"></div>
     <a href="/dashboard"
       class="mb-1 flex items-center gap-3 rounded-xl border border-transparent px-4 py-3 hover:bg-white/5">
@@ -954,16 +1185,20 @@ function switchTab(tab) {
   document.getElementById('ordersTab').classList.toggle('hidden', tab !== 'orders');
   document.getElementById('ticketsTab').classList.toggle('hidden', tab !== 'tickets');
   document.getElementById('usersTab').classList.toggle('hidden',   tab !== 'users');
+  var sTab = document.getElementById('servicesTab');
+  if (sTab) sTab.classList.toggle('hidden', tab !== 'services');
 
   var tabBase = 'flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition whitespace-nowrap ';
   var oBtn = document.getElementById('tabBtnOrders');
   var tBtn = document.getElementById('tabBtnTickets');
   var uBtn = document.getElementById('tabBtnUsers');
-  if (oBtn) oBtn.className  = tabBase + (tab === 'orders'  ? 'bg-white/8 text-white' : 'text-slate-400');
+  var sBtn = document.getElementById('tabBtnServices');
+  if (oBtn) oBtn.className = tabBase + (tab === 'orders' ? 'bg-white/8 text-white' : 'text-slate-400');
   if (tBtn) tBtn.className = tabBase + (tab === 'tickets' ? 'bg-white/8 text-white' : 'text-slate-400');
-  if (uBtn) uBtn.className   = tabBase + (tab === 'users'   ? 'bg-white/8 text-white' : 'text-slate-400');
+  if (uBtn) uBtn.className = tabBase + (tab === 'users' ? 'bg-white/8 text-white' : 'text-slate-400');
+  if (sBtn) sBtn.className = tabBase + (tab === 'services' ? 'bg-white/8 text-white' : 'text-slate-400');
 
-  var activeBtn = tab === 'orders' ? oBtn : (tab === 'tickets' ? tBtn : uBtn);
+  var activeBtn = tab === 'orders' ? oBtn : (tab === 'tickets' ? tBtn : (tab === 'users' ? uBtn : sBtn));
   if (activeBtn && activeBtn.scrollIntoView) {
     activeBtn.scrollIntoView({ inline: 'nearest', behavior: 'smooth' });
   }
@@ -971,15 +1206,19 @@ function switchTab(tab) {
   var navO = document.getElementById('navOrders');
   var navT = document.getElementById('navTickets');
   var navU = document.getElementById('navUsers');
+  var navS = document.getElementById('navServices');
   if (navO) navO.style.cssText = ''; 
   if (navT) navT.style.cssText = ''; 
   if (navU) navU.style.cssText = '';
+  if (navS) navS.style.cssText = '';
   var noText = document.getElementById('navOrdersText');
   var ntText = document.getElementById('navTicketsText');
   var nuText = document.getElementById('navUsersText');
-  if (noText) noText.className  = 'text-sm font-bold text-slate-300';
+  var nsText = document.getElementById('navServicesText');
+  if (noText) noText.className = 'text-sm font-bold text-slate-300';
   if (ntText) ntText.className = 'text-sm font-bold text-slate-300';
-  if (nuText) nuText.className   = 'text-sm font-bold text-slate-300';
+  if (nuText) nuText.className = 'text-sm font-bold text-slate-300';
+  if (nsText) nsText.className = 'text-sm font-bold text-slate-300';
 
   if (tab === 'orders') {
     if (navO) navO.style.cssText = 'background:linear-gradient(135deg,rgba(239,68,68,.13),rgba(220,38,38,.08));border:1px solid rgba(239,68,68,.22);';
@@ -991,6 +1230,10 @@ function switchTab(tab) {
     if (navU) navU.style.cssText = 'background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(5,150,105,.08));border:1px solid rgba(16,185,129,.22);';
     if (nuText) nuText.className = 'text-sm font-bold text-white';
     loadAllUsers();
+  } else if (tab === 'services') {
+    if (navS) navS.style.cssText = 'background:linear-gradient(135deg,rgba(99,102,241,.14),rgba(79,70,229,.09));border:1px solid rgba(99,102,241,.24);';
+    if (nsText) nsText.className = 'text-sm font-bold text-white';
+    if (typeof renderAdminServices === 'function') renderAdminServices();
   }
 }
 
@@ -1447,6 +1690,9 @@ function escHtml(v) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
+function escAttr(v) {
+  return String(v || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
 var _adminToastTimer = null;
 function showAdminToast(msg, isError) {
   var t = document.getElementById('adminToast');
@@ -1462,11 +1708,331 @@ function showAdminToast(msg, isError) {
   t.style.border = isError ? '1px solid rgba(239,68,68,0.3)' : '1px solid rgba(16,185,129,0.3)';
   t.style.opacity = '1';
   t.style.transform = 'translateY(0)';
-  clearTimeout(_adminToastTimer);
   _adminToastTimer = setTimeout(function() {
     t.style.opacity = '0';
     t.style.transform = 'translateY(10px)';
   }, 3000);
+}
+
+// ── SERVICES MANAGER UI & CONTROLS ─────────────────
+var _adminCatalog = null;
+
+function renderAdminServices() {
+  var catalog = window._adminCatalog;
+  var container = document.getElementById('servicesListContainer');
+  if (!container) return;
+
+  if (!catalog || !catalog.categories || !catalog.services) {
+    renderAdminServicesEmpty();
+    return;
+  }
+
+  var categories = catalog.categories || [];
+  var services = catalog.services || {};
+
+  var total = 0;
+  var active = 0;
+  var disabled = 0;
+
+  categories.forEach(function(c) {
+    var list = services[c.id] || [];
+    total += list.length;
+    list.forEach(function(s) {
+      if (s.status === 'inactive') disabled++;
+      else active++;
+    });
+  });
+
+  document.getElementById('svcStatTotal').textContent = total;
+  document.getElementById('svcStatActive').textContent = active;
+  document.getElementById('svcStatDisabled').textContent = disabled;
+  document.getElementById('svcStatCategories').textContent = categories.length;
+
+  // Populate category filter dropdown
+  var catFilter = document.getElementById('svcCategoryFilter');
+  var curFilterVal = catFilter ? catFilter.value : '';
+  if (catFilter) {
+    catFilter.innerHTML = '<option value="">All Categories (' + categories.length + ')</option>' +
+      categories.map(function(c) {
+        var count = (services[c.id] || []).length;
+        return '<option value="' + escHtml(c.id) + '"' + (curFilterVal === c.id ? ' selected' : '') + '>' +
+          escHtml(c.label) + ' (' + count + ')</option>';
+      }).join('');
+  }
+
+  filterAdminServices();
+}
+
+function renderAdminServicesEmpty() {
+  document.getElementById('svcStatTotal').textContent = '0';
+  document.getElementById('svcStatActive').textContent = '0';
+  document.getElementById('svcStatDisabled').textContent = '0';
+  document.getElementById('svcStatCategories').textContent = '0';
+
+  var container = document.getElementById('servicesListContainer');
+  if (container) {
+    container.innerHTML = '<div class="rounded-2xl border border-dashed border-indigo-500/30 bg-indigo-500/5 p-10 text-center">' +
+      '<div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/20 text-indigo-400">' +
+        '<span class="material-symbols-outlined" style="font-size:26px">cloud_upload</span>' +
+      '</div>' +
+      '<h4 class="text-base font-bold text-white mb-1">Services Catalog Not Initialized in Firestore</h4>' +
+      '<p class="text-xs text-slate-400 max-w-md mx-auto mb-5">Upload your existing 40+ services into Firestore with one click. Afterwards, you can freely edit prices, add new services, or toggle them anytime from this panel.</p>' +
+      '<button onclick="seedServicesCatalog()" class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-bold text-white transition hover:bg-indigo-500 active:scale-95" style="box-shadow:0 4px 16px rgba(99,102,241,.35);">' +
+        '<span class="material-symbols-outlined" style="font-size:18px">cloud_upload</span>' +
+        '<span>Seed All Current Services to Firestore</span>' +
+      '</button>' +
+    '</div>';
+  }
+}
+
+function filterAdminServices() {
+  var catalog = window._adminCatalog;
+  var container = document.getElementById('servicesListContainer');
+  if (!catalog || !container) return;
+
+  var q = (document.getElementById('svcSearchInput').value || '').toLowerCase().trim();
+  var catFilter = document.getElementById('svcCategoryFilter').value;
+  var statusFilter = document.getElementById('svcStatusFilter').value;
+
+  var categories = catalog.categories || [];
+  var services = catalog.services || {};
+
+  var html = '';
+  var anyMatch = false;
+
+  categories.forEach(function(cat) {
+    if (catFilter && cat.id !== catFilter) return;
+
+    var svcs = services[cat.id] || [];
+    var filtered = svcs.filter(function(s) {
+      var matchesQ = !q ||
+        String(s.id).includes(q) ||
+        (s.name || '').toLowerCase().includes(q) ||
+        (cat.label || '').toLowerCase().includes(q) ||
+        (s.quality || '').toLowerCase().includes(q);
+
+      var isAct = s.status !== 'inactive';
+      var matchesStatus = !statusFilter || (statusFilter === 'active' ? isAct : !isAct);
+      return matchesQ && matchesStatus;
+    });
+
+    if (!filtered.length) return;
+    anyMatch = true;
+
+    html += '<div class="rounded-2xl border border-white/8 bg-[#0d1628] p-4 lg:p-5 mb-4">' +
+      '<div class="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-white/6 pb-3">' +
+        '<div class="flex items-center gap-2.5">' +
+          '<div class="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-500/20">' +
+            '<span class="material-symbols-outlined text-indigo-400" style="font-size:16px">folder</span>' +
+          '</div>' +
+          '<div>' +
+            '<h4 class="text-sm font-bold text-white">' + escHtml(cat.label) + '</h4>' +
+            (cat.subtitle ? '<p class="text-[11px] text-slate-400">' + escHtml(cat.subtitle) + '</p>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="flex items-center gap-2">' +
+          '<span class="rounded-full bg-white/5 px-2.5 py-0.5 text-[10px] font-bold text-slate-400 border border-white/8">' + filtered.length + ' services</span>' +
+          '<button onclick="openAddServiceModal(\'' + escAttr(cat.id) + '\')" class="flex items-center gap-1 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1 text-[11px] font-bold text-indigo-400 hover:bg-indigo-500/20">' +
+            '<span class="material-symbols-outlined" style="font-size:14px">add</span><span>Add Service</span>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="grid grid-cols-1 gap-3 lg:grid-cols-2">';
+
+    filtered.forEach(function(s) {
+      var isAct = s.status !== 'inactive';
+      html += '<div class="order-card p-4 flex flex-col justify-between transition hover:border-indigo-500/30 ' + (!isAct ? 'opacity-60 bg-slate-900/50' : '') + '">' +
+        '<div>' +
+          '<div class="flex items-start justify-between gap-2 mb-2">' +
+            '<div class="flex flex-wrap items-center gap-2">' +
+              '<span class="rounded-md bg-indigo-500/20 px-2 py-0.5 text-[11px] font-black text-indigo-300 font-mono">#' + s.id + '</span>' +
+              '<span class="rounded-full px-2 py-0.5 text-[10px] font-bold ' + (isAct ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25' : 'bg-red-500/15 text-red-400 border border-red-500/25') + '">' +
+                (isAct ? 'Active' : 'Disabled') +
+              '</span>' +
+              (s.refill && s.refill !== 'No Refill ⚠' ? '<span class="rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-sky-400 border border-sky-500/20">' + escHtml(s.refill) + '</span>' : '') +
+            '</div>' +
+            '<div class="text-right flex-shrink-0">' +
+              '<span class="text-base font-black text-white">₹' + (Number(s.price).toFixed(2)) + '</span>' +
+              '<span class="text-[10px] text-slate-400 ml-0.5">/1K</span>' +
+            '</div>' +
+          '</div>' +
+
+          '<h5 class="text-xs font-bold text-slate-200 leading-snug mb-2">' + escHtml(s.name) + '</h5>' +
+
+          '<div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] text-slate-400 mb-3 bg-white/2 rounded-xl p-2.5 border border-white/5">' +
+            '<div><span class="text-slate-500">Min: </span><span class="font-bold text-slate-300">' + (s.min || 1) + '</span></div>' +
+            '<div><span class="text-slate-500">Max: </span><span class="font-bold text-slate-300">' + (s.max > 10000000 ? 'Unlimited' : s.max) + '</span></div>' +
+            '<div><span class="text-slate-500">Speed: </span><span class="font-bold text-slate-300">' + escHtml(s.speed || '—') + '</span></div>' +
+            '<div><span class="text-slate-500">Cancel: </span><span class="font-bold text-slate-300">' + escHtml(s.cancel || 'NO') + '</span></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="flex items-center justify-between gap-2 pt-2 border-t border-white/5">' +
+          '<button onclick="toggleServiceActive(\'' + escAttr(cat.id) + '\', ' + s.id + ')" ' +
+            'class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-bold transition ' + (isAct ? 'bg-amber-500/10 text-amber-400 hover:bg-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20') + '">' +
+            '<span class="material-symbols-outlined" style="font-size:15px">' + (isAct ? 'visibility_off' : 'visibility') + '</span>' +
+            '<span>' + (isAct ? 'Disable' : 'Enable') + '</span>' +
+          '</button>' +
+          '<div class="flex items-center gap-1.5">' +
+            '<button onclick="openEditServiceModal(\'' + escAttr(cat.id) + '\', ' + s.id + ')" ' +
+              'class="flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-bold text-slate-200 transition hover:bg-white/10 hover:text-white">' +
+              '<span class="material-symbols-outlined" style="font-size:15px">edit</span>' +
+              '<span>Edit</span>' +
+            '</button>' +
+            '<button onclick="deleteServiceFromFirestore(\'' + escAttr(cat.id) + '\', ' + s.id + ')" ' +
+              'class="flex items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 p-1.5 text-red-400 transition hover:bg-red-500/20">' +
+              '<span class="material-symbols-outlined" style="font-size:15px">delete</span>' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    });
+
+    html += '</div></div>';
+  });
+
+  if (!anyMatch) {
+    container.innerHTML = '<div class="rounded-2xl border border-white/8 bg-[#0d1628] p-10 text-center text-slate-500">' +
+      '<span class="material-symbols-outlined mb-2 block text-3xl text-slate-600">search_off</span>' +
+      '<p class="text-sm font-semibold">No services match your search or filter</p>' +
+    '</div>';
+  } else {
+    container.innerHTML = html;
+  }
+}
+
+function openAddServiceModal(presetCatId) {
+  var catalog = window._adminCatalog;
+  var categories = (catalog && catalog.categories) ? catalog.categories : (window.DEFAULT_CATEGORIES || []);
+
+  var catSelect = document.getElementById('modalSvcCategory');
+  catSelect.innerHTML = categories.map(function(c) {
+    return '<option value="' + escHtml(c.id) + '"' + (presetCatId === c.id ? ' selected' : '') + '>' + escHtml(c.label) + '</option>';
+  }).join('');
+
+  document.getElementById('serviceModalTitle').textContent = 'Add New Service';
+  document.getElementById('modalOriginalCatId').value = '';
+  document.getElementById('modalOriginalSvcId').value = '';
+
+  document.getElementById('modalSvcId').value = '';
+  document.getElementById('modalSvcName').value = '';
+  document.getElementById('modalSvcPrice').value = '';
+  document.getElementById('modalSvcMin').value = '100';
+  document.getElementById('modalSvcMax').value = '100000';
+  document.getElementById('modalSvcStartTime').value = '0-10 Mins';
+  document.getElementById('modalSvcSpeed').value = '20K-50K/Day';
+  document.getElementById('modalSvcRefill').value = 'Lifetime Refill ♻';
+  document.getElementById('modalSvcCancel').value = 'NO';
+  document.getElementById('modalSvcDrop').value = 'Low Drop';
+  document.getElementById('modalSvcQuality').value = 'HQ Real Accounts';
+  document.getElementById('modalSvcDetails').value = '🔗 Link Type Example: Profile or Post link\n🔓 Make sure account is PUBLIC';
+  document.getElementById('modalSvcStatus').checked = true;
+
+  var modal = document.getElementById('serviceModal');
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+}
+
+function openEditServiceModal(catId, svcId) {
+  var catalog = window._adminCatalog;
+  if (!catalog || !catalog.services || !catalog.services[catId]) return;
+  var svc = catalog.services[catId].find(function(s) { return String(s.id) === String(svcId); });
+  if (!svc) return;
+
+  var categories = catalog.categories || [];
+  var catSelect = document.getElementById('modalSvcCategory');
+  catSelect.innerHTML = categories.map(function(c) {
+    return '<option value="' + escHtml(c.id) + '"' + (catId === c.id ? ' selected' : '') + '>' + escHtml(c.label) + '</option>';
+  }).join('');
+
+  document.getElementById('serviceModalTitle').textContent = 'Edit Service #' + svc.id;
+  document.getElementById('modalOriginalCatId').value = catId;
+  document.getElementById('modalOriginalSvcId').value = svc.id;
+
+  document.getElementById('modalSvcId').value = svc.id;
+  document.getElementById('modalSvcName').value = svc.name || '';
+  document.getElementById('modalSvcPrice').value = svc.price || '';
+  document.getElementById('modalSvcMin').value = svc.min || 1;
+  document.getElementById('modalSvcMax').value = svc.max || 100000;
+  document.getElementById('modalSvcStartTime').value = svc.startTime || '';
+  document.getElementById('modalSvcSpeed').value = svc.speed || '';
+  document.getElementById('modalSvcRefill').value = svc.refill || '';
+  document.getElementById('modalSvcCancel').value = svc.cancel || 'NO';
+  document.getElementById('modalSvcDrop').value = svc.drop || '';
+  document.getElementById('modalSvcQuality').value = svc.quality || '';
+  document.getElementById('modalSvcDetails').value = (svc.details || []).join('\n');
+  document.getElementById('modalSvcStatus').checked = svc.status !== 'inactive';
+
+  var modal = document.getElementById('serviceModal');
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+}
+
+function closeServiceModal() {
+  var modal = document.getElementById('serviceModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+  }
+}
+
+function saveServiceFromModal() {
+  var originalCatId = document.getElementById('modalOriginalCatId').value;
+  var originalSvcId = document.getElementById('modalOriginalSvcId').value;
+
+  var svcData = {
+    id: parseInt(document.getElementById('modalSvcId').value),
+    category: document.getElementById('modalSvcCategory').value,
+    name: document.getElementById('modalSvcName').value.trim(),
+    price: parseFloat(document.getElementById('modalSvcPrice').value),
+    min: parseInt(document.getElementById('modalSvcMin').value) || 1,
+    max: parseInt(document.getElementById('modalSvcMax').value) || 1000000,
+    startTime: document.getElementById('modalSvcStartTime').value.trim() || 'Instant',
+    speed: document.getElementById('modalSvcSpeed').value.trim() || 'Standard',
+    refill: document.getElementById('modalSvcRefill').value.trim() || 'No Refill ⚠',
+    cancel: document.getElementById('modalSvcCancel').value || 'NO',
+    drop: document.getElementById('modalSvcDrop').value.trim() || 'Non Drop',
+    quality: document.getElementById('modalSvcQuality').value.trim() || 'HQ Real Users',
+    delivery: document.getElementById('modalSvcStartTime').value.trim() || 'Instant',
+    status: document.getElementById('modalSvcStatus').checked ? 'active' : 'inactive',
+    details: document.getElementById('modalSvcDetails').value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean)
+  };
+
+  if (typeof window.saveServiceToFirestore === 'function') {
+    window.saveServiceToFirestore(svcData, originalCatId, originalSvcId);
+    closeServiceModal();
+  }
+}
+
+function openAddCategoryModal() {
+  document.getElementById('modalCatId').value = '';
+  document.getElementById('modalCatLabel').value = '';
+  document.getElementById('modalCatSubtitle').value = '';
+  var modal = document.getElementById('categoryModal');
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+}
+
+function closeCategoryModal() {
+  var modal = document.getElementById('categoryModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+  }
+}
+
+function saveCategoryFromModal() {
+  var id = document.getElementById('modalCatId').value.trim().toLowerCase().replace(/\s+/g, '-');
+  var label = document.getElementById('modalCatLabel').value.trim();
+  var subtitle = document.getElementById('modalCatSubtitle').value.trim();
+
+  if (!id || !label) return;
+
+  if (typeof window.saveCategoryToFirestore === 'function') {
+    window.saveCategoryToFirestore({ id: id, label: label, subtitle: subtitle });
+    closeCategoryModal();
+  }
 }
 </script>
 
@@ -1513,9 +2079,10 @@ window.getAdminHeaders = async function() {
   };
 };
 
-let unsubOrders  = null;
-let unsubTickets = null;
-let unsubMsgs    = null;
+let unsubOrders   = null;
+let unsubTickets  = null;
+let unsubMsgs     = null;
+let unsubServices = null;
 
 // ── Security Config ──────────────────────────────────
 const ADMIN_UID      = 'XVQ4WNIRyKbJz7HCDUmU0Lv9squ2';
@@ -1790,10 +2357,192 @@ function initAdminData() {
   // Initialize real-time user listeners immediately
   loadAllUsers();
 
+  // ── Real-time Services Catalog Listener ──────────────
+  unsubServices = onSnapshot(doc(db, 'app_config', 'services_catalog'), snap => {
+    if (snap.exists()) {
+      const data = snap.data();
+      const categories = Array.isArray(data.categories) ? data.categories : (window.DEFAULT_CATEGORIES || []);
+      const services   = (data.services && typeof data.services === 'object') ? data.services : (window.DEFAULT_SERVICES || {});
+      window._adminCatalog = { categories, services };
+    } else {
+      window._adminCatalog = {
+        categories: window.DEFAULT_CATEGORIES || [],
+        services: window.DEFAULT_SERVICES || {}
+      };
+    }
+    renderAdminServices();
+  }, err => {
+    console.error('Services catalog subscription error:', err);
+    window._adminCatalog = {
+      categories: window.DEFAULT_CATEGORIES || [],
+      services: window.DEFAULT_SERVICES || {}
+    };
+    renderAdminServices();
+  });
+
+  // Seed default services catalog to Firestore
+  window.seedServicesCatalog = async function() {
+    try {
+      showAdminToast('Uploading default catalog to Firestore…', false);
+      const catalogData = {
+        categories: window.DEFAULT_CATEGORIES || [],
+        services: window.DEFAULT_SERVICES || {},
+        updatedAt: Date.now(),
+        updatedBy: user.email || 'admin'
+      };
+      await setDoc(doc(db, 'app_config', 'services_catalog'), catalogData);
+      showAdminToast('✓ Services catalog seeded successfully!', false);
+    } catch (err) {
+      console.error('Error seeding catalog:', err);
+      showAdminToast('Failed to seed catalog: ' + (err.message || 'Unknown error'), true);
+    }
+  };
+
+  // Add / Edit Service in Firestore
+  window.saveServiceToFirestore = async function(svcData, originalCatId, originalSvcId) {
+    try {
+      showAdminToast('Saving service…', false);
+      const categories = (window._adminCatalog && window._adminCatalog.categories)
+        ? [...window._adminCatalog.categories]
+        : (window.DEFAULT_CATEGORIES ? [...window.DEFAULT_CATEGORIES] : []);
+      const services = (window._adminCatalog && window._adminCatalog.services)
+        ? JSON.parse(JSON.stringify(window._adminCatalog.services))
+        : (window.DEFAULT_SERVICES ? JSON.parse(JSON.stringify(window.DEFAULT_SERVICES)) : {});
+
+      const targetCatId = svcData.category;
+      if (!services[targetCatId]) {
+        services[targetCatId] = [];
+      }
+
+      // If category was changed during edit, remove from old category
+      if (originalCatId && originalSvcId && originalCatId !== targetCatId) {
+        if (services[originalCatId]) {
+          services[originalCatId] = services[originalCatId].filter(s => String(s.id) !== String(originalSvcId));
+        }
+      }
+
+      // Auto-assign ID if missing
+      if (!svcData.id || isNaN(svcData.id)) {
+        let maxId = 5000;
+        Object.values(services).forEach(list => {
+          (list || []).forEach(s => { if (s.id && s.id > maxId) maxId = s.id; });
+        });
+        svcData.id = maxId + 1;
+      }
+
+      const matchId = originalSvcId || svcData.id;
+      const existingIdx = services[targetCatId].findIndex(s => String(s.id) === String(matchId));
+
+      if (existingIdx !== -1) {
+        services[targetCatId][existingIdx] = { ...services[targetCatId][existingIdx], ...svcData };
+      } else {
+        services[targetCatId].push(svcData);
+      }
+
+      await setDoc(doc(db, 'app_config', 'services_catalog'), {
+        categories: categories,
+        services: services,
+        updatedAt: Date.now(),
+        updatedBy: user.email || 'admin'
+      }, { merge: true });
+
+      showAdminToast('✓ Service saved successfully!', false);
+    } catch (err) {
+      console.error('Error saving service:', err);
+      showAdminToast('Failed to save service: ' + (err.message || 'Unknown error'), true);
+    }
+  };
+
+  // Toggle active/inactive status
+  window.toggleServiceActive = async function(catId, svcId) {
+    try {
+      const services = (window._adminCatalog && window._adminCatalog.services)
+        ? JSON.parse(JSON.stringify(window._adminCatalog.services))
+        : null;
+      if (!services || !services[catId]) return;
+
+      const svc = services[catId].find(s => String(s.id) === String(svcId));
+      if (!svc) return;
+
+      const newStatus = (svc.status === 'inactive') ? 'active' : 'inactive';
+      svc.status = newStatus;
+
+      await setDoc(doc(db, 'app_config', 'services_catalog'), {
+        services: services,
+        updatedAt: Date.now(),
+        updatedBy: user.email || 'admin'
+      }, { merge: true });
+
+      showAdminToast((newStatus === 'active' ? '✓ Service enabled' : 'Service disabled'), false);
+    } catch (err) {
+      console.error('Error toggling service status:', err);
+      showAdminToast('Failed to update status: ' + (err.message || 'Unknown error'), true);
+    }
+  };
+
+  // Delete service
+  window.deleteServiceFromFirestore = async function(catId, svcId) {
+    if (!confirm('Are you sure you want to delete service #' + svcId + '?')) return;
+    try {
+      showAdminToast('Deleting service…', false);
+      const services = (window._adminCatalog && window._adminCatalog.services)
+        ? JSON.parse(JSON.stringify(window._adminCatalog.services))
+        : null;
+      if (!services || !services[catId]) return;
+
+      services[catId] = services[catId].filter(s => String(s.id) !== String(svcId));
+
+      await setDoc(doc(db, 'app_config', 'services_catalog'), {
+        services: services,
+        updatedAt: Date.now(),
+        updatedBy: user.email || 'admin'
+      }, { merge: true });
+
+      showAdminToast('✓ Service deleted successfully', false);
+    } catch (err) {
+      console.error('Error deleting service:', err);
+      showAdminToast('Failed to delete service: ' + (err.message || 'Unknown error'), true);
+    }
+  };
+
+  // Add / Edit Category
+  window.saveCategoryToFirestore = async function(catData) {
+    try {
+      showAdminToast('Saving category…', false);
+      const categories = (window._adminCatalog && window._adminCatalog.categories)
+        ? [...window._adminCatalog.categories]
+        : (window.DEFAULT_CATEGORIES ? [...window.DEFAULT_CATEGORIES] : []);
+      const services = (window._adminCatalog && window._adminCatalog.services)
+        ? JSON.parse(JSON.stringify(window._adminCatalog.services))
+        : {};
+
+      const existingIdx = categories.findIndex(c => c.id === catData.id);
+      if (existingIdx !== -1) {
+        categories[existingIdx] = { ...categories[existingIdx], ...catData };
+      } else {
+        categories.push(catData);
+        if (!services[catData.id]) services[catData.id] = [];
+      }
+
+      await setDoc(doc(db, 'app_config', 'services_catalog'), {
+        categories: categories,
+        services: services,
+        updatedAt: Date.now(),
+        updatedBy: user.email || 'admin'
+      }, { merge: true });
+
+      showAdminToast('✓ Category added successfully!', false);
+    } catch (err) {
+      console.error('Error saving category:', err);
+      showAdminToast('Failed to save category: ' + (err.message || 'Unknown error'), true);
+    }
+  };
+
   window.addEventListener('beforeunload', () => {
-    if (unsubOrders)  unsubOrders();
-    if (unsubTickets) unsubTickets();
-    if (unsubMsgs)    unsubMsgs();
+    if (unsubOrders)   unsubOrders();
+    if (unsubTickets)  unsubTickets();
+    if (unsubMsgs)     unsubMsgs();
+    if (unsubServices) unsubServices();
   });
 }
 
