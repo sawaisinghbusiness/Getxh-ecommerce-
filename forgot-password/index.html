@@ -381,7 +381,7 @@ async function sendOTP() {
   btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;animation:spin 0.7s linear infinite;display:inline-block"></span>Sending OTP…</span>';
 
   try {
-    const res = await fetch("https://backend-for-email-verification-code-oelj.onrender.com/send-otp", {
+    const res = await fetch("https://backend-for-email-verification-code-vwip.onrender.com/send-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email, type: "reset" })

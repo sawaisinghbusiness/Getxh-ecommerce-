@@ -42,7 +42,7 @@
 ### 1️⃣ Orders API Backend
 * **Service Name:** `backend-for-api-connect`
 * **Hosted on:** Render (`Node.js`)
-* **Live URL:** `https://backend-for-api-connect-5kr9.onrender.com`
+* **Live URL:** `https://backend-for-api-connect-g8ta.onrender.com`
 * **GitHub Repo:** `https://github.com/sawaisinghbusiness/backend-for-api-connect.git` (Branch: `main`)
 * **Key Endpoints:**
   * `POST /order` — New SMM order placement & drip feed
@@ -92,7 +92,7 @@
 ### 4️⃣ OTP, Auth & Password Reset Backend
 * **Service Name:** `backend-for-email-verification-code`
 * **Hosted on:** Render (`Node.js`)
-* **Live URL:** `https://backend-for-email-verification-code-oelj.onrender.com`
+* **Live URL:** `https://backend-for-email-verification-code-vwip.onrender.com`
 * **GitHub Repo:** `https://github.com/sawaisinghbusiness/backend-for-email-verification-code-.git` (Branch: `main`)
 * **Key Endpoints:**
   * `POST /send-otp` — Sends 6-digit OTP email via Brevo API
@@ -115,24 +115,24 @@ Sabhi HTML files mein purana band pada VPS URL (`https://getxh.online`) replace 
 | File | Purana URL | Naya Render URL |
 |---|---|---|
 | `wallet/index.html` | `https://getxh.online/payment` | `https://backend-for-payment-system-getxh-f7fw.onrender.com` |
-| `wallet/index.html` | `https://getxh.online` | `https://backend-for-email-verification-code-oelj.onrender.com` |
+| `wallet/index.html` | `https://getxh.online` | `https://backend-for-email-verification-code-vwip.onrender.com` |
 | `payment-success/index.html` | `https://getxh.online/payment` | `https://backend-for-payment-system-getxh-f7fw.onrender.com` |
-| `dashboard/index.html` | `https://getxh.online/api/order` | `https://backend-for-api-connect-5kr9.onrender.com/order` |
-| `dashboard/index.html` | `https://getxh.online/api/status/` | `https://backend-for-api-connect-5kr9.onrender.com/status/` |
-| `dashboard/index.html` | `const _API = "https://getxh.online/api"` | `const _API = "https://backend-for-api-connect-5kr9.onrender.com"` |
-| `dashboard/index.html` | `const _OTP = "https://getxh.online"` | `const _OTP = "https://backend-for-email-verification-code-oelj.onrender.com"` |
-| `orders/index.html` | `https://getxh.online/api/status/` | `https://backend-for-api-connect-5kr9.onrender.com/status/` |
-| `orders/index.html` | `https://getxh.online/api/refill` | `https://backend-for-api-connect-5kr9.onrender.com/refill` |
-| `orders/index.html` | `https://getxh.online/api/cancel` | `https://backend-for-api-connect-5kr9.onrender.com/cancel` |
-| `register/index.html` | `https://getxh.online/send-otp` | `https://backend-for-email-verification-code-oelj.onrender.com/send-otp` |
-| `register/index.html` | `https://getxh.online/verify-otp` | `https://backend-for-email-verification-code-oelj.onrender.com/verify-otp` |
-| `register/index.html` | `https://getxh.online/save-user` | `https://backend-for-email-verification-code-oelj.onrender.com/save-user` |
-| `verify-otp/index.html` | `https://getxh.online/send-otp` | `https://backend-for-email-verification-code-oelj.onrender.com/send-otp` |
-| `verify-otp/index.html` | `https://getxh.online/verify-otp` | `https://backend-for-email-verification-code-oelj.onrender.com/verify-otp` |
-| `forgot-password/index.html` | `https://getxh.online/send-otp` | `https://backend-for-email-verification-code-oelj.onrender.com/send-otp` |
-| `reset-password/index.html` | `https://getxh.online/api/reset-password` | `https://backend-for-email-verification-code-oelj.onrender.com/api/reset-password` |
-| `index.html` | `https://getxh.online/save-user` | `https://backend-for-email-verification-code-oelj.onrender.com/save-user` |
-| `admin/index.html` | `var BACKEND_URL = "https://getxh.online"` | `var BACKEND_URL = "https://backend-for-email-verification-code-oelj.onrender.com"` |
+| `dashboard/index.html` | `https://getxh.online/api/order` | `https://backend-for-api-connect-g8ta.onrender.com/order` |
+| `dashboard/index.html` | `https://getxh.online/api/status/` | `https://backend-for-api-connect-g8ta.onrender.com/status/` |
+| `dashboard/index.html` | `const _API = "https://getxh.online/api"` | `const _API = "https://backend-for-api-connect-g8ta.onrender.com"` |
+| `dashboard/index.html` | `const _OTP = "https://getxh.online"` | `const _OTP = "https://backend-for-email-verification-code-vwip.onrender.com"` |
+| `orders/index.html` | `https://getxh.online/api/status/` | `https://backend-for-api-connect-g8ta.onrender.com/status/` |
+| `orders/index.html` | `https://getxh.online/api/refill` | `https://backend-for-api-connect-g8ta.onrender.com/refill` |
+| `orders/index.html` | `https://getxh.online/api/cancel` | `https://backend-for-api-connect-g8ta.onrender.com/cancel` |
+| `register/index.html` | `https://getxh.online/send-otp` | `https://backend-for-email-verification-code-vwip.onrender.com/send-otp` |
+| `register/index.html` | `https://getxh.online/verify-otp` | `https://backend-for-email-verification-code-vwip.onrender.com/verify-otp` |
+| `register/index.html` | `https://getxh.online/save-user` | `https://backend-for-email-verification-code-vwip.onrender.com/save-user` |
+| `verify-otp/index.html` | `https://getxh.online/send-otp` | `https://backend-for-email-verification-code-vwip.onrender.com/send-otp` |
+| `verify-otp/index.html` | `https://getxh.online/verify-otp` | `https://backend-for-email-verification-code-vwip.onrender.com/verify-otp` |
+| `forgot-password/index.html` | `https://getxh.online/send-otp` | `https://backend-for-email-verification-code-vwip.onrender.com/send-otp` |
+| `reset-password/index.html` | `https://getxh.online/api/reset-password` | `https://backend-for-email-verification-code-vwip.onrender.com/api/reset-password` |
+| `index.html` | `https://getxh.online/save-user` | `https://backend-for-email-verification-code-vwip.onrender.com/save-user` |
+| `admin/index.html` | `var BACKEND_URL = "https://getxh.online"` | `var BACKEND_URL = "https://backend-for-email-verification-code-vwip.onrender.com"` |
 
 *Saare changes GitHub repo `sawaisinghbusiness/Getxh-ecommerce-` ke `master` branch par push kar diye gaye hain.*
 
@@ -142,9 +142,9 @@ Sabhi HTML files mein purana band pada VPS URL (`https://getxh.online`) replace 
 
 Render free tier par 15 minute baad servers sleep ho jaate hain. Isko prevent karne ke liye **UptimeRobot** par 3 monitors active kiye gaye hain jo har **5 minute** mein ping bhejte hain:
 
-1. `https://backend-for-api-connect-5kr9.onrender.com/health` ➔ `200 OK` 🟢
+1. `https://backend-for-api-connect-g8ta.onrender.com/health` ➔ `200 OK` 🟢
 2. `https://backend-for-payment-system-getxh-f7fw.onrender.com/health.php` ➔ `200 OK` 🟢
-3. `https://backend-for-email-verification-code-oelj.onrender.com/health` ➔ `200 OK` 🟢
+3. `https://backend-for-email-verification-code-vwip.onrender.com/health` ➔ `200 OK` 🟢
 
 *Result: Server hamesha 24/7 bina kisi delay/freeze ke active rahega, chahe laptop band rahe.*
 
@@ -155,9 +155,9 @@ Render free tier par 15 minute baad servers sleep ho jaate hain. Isko prevent ka
 Jab tum Hostinger VPS renew kar loge aur `https://getxh.online` wapas chalu ho jayega, toh switch back karna bohot aasan hai:
 
 1. **Frontend files mein Find & Replace karo:**
-   * `https://backend-for-api-connect-5kr9.onrender.com` ➔ `https://getxh.online/api`
+   * `https://backend-for-api-connect-g8ta.onrender.com` ➔ `https://getxh.online/api`
    * `https://backend-for-payment-system-getxh-f7fw.onrender.com` ➔ `https://getxh.online/payment`
-   * `https://backend-for-email-verification-code-oelj.onrender.com` ➔ `https://getxh.online`
+   * `https://backend-for-email-verification-code-vwip.onrender.com` ➔ `https://getxh.online`
 2. **Git commit & push karo:**
    ```bash
    git add -A

@@ -2598,7 +2598,7 @@ async function placeOrder(serviceId) {
       requestBody.comments = customComments;
     }
 
-    const res = await fetch('https://backend-for-api-connect-5kr9.onrender.com/order', {
+    const res = await fetch('https://backend-for-api-connect-g8ta.onrender.com/order', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -2866,7 +2866,7 @@ window.logout = function() {
 // ── ORDER TRACKING ──
 async function checkStatus(orderId) {
   try {
-    const res  = await fetch('https://backend-for-api-connect-5kr9.onrender.com/status/' + orderId);
+    const res  = await fetch('https://backend-for-api-connect-g8ta.onrender.com/status/' + orderId);
     const data = await res.json();
 
 
@@ -3546,8 +3546,8 @@ function changePasswordInline() {
 <div id="toastContainer"></div>
 
 <script>
-const _API  = "https://backend-for-api-connect-5kr9.onrender.com";
-const _OTP  = "https://backend-for-email-verification-code-oelj.onrender.com";
+const _API  = "https://backend-for-api-connect-g8ta.onrender.com";
+const _OTP  = "https://backend-for-email-verification-code-vwip.onrender.com";
 
 </script>
 <script>requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.style.opacity=1))</script>
