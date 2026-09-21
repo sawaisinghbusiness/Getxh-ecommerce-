@@ -993,7 +993,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         </div>
 
         <!-- DRIP FEED OPTION / FIELDS -->
-        <div id="dripToggleWrap" style="margin-bottom:12px;">
+        <div id="dripToggleWrap" class="hidden" style="display:none;margin-bottom:12px;">
           <label id="dripToggleLabel" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none;padding:6px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:6px;transition:all 0.2s;">
             <input type="checkbox" id="dripFeedCheckbox" style="width:16px;height:16px;accent-color:#3b82f6;cursor:pointer;">
             <span style="font-size:12px;font-weight:700;color:#e2e8f0;letter-spacing:0.04em;">DRIP-FEED</span>
@@ -1715,7 +1715,7 @@ let SERVICES = (window.DEFAULT_SERVICES && typeof window.DEFAULT_SERVICES === 'o
   'reel-views': [
     {id:5829,name:'Instagram Views - Max Unlimited',price:1,min:10,max:2147483647,startTime:'Instant',speed:'300K/Day',refill:'No Refill ⚠',cancel:'NO',drop:'Non Drop',quality:'HQ Worldwide',delivery:'Instant',details:['🔗 Works on Reels and Post links','🔓 Use reel or post link only','❌ Private accounts not accepted','❌ Wrong links are non-refundable']},
     {id:5830,name:'Instagram Video Views - All Links',price:2.5,min:100,max:2147483647,startTime:'Instant',speed:'100K/Day',refill:'No Refill ⚠',cancel:'NO',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:["🔗 Works on all video and reels links","🔓 Make sure account is public. If not public, order will be marked complete."]},
-    {id:5832,name:'ultrafast views services drip feed (interval available )',price:2.25,min:100,max:2147483647,startTime:'Instant',speed:'Ultra Fast',refill:'No Refill ⚠',cancel:'NO',drop:'Non Drop',quality:'HQ Real Users',delivery:'Instant',details:["🚄 Speed: Ultrafast","🔄 Drip Feed / Interval available","🔓 Kindly make sure your account is public."]},
+    {id:5832,name:'ultrafast views services drip feed (interval available )',price:2.25,min:100,max:2147483647,startTime:'Instant',speed:'Ultra Fast',refill:'No Refill ⚠',cancel:'NO',drop:'Non Drop',quality:'HQ Real Users',delivery:'Instant',dripfeed:true,details:["🚄 Speed: Ultrafast","🔄 Drip Feed / Interval available","🔓 Kindly make sure your account is public."]},
     {id:5835,name:'Instagram Video Views All Link',price:4.86,min:50,max:2147483647,startTime:'Instant',speed:'500K-1M/Day',refill:'No Refill ⚠',cancel:'NO',drop:'Non Drop',quality:'Worldwide',delivery:'Instant',details:["🔗 Works on all Instagram video links","🔓 Account must be public before placing order."]},
   ],
   'post-views': [
@@ -1733,7 +1733,7 @@ let SERVICES = (window.DEFAULT_SERVICES && typeof window.DEFAULT_SERVICES === 'o
     {id:5893,name:'Instagram Likes - Indian Profiles',price:21.17,min:10,max:500000,startTime:'Instant',speed:'300K/Day',refill:'30 Days ♻',cancel:'YES',drop:'Non Drop',quality:'Indian Profiles 🇮🇳',delivery:'Instant',details:["🔗 Location: India 🇮🇳","❌ Cancel Button Enabled","🔓 Post link must be public."]},
     {id:5112,name:'Instagram Likes - Indian Profiles',price:22.15,min:10,max:500000,startTime:'Instant',speed:'300K/Day',refill:'Lifetime ♻',cancel:'YES',drop:'Non Drop',quality:'Indian Profiles 🇮🇳',delivery:'Instant',details:["🔗 Location: India 🇮🇳","❌ Cancel Button Enabled","🔓 Post link must be public."]},
     {id:5209,name:'Instagram Likes - Indian Profile',price:86,min:10,max:1000000,startTime:'0-1 Min',speed:'10K+/Hour',refill:'Lifetime ♻',cancel:'NO',drop:'Non Drop',quality:'100% Real Indian with Story 🇮🇳',delivery:'0-1 minute',details:["👑 100% Real Indian Profiles with active stories"]},
-    {id:5210,name:'real indian likes with profile photo and stories also drip feed (interval availble )',price:99.34,min:10,max:5000,startTime:'Instant',speed:'10K+/Day',refill:'Lifetime ♻',cancel:'YES',drop:'Non Drop',quality:'Real Indian with Photo & Stories 🇮🇳',delivery:'Instant',details:["🇮🇳 Real Indian Profiles with DP & Stories","🔄 Drip Feed / Interval available","❌ Cancel Button Enabled"]},
+    {id:5210,name:'real indian likes with profile photo and stories also drip feed (interval availble )',price:99.34,min:10,max:5000,startTime:'Instant',speed:'10K+/Day',refill:'Lifetime ♻',cancel:'YES',drop:'Non Drop',quality:'Real Indian with Photo & Stories 🇮🇳',delivery:'Instant',dripfeed:true,details:["🇮🇳 Real Indian Profiles with DP & Stories","🔄 Drip Feed / Interval available","❌ Cancel Button Enabled"]},
   ],
   'comments': [
     {id:4966,name:'Instagram Comments - Random',price:189.35,min:10,max:50000,startTime:'0-1 Hour',speed:'10K/Day',refill:'No Refill ⚠',cancel:'NO',drop:'Non Drop',quality:'100% Real Users',delivery:'0-1 hour',details:['💬 Random positive/relevant comments','🔓 Post must be public']},
@@ -2174,35 +2174,36 @@ function selectService(svc) {
 function checkIsDripSvc(svc) {
   if (!svc) return false;
   const id = Number(svc.id || svc.service);
-  if (id === 6055 || id === 5832 || id === 5210) return true;
-  if (svc.dripfeed === true || svc.dripfeed === 1 || svc.dripfeed === '1' || svc.drip_feed === 1 || svc.drip_feed === true) return true;
-  const name = String(svc.name || '').toLowerCase();
-  if (name.includes('drip')) return true;
-  if (Array.isArray(svc.details) && svc.details.some(d => String(d).toLowerCase().includes('drip'))) return true;
+  // Only 5210 and 5832 by default, or if explicitly enabled by admin in catalog
+  if (id === 5210 || id === 5832) return true;
+  if (svc.dripfeed === true || svc.dripfeed === 1 || svc.dripfeed === '1' || svc.drip_feed === 1 || svc.drip_feed === true || svc.dripfeed === 'true' || svc.drip_feed === 'true') return true;
   return false;
 }
 
 function isDripActive() {
+  if (!checkIsDripSvc(_selSvc)) return false;
   const cb = document.getElementById('dripFeedCheckbox');
   if (cb && cb.checked) return true;
-  const runs = parseInt(document.getElementById('dripRuns')?.value) || 0;
-  const interval = parseInt(document.getElementById('dripInterval')?.value) || 0;
-  if (runs > 0 && interval > 0) return true;
   return false;
 }
 
-  // Reset and show/hide drip feed container based on service ID / name / checkbox
+  // Reset and show/hide drip feed container based on service ID / checkbox
   const isDripSvc = checkIsDripSvc(svc);
+  const dripToggleWrap = document.getElementById('dripToggleWrap');
   const dripCb = document.getElementById('dripFeedCheckbox');
   const dripContainer = document.getElementById('dripFieldsContainer');
-  if (dripCb && dripContainer) {
+  if (dripToggleWrap) {
     if (isDripSvc) {
-      dripCb.checked = true;
-      dripContainer.classList.remove('hidden');
+      dripToggleWrap.classList.remove('hidden');
+      dripToggleWrap.style.display = 'block';
     } else {
-      dripCb.checked = false;
-      dripContainer.classList.add('hidden');
+      dripToggleWrap.classList.add('hidden');
+      dripToggleWrap.style.display = 'none';
     }
+  }
+  if (dripCb && dripContainer) {
+    dripCb.checked = false;
+    dripContainer.classList.add('hidden');
     const dRuns = document.getElementById('dripRuns'); if(dRuns) dRuns.value = '';
     const dInt = document.getElementById('dripInterval'); if(dInt) dInt.value = '';
     const dTot = document.getElementById('dripTotalQty'); if(dTot) dTot.value = '';

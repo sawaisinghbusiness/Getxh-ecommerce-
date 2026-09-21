@@ -1478,6 +1478,19 @@
           </label>
         </div>
 
+        <div class="flex items-center justify-between rounded-xl border border-white/8 bg-white/3 p-3">
+          <div>
+            <p class="text-xs font-bold text-white">Drip-Feed Support</p>
+            <p class="text-[11px] text-slate-400">Allow users to place drip-feed (Runs & Interval) orders for this service</p>
+          </div>
+          <label class="relative inline-flex cursor-pointer items-center">
+            <input type="checkbox" id="modalSvcDripfeed" class="sr-only peer">
+            <div
+              class="h-6 w-11 rounded-full bg-slate-700 peer-checked:bg-blue-500 peer-focus:outline-none after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full">
+            </div>
+          </label>
+        </div>
+
         <div class="flex items-center justify-end gap-2 pt-2">
           <button type="button" onclick="closeServiceModal()"
             class="rounded-xl border border-white/10 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-white/5">Cancel</button>
@@ -2547,6 +2560,7 @@ CURRENT DEFECTS(confirmed by screenshot):
                         (isAct ? 'Active' : 'Disabled') +
                         '</span>' +
                       (s.refill && s.refill !== 'No Refill ⚠' ? '<span class="rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-sky-400 border border-sky-500/20">' + escHtml(s.refill) + '</span>' : '') +
+                      ((s.dripfeed === true || s.dripfeed === 1 || s.drip_feed === 1 || s.drip_feed === true || String(s.id) === '5210' || String(s.id) === '5832') ? '<span class="rounded-full bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-400 border border-cyan-500/25">Drip-Feed</span>' : '') +
                       '</div>' +
                     '<div class="text-right flex-shrink-0">' +
                       '<span class="text-base font-black text-white">₹' + (Number(s.price).toFixed(2)) + '</span>' +
@@ -2624,6 +2638,7 @@ CURRENT DEFECTS(confirmed by screenshot):
     document.getElementById('modalSvcQuality').value = 'HQ Real Accounts';
     document.getElementById('modalSvcDetails').value = '🔗 Link Type Example: Profile or Post link\n🔓 Make sure account is PUBLIC';
     document.getElementById('modalSvcStatus').checked = true;
+    document.getElementById('modalSvcDripfeed').checked = false;
 
     var modal = document.getElementById('serviceModal');
     modal.classList.remove('hidden');
@@ -2659,6 +2674,7 @@ CURRENT DEFECTS(confirmed by screenshot):
       document.getElementById('modalSvcQuality').value = svc.quality || '';
       document.getElementById('modalSvcDetails').value = (svc.details || []).join('\n');
       document.getElementById('modalSvcStatus').checked = svc.status !== 'inactive';
+      document.getElementById('modalSvcDripfeed').checked = Boolean(svc.dripfeed === true || svc.dripfeed === 1 || svc.dripfeed === '1' || svc.drip_feed === 1 || svc.drip_feed === true || String(svc.id) === '5210' || String(svc.id) === '5832');
 
       var modal = document.getElementById('serviceModal');
       modal.classList.remove('hidden');
@@ -2736,6 +2752,8 @@ CURRENT DEFECTS(confirmed by screenshot):
         quality: document.getElementById('modalSvcQuality').value.trim() || 'HQ Real Users',
         delivery: document.getElementById('modalSvcStartTime').value.trim() || 'Instant',
         status: document.getElementById('modalSvcStatus').checked ? 'active' : 'inactive',
+        dripfeed: document.getElementById('modalSvcDripfeed').checked,
+        drip_feed: document.getElementById('modalSvcDripfeed').checked,
         details: document.getElementById('modalSvcDetails').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean)
       };
 
