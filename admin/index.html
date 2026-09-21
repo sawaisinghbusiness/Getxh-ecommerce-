@@ -599,7 +599,17 @@
       border-bottom-right-radius: 16px;
     }
   </style>
-  <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(r => { r.forEach(reg => reg.unregister()) }) }</script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw-alert.js', { scope: '/' })
+        .then(function (reg) {
+          window._alertSWReg = reg;
+        })
+        .catch(function (e) {
+          console.warn('Alert SW register error:', e);
+        });
+    }
+  </script>
   <script>
     // Strict Admin Guard:
     // Direct URL access or searching getxh.in/admin/ is strictly blocked.
@@ -891,17 +901,22 @@
           <span class="text-base font-bold text-white whitespace-nowrap"
             style="font-size:16px;white-space:nowrap;">Admin Panel</span>
         </div>
-        <!-- Rapido-Style Sound & Vibration Alert Button -->
+        <!-- Rapido-Style Sound & Real Phone Vibration Alert Button -->
         <div class="flex items-center gap-1.5 flex-shrink-0">
-          <button id="alertSoundToggleBtn" onclick="toggleAlertSound()" title="Rapido Style Sound & Heavy Vibration Alerts"
+          <button id="alertSoundToggleBtn" onclick="toggleAlertSound()" title="Rapido Sound & Phone Vibration Alerts"
             class="flex h-8 items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-emerald-400 hover:bg-emerald-500/25 transition">
             <span class="material-symbols-outlined" id="alertSoundIcon" style="font-size:16px">notifications_active</span>
             <span id="alertSoundLabel">Alert: ON</span>
           </button>
-          <button type="button" onclick="testAlertSoundAndVibration()" title="Test Loud Chime & Heavy Vibration on Phone"
-            class="flex h-8 items-center gap-1 rounded-lg border border-sky-500/30 bg-sky-500/15 px-2 py-1 text-[11px] font-bold text-sky-400 hover:bg-sky-500/25 transition">
-            <span class="material-symbols-outlined" style="font-size:14px">vibration</span>
-            <span class="hidden sm:inline">Test</span>
+          <button type="button" onclick="testAlertSoundAndVibration()" title="Test Loud Chime & Real Phone Hardware Vibration"
+            class="flex h-8 items-center gap-1 rounded-lg border border-sky-500/30 bg-sky-500/15 px-2.5 py-1 text-[11px] font-bold text-sky-400 hover:bg-sky-500/25 transition">
+            <span class="material-symbols-outlined" style="font-size:15px">vibration</span>
+            <span>Test Vibrate</span>
+          </button>
+          <button id="btnGrantVibration" type="button" onclick="requestNotificationAndVibratePermission()" title="Enable Real Phone Hardware Vibration"
+            class="hidden flex h-8 items-center gap-1 rounded-lg border border-amber-500/40 bg-amber-500/20 px-2.5 py-1 text-[11px] font-bold text-amber-300 animate-pulse hover:bg-amber-500/30 transition">
+            <span class="material-symbols-outlined" style="font-size:15px">sensors</span>
+            <span class="hidden sm:inline">Enable Vibrate</span>
           </button>
         </div>
         <!-- Tab switcher wrapper with fade mask below 768px -->
@@ -3529,35 +3544,37 @@
       return _audioCtx;
     }
 
-    // Prime Audio & Vibration on any touch/click (required by mobile Android browsers)
-    function primeAudioAndVibration() {
+    // Prime Audio Context on any touch/click
+    function primeAudioContext() {
       getAudioContext();
-      if ('vibrate' in navigator) {
-        try { navigator.vibrate(25); } catch (e) {}
-      }
     }
-    window.addEventListener('click', primeAudioAndVibration);
-    window.addEventListener('touchstart', primeAudioAndVibration);
-    window.addEventListener('pointerdown', primeAudioAndVibration);
+    window.addEventListener('click', primeAudioContext);
+    window.addEventListener('touchstart', primeAudioContext);
+    window.addEventListener('pointerdown', primeAudioContext);
 
     var _vibrationInterval = null;
 
+    // Direct hardware vibration
     function triggerHeavyVibration() {
-      if (!('vibrate' in navigator)) return;
+      if (!('vibrate' in navigator)) {
+        console.warn('Vibration API not available on this browser/platform');
+        return false;
+      }
       try {
-        navigator.vibrate(0);
         if (_vibrationInterval) {
           clearInterval(_vibrationInterval);
           _vibrationInterval = null;
         }
 
-        // Standard Android mobile vibration pattern:
-        // Android limits continuous vibration to <500ms bursts to prevent motor failure.
-        // We use distinct high-energy pulses: 350ms buzz, 100ms pause, 350ms buzz, 100ms pause, 450ms buzz
-        var pattern = [350, 100, 350, 100, 450, 150, 400];
-        navigator.vibrate(pattern);
+        // Heavy vibration pattern: 600ms buzz, 150ms pause, 600ms buzz, 150ms pause, 1000ms buzz
+        var pattern = [600, 150, 600, 150, 1000];
+        var res = navigator.vibrate(pattern);
+        if (!res) {
+          // If device rejects array, fallback to continuous 1000ms vibration
+          navigator.vibrate(1000);
+        }
 
-        // Repeat pulses every 2.4 seconds (up to 4 times)
+        // Pulse vibration every 2.6 seconds (up to 4 times) while alert banner is active
         var count = 0;
         _vibrationInterval = setInterval(function () {
           count++;
@@ -3566,10 +3583,15 @@
             _vibrationInterval = null;
             return;
           }
-          try { navigator.vibrate(pattern); } catch (err) {}
-        }, 2400);
+          try {
+            var r = navigator.vibrate(pattern);
+            if (!r) navigator.vibrate(1000);
+          } catch (_) {}
+        }, 2600);
+        return true;
       } catch (e) {
-        console.warn('Vibration API error:', e);
+        console.warn('triggerHeavyVibration error:', e);
+        return false;
       }
     }
 
@@ -3583,6 +3605,80 @@
       }
     }
 
+    // System Notification with Hardware Vibration via Service Worker
+    async function triggerSystemVibrationNotification(title, body, tag, docId) {
+      if (!('Notification' in window)) return;
+      if (Notification.permission !== 'granted') return;
+
+      var pattern = [600, 150, 600, 150, 1000];
+      var options = {
+        body: body || 'New activity on GetXH',
+        icon: '/GETXH WEB NEW LOGO.png',
+        badge: '/GETXH WEB NEW LOGO.png',
+        tag: tag || ('gx-' + (docId || Date.now())),
+        renotify: true,
+        vibrate: pattern,
+        silent: false,
+        requireInteraction: true
+      };
+
+      // 1. Try ServiceWorkerRegistration.showNotification (Mandatory for Android Chrome background vibration)
+      if ('serviceWorker' in navigator) {
+        try {
+          var reg = window._alertSWReg;
+          if (!reg && navigator.serviceWorker.ready) {
+            reg = await navigator.serviceWorker.ready;
+          }
+          if (reg && reg.showNotification) {
+            await reg.showNotification(title, options);
+            return;
+          }
+        } catch (swErr) {
+          console.warn('SW showNotification error:', swErr);
+        }
+      }
+
+      // 2. Direct Notification fallback
+      try {
+        new Notification(title, options);
+      } catch (_) {}
+    }
+
+    function updateVibrationStatusUi() {
+      var grantBtn = document.getElementById('btnGrantVibration');
+      if (!grantBtn) return;
+      if ('Notification' in window && Notification.permission !== 'granted') {
+        grantBtn.classList.remove('hidden');
+        grantBtn.style.display = 'flex';
+      } else {
+        grantBtn.classList.add('hidden');
+        grantBtn.style.display = 'none';
+      }
+    }
+
+    // Check vibration status on load
+    setTimeout(updateVibrationStatusUi, 1000);
+
+    window.requestNotificationAndVibratePermission = async function () {
+      if (!('Notification' in window)) {
+        showAdminToast('Notifications are not supported by this browser', true);
+        return;
+      }
+      try {
+        var perm = await Notification.requestPermission();
+        updateVibrationStatusUi();
+        if (perm === 'granted') {
+          triggerHeavyVibration();
+          triggerSystemVibrationNotification('📳 Phone Vibration Activated!', 'Your phone will now vibrate on all new orders, payments, and users.', 'perm-test');
+          showAdminToast('Phone Vibration & Real-Time Alerts Activated! 📳', false);
+        } else {
+          showAdminToast('Notification permission was blocked in browser settings', true);
+        }
+      } catch (e) {
+        showAdminToast('Could not request notification permission: ' + e.message, true);
+      }
+    };
+
     function toggleAlertSound() {
       _alertSoundEnabled = !_alertSoundEnabled;
       localStorage.setItem('gx_alert_sound', _alertSoundEnabled ? 'true' : 'false');
@@ -3590,22 +3686,39 @@
       if (_alertSoundEnabled) {
         playRapidoChime();
         triggerHeavyVibration();
-        showAdminToast('Rapido Alert & Heavy Vibration: ENABLED 🔔📳', false);
+        triggerSystemVibrationNotification('🚨 GetXH Alert Enabled', 'Alerts and phone vibration are now active.', 'sound-on');
+        showAdminToast('Rapido Alert & Phone Vibration: ENABLED 🔔📳', false);
       } else {
         stopHeavyVibration();
         showAdminToast('Rapido Alert & Vibration: MUTED 🔕', false);
       }
     }
 
-    window.testAlertSoundAndVibration = function () {
-      primeAudioAndVibration();
+    window.testAlertSoundAndVibration = async function () {
+      getAudioContext();
+
+      // If notification permission not yet granted, request immediately on this user click!
+      if ('Notification' in window && Notification.permission === 'default') {
+        try {
+          var p = await Notification.requestPermission();
+          updateVibrationStatusUi();
+        } catch (_) {}
+      }
+
       playRapidoChime();
+      triggerHeavyVibration();
+
+      await triggerSystemVibrationNotification(
+        '🚨 Test Alert: Phone Vibrating!',
+        'Rapido chime and phone vibration successfully activated.',
+        'test-alert-' + Date.now()
+      );
+
       var hasVibrate = ('vibrate' in navigator);
       if (hasVibrate) {
-        triggerHeavyVibration();
-        showAdminToast('🔔 Rapido Chime Playing & Phone Vibrating! 📳', false);
+        showAdminToast('🔔 Rapido Chime Playing & 📳 Phone Vibrating!', false);
       } else {
-        showAdminToast('🔔 Chime Playing! (Note: Apple iOS Safari blocks Web Vibration API)', false);
+        showAdminToast('🔔 Chime Playing! (Note: iOS Safari requires Home Screen PWA for vibration)', false);
       }
     };
 
@@ -3687,21 +3800,8 @@
         icon = 'person_add';
       }
 
-      if ('Notification' in window) {
-        if (Notification.permission === 'granted') {
-          try {
-            new Notification('🚨 ' + tag + ': ' + title, {
-              body: sub,
-              icon: '/GETXH WEB NEW LOGO.png',
-              tag: 'gx-' + docId,
-              vibrate: [350, 100, 350, 100, 450],
-              requireInteraction: true
-            });
-          } catch (e) {}
-        } else if (Notification.permission === 'default') {
-          Notification.requestPermission().catch(function () {});
-        }
-      }
+      // Hardware notification with vibration pattern (Service Worker + Android Notification)
+      triggerSystemVibrationNotification('🚨 ' + tag + ': ' + title, sub, 'gx-' + docId, docId);
 
       showRapidoBanner(type, tag, title, sub, docId);
     }
