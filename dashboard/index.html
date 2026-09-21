@@ -992,7 +992,15 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
           <div class="field-err" id="err-quantity"></div>
         </div>
 
-        <!-- DRIP FEED FIELDS (Shown only for drip-feed specific services) -->
+        <!-- DRIP FEED OPTION / FIELDS -->
+        <div id="dripToggleWrap" style="margin-bottom:12px;">
+          <label id="dripToggleLabel" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none;padding:6px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:6px;transition:all 0.2s;">
+            <input type="checkbox" id="dripFeedCheckbox" style="width:16px;height:16px;accent-color:#3b82f6;cursor:pointer;">
+            <span style="font-size:12px;font-weight:700;color:#e2e8f0;letter-spacing:0.04em;">DRIP-FEED</span>
+          </label>
+        </div>
+
+        <!-- DRIP FEED FIELDS -->
         <div id="dripFieldsContainer" class="hidden">
           <div style="margin-bottom:15px;">
             <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Runs</p>
@@ -2149,19 +2157,43 @@ function selectService(svc) {
   const pBtn = document.getElementById('placeOrderBtn');
   if(pBtn) pBtn.disabled=false;
 
-  // Reset and show/hide drip feed container based on service ID / name
-  const isDripSvc = svc && (svc.id === 5832 || svc.id === 5210 || (svc.name && svc.name.toLowerCase().includes('drip feed')));
+function checkIsDripSvc(svc) {
+  if (!svc) return false;
+  const id = Number(svc.id || svc.service);
+  if (id === 6055 || id === 5832 || id === 5210) return true;
+  if (svc.dripfeed === true || svc.dripfeed === 1 || svc.dripfeed === '1' || svc.drip_feed === 1 || svc.drip_feed === true) return true;
+  const name = String(svc.name || '').toLowerCase();
+  if (name.includes('drip')) return true;
+  if (Array.isArray(svc.details) && svc.details.some(d => String(d).toLowerCase().includes('drip'))) return true;
+  return false;
+}
+
+function isDripActive() {
+  const cb = document.getElementById('dripFeedCheckbox');
+  if (cb && cb.checked) return true;
+  const runs = parseInt(document.getElementById('dripRuns')?.value) || 0;
+  const interval = parseInt(document.getElementById('dripInterval')?.value) || 0;
+  if (runs > 0 && interval > 0) return true;
+  return false;
+}
+
+  // Reset and show/hide drip feed container based on service ID / name / checkbox
+  const isDripSvc = checkIsDripSvc(svc);
+  const dripCb = document.getElementById('dripFeedCheckbox');
   const dripContainer = document.getElementById('dripFieldsContainer');
-  if (dripContainer) {
+  if (dripCb && dripContainer) {
     if (isDripSvc) {
+      dripCb.checked = true;
       dripContainer.classList.remove('hidden');
     } else {
+      dripCb.checked = false;
       dripContainer.classList.add('hidden');
     }
     const dRuns = document.getElementById('dripRuns'); if(dRuns) dRuns.value = '';
     const dInt = document.getElementById('dripInterval'); if(dInt) dInt.value = '';
     const dTot = document.getElementById('dripTotalQty'); if(dTot) dTot.value = '';
-    const dErr = document.getElementById('dripError'); if(dErr) dErr.classList.add('hidden');
+    dbClearErr('dripRuns', 'err-dripRuns');
+    dbClearErr('dripInterval', 'err-dripInterval');
   }
 
   // Custom comments box logic
@@ -2389,7 +2421,7 @@ function validateOrderForm() {
       }
     }
 
-    const isDrip = _selSvc && (_selSvc.id === 5832 || _selSvc.id === 5210 || (_selSvc.name && _selSvc.name.toLowerCase().includes('drip feed')));
+    const isDrip = isDripActive();
     if (isDrip) {
       const runsVal = document.getElementById("dripRuns").value.trim();
       const runs = parseInt(runsVal) || 0;
@@ -2447,7 +2479,7 @@ function updateTotalPrice() {
   const qtyInput = document.getElementById('quantityInput');
   const qty = parseInt(qtyInput.value) || 0;
 
-  const isDrip = _selSvc && (_selSvc.id === 5832 || _selSvc.id === 5210 || (_selSvc.name && _selSvc.name.toLowerCase().includes('drip feed')));
+  const isDrip = isDripActive();
   const runsInput = document.getElementById('dripRuns');
   const runs = parseInt(runsInput.value) || 0;
 
@@ -2504,6 +2536,23 @@ document.getElementById('dripInterval').addEventListener('input', function() {
   dbClearErr('dripInterval', 'err-dripInterval');
   updateTotalPrice();
 });
+const dripCbEl = document.getElementById('dripFeedCheckbox');
+if (dripCbEl) {
+  dripCbEl.addEventListener('change', function() {
+    const dripContainer = document.getElementById('dripFieldsContainer');
+    if (this.checked) {
+      dripContainer.classList.remove('hidden');
+    } else {
+      dripContainer.classList.add('hidden');
+      const dRuns = document.getElementById('dripRuns'); if(dRuns) dRuns.value = '';
+      const dInt = document.getElementById('dripInterval'); if(dInt) dInt.value = '';
+      const dTot = document.getElementById('dripTotalQty'); if(dTot) dTot.value = '';
+      dbClearErr('dripRuns', 'err-dripRuns');
+      dbClearErr('dripInterval', 'err-dripInterval');
+    }
+    updateTotalPrice();
+  });
+}
 // ── CUSTOM COMMENTS TEXTAREA ──
 document.getElementById('customCommentsInput').addEventListener('input', function() {
   if (!_selSvc) return;
@@ -2583,7 +2632,7 @@ async function placeOrder(serviceId) {
   }
 
   // Drip feed variables
-  const isDrip = _selSvc && (_selSvc.id === 5832 || _selSvc.id === 5210 || (_selSvc.name && _selSvc.name.toLowerCase().includes('drip feed')));
+  const isDrip = isDripActive();
   const runs = isDrip ? (parseInt(document.getElementById('dripRuns').value) || 0) : null;
   const interval = isDrip ? (parseInt(document.getElementById('dripInterval').value) || 0) : null;
 
