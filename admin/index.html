@@ -535,27 +535,42 @@
   </style>
   <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(r => { r.forEach(reg => reg.unregister()) }) }</script>
   <script>
-    // Strict Admin Guard:
+    // Strict Admin Guard with Persistent Mobile Session:
     // Direct URL access or searching getxh.in/admin/ is strictly blocked.
     // ONLY opens if user is logged into admin account AND navigated via 'Admin Panel' menu click.
+    // If admin has already verified on this device, persistent session prevents expiration on phone.
     (function () {
       try {
         var e = (localStorage.getItem('getxh_current_user') || '').toLowerCase().trim();
         var loggedIn = localStorage.getItem('getxh_user_logged_in');
-        var navAuthRaw = sessionStorage.getItem('gx_admin_nav_auth');
+        var navAuthRaw = sessionStorage.getItem('gx_admin_nav_auth') || localStorage.getItem('gx_admin_nav_auth');
+        var authRaw = localStorage.getItem('gx_admin_authenticated');
 
-        if (!loggedIn || e !== 'agency@getxh.in' || !navAuthRaw) {
-          document.documentElement.style.display = 'none';
-          window.location.replace('/');
-          return;
+        var hasPersistentAuth = false;
+        if (authRaw) {
+          try {
+            var parsed = JSON.parse(authRaw);
+            if (parsed && (parsed.email === 'agency@getxh.in' || parsed.uid === 'XVQ4WNIRyKbJz7HCDUmU0Lv9squ2')) {
+              hasPersistentAuth = true;
+            }
+          } catch (err) {}
         }
 
-        var navAuth = JSON.parse(navAuthRaw);
-        if (!navAuth || !navAuth.t) {
-          document.documentElement.style.display = 'none';
-          sessionStorage.removeItem('gx_admin_nav_auth');
-          window.location.replace('/');
-          return;
+        if (!hasPersistentAuth) {
+          if (!loggedIn || e !== 'agency@getxh.in' || !navAuthRaw) {
+            document.documentElement.style.display = 'none';
+            window.location.replace('/');
+            return;
+          }
+
+          var navAuth = JSON.parse(navAuthRaw);
+          if (!navAuth || !navAuth.t) {
+            document.documentElement.style.display = 'none';
+            sessionStorage.removeItem('gx_admin_nav_auth');
+            localStorage.removeItem('gx_admin_nav_auth');
+            window.location.replace('/');
+            return;
+          }
         }
       } catch (err) {
         document.documentElement.style.display = 'none';
@@ -817,12 +832,19 @@
           <span class="text-base font-bold text-white whitespace-nowrap"
             style="font-size:16px;white-space:nowrap;">Admin Panel</span>
         </div>
-        <!-- Rapido-Style Sound Alert Toggle Button -->
-        <button id="alertSoundToggleBtn" onclick="toggleAlertSound()" title="Rapido Style Sound Alerts (Click to test)"
-          class="flex h-8 items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2 py-1 text-[11px] font-bold text-emerald-400 hover:bg-emerald-500/25 transition">
-          <span class="material-symbols-outlined" id="alertSoundIcon" style="font-size:16px">notifications_active</span>
-          <span id="alertSoundLabel" class="hidden sm:inline">Alert: ON</span>
-        </button>
+        <!-- Rapido-Style Sound & Vibration Alert Button -->
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+          <button id="alertSoundToggleBtn" onclick="toggleAlertSound()" title="Rapido Style Sound & Heavy Vibration Alerts"
+            class="flex h-8 items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-emerald-400 hover:bg-emerald-500/25 transition">
+            <span class="material-symbols-outlined" id="alertSoundIcon" style="font-size:16px">notifications_active</span>
+            <span id="alertSoundLabel">Alert: ON</span>
+          </button>
+          <button type="button" onclick="testAlertSoundAndVibration()" title="Test Loud Chime & Heavy Vibration on Phone"
+            class="flex h-8 items-center gap-1 rounded-lg border border-sky-500/30 bg-sky-500/15 px-2 py-1 text-[11px] font-bold text-sky-400 hover:bg-sky-500/25 transition">
+            <span class="material-symbols-outlined" style="font-size:14px">vibration</span>
+            <span class="hidden sm:inline">Test</span>
+          </button>
+        </div>
         <!-- Tab switcher wrapper with fade mask below 768px -->
         <div class="tabs-wrapper-fade ml-auto flex items-center min-w-0">
           <div class="tab-row-scroll flex items-center gap-1 rounded-xl bg-white/5 p-1">
@@ -3050,8 +3072,58 @@
       return _audioCtx;
     }
 
-    document.addEventListener('click', function () { getAudioContext(); }, { once: true });
-    document.addEventListener('touchstart', function () { getAudioContext(); }, { once: true });
+    // Prime Audio & Vibration on any touch/click (required by mobile Android browsers)
+    function primeAudioAndVibration() {
+      getAudioContext();
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate(25); } catch (e) {}
+      }
+    }
+    window.addEventListener('click', primeAudioAndVibration);
+    window.addEventListener('touchstart', primeAudioAndVibration);
+    window.addEventListener('pointerdown', primeAudioAndVibration);
+
+    var _vibrationInterval = null;
+
+    function triggerHeavyVibration() {
+      if (!('vibrate' in navigator)) return;
+      try {
+        navigator.vibrate(0);
+        if (_vibrationInterval) {
+          clearInterval(_vibrationInterval);
+          _vibrationInterval = null;
+        }
+
+        // Heavy Rapido Alert pattern: intense long pulses with pauses
+        // 800ms buzz, 200ms pause, 800ms buzz, 200ms pause, 1200ms buzz, 250ms pause, 1500ms buzz
+        var pattern = [800, 200, 800, 200, 1200, 250, 1500];
+        navigator.vibrate(pattern);
+
+        // Repeat heavy vibration pulses every 4.8 seconds (up to 3 times, ~16 seconds total alert)
+        var count = 0;
+        _vibrationInterval = setInterval(function () {
+          count++;
+          if (count >= 3) {
+            clearInterval(_vibrationInterval);
+            _vibrationInterval = null;
+            return;
+          }
+          try { navigator.vibrate(pattern); } catch (err) {}
+        }, 4800);
+      } catch (e) {
+        console.warn('Vibration API error:', e);
+      }
+    }
+
+    function stopHeavyVibration() {
+      if (_vibrationInterval) {
+        clearInterval(_vibrationInterval);
+        _vibrationInterval = null;
+      }
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate(0); } catch (e) {}
+      }
+    }
 
     function toggleAlertSound() {
       _alertSoundEnabled = !_alertSoundEnabled;
@@ -3059,11 +3131,20 @@
       updateAlertSoundBtn();
       if (_alertSoundEnabled) {
         playRapidoChime();
-        showAdminToast('Rapido Alert Sound: ENABLED 🔔', false);
+        triggerHeavyVibration();
+        showAdminToast('Rapido Alert & Heavy Vibration: ENABLED 🔔📳', false);
       } else {
-        showAdminToast('Rapido Alert Sound: MUTED 🔕', false);
+        stopHeavyVibration();
+        showAdminToast('Rapido Alert & Vibration: MUTED 🔕', false);
       }
     }
+
+    window.testAlertSoundAndVibration = function () {
+      primeAudioAndVibration();
+      playRapidoChime();
+      triggerHeavyVibration();
+      showAdminToast('Testing Loud Chime & Heavy Vibration 🔔📳', false);
+    };
 
     function updateAlertSoundBtn() {
       var btn = document.getElementById('alertSoundToggleBtn');
@@ -3071,11 +3152,11 @@
       var lbl = document.getElementById('alertSoundLabel');
       if (!btn) return;
       if (_alertSoundEnabled) {
-        btn.className = 'flex h-8 items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2 py-1 text-[11px] font-bold text-emerald-400 hover:bg-emerald-500/25 transition';
+        btn.className = 'flex h-8 items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-emerald-400 hover:bg-emerald-500/25 transition';
         if (icon) icon.textContent = 'notifications_active';
         if (lbl) lbl.textContent = 'Alert: ON';
       } else {
-        btn.className = 'flex h-8 items-center gap-1.5 rounded-lg border border-slate-700 bg-white/5 px-2 py-1 text-[11px] font-bold text-slate-400 hover:bg-white/10 transition';
+        btn.className = 'flex h-8 items-center gap-1.5 rounded-lg border border-slate-700 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-400 hover:bg-white/10 transition';
         if (icon) icon.textContent = 'notifications_off';
         if (lbl) lbl.textContent = 'Alert: OFF';
       }
@@ -3089,7 +3170,7 @@
         var gain = ctx.createGain();
         osc.type = type || 'sine';
         osc.frequency.setValueAtTime(freq, ctx.currentTime + startTime);
-        gain.gain.setValueAtTime(gainValue || 0.4, ctx.currentTime + startTime);
+        gain.gain.setValueAtTime(gainValue || 0.65, ctx.currentTime + startTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startTime + duration);
         osc.connect(gain);
         gain.connect(ctx.destination);
@@ -3104,12 +3185,12 @@
         var ctx = getAudioContext();
         if (!ctx) return;
         var notes = [
-          { f: 587.33, t: 'triangle', s: 0.00, d: 0.12, v: 0.45 },
-          { f: 739.99, t: 'triangle', s: 0.10, d: 0.12, v: 0.45 },
-          { f: 880.00, t: 'sine',     s: 0.20, d: 0.14, v: 0.50 },
-          { f: 1174.66, t: 'sine',    s: 0.32, d: 0.35, v: 0.55 },
-          { f: 880.00, t: 'triangle', s: 0.55, d: 0.14, v: 0.45 },
-          { f: 1174.66, t: 'sine',    s: 0.67, d: 0.40, v: 0.55 }
+          { f: 587.33, t: 'triangle', s: 0.00, d: 0.14, v: 0.65 },
+          { f: 739.99, t: 'sawtooth', s: 0.10, d: 0.14, v: 0.60 },
+          { f: 880.00, t: 'sine',     s: 0.20, d: 0.16, v: 0.75 },
+          { f: 1174.66, t: 'sawtooth', s: 0.32, d: 0.40, v: 0.85 },
+          { f: 880.00, t: 'triangle', s: 0.55, d: 0.16, v: 0.70 },
+          { f: 1174.66, t: 'sine',    s: 0.68, d: 0.45, v: 0.85 }
         ];
         notes.forEach(function (n) { playRapidoTone(n.f, n.t, n.s, n.d, n.v); });
       } catch (e) {
@@ -3119,9 +3200,7 @@
 
     function triggerRapidoAlert(type, data, docId) {
       playRapidoChime();
-      if (navigator.vibrate) {
-        try { navigator.vibrate([350, 150, 350, 150, 600]); } catch (e) {}
-      }
+      triggerHeavyVibration();
 
       var tag = 'NEW PAYMENT';
       var title = '+₹' + (data.amount || 0) + ' Received';
@@ -3142,7 +3221,15 @@
 
       if ('Notification' in window) {
         if (Notification.permission === 'granted') {
-          try { new Notification('🚨 ' + tag + ': ' + title, { body: sub, icon: '/GETXH WEB NEW LOGO.png', tag: 'gx-' + docId }); } catch (e) {}
+          try {
+            new Notification('🚨 ' + tag + ': ' + title, {
+              body: sub,
+              icon: '/GETXH WEB NEW LOGO.png',
+              tag: 'gx-' + docId,
+              vibrate: [800, 200, 800, 200, 1200, 250, 1500],
+              requireInteraction: true
+            });
+          } catch (e) {}
         } else if (Notification.permission === 'default') {
           Notification.requestPermission().catch(function () {});
         }
@@ -3163,6 +3250,7 @@
       var actionBtn = document.getElementById('rapidoAlertActionBtn');
       if (actionBtn) {
         actionBtn.onclick = function () {
+          stopHeavyVibration();
           dismissRapidoAlert();
           if (type === 'fund') switchTab('funds');
           else if (type === 'order') switchTab('orders');
@@ -3180,6 +3268,7 @@
     }
 
     function dismissRapidoAlert() {
+      stopHeavyVibration();
       var banner = document.getElementById('rapidoAlertBanner');
       if (banner) {
         banner.classList.add('hidden');
@@ -3750,7 +3839,20 @@
         const data = await res.json();
         if (res.ok || data.success) {
           _adminUnlocked = true;
+          try {
+            localStorage.setItem('gx_admin_authenticated', JSON.stringify({
+              uid: ADMIN_UID,
+              email: ADMIN_EMAIL,
+              unlockedAt: Date.now()
+            }));
+            localStorage.setItem('gx_admin_nav_auth', JSON.stringify({
+              t: Date.now(),
+              role: 'admin',
+              source: 'verified_session'
+            }));
+          } catch (e) {}
           document.getElementById('otpGate').style.display = 'none';
+          document.getElementById('passwordGate').style.display = 'none';
           document.getElementById('adminPanel').style.display = 'block';
           initAdminData();
         } else {
@@ -3811,6 +3913,8 @@
       // Sign out buttons
       const doSignOut = () => {
         sessionStorage.removeItem('gx_admin_nav_auth');
+        localStorage.removeItem('gx_admin_nav_auth');
+        localStorage.removeItem('gx_admin_authenticated');
         sessionStorage.removeItem('_adm_lock');
         return signOut(auth).then(() => window.location.replace('/'));
       };
@@ -4751,47 +4855,66 @@
         return;
       }
 
-      // Check menu navigation token
+      // Check persistent auth or menu navigation token
+      let isPersistentAuth = false;
       try {
-        const navRaw = sessionStorage.getItem('gx_admin_nav_auth');
-        if (!navRaw) {
+        const rawAuth = localStorage.getItem('gx_admin_authenticated');
+        if (rawAuth) {
+          const authData = JSON.parse(rawAuth);
+          if (authData && (authData.uid === ADMIN_UID || authData.email === ADMIN_EMAIL)) {
+            isPersistentAuth = true;
+          }
+        }
+      } catch (e) {}
+
+      if (!isPersistentAuth) {
+        try {
+          const navRaw = sessionStorage.getItem('gx_admin_nav_auth') || localStorage.getItem('gx_admin_nav_auth');
+          if (!navRaw) {
+            window.location.replace('/');
+            return;
+          }
+        } catch (e) {
           window.location.replace('/');
           return;
         }
-      } catch (e) {
-        window.location.replace('/');
-        return;
       }
 
-      // Store user for initAdminData, show password gate
+      // Store user for initAdminData
       _currentUser = user;
       window._adminUser = user;
       window._gateSignOut = () => {
         sessionStorage.removeItem('gx_admin_nav_auth');
+        localStorage.removeItem('gx_admin_nav_auth');
+        localStorage.removeItem('gx_admin_authenticated');
         sessionStorage.removeItem('_adm_lock');
         return signOut(auth).then(() => window.location.replace('/'));
       };
       document.getElementById('sidebarEmail').textContent = user.email;
       document.getElementById('loadingScreen').style.display = 'none';
 
-      // Show password gate — ALWAYS, no skip
-      const gate = document.getElementById('passwordGate');
-      gate.style.display = 'flex';
-      setTimeout(() => document.getElementById('gatePasswordInput').focus(), 150);
+      if (isPersistentAuth) {
+        // Device session already verified and active! Never expire session on phone!
+        _adminUnlocked = true;
+        document.getElementById('passwordGate').style.display = 'none';
+        document.getElementById('otpGate').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        initAdminData();
+      } else {
+        // Show password gate on first-time login
+        const gate = document.getElementById('passwordGate');
+        gate.style.display = 'flex';
+        setTimeout(() => document.getElementById('gatePasswordInput').focus(), 150);
+      }
 
-      // Lock page if window regains focus and password not entered
+      // Lock page if window regains focus ONLY if not unlocked
       window.addEventListener('focus', async () => {
         const cu = auth.currentUser;
-        if (!cu || cu.uid !== ADMIN_UID) {
-          window.location.replace('/');
-          return;
-        }
-        if (cu.email !== ADMIN_EMAIL) {
+        if (!cu || cu.uid !== ADMIN_UID || cu.email !== ADMIN_EMAIL) {
           window.location.replace('/');
           return;
         }
         if (!_adminUnlocked) {
-          // agar OTP gate already open hai toh wahan se mat hatao
           const otpVisible = document.getElementById('otpGate').style.display === 'flex';
           if (!otpVisible) {
             document.getElementById('adminPanel').style.display = 'none';

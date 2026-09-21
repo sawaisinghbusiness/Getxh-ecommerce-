@@ -884,11 +884,13 @@ if (menuEmailMobileEl) menuEmailMobileEl.textContent = _menuEmail;
 function openAdminPanel(e) {
   if (e && e.preventDefault) e.preventDefault();
   try {
-    sessionStorage.setItem('gx_admin_nav_auth', JSON.stringify({
+    const navData = JSON.stringify({
       t: Date.now(),
       role: 'admin',
       source: 'menu_click'
-    }));
+    });
+    sessionStorage.setItem('gx_admin_nav_auth', navData);
+    localStorage.setItem('gx_admin_nav_auth', navData);
   } catch (err) {}
   window.location.href = '/admin';
 }
