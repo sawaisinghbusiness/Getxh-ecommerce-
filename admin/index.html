@@ -535,42 +535,27 @@
   </style>
   <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(r => { r.forEach(reg => reg.unregister()) }) }</script>
   <script>
-    // Strict Admin Guard with Persistent Mobile Session:
+    // Strict Admin Guard:
     // Direct URL access or searching getxh.in/admin/ is strictly blocked.
     // ONLY opens if user is logged into admin account AND navigated via 'Admin Panel' menu click.
-    // If admin has already verified on this device, persistent session prevents expiration on phone.
     (function () {
       try {
         var e = (localStorage.getItem('getxh_current_user') || '').toLowerCase().trim();
         var loggedIn = localStorage.getItem('getxh_user_logged_in');
-        var navAuthRaw = sessionStorage.getItem('gx_admin_nav_auth') || localStorage.getItem('gx_admin_nav_auth');
-        var authRaw = localStorage.getItem('gx_admin_authenticated');
+        var navAuthRaw = sessionStorage.getItem('gx_admin_nav_auth');
 
-        var hasPersistentAuth = false;
-        if (authRaw) {
-          try {
-            var parsed = JSON.parse(authRaw);
-            if (parsed && (parsed.email === 'agency@getxh.in' || parsed.uid === 'XVQ4WNIRyKbJz7HCDUmU0Lv9squ2')) {
-              hasPersistentAuth = true;
-            }
-          } catch (err) {}
+        if (!loggedIn || e !== 'agency@getxh.in' || !navAuthRaw) {
+          document.documentElement.style.display = 'none';
+          window.location.replace('/');
+          return;
         }
 
-        if (!hasPersistentAuth) {
-          if (!loggedIn || e !== 'agency@getxh.in' || !navAuthRaw) {
-            document.documentElement.style.display = 'none';
-            window.location.replace('/');
-            return;
-          }
-
-          var navAuth = JSON.parse(navAuthRaw);
-          if (!navAuth || !navAuth.t) {
-            document.documentElement.style.display = 'none';
-            sessionStorage.removeItem('gx_admin_nav_auth');
-            localStorage.removeItem('gx_admin_nav_auth');
-            window.location.replace('/');
-            return;
-          }
+        var navAuth = JSON.parse(navAuthRaw);
+        if (!navAuth || !navAuth.t) {
+          document.documentElement.style.display = 'none';
+          sessionStorage.removeItem('gx_admin_nav_auth');
+          window.location.replace('/');
+          return;
         }
       } catch (err) {
         document.documentElement.style.display = 'none';
@@ -3839,20 +3824,7 @@
         const data = await res.json();
         if (res.ok || data.success) {
           _adminUnlocked = true;
-          try {
-            localStorage.setItem('gx_admin_authenticated', JSON.stringify({
-              uid: ADMIN_UID,
-              email: ADMIN_EMAIL,
-              unlockedAt: Date.now()
-            }));
-            localStorage.setItem('gx_admin_nav_auth', JSON.stringify({
-              t: Date.now(),
-              role: 'admin',
-              source: 'verified_session'
-            }));
-          } catch (e) {}
           document.getElementById('otpGate').style.display = 'none';
-          document.getElementById('passwordGate').style.display = 'none';
           document.getElementById('adminPanel').style.display = 'block';
           initAdminData();
         } else {
@@ -3913,8 +3885,6 @@
       // Sign out buttons
       const doSignOut = () => {
         sessionStorage.removeItem('gx_admin_nav_auth');
-        localStorage.removeItem('gx_admin_nav_auth');
-        localStorage.removeItem('gx_admin_authenticated');
         sessionStorage.removeItem('_adm_lock');
         return signOut(auth).then(() => window.location.replace('/'));
       };
@@ -4855,66 +4825,47 @@
         return;
       }
 
-      // Check persistent auth or menu navigation token
-      let isPersistentAuth = false;
+      // Check menu navigation token
       try {
-        const rawAuth = localStorage.getItem('gx_admin_authenticated');
-        if (rawAuth) {
-          const authData = JSON.parse(rawAuth);
-          if (authData && (authData.uid === ADMIN_UID || authData.email === ADMIN_EMAIL)) {
-            isPersistentAuth = true;
-          }
-        }
-      } catch (e) {}
-
-      if (!isPersistentAuth) {
-        try {
-          const navRaw = sessionStorage.getItem('gx_admin_nav_auth') || localStorage.getItem('gx_admin_nav_auth');
-          if (!navRaw) {
-            window.location.replace('/');
-            return;
-          }
-        } catch (e) {
+        const navRaw = sessionStorage.getItem('gx_admin_nav_auth');
+        if (!navRaw) {
           window.location.replace('/');
           return;
         }
+      } catch (e) {
+        window.location.replace('/');
+        return;
       }
 
-      // Store user for initAdminData
+      // Store user for initAdminData, show password gate
       _currentUser = user;
       window._adminUser = user;
       window._gateSignOut = () => {
         sessionStorage.removeItem('gx_admin_nav_auth');
-        localStorage.removeItem('gx_admin_nav_auth');
-        localStorage.removeItem('gx_admin_authenticated');
         sessionStorage.removeItem('_adm_lock');
         return signOut(auth).then(() => window.location.replace('/'));
       };
       document.getElementById('sidebarEmail').textContent = user.email;
       document.getElementById('loadingScreen').style.display = 'none';
 
-      if (isPersistentAuth) {
-        // Device session already verified and active! Never expire session on phone!
-        _adminUnlocked = true;
-        document.getElementById('passwordGate').style.display = 'none';
-        document.getElementById('otpGate').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'block';
-        initAdminData();
-      } else {
-        // Show password gate on first-time login
-        const gate = document.getElementById('passwordGate');
-        gate.style.display = 'flex';
-        setTimeout(() => document.getElementById('gatePasswordInput').focus(), 150);
-      }
+      // Show password gate — ALWAYS, no skip
+      const gate = document.getElementById('passwordGate');
+      gate.style.display = 'flex';
+      setTimeout(() => document.getElementById('gatePasswordInput').focus(), 150);
 
-      // Lock page if window regains focus ONLY if not unlocked
+      // Lock page if window regains focus and password not entered
       window.addEventListener('focus', async () => {
         const cu = auth.currentUser;
-        if (!cu || cu.uid !== ADMIN_UID || cu.email !== ADMIN_EMAIL) {
+        if (!cu || cu.uid !== ADMIN_UID) {
+          window.location.replace('/');
+          return;
+        }
+        if (cu.email !== ADMIN_EMAIL) {
           window.location.replace('/');
           return;
         }
         if (!_adminUnlocked) {
+          // agar OTP gate already open hai toh wahan se mat hatao
           const otpVisible = document.getElementById('otpGate').style.display === 'flex';
           if (!otpVisible) {
             document.getElementById('adminPanel').style.display = 'none';
