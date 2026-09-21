@@ -319,9 +319,9 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 <script type="module">
   import { initializeApp }
     from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile }
+  import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut }
     from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-  import { getFirestore, doc, setDoc, serverTimestamp }
+  import { getFirestore, doc, getDoc, setDoc, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -337,9 +337,18 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
   const auth = getAuth(app);
   const db   = getFirestore(app);
   const googleProvider = new GoogleAuthProvider();
+  googleProvider.setCustomParameters({ prompt: 'select_account' });
+
+  function saveSession(user, email) {
+    const username = user.displayName || (email ? email.split("@")[0] : "User");
+    localStorage.setItem("getxh_user_name", username);
+    localStorage.setItem("getxh_current_user_uid", user.uid);
+    localStorage.setItem("getxh_user_logged_in", "yes");
+    localStorage.setItem("getxh_current_user", email);
+  }
 
   // ── GOOGLE SIGN IN ──
-  window.signInWithGoogle = async function() {
+  window.signInWithGoogle = window.signUpWithGoogle = async function() {
     sessionStorage.removeItem("getxh_logged_out");
     clearMessages();
     try {
@@ -348,10 +357,19 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
       const email = normalizeEmail(user.email);
       const username = user.displayName || (email ? email.split("@")[0] : "User");
 
-      localStorage.setItem("getxh_user_name", username);
-      localStorage.setItem("getxh_current_user_uid", user.uid);
-      localStorage.setItem("getxh_user_logged_in", "yes");
-      localStorage.setItem("getxh_current_user", email);
+      // Check if user is disabled
+      try {
+        const uSnap = await getDoc(doc(db, "users", user.uid));
+        if (uSnap.exists() && uSnap.data().disabled === true) {
+          await signOut(auth);
+          sessionStorage.removeItem("getxh_user_logged_in");
+          localStorage.removeItem("getxh_user_logged_in");
+          showError("Your account has been disabled by administrator.");
+          return;
+        }
+      } catch(e) {}
+
+      saveSession(user, email);
 
       // Save user to MongoDB in background
       fetch("https://backend-for-email-verification-code-vwip.onrender.com/save-user", {
@@ -367,7 +385,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 
       // Save user to Firestore with await so it is not cancelled on redirect
       try {
-        await Promise.allSettled([
+        const writes = [
           setDoc(doc(db, "users", user.uid), {
             username: username,
             email: email,
@@ -381,13 +399,21 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
             mobile: "",
             uid: user.uid,
             createdAt: serverTimestamp()
-          }, { merge: true }),
-          setDoc(doc(db, "Users", user.uid), {
-            Balance: 0,
-            TotalOrders: 0,
-            TotalSpent: 0
           }, { merge: true })
-        ]);
+        ];
+
+        // CRITICAL FIX: Only set Balance: 0 if user record does NOT exist yet!
+        const userBalSnap = await getDoc(doc(db, "Users", user.uid));
+        if (!userBalSnap.exists()) {
+          writes.push(
+            setDoc(doc(db, "Users", user.uid), {
+              Balance: 0,
+              TotalOrders: 0,
+              TotalSpent: 0
+            }, { merge: true })
+          );
+        }
+        await Promise.allSettled(writes);
       } catch(e) {
         console.warn("Firestore Google Sign-In sync warning:", e);
       }

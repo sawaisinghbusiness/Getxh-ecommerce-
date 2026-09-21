@@ -3199,6 +3199,20 @@ window._logoutUser = async function() {
 onAuthStateChanged(auth, async (user) => {
   if (!user) { window.location.href = "/"; return; }
 
+  // Check if account is disabled by admin
+  try {
+    getDoc(doc(db, "users", user.uid)).then(uSnap => {
+      if (uSnap.exists() && uSnap.data().disabled === true) {
+        alert("Your account has been disabled by the administrator.");
+        signOut(auth).then(() => {
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.replace("/");
+        });
+      }
+    }).catch(() => {});
+  } catch(e) {}
+
   currentUid   = user.uid;
   currentEmail = (user.email || '').trim().toLowerCase();
   window.currentUid   = currentUid;

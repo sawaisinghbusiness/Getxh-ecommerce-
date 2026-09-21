@@ -468,8 +468,74 @@
       background: #059669;
     }
 
+    .user-disable-btn {
+      height: 42px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      background: rgba(245, 158, 11, 0.12);
+      color: #fbbf24;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .user-disable-btn:hover {
+      background: rgba(245, 158, 11, 0.25);
+      border-color: rgba(245, 158, 11, 0.55);
+    }
+
+    .user-enable-btn {
+      height: 42px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .user-enable-btn:hover {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: rgba(16, 185, 129, 0.55);
+    }
+
+    .user-delete-btn {
+      height: 42px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      background: rgba(244, 63, 94, 0.12);
+      color: #fb7185;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .user-delete-btn:hover {
+      background: rgba(244, 63, 94, 0.25);
+      border-color: rgba(244, 63, 94, 0.55);
+    }
+
     @media (min-width: 640px) {
-      .user-manage-btn {
+      .user-manage-btn, .user-disable-btn, .user-enable-btn, .user-delete-btn {
         flex: initial;
       }
     }
@@ -2196,212 +2262,301 @@
       if (info.mobile && info.mobile !== '—') m.mobile = info.mobile;
       if (info.password && info.password !== '—') m.password = info.password;
       if (info.createdAt) m.createdAt = info.createdAt;
+      if (info.disabled !== undefined) m.disabled = Boolean(info.disabled);
     }
 
     function switchUserSubTab(tab) {
       _activeUserSubTab = tab;
       var isApp = tab === 'app';
 
-                var appBtn = document.getElementById('userSubTabApp');
-                var fbBtn  = document.getElementById('userSubTabFirebase');
+      var btnApp = document.getElementById('userSubTabApp');
+      var btnFb  = document.getElementById('userSubTabFirebase');
+      if (btnApp) {
+        btnApp.className = 'user-seg-btn' + (isApp ? ' user-seg-btn-active' : '');
+      }
+      if (btnFb) {
+        btnFb.className = 'user-seg-btn' + (!isApp ? ' user-seg-btn-active' : '');
+      }
 
-                if (appBtn) {
-                  appBtn.className = 'user-seg-btn' + (isApp ? ' user-seg-btn-active' : '');
-  }
-                if (fbBtn) {
-                  fbBtn.className = 'user-seg-btn' + (!isApp ? ' user-seg-btn-active' : '');
-  }
+      var desc = document.getElementById('subTabDesc');
+      if (desc) {
+        desc.textContent = isApp
+          ? 'App Registered Users (with login details)'
+          : 'All Firebase Wallet Users (from Users collection)';
+      }
 
-                var desc = document.getElementById('subTabDesc');
-                if (desc) {
-                  desc.textContent = isApp ? 'App Registered Users (sorted latest first)' : 'All Firebase Wallet Users (sorted latest first)';
-                desc.className = 'm-0 text-slate-400 font-normal';
-  }
+      searchUsers();
+    }
 
-                searchUsers();
-}
+    function loadAllUsers() {
+      if (!window._db || !window._collection || !window._onSnapshot) {
+        console.warn("Firestore not ready for loadAllUsers yet");
+        return;
+      }
+      if (_unsubFbUsers) { _unsubFbUsers(); _unsubFbUsers = null; }
+      if (_unsubAppUsers) { _unsubAppUsers(); _unsubAppUsers = null; }
+      if (_unsubUsersFallback) { _unsubUsersFallback(); _unsubUsersFallback = null; }
 
-                function loadAllUsers() {
-  var el = document.getElementById('usersList');
-                if (el) el.innerHTML = '<div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:32px;text-align:center;color:#71717a;"><p style="font-size:14px;font-weight:500;margin:0;">Loading users…</p></div>';
+      // 1. Listen to Users collection (wallet balances)
+      var qFb = window._collection(window._db, 'Users');
+      _unsubFbUsers = window._onSnapshot(qFb, function(snap) {
+        var fbUsers = [];
+        snap.forEach(function(d) {
+          var data = d.data();
+          var uid = d.id;
+          var bal = data.Balance !== undefined ? data.Balance : (data.balance || 0);
+          _userBalanceMap[uid] = bal;
+          registerUserInfo(uid, data);
+          fbUsers.push({
+            uid: uid,
+            balance: bal,
+            totalOrders: Number(data.TotalOrders || 0),
+            totalSpent: Number(data.TotalSpent || 0),
+            createdAt: data.createdAt || data.created_at || null,
+            email: data.email || data.Email || null,
+            username: data.name || data.Name || data.username || null,
+            disabled: Boolean(data.disabled)
+          });
+        });
+        fbUsers.sort(function(a, b) {
+          var infoA = window._masterUserMap[a.uid] || {};
+          var infoB = window._masterUserMap[b.uid] || {};
+          var rawA = a.createdAt || infoA.createdAt;
+          var rawB = b.createdAt || infoB.createdAt;
+          var at = rawA && rawA.seconds ? rawA.seconds * 1000 : (Number(rawA) || 0);
+          var bt = rawB && rawB.seconds ? rawB.seconds * 1000 : (Number(rawB) || 0);
+          return bt - at;
+        });
+        _allFirebaseUsers = fbUsers;
+        var countEl = document.getElementById('firebaseUsersCount');
+        if (countEl) countEl.textContent = fbUsers.length;
+        searchUsers();
+      }, function(err) { console.warn("Firebase users listen error:", err); });
 
-                if (_unsubAppUsers) {_unsubAppUsers(); _unsubAppUsers = null; }
-                if (_unsubFbUsers)  {_unsubFbUsers();  _unsubFbUsers = null; }
-                if (_unsubUsersFallback) {_unsubUsersFallback(); _unsubUsersFallback = null; }
+      // 2. Listen to users collection (fallback/supplementary metadata)
+      var qUsers = window._collection(window._db, 'users');
+      _unsubUsersFallback = window._onSnapshot(qUsers, function(snap) {
+        snap.forEach(function(d) {
+          var data = d.data();
+          var uid = data.uid || d.id;
+          registerUserInfo(uid, data);
+        });
+        searchUsers();
+      }, function(err) {});
 
-                // 1. Listen to Users collection (all wallet users) for real-time balances & all Firebase users
-                var qFb = window._collection(window._db, 'Users');
-                _unsubFbUsers = window._onSnapshot(qFb, function(snap) {
-    var fbUsers = [];
-                snap.forEach(function(d) {
-      var uid = d.id;
-                var data = d.data();
-                var bal = Number(data.Balance || 0);
-                _userBalanceMap[uid] = bal;
-                registerUserInfo(uid, data);
-                fbUsers.push({
-                  uid: uid,
-                balance: bal,
-                totalOrders: Number(data.TotalOrders || 0),
-                totalSpent: Number(data.TotalSpent || 0),
-                createdAt: data.createdAt || data.created_at || null,
-                email: data.email || data.Email || null,
-                username: data.name || data.Name || data.username || null
-      });
-    });
-                fbUsers.sort(function(a, b) {
-      var infoA = window._masterUserMap[a.uid] || { };
-                var infoB = window._masterUserMap[b.uid] || { };
-                var rawA = a.createdAt || infoA.createdAt;
-                var rawB = b.createdAt || infoB.createdAt;
-                var at = rawA && rawA.seconds ? rawA.seconds * 1000 : (Number(rawA) || 0);
-                var bt = rawB && rawB.seconds ? rawB.seconds * 1000 : (Number(rawB) || 0);
-                return bt - at;
-    });
-                _allFirebaseUsers = fbUsers;
-                var countEl = document.getElementById('firebaseUsersCount');
-                if (countEl) countEl.textContent = fbUsers.length;
-                searchUsers();
-  }, function(err) {console.warn("Firebase users listen error:", err); });
+      // 3. Listen to userData collection (app registered users)
+      var qApp = window._collection(window._db, 'userData');
+      _unsubAppUsers = window._onSnapshot(qApp, function(snap) {
+        var appUsers = [];
+        snap.forEach(function(d) {
+          var data = d.data();
+          var uid = data.uid || d.id;
+          var uObj = Object.assign({ uid: uid }, data);
+          registerUserInfo(uid, data);
+          appUsers.push(uObj);
+        });
+        appUsers.sort(function(a, b) {
+          var rawA = a.createdAt;
+          var rawB = b.createdAt;
+          var at = rawA && rawA.seconds ? rawA.seconds * 1000 : (Number(rawA) || 0);
+          var bt = rawB && rawB.seconds ? rawB.seconds * 1000 : (Number(rawB) || 0);
+          return bt - at;
+        });
+        _allAppUsers = appUsers;
+        var countEl = document.getElementById('appUsersCount');
+        if (countEl) countEl.textContent = appUsers.length;
+        searchUsers();
+      }, function(e) {});
+    }
 
-                // 2. Listen to users collection (fallback/supplementary user metadata)
-                var qUsers = window._collection(window._db, 'users');
-                _unsubUsersFallback = window._onSnapshot(qUsers, function(snap) {
-                  snap.forEach(function (d) {
-                    var data = d.data();
-                    var uid = data.uid || d.id;
-                    registerUserInfo(uid, data);
-                  });
-                searchUsers();
-  }, function(err) { });
+    var _searchTimer = null;
+    function searchUsers() {
+      clearTimeout(_searchTimer);
+      var q = (document.getElementById('userSearch') ? document.getElementById('userSearch').value : '').trim().toLowerCase();
+      var listToFilter = (_activeUserSubTab === 'app') ? _allAppUsers : _allFirebaseUsers;
 
-                // 3. Listen to userData collection (app registered users)
-                var qApp = window._collection(window._db, 'userData');
-                _unsubAppUsers = window._onSnapshot(qApp, function(snap) {
-    var appUsers = [];
-                snap.forEach(function(d) {
-      var data = d.data();
-                var uid = data.uid || d.id;
-                var uObj = Object.assign({uid: uid }, data);
-                registerUserInfo(uid, data);
-                appUsers.push(uObj);
-    });
-                appUsers.sort(function(a, b) {
-      var rawA = a.createdAt;
-                var rawB = b.createdAt;
-                var at = rawA && rawA.seconds ? rawA.seconds * 1000 : (Number(rawA) || 0);
-                var bt = rawB && rawB.seconds ? rawB.seconds * 1000 : (Number(rawB) || 0);
-                return bt - at;
-    });
-                _allAppUsers = appUsers;
-                var countEl = document.getElementById('appUsersCount');
-                if (countEl) countEl.textContent = appUsers.length;
-                searchUsers();
-  }, function(e) { });
-}
+      if (!q) {
+        renderUsersList(listToFilter);
+        return;
+      }
+      _searchTimer = setTimeout(function() {
+        var filtered = listToFilter.filter(function(u) {
+          var info = window._masterUserMap ? (window._masterUserMap[u.uid] || {}) : {};
+          var email = (u.email || info.email || '').toLowerCase();
+          var name  = (u.username || info.username || '').toLowerCase();
+          var mob   = (u.mobile || info.mobile || '').toLowerCase();
+          var uid   = (u.uid || '').toLowerCase();
+          return email.includes(q) || name.includes(q) || mob.includes(q) || uid.includes(q);
+        });
+        renderUsersList(filtered);
+      }, 150);
+    }
 
-                var _searchTimer = null;
-                function searchUsers() {
-                  clearTimeout(_searchTimer);
-                var q = (document.getElementById('userSearch') ? document.getElementById('userSearch').value : '').trim().toLowerCase();
+    function renderUsersList(users) {
+      var countEl = document.getElementById('userCountLabel');
+      if (countEl) countEl.textContent = users.length;
+      var el = document.getElementById('usersList');
+      if (!el) return;
 
-                var listToFilter = (_activeUserSubTab === 'app') ? _allAppUsers : _allFirebaseUsers;
+      if (!users.length) {
+        el.innerHTML = '<div style="background:#0f172a;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:36px;text-align:center;color:#64748b;"><p style="font-size:14px;font-weight:600;margin:0;">No users found</p></div>';
+        return;
+      }
 
-                if (!q) {
-                  renderUsersList(listToFilter);
-                return;
-  }
-                _searchTimer = setTimeout(function() {
-    var filtered = listToFilter.filter(function(u) {
-      var info = window._masterUserMap ? (window._masterUserMap[u.uid] || { }) : { };
-                var email = (u.email || info.email || '').toLowerCase();
-                var name  = (u.username || info.username || '').toLowerCase();
-                var mob   = (u.mobile || info.mobile || '').toLowerCase();
-                var uid   = (u.uid || '').toLowerCase();
-                return email.includes(q) || name.includes(q) || mob.includes(q) || uid.includes(q);
-    });
-                renderUsersList(filtered);
-  }, 150);
-}
+      el.innerHTML = users.map(function(u) {
+        var info = (window._masterUserMap && window._masterUserMap[u.uid]) ? window._masterUserMap[u.uid] : {};
+        var email = u.email || info.email || '—';
+        var name  = u.username || info.username || (email !== '—' ? email.split('@')[0] : 'User (' + u.uid.slice(0, 6) + ')');
+        var mobile = u.mobile || info.mobile || '—';
+        var pass  = u.password || info.password || '—';
+        var isDisabled = u.disabled !== undefined ? Boolean(u.disabled) : Boolean(info.disabled);
 
-                function renderUsersList(users) {
-  var countEl = document.getElementById('userCountLabel');
-                if (countEl) countEl.textContent = users.length;
-                var el = document.getElementById('usersList');
-                if (!el) return;
+        var liveBal = _userBalanceMap[u.uid] !== undefined ? _userBalanceMap[u.uid] : (u.balance || 0);
 
-                if (!users.length) {
-                  el.innerHTML = '<div style="background:#0f172a;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:36px;text-align:center;color:#64748b;"><p style="font-size:14px;font-weight:600;margin:0;">No users found</p></div>';
-                return;
-  }
+        var _rawDate = u.createdAt || info.createdAt;
+        var _dateObj = null;
+        if (_rawDate && _rawDate.toDate) _dateObj = _rawDate.toDate();
+        else if (_rawDate && _rawDate.seconds) _dateObj = new Date(_rawDate.seconds * 1000);
+        else if (typeof _rawDate === 'number') _dateObj = new Date(_rawDate);
+        else if (_rawDate) _dateObj = new Date(_rawDate);
+        var date = _dateObj && !isNaN(_dateObj) ? _dateObj.toLocaleString('en-IN', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true }) : '—';
+        var initial = (name || email || '?')[0].toUpperCase();
 
-                el.innerHTML = users.map(function(u) {
-    var info = (window._masterUserMap && window._masterUserMap[u.uid]) ? window._masterUserMap[u.uid] : { };
-                var email = u.email || info.email || '—';
-                var name  = u.username || info.username || (email !== '—' ? email.split('@')[0] : 'User (' + u.uid.slice(0, 6) + ')');
-                var mobile = u.mobile || info.mobile || '—';
-                var pass  = u.password || info.password || '—';
+        if (!window._userDataMap) window._userDataMap = {};
+        window._userDataMap[u.uid] = { uid: u.uid, email: email, username: name, mobile: mobile, password: pass, disabled: isDisabled };
 
-                var liveBal = _userBalanceMap[u.uid] !== undefined ? _userBalanceMap[u.uid] : (u.balance || 0);
+        var totalOrders = u.totalOrders !== undefined ? u.totalOrders : (info.totalOrders || 0);
+        var totalSpent = u.totalSpent !== undefined ? u.totalSpent : (info.totalSpent || 0);
 
-                var _rawDate = u.createdAt || info.createdAt;
-                var _dateObj = null;
-                if (_rawDate && _rawDate.toDate) _dateObj = _rawDate.toDate();
-                else if (_rawDate && _rawDate.seconds) _dateObj = new Date(_rawDate.seconds * 1000);
-                else if (typeof _rawDate === 'number') _dateObj = new Date(_rawDate);
-                else if (_rawDate) _dateObj = new Date(_rawDate);
-                var date = _dateObj && !isNaN(_dateObj) ? _dateObj.toLocaleString('en-IN', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true }) : '—';
-                var initial = (name || email || '?')[0].toUpperCase();
+        var statusBadge = isDisabled
+          ? '<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);"><span style="width:6px;height:6px;border-radius:999px;background:#ef4444;"></span> Disabled</span>'
+          : '<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);"><span style="width:6px;height:6px;border-radius:999px;background:#10b981;"></span> Active</span>';
 
-                if (!window._userDataMap) window._userDataMap = { };
-                window._userDataMap[u.uid] = {uid: u.uid, email: email, username: name, mobile: mobile, password: pass };
+        return '<div class="user-card" style="' + (isDisabled ? 'border-color:rgba(239,68,68,0.35);background:rgba(239,68,68,0.03);' : '') + '">'
+          /* Main content */
+          + '<div class="user-card-main">'
+            /* Left: Avatar + Info */
+            + '<div class="user-card-identity">'
+              + '<div class="user-avatar" style="' + (isDisabled ? 'background:rgba(239,68,68,0.2);color:#f87171;' : '') + '">' + initial + '</div>'
+              + '<div class="user-info">'
+                + '<div class="user-name-row" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+                  + '<h4 class="user-name">' + escHtml(name) + '</h4>'
+                  + statusBadge
+                  + (date !== '—' ? '<span class="user-joined">Joined ' + date + '</span>' : '')
+                + '</div>'
+                + '<p class="user-email" title="' + escHtml(email) + '">' + escHtml(email) + '</p>'
+              + '</div>'
+            + '</div>'
 
-                var totalOrders = u.totalOrders !== undefined ? u.totalOrders : (info.totalOrders || 0);
-                var totalSpent = u.totalSpent !== undefined ? u.totalSpent : (info.totalSpent || 0);
+            /* Right: Balance + Action Buttons */
+            + '<div class="user-card-actions" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+              + '<div class="user-bal-chip">'
+                + '<span class="user-bal-label">Balance</span>'
+                + '<span class="user-bal-amount">&#8377;' + Number(liveBal).toFixed(2) + '</span>'
+              + '</div>'
+              + '<button onclick="window._openBalPopup(\'' + escAttr(u.uid) + '\')" class="user-manage-btn" title="Add or Deduct Balance">'
+                + '<span class="material-symbols-outlined" style="font-size:16px;">account_balance_wallet</span>'
+                + '<span>Manage</span>'
+              + '</button>'
+              + (isDisabled
+                ? '<button onclick="toggleUserDisable(\'' + escAttr(u.uid) + '\', true)" class="user-enable-btn" title="Re-enable account login">'
+                    + '<span class="material-symbols-outlined" style="font-size:16px;">lock_open</span>'
+                    + '<span>Enable</span>'
+                  + '</button>'
+                : '<button onclick="toggleUserDisable(\'' + escAttr(u.uid) + '\', false)" class="user-disable-btn" title="Ban or disable user from logging in">'
+                    + '<span class="material-symbols-outlined" style="font-size:16px;">block</span>'
+                    + '<span>Disable</span>'
+                  + '</button>'
+                )
+              + '<button onclick="confirmDeleteUser(\'' + escAttr(u.uid) + '\', \'' + escAttr(email) + '\')" class="user-delete-btn" title="Permanently delete user data">'
+                + '<span class="material-symbols-outlined" style="font-size:16px;">delete_forever</span>'
+                + '<span>Delete</span>'
+              + '</button>'
+            + '</div>'
+          + '</div>'
 
-                return '<div class="user-card">'
-      /* Main content: wrapping layout (row 1 + row 2 on <640px, single row on >=640px) */
-                  + '<div class="user-card-main">'
+          /* Bottom Row: Metadata */
+          + '<div class="user-card-meta">'
+            + '<div class="user-uid-box">UID: <span style="color:#64748b;font-family:monospace;overflow-wrap:anywhere;">' + escHtml(u.uid) + '</span>'
+              + ' <button onclick="copyToClipboard(\'' + escAttr(u.uid) + '\', \'UID copied!\')" class="text-slate-500 hover:text-sky-400 font-mono text-[10px] ml-1.5 underline">copy</button>'
+            + '</div>'
+            + '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">'
+              + (mobile !== '—' ? '<span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;">call</span> <b style="color:#e2e8f0;font-weight:600;">' + escHtml(mobile) + '</b></span>' : '')
+              + (pass !== '—' ? '<span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:14px;color:#f59e0b;">key</span> Pass: <b style="color:#e2e8f0;font-weight:600;">' + escHtml(pass) + '</b></span>' : '')
+              + '<span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:14px;color:#38bdf8;">shopping_bag</span> Orders: <b style="color:#e2e8f0;font-weight:600;">' + totalOrders + '</b> · Spent: <b style="color:#e2e8f0;font-weight:600;">&#8377;' + Number(totalSpent).toFixed(2) + '</b></span>'
+            + '</div>'
+          + '</div>'
 
-                    /* Row 1 on mobile / Left group on desktop: Avatar + Info column */
-                    + '<div class="user-card-identity">'
-                      + '<div class="user-avatar">' + initial + '</div>'
-                      + '<div class="user-info">'
-                        + '<div class="user-name-row">'
-                          + '<h4 class="user-name">' + escHtml(name) + '</h4>'
-                          + (date !== '—' ? '<span class="user-joined">Joined ' + date + '</span>' : '')
-                          + '</div>'
-                        + '<p class="user-email" title="' + escHtml(email) + '">' + escHtml(email) + '</p>'
-                        + '</div>'
-                      + '</div>'
+        + '</div>';
+      }).join('');
+    }
 
-                    /* Row 2 on mobile / Right group on desktop: Balance chip + Manage Balance button */
-                    + '<div class="user-card-actions">'
-                      + '<div class="user-bal-chip">'
-                        + '<span class="user-bal-label">Balance</span>'
-                        + '<span class="user-bal-amount">&#8377;' + Number(liveBal).toFixed(2) + '</span>'
-                        + '</div>'
-                      + '<button onclick="window._openBalPopup(\'' + u.uid + '\')" class="user-manage-btn">'
-                        + '<span class="material-symbols-outlined" style="font-size:16px;">account_balance_wallet</span>'
-                        + '<span>Manage Balance</span>'
-                        + '</button>'
-                      + '</div>'
+    async function toggleUserDisable(uid, currentDisabled) {
+      var action = currentDisabled ? 'Enable' : 'Disable / Ban';
+      if (!confirm('Are you sure you want to ' + action + ' this user account?')) return;
 
-                    + '</div>'
+      try {
+        showAdminToast('Updating user status…', false);
+        var newDisabled = !currentDisabled;
 
-                  /* Bottom Row: Metadata (UID, Phone, Password, Orders, Spent) */
-                  + '<div class="user-card-meta">'
-                    + '<div class="user-uid-box">UID: <span style="color:#64748b;font-family:monospace;overflow-wrap:anywhere;">' + escHtml(u.uid) + '</span></div>'
-                    + '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">'
-                      + (mobile !== '—' ? '<span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:14px;color:#10b981;">call</span> <b style="color:#e2e8f0;font-weight:600;">' + escHtml(mobile) + '</b></span>' : '')
-                      + (pass !== '—' ? '<span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:14px;color:#f59e0b;">key</span> Pass: <b style="color:#e2e8f0;font-weight:600;">' + escHtml(pass) + '</b></span>' : '')
-                      + '<span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:14px;color:#38bdf8;">shopping_bag</span> Orders: <b style="color:#e2e8f0;font-weight:600;">' + totalOrders + '</b> · Spent: <b style="color:#e2e8f0;font-weight:600;">&#8377;' + Number(totalSpent).toFixed(2) + '</b></span>'
-                      + '</div>'
-                    + '</div>'
+        // Update in users, userData, and Users collections
+        var updates = [];
+        if (window._updateDoc && window._doc && window._db) {
+          updates.push(window._updateDoc(window._doc(window._db, 'users', uid), { disabled: newDisabled }).catch(function(){}));
+          updates.push(window._updateDoc(window._doc(window._db, 'userData', uid), { disabled: newDisabled }).catch(function(){}));
+          updates.push(window._updateDoc(window._doc(window._db, 'Users', uid), { disabled: newDisabled }).catch(function(){}));
+        }
+        await Promise.allSettled(updates);
 
-                  + '</div>';
-  }).join('');
-}
+        if (window._masterUserMap && window._masterUserMap[uid]) {
+          window._masterUserMap[uid].disabled = newDisabled;
+        }
+        var appU = _allAppUsers.find(function(x) { return x.uid === uid; });
+        if (appU) appU.disabled = newDisabled;
+        var fbU = _allFirebaseUsers.find(function(x) { return x.uid === uid; });
+        if (fbU) fbU.disabled = newDisabled;
+
+        searchUsers();
+        showAdminToast(newDisabled ? 'User account disabled (banned) successfully.' : 'User account re-enabled successfully.', false);
+      } catch (err) {
+        console.error('Error toggling user disable:', err);
+        showAdminToast('Failed to update status: ' + (err.message || 'Unknown error'), true);
+      }
+    }
+
+    async function confirmDeleteUser(uid, email) {
+      var promptText = 'PERMANENT DELETE: Are you sure you want to delete user ' + (email || uid) + '?\nThis will remove their balance, registration data, and profile from Firestore.';
+      if (!confirm(promptText)) return;
+
+      try {
+        showAdminToast('Deleting user from database…', false);
+        var deletes = [];
+        if (window._deleteDoc && window._doc && window._db) {
+          deletes.push(window._deleteDoc(window._doc(window._db, 'users', uid)).catch(function(){}));
+          deletes.push(window._deleteDoc(window._doc(window._db, 'userData', uid)).catch(function(){}));
+          deletes.push(window._deleteDoc(window._doc(window._db, 'Users', uid)).catch(function(){}));
+        }
+        await Promise.allSettled(deletes);
+
+        if (window._masterUserMap && window._masterUserMap[uid]) {
+          delete window._masterUserMap[uid];
+        }
+        _allAppUsers = _allAppUsers.filter(function(x) { return x.uid !== uid; });
+        _allFirebaseUsers = _allFirebaseUsers.filter(function(x) { return x.uid !== uid; });
+
+        searchUsers();
+        showAdminToast('User deleted permanently from Firestore.', false);
+      } catch (err) {
+        console.error('Error deleting user:', err);
+        showAdminToast('Failed to delete user: ' + (err.message || 'Unknown error'), true);
+      }
+    }
+
+    window.toggleUserDisable = toggleUserDisable;
+    window.confirmDeleteUser = confirmDeleteUser;
+    window.switchUserSubTab = switchUserSubTab;
+    window.loadAllUsers = loadAllUsers;
+    window.searchUsers = searchUsers;
 
                 // ── Orders Rendering ────────────────────────────────
                 function renderOrders(orders) {
@@ -3079,22 +3234,23 @@
           _vibrationInterval = null;
         }
 
-        // Heavy Rapido Alert pattern: intense long pulses with pauses
-        // 800ms buzz, 200ms pause, 800ms buzz, 200ms pause, 1200ms buzz, 250ms pause, 1500ms buzz
-        var pattern = [800, 200, 800, 200, 1200, 250, 1500];
+        // Standard Android mobile vibration pattern:
+        // Android limits continuous vibration to <500ms bursts to prevent motor failure.
+        // We use distinct high-energy pulses: 350ms buzz, 100ms pause, 350ms buzz, 100ms pause, 450ms buzz
+        var pattern = [350, 100, 350, 100, 450, 150, 400];
         navigator.vibrate(pattern);
 
-        // Repeat heavy vibration pulses every 4.8 seconds (up to 3 times, ~16 seconds total alert)
+        // Repeat pulses every 2.4 seconds (up to 4 times)
         var count = 0;
         _vibrationInterval = setInterval(function () {
           count++;
-          if (count >= 3) {
+          if (count >= 4) {
             clearInterval(_vibrationInterval);
             _vibrationInterval = null;
             return;
           }
           try { navigator.vibrate(pattern); } catch (err) {}
-        }, 4800);
+        }, 2400);
       } catch (e) {
         console.warn('Vibration API error:', e);
       }
@@ -3127,8 +3283,13 @@
     window.testAlertSoundAndVibration = function () {
       primeAudioAndVibration();
       playRapidoChime();
-      triggerHeavyVibration();
-      showAdminToast('Testing Loud Chime & Heavy Vibration 🔔📳', false);
+      var hasVibrate = ('vibrate' in navigator);
+      if (hasVibrate) {
+        triggerHeavyVibration();
+        showAdminToast('🔔 Rapido Chime Playing & Phone Vibrating! 📳', false);
+      } else {
+        showAdminToast('🔔 Chime Playing! (Note: Apple iOS Safari blocks Web Vibration API)', false);
+      }
     };
 
     function updateAlertSoundBtn() {
@@ -3202,6 +3363,11 @@
         title = 'Support: ' + (data.subject || 'Ticket #' + (docId || ''));
         sub = 'From: ' + (data.userEmail || data.userName || 'User');
         icon = 'support_agent';
+      } else if (type === 'user') {
+        tag = 'NEW USER';
+        title = 'User: ' + (data.name || data.userName || data.username || data.email || 'New Registration');
+        sub = (data.email || 'New account created') + (data.mobile ? ' · 📞 ' + data.mobile : '');
+        icon = 'person_add';
       }
 
       if ('Notification' in window) {
@@ -3211,7 +3377,7 @@
               body: sub,
               icon: '/GETXH WEB NEW LOGO.png',
               tag: 'gx-' + docId,
-              vibrate: [800, 200, 800, 200, 1200, 250, 1500],
+              vibrate: [350, 100, 350, 100, 450],
               requireInteraction: true
             });
           } catch (e) {}
@@ -3229,7 +3395,7 @@
       document.getElementById('rapidoAlertTag').textContent = tag;
       document.getElementById('rapidoAlertTitle').textContent = title;
       document.getElementById('rapidoAlertSub').textContent = sub;
-      document.getElementById('rapidoAlertIcon').textContent = type === 'order' ? 'receipt_long' : (type === 'ticket' ? 'support_agent' : 'payments');
+      document.getElementById('rapidoAlertIcon').textContent = type === 'order' ? 'receipt_long' : (type === 'ticket' ? 'support_agent' : (type === 'user' ? 'person_add' : 'payments'));
       document.getElementById('rapidoAlertTime').textContent = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
 
       var actionBtn = document.getElementById('rapidoAlertActionBtn');
@@ -3240,6 +3406,7 @@
           if (type === 'fund') switchTab('funds');
           else if (type === 'order') switchTab('orders');
           else if (type === 'ticket') switchTab('tickets');
+          else if (type === 'user') switchTab('users');
         };
       }
 
@@ -3698,6 +3865,11 @@
     window._orderBy = orderBy;
     window._limit = limit;
     window._onSnapshot = onSnapshot;
+    window._doc = doc;
+    window._setDoc = setDoc;
+    window._updateDoc = updateDoc;
+    window._deleteDoc = deleteDoc;
+    window._getDoc = getDoc;
 
     window.getAdminHeaders = async function () {
       const user = auth.currentUser;
@@ -3992,6 +4164,45 @@
         console.warn('Fund payments subscription error:', err);
       });
 
+      // Real-time New User Registration Listener (Rapido Alert on registration)
+      let _isInitialUsersAlert = true;
+      const _knownUserAlertIds = new Set();
+      let unsubUsersAlert = onSnapshot(collection(db, 'users'), snap => {
+        snap.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            const uid = change.doc.id;
+            if (!_isInitialUsersAlert && !_knownUserAlertIds.has(uid)) {
+              if (typeof triggerRapidoAlert === 'function') {
+                triggerRapidoAlert('user', change.doc.data(), uid);
+              }
+            }
+            _knownUserAlertIds.add(uid);
+          }
+        });
+        _isInitialUsersAlert = false;
+      }, err => {
+        console.warn('Users alert listener error:', err);
+      });
+
+      // Also listen to userData collection for app registrations
+      let _isInitialUserDataAlert = true;
+      let unsubUserDataAlert = onSnapshot(collection(db, 'userData'), snap => {
+        snap.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            const uid = change.doc.id;
+            if (!_isInitialUserDataAlert && !_knownUserAlertIds.has(uid)) {
+              if (typeof triggerRapidoAlert === 'function') {
+                triggerRapidoAlert('user', change.doc.data(), uid);
+              }
+            }
+            _knownUserAlertIds.add(uid);
+          }
+        });
+        _isInitialUserDataAlert = false;
+      }, err => {
+        console.warn('UserData alert listener error:', err);
+      });
+
       // Messages Listener
       window.startMsgListener = function (ticketId) {
         if (unsubMsgs) { unsubMsgs(); unsubMsgs = null; }
@@ -4253,6 +4464,9 @@
       window.addEventListener('beforeunload', () => {
         if (unsubOrders) unsubOrders();
         if (unsubTickets) unsubTickets();
+        if (unsubFundPayments) unsubFundPayments();
+        if (unsubUsersAlert) unsubUsersAlert();
+        if (unsubUserDataAlert) unsubUserDataAlert();
         if (unsubMsgs) unsubMsgs();
         if (unsubServices) unsubServices();
       });
@@ -4319,6 +4533,15 @@
           await setDoc(doc(db, 'Users', _balPopupUid), { Balance: amount, TotalOrders: 0, TotalSpent: 0 }, { merge: true });
         }
 
+        // Keep users collection in sync
+        try {
+          await updateDoc(doc(db, 'users', _balPopupUid), { balance: increment(amount) });
+        } catch (ue) {
+          try {
+            await setDoc(doc(db, 'users', _balPopupUid), { balance: increment(amount) }, { merge: true });
+          } catch (_) {}
+        }
+
         try {
           await addDoc(collection(db, 'walletTxns'), {
             uid: _balPopupUid,
@@ -4340,6 +4563,9 @@
         _showBalStatus('✓ ₹' + amount.toFixed(2) + ' added successfully!', true);
         document.getElementById('balAmountInput').value = '';
         document.getElementById('balReasonInput').value = '';
+
+        _userBalanceMap[_balPopupUid] = newBal;
+        if (typeof searchUsers === 'function') searchUsers();
       } catch (e) {
         console.error("Add balance error:", e);
         _showBalStatus('Failed: ' + (e.message || 'Unknown error'), false);
@@ -4372,6 +4598,11 @@
 
         await updateDoc(doc(db, 'Users', _balPopupUid), { Balance: increment(-amount) });
 
+        // Keep users collection in sync
+        try {
+          await updateDoc(doc(db, 'users', _balPopupUid), { balance: increment(-amount) });
+        } catch (_) {}
+
         try {
           await addDoc(collection(db, 'walletTxns'), {
             uid: _balPopupUid,
@@ -4393,6 +4624,9 @@
         _showBalStatus('✓ ₹' + amount.toFixed(2) + ' deducted successfully!', true);
         document.getElementById('balAmountInput').value = '';
         document.getElementById('balReasonInput').value = '';
+
+        _userBalanceMap[_balPopupUid] = newBal;
+        if (typeof searchUsers === 'function') searchUsers();
       } catch (e) {
         console.error("Deduct balance error:", e);
         _showBalStatus('Failed: ' + (e.message || 'Unknown error'), false);

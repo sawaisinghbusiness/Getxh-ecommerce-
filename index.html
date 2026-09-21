@@ -1135,7 +1135,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, signOut }
   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-  import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -1168,8 +1168,25 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
       signOut(auth);
       return;
     }
-    saveSession(user);
-    window.location.replace('/dashboard');
+    // Check if user is disabled / banned
+    getDoc(doc(db, "users", user.uid)).then(snap => {
+      if (snap.exists() && snap.data().disabled === true) {
+        signOut(auth);
+        sessionStorage.removeItem("getxh_user_logged_in");
+        localStorage.removeItem("getxh_user_logged_in");
+        const errBox = document.getElementById("errorBox");
+        if (errBox) {
+          errBox.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Your account has been disabled by administrator.';
+          errBox.style.display = 'flex';
+        }
+        return;
+      }
+      saveSession(user);
+      window.location.replace('/dashboard');
+    }).catch(() => {
+      saveSession(user);
+      window.location.replace('/dashboard');
+    });
   });
 
   function clearLoginFields(){
@@ -1205,10 +1222,26 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 
     signInWithEmailAndPassword(auth, email, password)
     .then(async(cred)=>{
+      // Check if user is disabled / banned
+      try {
+        const uSnap = await getDoc(doc(db, "users", cred.user.uid));
+        if (uSnap.exists() && uSnap.data().disabled === true) {
+          await signOut(auth);
+          sessionStorage.removeItem("getxh_user_logged_in");
+          localStorage.removeItem("getxh_user_logged_in");
+          errBox.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Your account has been disabled by administrator.';
+          errBox.style.display = 'flex';
+          loginBtn.disabled = false;
+          loginBtn.innerHTML = 'Sign In';
+          window._isLoggingIn = false;
+          return;
+        }
+      } catch(e) {}
+
       saveSession(cred.user, email);
       const username = cred.user.displayName || email.split("@")[0];
       try {
-        await Promise.allSettled([
+        const writes = [
           setDoc(doc(db, "users", cred.user.uid), {
             username: username,
             email: email,
@@ -1220,13 +1253,21 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
             email: email,
             uid: cred.user.uid,
             createdAt: serverTimestamp()
-          }, { merge: true }),
-          setDoc(doc(db, "Users", cred.user.uid), {
-            Balance: 0,
-            TotalOrders: 0,
-            TotalSpent: 0
           }, { merge: true })
-        ]);
+        ];
+
+        // CRITICAL FIX: Only set Balance: 0 if user record does NOT exist yet!
+        const userBalSnap = await getDoc(doc(db, "Users", cred.user.uid));
+        if (!userBalSnap.exists()) {
+          writes.push(
+            setDoc(doc(db, "Users", cred.user.uid), {
+              Balance: 0,
+              TotalOrders: 0,
+              TotalSpent: 0
+            }, { merge: true })
+          );
+        }
+        await Promise.allSettled(writes);
       } catch(e) {}
       window.location.replace("/dashboard");
     })
@@ -1257,6 +1298,23 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
       const user = result.user;
       const email = normalizeEmail(user.email);
       const username = user.displayName || (email ? email.split("@")[0] : "User");
+
+      // Check if user is disabled / banned
+      try {
+        const uSnap = await getDoc(doc(db, "users", user.uid));
+        if (uSnap.exists() && uSnap.data().disabled === true) {
+          await signOut(auth);
+          sessionStorage.removeItem("getxh_user_logged_in");
+          localStorage.removeItem("getxh_user_logged_in");
+          if (errBox) {
+            errBox.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Your account has been disabled by administrator.';
+            errBox.style.display = 'flex';
+          }
+          window._isLoggingIn = false;
+          return;
+        }
+      } catch(e) {}
+
       saveSession(user, email);
 
       // Save user to MongoDB in background
@@ -1273,7 +1331,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 
       // Ensure Firestore records exist for Admin Panel & Dashboard
       try {
-        await Promise.allSettled([
+        const writes = [
           setDoc(doc(db, "users", user.uid), {
             username: username,
             email: email,
@@ -1287,13 +1345,21 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
             mobile: "",
             uid: user.uid,
             createdAt: serverTimestamp()
-          }, { merge: true }),
-          setDoc(doc(db, "Users", user.uid), {
-            Balance: 0,
-            TotalOrders: 0,
-            TotalSpent: 0
           }, { merge: true })
-        ]);
+        ];
+
+        // CRITICAL FIX: Only set Balance: 0 if user record does NOT exist yet!
+        const userBalSnap = await getDoc(doc(db, "Users", user.uid));
+        if (!userBalSnap.exists()) {
+          writes.push(
+            setDoc(doc(db, "Users", user.uid), {
+              Balance: 0,
+              TotalOrders: 0,
+              TotalSpent: 0
+            }, { merge: true })
+          );
+        }
+        await Promise.allSettled(writes);
       } catch(e) {
         console.warn("Firestore user sync warning:", e);
       }
