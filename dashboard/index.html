@@ -3146,68 +3146,13 @@ onAuthStateChanged(auth, async (user) => {
     if (loader) { loader.classList.add('hide'); setTimeout(() => loader.remove(), 450); }
   }, 5000);
 
-  // ── SOUND SYNTHESIZER (Web Audio API - 0 external files) ──
+  // ── SOUND SYNTHESIZER (DISABLED - Sound effects removed as requested) ──
   window._playWalletSound = function(type) {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      if (!window._walletAudioCtx) window._walletAudioCtx = new AudioCtx();
-      const ctx = window._walletAudioCtx;
-      if (ctx.state === 'suspended') ctx.resume();
-
-      const masterGain = ctx.createGain();
-      masterGain.gain.setValueAtTime(0.35, ctx.currentTime); // ~35% volume (pleasant)
-      masterGain.connect(ctx.destination);
-
-      if (type === 'tick') {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.03);
-        gain.gain.setValueAtTime(0.15, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.03);
-        osc.connect(gain);
-        gain.connect(masterGain);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.03);
-      } else if (type === 'credit_complete') {
-        // Cha-Ching / Money collect ascending chord
-        const notes = [523.25, 659.25, 783.99, 1046.50];
-        notes.forEach((freq, idx) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.06);
-          gain.gain.setValueAtTime(0, ctx.currentTime + idx * 0.06);
-          gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + idx * 0.06 + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.06 + 0.25);
-          osc.connect(gain);
-          gain.connect(masterGain);
-          osc.start(ctx.currentTime + idx * 0.06);
-          osc.stop(ctx.currentTime + idx * 0.06 + 0.25);
-        });
-      } else if (type === 'debit_complete') {
-        // Soft deduction descending tone
-        const notes = [659.25, 523.25, 392.00];
-        notes.forEach((freq, idx) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.07);
-          gain.gain.setValueAtTime(0, ctx.currentTime + idx * 0.07);
-          gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + idx * 0.07 + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.07 + 0.2);
-          osc.connect(gain);
-          gain.connect(masterGain);
-          osc.start(ctx.currentTime + idx * 0.07);
-          osc.stop(ctx.currentTime + idx * 0.07 + 0.2);
-        });
-      }
-    } catch(e) {}
+    // Sound effects removed
+    return;
   };
 
-  // ── ANIMATED DASHBOARD BALANCE COUNTER (2 SECONDS + SOUND) ──
+  // ── ANIMATED DASHBOARD BALANCE COUNTER (2 SECONDS - SILENT) ──
   window.animateDashboardBalance = function(startVal, endVal, isCredit, onComplete) {
     const elements = [
       document.getElementById("userBalance"),
@@ -3216,12 +3161,10 @@ onAuthStateChanged(auth, async (user) => {
 
     if (!elements.length) return;
 
-    const duration = 2000; // Exactly 2 seconds animation as requested
+    const duration = 2000; // Exactly 2 seconds animation
     const startTime = performance.now();
     const diff = endVal - startVal;
     const activeColor = isCredit ? '#34d399' : '#f87171'; // Green for credit, Red for debit
-
-    let lastTickTime = 0;
 
     elements.forEach(el => {
       el.style.transition = 'color 0.3s ease, transform 0.2s ease';
@@ -3239,11 +3182,6 @@ onAuthStateChanged(auth, async (user) => {
         el.textContent = valStr;
       });
 
-      if (now - lastTickTime > 120 && progress < 0.95) {
-        lastTickTime = now;
-        window._playWalletSound('tick');
-      }
-
       if (progress < 1) {
         requestAnimationFrame(step);
       } else {
@@ -3252,9 +3190,6 @@ onAuthStateChanged(auth, async (user) => {
           el.textContent = finalStr;
           el.style.transform = 'scale(1.18)'; // Scale up slightly at completion
         });
-
-        // Play completion sound (Cha-Ching for credit, Soft tone for debit)
-        window._playWalletSound(isCredit ? 'credit_complete' : 'debit_complete');
 
         setTimeout(() => {
           elements.forEach(el => {
