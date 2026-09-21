@@ -6,6 +6,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>Admin Orders | GETXH</title>
 <meta name="robots" content="noindex, nofollow"/>
+<script>
+  // Strict Admin Guard:
+  // Direct URL access is strictly blocked.
+  (function () {
+    try {
+      var e = (localStorage.getItem('getxh_current_user') || '').toLowerCase().trim();
+      var loggedIn = localStorage.getItem('getxh_user_logged_in');
+      var navAuthRaw = sessionStorage.getItem('gx_admin_nav_auth');
+
+      if (!loggedIn || e !== 'agency@getxh.in' || !navAuthRaw) {
+        document.documentElement.style.display = 'none';
+        window.location.replace('/');
+        return;
+      }
+
+      var navAuth = JSON.parse(navAuthRaw);
+      if (!navAuth || !navAuth.t) {
+        document.documentElement.style.display = 'none';
+        sessionStorage.removeItem('gx_admin_nav_auth');
+        window.location.replace('/');
+        return;
+      }
+    } catch (err) {
+      document.documentElement.style.display = 'none';
+      window.location.replace('/');
+    }
+  })();
+</script>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
 <style>
@@ -560,9 +588,10 @@ onAuthStateChanged(auth, async user => {
   document.getElementById('mainPanel').classList.remove('hidden');
 
   // Sign out
-  document.getElementById('signOutBtn').addEventListener('click', () =>
-    signOut(auth).then(() => window.location.replace('/'))
-  );
+  document.getElementById('signOutBtn').addEventListener('click', () => {
+    sessionStorage.removeItem('gx_admin_nav_auth');
+    return signOut(auth).then(() => window.location.replace('/'));
+  });
 
   // ── STEP 2: Real-time orders ──────────────────────
   unsubOrders = onSnapshot(collection(db, 'orders'), snap => {

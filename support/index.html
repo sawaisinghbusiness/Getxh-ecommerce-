@@ -805,7 +805,7 @@ textarea::placeholder {
     </button>
 
     <!-- Admin (hidden, shown for admins) -->
-    <button id="adminBtn" onclick="closeMenu();window.location.href='/admin'"
+    <button id="adminBtn" onclick="closeMenu();openAdminPanel(event)"
       class="menu-item hidden w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
       style="display:none;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
       <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#38bdf8,#0284c7);">
@@ -881,6 +881,19 @@ if (menuUserMobileEl) menuUserMobileEl.textContent = _menuInitial;
 if (menuEmailEl) menuEmailEl.textContent = _menuEmail;
 if (menuEmailMobileEl) menuEmailMobileEl.textContent = _menuEmail;
 
+function openAdminPanel(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  try {
+    sessionStorage.setItem('gx_admin_nav_auth', JSON.stringify({
+      t: Date.now(),
+      role: 'admin',
+      source: 'menu_click'
+    }));
+  } catch (err) {}
+  window.location.href = '/admin';
+}
+window.openAdminPanel = openAdminPanel;
+
 function openMenu() {
   document.getElementById('sideMenu').classList.remove('-translate-x-full');
   document.getElementById('menuOverlay').classList.remove('hidden');
@@ -901,6 +914,7 @@ function logout() {
   requestAnimationFrame(() => p.classList.add('is-visible'));
 }
 function _doLogout() {
+  sessionStorage.removeItem('gx_admin_nav_auth');
   if (typeof window._logoutUser === 'function') { window._logoutUser(); return; }
   sessionStorage.setItem("getxh_logged_out", "yes");
   localStorage.clear(); window.location.href='/';
@@ -1477,6 +1491,11 @@ onAuthStateChanged(auth, user => {
   if (av) av.textContent = _name.charAt(0).toUpperCase();
   const av2 = document.getElementById('menuAvatarCircle');
   if (av2) av2.innerHTML = `<span style="font-size:18px;font-weight:900;color:#fff;">${_name.charAt(0).toUpperCase()}</span>`;
+
+  if ((user.email || '').toLowerCase() === 'agency@getxh.in') {
+    const ab = document.getElementById('adminBtn');
+    if (ab) { ab.classList.remove('hidden'); ab.style.display = 'flex'; }
+  }
 
   window.startActiveTicketListener = function(ticketId) {
     if (typeof unsubscribeActiveTicket === 'function') unsubscribeActiveTicket();

@@ -703,7 +703,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">WhatsApp</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a id="desktopAdminBtn" href="/admin" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 hidden" style="display:none;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;text-decoration:none;border:1px solid transparent;">
+    <a id="desktopAdminBtn" href="/admin" onclick="openAdminPanel(event)" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 hidden" style="display:none;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;text-decoration:none;border:1px solid transparent;">
       <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#38bdf8,#0284c7);">
         <span class="material-symbols-outlined" style="font-size:15px;color:#fff;">admin_panel_settings</span>
       </div>
@@ -1343,7 +1343,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     </button>
 
     <!-- Admin (hidden, shown for admins) -->
-    <button id="adminBtn" onclick="closeMenu();window.location.href='/admin'"
+    <button id="adminBtn" onclick="closeMenu();openAdminPanel(event)"
       class="menu-item hidden w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
       style="display:none;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:2px;width:100%;text-align:left;background:transparent;border:1px solid transparent;">
       <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#38bdf8,#0284c7);">
@@ -1878,6 +1878,19 @@ window.applyDynamicServicesCatalog = function(newCategories, newServices) {
 let _selCat=null,_selSvc=null,_catOpen=false,_svcOpen=false;
 
 // ── MENU / ACCOUNT ──
+function openAdminPanel(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  try {
+    sessionStorage.setItem('gx_admin_nav_auth', JSON.stringify({
+      t: Date.now(),
+      role: 'admin',
+      source: 'menu_click'
+    }));
+  } catch (err) {}
+  window.location.href = '/admin';
+}
+window.openAdminPanel = openAdminPanel;
+
 function openMenu() {
   document.getElementById('sideMenu').classList.remove('-translate-x-full');
   document.getElementById('menuOverlay').classList.remove('hidden');
@@ -1928,6 +1941,7 @@ function logout() {
   requestAnimationFrame(() => p.classList.add('is-visible'));
 }
 function _doLogout() {
+  sessionStorage.removeItem('gx_admin_nav_auth');
   if (typeof window._logoutUser === 'function') { window._logoutUser(); return; }
   sessionStorage.setItem("getxh_logged_out", "yes");
   localStorage.clear(); window.location.href = '/';

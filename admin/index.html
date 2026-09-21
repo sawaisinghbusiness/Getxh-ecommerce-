@@ -535,11 +535,30 @@
   </style>
   <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(r => { r.forEach(reg => reg.unregister()) }) }</script>
   <script>
-    // Hard block — instant redirect if not agency@getxh.in
+    // Strict Admin Guard:
+    // Direct URL access or searching getxh.in/admin/ is strictly blocked.
+    // ONLY opens if user is logged into admin account AND navigated via 'Admin Panel' menu click.
     (function () {
-      var e = (localStorage.getItem('getxh_current_user') || '').toLowerCase().trim();
-      var loggedIn = localStorage.getItem('getxh_user_logged_in');
-      if (!loggedIn || e !== 'agency@getxh.in') {
+      try {
+        var e = (localStorage.getItem('getxh_current_user') || '').toLowerCase().trim();
+        var loggedIn = localStorage.getItem('getxh_user_logged_in');
+        var navAuthRaw = sessionStorage.getItem('gx_admin_nav_auth');
+
+        if (!loggedIn || e !== 'agency@getxh.in' || !navAuthRaw) {
+          document.documentElement.style.display = 'none';
+          window.location.replace('/');
+          return;
+        }
+
+        var navAuth = JSON.parse(navAuthRaw);
+        if (!navAuth || !navAuth.t) {
+          document.documentElement.style.display = 'none';
+          sessionStorage.removeItem('gx_admin_nav_auth');
+          window.location.replace('/');
+          return;
+        }
+      } catch (err) {
+        document.documentElement.style.display = 'none';
         window.location.replace('/');
       }
     })();
@@ -2975,7 +2994,11 @@ CURRENT DEFECTS(confirmed by screenshot):
       if (!user) return;
 
       // Sign out buttons
-      const doSignOut = () => signOut(auth).then(() => window.location.replace('/'));
+      const doSignOut = () => {
+        sessionStorage.removeItem('gx_admin_nav_auth');
+        sessionStorage.removeItem('_adm_lock');
+        return signOut(auth).then(() => window.location.replace('/'));
+      };
       document.getElementById('signOutBtn').addEventListener('click', doSignOut);
       document.getElementById('mobileSignOutBtn').addEventListener('click', doSignOut);
 
@@ -3853,10 +3876,26 @@ CURRENT DEFECTS(confirmed by screenshot):
         return;
       }
 
+      // Check menu navigation token
+      try {
+        const navRaw = sessionStorage.getItem('gx_admin_nav_auth');
+        if (!navRaw) {
+          window.location.replace('/');
+          return;
+        }
+      } catch (e) {
+        window.location.replace('/');
+        return;
+      }
+
       // Store user for initAdminData, show password gate
       _currentUser = user;
       window._adminUser = user;
-      window._gateSignOut = () => signOut(auth).then(() => window.location.replace('/'));
+      window._gateSignOut = () => {
+        sessionStorage.removeItem('gx_admin_nav_auth');
+        sessionStorage.removeItem('_adm_lock');
+        return signOut(auth).then(() => window.location.replace('/'));
+      };
       document.getElementById('sidebarEmail').textContent = user.email;
       document.getElementById('loadingScreen').style.display = 'none';
 
