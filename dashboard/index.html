@@ -998,6 +998,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
             <input type="checkbox" id="dripFeedCheckbox" style="width:16px;height:16px;accent-color:#3b82f6;cursor:pointer;">
             <span style="font-size:12px;font-weight:700;color:#e2e8f0;letter-spacing:0.04em;">DRIP-FEED</span>
           </label>
+          <div class="field-err" id="err-dripGeneral"></div>
         </div>
 
         <!-- DRIP FEED FIELDS -->
@@ -1019,7 +1020,6 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
             <input type="number" id="dripTotalQty" placeholder="Total Quantity" disabled
               style="width:100%;height:42px;padding:0 14px;background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:6px;color:#fff;font-size:13px;outline:none;transition:all 0.2s;box-sizing:border-box;opacity:0.75;cursor:not-allowed;"/>
           </div>
-          <div class="field-err" id="err-dripGeneral"></div>
         </div>
 
         <!-- DELIVERY TIME -->
@@ -2026,7 +2026,9 @@ function toggleCategoryDropdown() {
 function closeCatDrop(){document.getElementById('categoryDropdown').classList.add('hidden');document.getElementById('catArrow').style.transform='rotate(0deg)';_catOpen=false;}
 function selectCategory(cat) {
   _selCat=cat.id;_selSvc=null;
+  window._dripWarningDismissedFor = null;
   dbClearErr("catBtn", "err-category");
+  dbClearErr("dripToggleLabel", "err-dripGeneral");
   const isWelcome = cat.id==='welcome-offer';
   const platformIcons = {
     'instagram': 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png',
@@ -2107,13 +2109,32 @@ function toggleServiceDropdown() {
   else closeSvcDrop();
 }
 function closeSvcDrop(){document.getElementById('serviceDropdown').classList.add('hidden');document.getElementById('svcArrow').style.transform='rotate(0deg)';_svcOpen=false;}
+// ── DRIP FEED HELPERS (TOP-LEVEL) ──
+function checkIsDripSvc(svc) {
+  if (!svc) return false;
+  const id = Number(svc.id || svc.service);
+  // Only 5210 and 5832 by default, or if explicitly enabled by admin in catalog
+  if (id === 5210 || id === 5832) return true;
+  if (svc.dripfeed === true || svc.dripfeed === 1 || svc.dripfeed === '1' || svc.drip_feed === 1 || svc.drip_feed === true || svc.dripfeed === 'true' || svc.drip_feed === 'true') return true;
+  return false;
+}
+
+function isDripActive() {
+  if (!_selSvc || !checkIsDripSvc(_selSvc)) return false;
+  const cb = document.getElementById('dripFeedCheckbox');
+  if (cb && cb.checked) return true;
+  return false;
+}
+
 function selectService(svc) {
   if(!svc) return;
   _selSvc=svc;
+  window._dripWarningDismissedFor = null;
   dbClearErr("svcBtn", "err-service");
   dbClearErr("linkInput", "err-link");
   dbClearErr("quantityInput", "err-quantity");
   dbClearErr("customCommentsInput", "err-customComments");
+  dbClearErr("dripToggleLabel", "err-dripGeneral");
 
   const bBadge = document.getElementById('svcNumBadge');
   if(bBadge){
@@ -2170,22 +2191,6 @@ function selectService(svc) {
 
   const pBtn = document.getElementById('placeOrderBtn');
   if(pBtn) pBtn.disabled=false;
-
-function checkIsDripSvc(svc) {
-  if (!svc) return false;
-  const id = Number(svc.id || svc.service);
-  // Only 5210 and 5832 by default, or if explicitly enabled by admin in catalog
-  if (id === 5210 || id === 5832) return true;
-  if (svc.dripfeed === true || svc.dripfeed === 1 || svc.dripfeed === '1' || svc.drip_feed === 1 || svc.drip_feed === true || svc.dripfeed === 'true' || svc.drip_feed === 'true') return true;
-  return false;
-}
-
-function isDripActive() {
-  if (!checkIsDripSvc(_selSvc)) return false;
-  const cb = document.getElementById('dripFeedCheckbox');
-  if (cb && cb.checked) return true;
-  return false;
-}
 
   // Reset and show/hide drip feed container based on service ID / checkbox
   const isDripSvc = checkIsDripSvc(svc);
@@ -2475,12 +2480,34 @@ function validateOrderForm() {
   }
 
   if (firstInvalid) {
+    window._dripWarningDismissedFor = null;
     const el = document.getElementById(firstInvalid);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
       setTimeout(() => el.focus(), 120);
     }
     return false;
+  }
+
+  // Drip-Feed service warning on first click, bypass on second click
+  if (checkIsDripSvc(_selSvc) && !isDripActive()) {
+    const svcId = String(_selSvc.id || _selSvc.service);
+    if (window._dripWarningDismissedFor !== svcId) {
+      window._dripWarningDismissedFor = svcId;
+      dbSetErr("dripToggleLabel", "err-dripGeneral", "⚠ Drip-Feed is available for this service! Click ORDER again to proceed without Drip-Feed, or enable DRIP-FEED above.");
+      dbShake("dripToggleLabel");
+      showToast('warn', 'Drip-Feed Available', 'Drip-Feed is available for this service! Click ORDER again to place without Drip-Feed, or check DRIP-FEED above.');
+      const dt = document.getElementById("dripToggleWrap");
+      if (dt) dt.scrollIntoView({ behavior: "smooth", block: "center" });
+      return false;
+    } else {
+      // Second click: user proceeds without drip feed
+      window._dripWarningDismissedFor = null;
+      dbClearErr("dripToggleLabel", "err-dripGeneral");
+    }
+  } else {
+    window._dripWarningDismissedFor = null;
+    dbClearErr("dripToggleLabel", "err-dripGeneral");
   }
 
   return true;
@@ -2490,57 +2517,62 @@ function validateOrderForm() {
 function updateTotalPrice() {
   if (!_selSvc) return;
 
-  const isCustomComment = _selSvc.name.toLowerCase().includes('custom');
+  const isCustomComment = _selSvc.name && _selSvc.name.toLowerCase().includes('custom');
   const qtyInput = document.getElementById('quantityInput');
-  const qty = parseInt(qtyInput.value) || 0;
+  const qty = qtyInput ? (parseInt(qtyInput.value) || 0) : 0;
 
   const isDrip = isDripActive();
   const runsInput = document.getElementById('dripRuns');
-  const runs = parseInt(runsInput.value) || 0;
+  const runs = runsInput ? (parseInt(runsInput.value) || 0) : 0;
 
   const totalQtyEl = document.getElementById('dripTotalQty');
   const priceEl = document.getElementById('totalPrice');
 
   if (isCustomComment) {
-    const lines = document.getElementById('customCommentsInput').value.split('\n').filter(l => l.trim() !== '').length;
+    const ccInput = document.getElementById('customCommentsInput');
+    const lines = ccInput ? ccInput.value.split('\n').filter(l => l.trim() !== '').length : 0;
     if (lines < _selSvc.min) {
-      priceEl.textContent = '';
+      if (priceEl) priceEl.textContent = '';
       return;
     }
     const orderPrice = Math.max(0.01, parseFloat(((lines / 1000) * _selSvc.price).toFixed(2)));
-    priceEl.textContent = '₹' + orderPrice.toFixed(2) + '  ';
+    if (priceEl) priceEl.textContent = '₹' + orderPrice.toFixed(2) + '  ';
     return;
   }
 
   if (!qty || qty < _selSvc.min || qty > _selSvc.max) {
-    priceEl.textContent = '';
-    totalQtyEl.value = '';
+    if (priceEl) priceEl.textContent = '';
+    if (totalQtyEl) totalQtyEl.value = '';
     return;
   }
 
   let totalQty = qty;
   if (isDrip) {
     if (runs <= 0) {
-      priceEl.textContent = '';
+      if (priceEl) priceEl.textContent = '';
       return;
     }
     totalQty = qty * runs;
-    totalQtyEl.value = totalQty || '';
+    if (totalQtyEl) totalQtyEl.value = totalQty || '';
   } else {
-    totalQtyEl.value = '';
+    if (totalQtyEl) totalQtyEl.value = '';
   }
 
   const orderPrice = Math.max(0.01, parseFloat(((totalQty / 1000) * _selSvc.price).toFixed(2)));
-  priceEl.textContent = '₹' + orderPrice.toFixed(2) + '  ';
+  if (priceEl) priceEl.textContent = '₹' + orderPrice.toFixed(2) + '  ';
 }
 
 // Wire up listeners
 document.getElementById('quantityInput').addEventListener('input', function() {
   dbClearErr('quantityInput', 'err-quantity');
+  window._dripWarningDismissedFor = null;
+  dbClearErr('dripToggleLabel', 'err-dripGeneral');
   updateTotalPrice();
 });
 document.getElementById('linkInput').addEventListener('input', function() {
   dbClearErr('linkInput', 'err-link');
+  window._dripWarningDismissedFor = null;
+  dbClearErr('dripToggleLabel', 'err-dripGeneral');
   updateTotalPrice();
 });
 document.getElementById('dripRuns').addEventListener('input', function() {
@@ -2554,6 +2586,8 @@ document.getElementById('dripInterval').addEventListener('input', function() {
 const dripCbEl = document.getElementById('dripFeedCheckbox');
 if (dripCbEl) {
   dripCbEl.addEventListener('change', function() {
+    window._dripWarningDismissedFor = null;
+    dbClearErr('dripToggleLabel', 'err-dripGeneral');
     const dripContainer = document.getElementById('dripFieldsContainer');
     if (this.checked) {
       dripContainer.classList.remove('hidden');
@@ -2916,6 +2950,8 @@ document.getElementById('successModal').addEventListener('click', function(e) {
   if (e.target === this) closeSuccessModal();
 });
 function closeSuccessModal(){
+  window._dripWarningDismissedFor = null;
+  dbClearErr('dripToggleLabel', 'err-dripGeneral');
   const box=document.getElementById('successModalBox');
   box.classList.remove('sheet-spring-enter');
   box.classList.add('sheet-spring-exit');
