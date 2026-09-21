@@ -386,7 +386,13 @@ function renderTable(orders) {
         : '<span class="text-slate-600">—</span>') +
       '</td>' +
       // Qty
-      '<td class="font-bold text-slate-200" title="' + (o.isDrip ? 'Drip Feed: ' + (o.totalQuantity || (o.quantity * o.runs)) + ' total, ' + o.interval + 'm interval' : '') + '">' + (o.isDrip ? (o.quantity || o.qty || '—') + ' x ' + o.runs + ' (Drip)' : (o.quantity || o.qty || '—')) + '</td>' +
+      '<td class="font-bold text-slate-200" title="' + (o.isDrip ? 'Drip Feed: ' + (o.totalQuantity || (o.quantity * o.runs)) + ' total, ' + o.interval + 'm interval' : '') + '">' +
+        (o.isDrip ? (o.quantity || o.qty || '—') + ' x ' + o.runs + ' (Drip)' : (o.quantity || o.qty || '—')) +
+        '<div class="text-[10px] font-normal text-slate-400 mt-0.5">' +
+          '<span class="text-amber-400 font-semibold">S: ' + escHtml(String((o.start_count !== undefined && o.start_count !== null && o.start_count !== '') ? o.start_count : '—')) + '</span> | ' +
+          '<span class="text-emerald-400 font-semibold">E: ' + escHtml(String((o.end_count !== undefined && o.end_count !== null && o.end_count !== '') ? o.end_count : '—')) + '</span>' +
+        '</div>' +
+      '</td>' +
       // Price
       '<td class="font-bold text-white">' + price + '</td>' +
       // Status badge
@@ -443,6 +449,8 @@ function renderCards(orders) {
         '<div class="mb-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs">' +
           '<div><span class="text-slate-500">Qty: </span><span class="font-bold text-slate-200">' + (o.isDrip ? (o.quantity || o.qty || '—') + ' x ' + o.runs + ' (Drip: ' + (o.totalQuantity || (o.quantity * o.runs)) + ' total)' : (o.quantity || o.qty || '—')) + '</span></div>' +
           '<div><span class="text-slate-500">API: </span><span class="font-bold text-slate-300">' + escHtml(String(o.apiOrderId || '—')) + '</span></div>' +
+          '<div><span class="text-slate-500">Start: </span><span class="font-bold text-amber-400">' + escHtml(String((o.start_count !== undefined && o.start_count !== null && o.start_count !== '') ? o.start_count : '—')) + '</span></div>' +
+          '<div><span class="text-slate-500">End: </span><span class="font-bold text-emerald-400">' + escHtml(String((o.end_count !== undefined && o.end_count !== null && o.end_count !== '') ? o.end_count : '—')) + '</span></div>' +
           '<div class="col-span-2"><span class="text-slate-500">User: </span>' +
             '<span class="copy-chip" onclick="copyText(\'' + escAttr(uid) + '\',this)">' +
               escHtml(uid.length > 18 ? uid.slice(0,18)+'…' : uid) +

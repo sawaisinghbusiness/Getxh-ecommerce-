@@ -2620,7 +2620,39 @@ function showToast(type, title, msg) {
   }, 3000);
 }
 
-// ── PLACE ORDER ──
+// ── INSTAGRAM COUNT AUTO-FETCHER (VIA BACKEND) ──
+async function fetchInstagramCount(url) {
+  try {
+    if (!url || typeof url !== 'string' || !url.includes('instagram.com')) return null;
+    const res = await fetch('https://backend-for-api-connect-g8ta.onrender.com/instagram-count', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data && data.count !== undefined && data.count !== null) ? String(data.count) : null;
+  } catch (err) {
+    console.warn('Instagram count fetch error:', err);
+    return null;
+  }
+}
+
+async function fetchAndSaveInstagramStartCount(url, docId) {
+  if (!url || !docId) return;
+  try {
+    const startCount = await fetchInstagramCount(url);
+    if (startCount !== null && startCount !== undefined && window._updateDoc && window._doc && window.db) {
+      await window._updateDoc(window._doc(window.db, 'orders', docId), {
+        start_count: String(startCount)
+      });
+      console.log('Instagram start count auto-saved for order:', docId, startCount);
+    }
+  } catch (err) {
+    console.error('Error in fetchAndSaveInstagramStartCount:', err);
+  }
+}
+
 // ── PLACE ORDER ──
 async function placeOrder(serviceId) {
   const link     = document.getElementById('linkInput').value.trim();
@@ -2752,6 +2784,15 @@ async function placeOrder(serviceId) {
           dbOrderData.comments = customComments;
         }
         window._addDoc(window._collection(window.db, 'orders'), dbOrderData)
+          .then(docRef => {
+            if (data && data.start_count) {
+              window._updateDoc(window._doc(window.db, 'orders', docRef.id), {
+                start_count: String(data.start_count)
+              }).catch(() => {});
+            } else if (docRef && docRef.id && link && link.includes('instagram.com')) {
+              fetchAndSaveInstagramStartCount(link, docRef.id);
+            }
+          })
           .catch(e => console.error('Order save error:', e));
 
         // Deduct balance, increment TotalOrders & TotalSpent on Firestore Users collection

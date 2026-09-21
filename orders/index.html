@@ -684,6 +684,25 @@ function cancelLogout() {
 // ── REAL-TIME ORDER STATUS POLLING ──
 let _ordersInterval = null;
 window._adminOverriddenOrders = new Set(); // docIds where admin manually set status
+window._fetchingEndCounts = new Set(); // Avoid duplicate concurrent Apify calls for same order
+
+// ── INSTAGRAM COUNT AUTO-FETCHER (VIA BACKEND) ──
+async function fetchInstagramCount(url) {
+  try {
+    if (!url || typeof url !== 'string' || !url.includes('instagram.com')) return null;
+    const res = await fetch('https://backend-for-api-connect-g8ta.onrender.com/instagram-count', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data && data.count !== undefined && data.count !== null) ? String(data.count) : null;
+  } catch (err) {
+    console.warn('Instagram count fetch error:', err);
+    return null;
+  }
+}
 
 async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
   // Skip API polling if admin has manually overridden this order's status
@@ -751,17 +770,98 @@ async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
     const currentStatus = cardEl ? (cardEl.getAttribute('data-status') || '') : '';
     if (cardEl) cardEl.setAttribute('data-status', firestoreStatus);
 
+    // Start Count & End Count handling
+    const existingStart = cardEl ? (cardEl.getAttribute('data-start-count') || '') : '';
+    const existingEnd   = cardEl ? (cardEl.getAttribute('data-end-count') || '') : '';
+
+    let apiStart = (data.start_count !== undefined && data.start_count !== null && String(data.start_count).trim() !== '')
+                   ? String(data.start_count).trim()
+                   : '';
+
+    let finalStartCount = existingStart;
+    if (!existingStart && apiStart) {
+      finalStartCount = apiStart;
+    } else if (apiStart && apiStart !== '0000' && apiStart !== existingStart) {
+      finalStartCount = apiStart;
+    }
+
+    // ONLY calculate / update End Count when status is explicitly Completed!
+    let finalEndCount = existingEnd;
+    const qty = Number(cardEl ? cardEl.getAttribute('data-quantity') : 0) || 0;
+    const orderLink = cardEl ? (cardEl.getAttribute('data-link') || '') : '';
+
+    if (isCompleted) {
+      if (!existingEnd) {
+        if (orderLink && orderLink.includes('instagram.com') && !window._fetchingEndCounts.has(docId)) {
+          window._fetchingEndCounts.add(docId);
+          fetchInstagramCount(orderLink).then(apifyEnd => {
+            const startNum = Number(finalStartCount);
+            const resolvedEnd = apifyEnd || (!isNaN(startNum) && startNum > 0 ? String(startNum + qty) : null);
+            if (resolvedEnd) {
+              const endEl = document.getElementById('endCount-' + eid);
+              if (endEl) endEl.textContent = resolvedEnd;
+              if (cardEl) cardEl.setAttribute('data-end-count', resolvedEnd);
+              if (Array.isArray(_allOrders)) {
+                const mem = _allOrders.find(x => x.docId === docId);
+                if (mem) mem.end_count = resolvedEnd;
+              }
+              if (typeof window._updateOrderInFirestore === 'function') {
+                window._updateOrderInFirestore(docId, 'Completed', data.remains, finalStartCount, resolvedEnd);
+              }
+            }
+          }).catch(() => {
+            const startNum = Number(finalStartCount);
+            if (!isNaN(startNum) && startNum > 0) {
+              const fallbackEnd = String(startNum + qty);
+              const endEl = document.getElementById('endCount-' + eid);
+              if (endEl) endEl.textContent = fallbackEnd;
+              if (cardEl) cardEl.setAttribute('data-end-count', fallbackEnd);
+              if (Array.isArray(_allOrders)) {
+                const mem = _allOrders.find(x => x.docId === docId);
+                if (mem) mem.end_count = fallbackEnd;
+              }
+              if (typeof window._updateOrderInFirestore === 'function') {
+                window._updateOrderInFirestore(docId, 'Completed', data.remains, finalStartCount, fallbackEnd);
+              }
+            }
+          });
+        } else if (finalStartCount && !isNaN(Number(finalStartCount))) {
+          finalEndCount = String(Number(finalStartCount) + qty);
+        }
+      }
+    } else {
+      // Order not completed yet — keep End Count as blank/unset
+      finalEndCount = existingEnd || '';
+    }
+
+    const startEl = document.getElementById('startCount-' + eid);
+    const endEl   = document.getElementById('endCount-'   + eid);
+    if (startEl && finalStartCount) {
+      startEl.textContent = finalStartCount;
+      if (cardEl) cardEl.setAttribute('data-start-count', finalStartCount);
+    }
+    if (endEl && finalEndCount) {
+      endEl.textContent = finalEndCount;
+      if (cardEl) cardEl.setAttribute('data-end-count', finalEndCount);
+    }
+
     // Update in-memory array so filter/re-renders retain the new status immediately
     if (Array.isArray(_allOrders)) {
       const memoryItem = _allOrders.find(x => x.docId === docId || (docId && x.docId === docId));
       if (memoryItem) {
         memoryItem.status = firestoreStatus;
+        if (finalStartCount) memoryItem.start_count = finalStartCount;
+        if (finalEndCount) memoryItem.end_count = finalEndCount;
       }
     }
 
-    if (currentStatus.toLowerCase() !== firestoreStatus.toLowerCase()) {
+    const statusChanged = currentStatus.toLowerCase() !== firestoreStatus.toLowerCase();
+    const startChanged  = Boolean(finalStartCount && finalStartCount !== existingStart);
+    const endChanged    = Boolean(finalEndCount && finalEndCount !== existingEnd);
+
+    if (statusChanged || startChanged || endChanged) {
       if (typeof window._updateOrderInFirestore === 'function') {
-        window._updateOrderInFirestore(docId, firestoreStatus, data.remains);
+        window._updateOrderInFirestore(docId, firestoreStatus, data.remains, finalStartCount, finalEndCount);
       }
     }
 
@@ -1022,6 +1122,10 @@ function renderOrders(orders) {
          data-order-id="${o.apiOrderId || ''}"
          data-eid="${eid}"
          data-doc-id="${o.docId || ''}"
+         data-start-count="${o.start_count || ''}"
+         data-end-count="${o.end_count || ''}"
+         data-quantity="${o.quantity || o.totalQuantity || 0}"
+         data-link="${o.link || ''}"
          data-status="${o.status || 'Pending'}">
 
       <!-- Order Header -->
@@ -1081,6 +1185,24 @@ function renderOrders(orders) {
           <span class="text-white text-xs font-semibold">${o.interval} min</span>
         </div>
         ` : ''}
+
+        <div class="flex items-center justify-between"
+             style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:8px;">
+          <span class="text-gray-400 text-xs flex items-center gap-1.5">
+            <span style="width:6px;height:6px;border-radius:50%;background:#f59e0b;display:inline-block"></span>
+            Start Count:
+          </span>
+          <span id="startCount-${eid}" class="text-xs font-bold text-amber-400">${(o.start_count !== undefined && o.start_count !== null && o.start_count !== '') ? o.start_count : '—'}</span>
+        </div>
+
+        <div class="flex items-center justify-between"
+             style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:8px;">
+          <span class="text-gray-400 text-xs flex items-center gap-1.5">
+            <span style="width:6px;height:6px;border-radius:50%;background:#34d399;display:inline-block"></span>
+            End Count:
+          </span>
+          <span id="endCount-${eid}" class="text-xs font-bold text-emerald-400">${(o.end_count !== undefined && o.end_count !== null && o.end_count !== '') ? o.end_count : '—'}</span>
+        </div>
 
         <!-- Bottom row: date + actions -->
         <div class="flex items-center justify-between pt-1" style="margin-top:4px;">
@@ -1153,12 +1275,18 @@ let _unsubWallet = null;
 
 // Expose Firestore writer so polling JS (non-module) can persist status & remains back
 window._currentUid = null;
-window._updateOrderInFirestore = async function(docId, status, remains) {
+window._updateOrderInFirestore = async function(docId, status, remains, startCount, endCount) {
   if (!docId) return;
   try {
     const updateData = { status };
     if (remains !== undefined && remains !== null && !isNaN(remains)) {
       updateData.remains = Number(remains);
+    }
+    if (startCount !== undefined && startCount !== null && startCount !== '') {
+      updateData.start_count = startCount;
+    }
+    if (endCount !== undefined && endCount !== null && endCount !== '') {
+      updateData.end_count = endCount;
     }
     await updateDoc(doc(db, 'orders', docId), updateData);
   } catch(_) {}

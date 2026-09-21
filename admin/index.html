@@ -1510,6 +1510,57 @@
     </div>
   </div>
 
+  <!-- ── EDIT ORDER COUNTS MODAL ──────────────────────── -->
+  <div id="editCountsModal"
+    class="fixed inset-0 z-[120] hidden items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+    onclick="if(event.target===this)closeEditCountsModal()">
+    <div class="w-full max-w-sm rounded-2xl border border-white/10 bg-[#0d1628] p-6 shadow-2xl"
+      style="background:linear-gradient(180deg,#0f1b33 0%,#09101f 100%);">
+      <div class="mb-4 flex items-center justify-between border-b border-white/8 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/20">
+            <span class="material-symbols-outlined text-amber-400" style="font-size:18px">tune</span>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Edit Order Counts</h3>
+            <p id="editCountsOrderDisplay" class="text-[11px] font-bold text-amber-400">—</p>
+          </div>
+        </div>
+        <button onclick="closeEditCountsModal()"
+          class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 text-slate-400 hover:text-white">
+          <span class="material-symbols-outlined" style="font-size:18px">close</span>
+        </button>
+      </div>
+
+      <form onsubmit="event.preventDefault();submitOrderCounts();" class="space-y-4">
+        <input type="hidden" id="editCountsDocId" />
+        <input type="hidden" id="editCountsQty" />
+
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Start Count (Views / Followers at start)</label>
+          <input type="text" id="editStartCountInput" placeholder="e.g. 1540" class="adm-field w-full text-xs" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">End Count (Views / Followers at completion)</label>
+          <input type="text" id="editEndCountInput" placeholder="Leave blank to auto-calculate (Start + Qty)"
+            class="adm-field w-full text-xs" />
+          <p class="mt-1 text-[10px] text-slate-500">If left blank, End Count will be auto-calculated using Start Count + Quantity.</p>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-white/5">
+          <button type="button" onclick="closeEditCountsModal()"
+            class="rounded-xl border border-white/10 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-white/5">Cancel</button>
+          <button type="submit" id="btnSaveCountsModal"
+            class="flex items-center gap-1.5 rounded-xl bg-amber-500 px-5 py-2 text-xs font-bold text-slate-950 transition hover:bg-amber-400">
+            <span class="material-symbols-outlined" style="font-size:16px">check</span>
+            <span>Save Counts</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- ── MOBILE CHAT MODAL ────────────────────────────── -->
   <div id="mobileChatModal" class="fixed inset-0 z-50 hidden flex-col"
     style="background:linear-gradient(180deg,#0d1628 0%,#0b1220 100%);">
@@ -2138,8 +2189,11 @@ CURRENT DEFECTS(confirmed by screenshot):
                         '<p class="mt-0.5 text-[10px] text-slate-500">' + formatDate(o.createdAt) + '</p>' +
                         '</div>' +
                       '</div>' +
-                    '<div class="mb-3 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-slate-400">' +
+                    '<div class="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-400">' +
                       '<span>Qty: <b class="font-bold text-slate-200">' + escHtml(String(o.quantity || o.qty || '—')) + '</b></span>' +
+                      '<span>Start: <b class="font-bold text-amber-400">' + escHtml(String((o.start_count !== undefined && o.start_count !== null && o.start_count !== '') ? o.start_count : '—')) + '</b></span>' +
+                      '<span>End: <b class="font-bold text-emerald-400">' + escHtml(String((o.end_count !== undefined && o.end_count !== null && o.end_count !== '') ? o.end_count : '—')) + '</b></span>' +
+                      '<button type="button" onclick="window.editOrderCounts(\'' + escHtml(o.id) + '\',\'' + escHtml(oid) + '\',\'' + escHtml(String(o.start_count || '')) + '\',\'' + escHtml(String(o.end_count || '')) + '\',' + Number(o.quantity || o.qty || 0) + ')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-all cursor-pointer" title="Edit Start / End Count"><span class="material-symbols-outlined" style="font-size:12px">tune</span> Counts</button>' +
                       '<span>User: <b class="font-bold text-slate-200">' + escHtml(uidShort) + '</b></span>' +
                       (o.apiOrderId ? '<span>API: <b class="font-bold text-slate-200">' + escHtml(String(o.apiOrderId)) + '</b></span>' : '') +
                       '</div>' +
@@ -2600,6 +2654,50 @@ CURRENT DEFECTS(confirmed by screenshot):
       }
     }
 
+    window.editOrderCounts = function (orderId, orderNum, startCount, endCount, qty) {
+      document.getElementById('editCountsDocId').value = orderId;
+      document.getElementById('editCountsOrderDisplay').textContent = '#' + (orderNum || orderId.slice(-7));
+      document.getElementById('editCountsQty').value = qty || 0;
+      document.getElementById('editStartCountInput').value = (startCount && startCount !== '—') ? startCount : '';
+      document.getElementById('editEndCountInput').value = (endCount && endCount !== '—') ? endCount : '';
+      var modal = document.getElementById('editCountsModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        setTimeout(function() { document.getElementById('editStartCountInput').focus(); }, 100);
+      }
+    };
+
+    window.closeEditCountsModal = function () {
+      var modal = document.getElementById('editCountsModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    };
+
+    window.submitOrderCounts = async function () {
+      var docId = document.getElementById('editCountsDocId').value;
+      var qty = Number(document.getElementById('editCountsQty').value) || 0;
+      var start = document.getElementById('editStartCountInput').value.trim();
+      var end = document.getElementById('editEndCountInput').value.trim();
+
+      if (start && !end && !isNaN(Number(start)) && qty > 0) {
+        end = String(Number(start) + qty);
+      }
+
+      var btn = document.getElementById('btnSaveCountsModal');
+      if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+      try {
+        if (typeof window.saveOrderCounts === 'function') {
+          await window.saveOrderCounts(docId, start, end);
+        }
+        window.closeEditCountsModal();
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">check</span><span>Save Counts</span>'; }
+      }
+    };
+
     function saveServiceFromModal() {
       var originalCatId = document.getElementById('modalOriginalCatId').value;
       var originalSvcId = document.getElementById('modalOriginalSvcId').value;
@@ -2948,6 +3046,25 @@ CURRENT DEFECTS(confirmed by screenshot):
         } catch (err) {
           console.error('updateOrderStatus error:', err);
           showAdminToast('Failed to update status: ' + (err.message || 'Unknown error'), true);
+        }
+      };
+
+      window.saveOrderCounts = async function (orderId, startCount, endCount) {
+        try {
+          const updateData = { adminOverrideCounts: true };
+          if (startCount !== undefined && startCount !== null) {
+            updateData.start_count = startCount;
+          }
+          if (endCount !== undefined && endCount !== null) {
+            updateData.end_count = endCount;
+          }
+          await updateDoc(doc(db, 'orders', orderId), updateData);
+          showAdminToast('Order counts updated! (Start: ' + (startCount || '—') + ', End: ' + (endCount || '—') + ')', false);
+          return true;
+        } catch (err) {
+          console.error('saveOrderCounts error:', err);
+          showAdminToast('Failed to update counts: ' + (err.message || 'Unknown error'), true);
+          return false;
         }
       };
 
