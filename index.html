@@ -1135,7 +1135,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, signOut }
   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -1150,6 +1150,26 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   const auth = getAuth(app);
   const db = getFirestore(app);
   const googleProvider = new GoogleAuthProvider();
+
+  // ── CAMPAIGN REFERRAL TRACKING ──
+  try {
+    const _urlParams = new URLSearchParams(window.location.search);
+    const _refParam = (_urlParams.get('ref') || _urlParams.get('r') || '').trim();
+    if (_refParam) {
+      localStorage.setItem('gx_ref_code', _refParam);
+      localStorage.setItem('gx_ref_time', String(Date.now()));
+
+      // Increment click if not already clicked this browser session
+      const _clickKey = 'gx_clicked_' + _refParam;
+      if (!sessionStorage.getItem(_clickKey)) {
+        sessionStorage.setItem(_clickKey, '1');
+        updateDoc(doc(db, 'campaigns', _refParam), {
+          clicks: increment(1),
+          lastClickedAt: Date.now()
+        }).catch(() => {});
+      }
+    }
+  } catch (e) {}
 
   function normalizeEmail(value){ return String(value||"").trim().toLowerCase(); }
 
@@ -1331,26 +1351,31 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 
       // Ensure Firestore records exist for Admin Panel & Dashboard
       try {
+        const _refCode = localStorage.getItem('gx_ref_code') || '';
+        const userBalSnap = await getDoc(doc(db, "Users", user.uid));
+        const isNewUser = !userBalSnap.exists();
+
         const writes = [
           setDoc(doc(db, "users", user.uid), {
             username: username,
             email: email,
             mobile: "",
             uid: user.uid,
-            createdAt: serverTimestamp()
+            createdAt: serverTimestamp(),
+            ...(isNewUser && _refCode ? { refSource: _refCode, referredAt: Date.now() } : {})
           }, { merge: true }),
           setDoc(doc(db, "userData", user.uid), {
             username: username,
             email: email,
             mobile: "",
             uid: user.uid,
-            createdAt: serverTimestamp()
+            createdAt: serverTimestamp(),
+            ...(isNewUser && _refCode ? { refSource: _refCode, referredAt: Date.now() } : {})
           }, { merge: true })
         ];
 
         // CRITICAL FIX: Only set Balance: 0 if user record does NOT exist yet!
-        const userBalSnap = await getDoc(doc(db, "Users", user.uid));
-        if (!userBalSnap.exists()) {
+        if (isNewUser) {
           writes.push(
             setDoc(doc(db, "Users", user.uid), {
               Balance: 0,
@@ -1358,6 +1383,23 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
               TotalSpent: 0
             }, { merge: true })
           );
+          if (_refCode) {
+            writes.push(
+              setDoc(doc(db, "campaigns", _refCode, "referrals", user.uid), {
+                uid: user.uid,
+                email: email,
+                username: username,
+                createdAt: Date.now(),
+                authProvider: 'google'
+              }, { merge: true }).catch(() => {})
+            );
+            try {
+              updateDoc(doc(db, "campaigns", _refCode), {
+                conversions: increment(1),
+                lastReferralAt: Date.now()
+              }).catch(() => {});
+            } catch (_) {}
+          }
         }
         await Promise.allSettled(writes);
       } catch(e) {

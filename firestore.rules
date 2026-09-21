@@ -97,6 +97,25 @@ service cloud.firestore {
       allow write: if isSignedIn();
     }
 
+    // ── 11. Custom Campaign & Tracking Links ──
+    match /campaigns/{campaignId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        request.resource.data.diff(resource.data).changedKeys().hasAny(['clicks', 'lastClickedAt', 'conversions'])
+      );
+
+      match /clicks/{clickId} {
+        allow create: if true;
+        allow read: if isAdmin();
+      }
+
+      match /referrals/{refId} {
+        allow create: if isSignedIn();
+        allow read, update, delete: if isAdmin();
+      }
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

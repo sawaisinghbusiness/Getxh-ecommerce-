@@ -836,6 +836,14 @@
           <span id="navFundsText" class="text-sm font-bold text-slate-300">Fund History</span>
         </button>
 
+        <button id="navTracking" onclick="switchTab('tracking')"
+          class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left transition-all hover:bg-white/5 hover:border-white/10">
+          <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-cyan-500/15">
+            <span class="material-symbols-outlined text-cyan-400" style="font-size:16px">link</span>
+          </div>
+          <span id="navTrackingText" class="text-sm font-bold text-slate-300">Tracking Links</span>
+        </button>
+
         <button id="navBlogs" onclick="switchTab('blogs')"
           class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left transition-all hover:bg-white/5 hover:border-white/10">
           <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-purple-500/15">
@@ -918,6 +926,10 @@
             <button id="tabBtnFunds" onclick="switchTab('funds')"
               class="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold text-slate-400 transition whitespace-nowrap">
               <span class="material-symbols-outlined" style="font-size:14px">payments</span>Fund History
+            </button>
+            <button id="tabBtnTracking" onclick="switchTab('tracking')"
+              class="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold text-slate-400 transition whitespace-nowrap">
+              <span class="material-symbols-outlined" style="font-size:14px">link</span>Tracking Links
             </button>
             <button id="tabBtnBlogs" onclick="switchTab('blogs')"
               class="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold text-slate-400 transition whitespace-nowrap">
@@ -1376,6 +1388,283 @@
           <p class="text-xs text-slate-500 mt-1">Try changing your date filters or search query.</p>
         </div>
       </div><!-- /fundsTab -->
+
+      <!-- ── TRACKING LINKS TAB ────────────────────────── -->
+      <div id="trackingTab" class="hidden flex-1 p-4 lg:p-6 space-y-6">
+
+        <!-- ══════════════════════════════════════════════════
+             VIEW A: TRACKING LIST & GENERATOR VIEW
+             ══════════════════════════════════════════════════ -->
+        <div id="trackingListView" class="space-y-6">
+
+          <!-- 1. Top Link Generator Card (Premium Radiant Gradient) -->
+          <div class="relative overflow-hidden rounded-2xl border border-cyan-500/25 bg-gradient-to-br from-[#0c182b] via-[#091222] to-[#0d1c33] p-5 sm:p-7 shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
+            <div class="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl"></div>
+            <div class="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl"></div>
+
+            <div class="relative z-10">
+              <div class="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-white/8 pb-4">
+                <div class="flex items-center gap-3">
+                  <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-[0_4px_18px_rgba(6,182,212,0.35)]">
+                    <span class="material-symbols-outlined text-white" style="font-size:24px">add_link</span>
+                  </div>
+                  <div>
+                    <h3 class="text-lg font-black text-white tracking-tight">Create Custom Tracking Link</h3>
+                    <p class="text-xs text-slate-400">Generate trackable links for affiliates, influencers, or ad campaigns with real-time analytics.</p>
+                  </div>
+                </div>
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 px-3 py-1 text-[11px] font-bold text-cyan-400">
+                  <span class="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse"></span> Auto-Tracking Enabled
+                </span>
+              </div>
+
+              <!-- Generator Form -->
+              <form onsubmit="event.preventDefault();submitCreateCampaign();" class="space-y-4">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+                  <!-- Campaign Name -->
+                  <div class="md:col-span-5">
+                    <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">
+                      Campaign / Influencer Name <span class="text-red-400">*</span>
+                    </label>
+                    <input type="text" id="campNameInput" required placeholder="e.g. Rahul Influencer, Instagram Reel Ad"
+                      class="adm-field w-full text-xs font-semibold" style="height:44px;" oninput="autoSuggestSlug(this.value)" />
+                    <p class="mt-1 text-[11px] text-slate-500">A clear title to easily identify this partner or promotion.</p>
+                  </div>
+
+                  <!-- Custom Slug / Ref Code -->
+                  <div class="md:col-span-4">
+                    <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">
+                      Custom Link Code / Slug
+                    </label>
+                    <div class="relative">
+                      <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-slate-500">?ref=</span>
+                      <input type="text" id="campSlugInput" placeholder="e.g. rahul, insta-ad"
+                        class="adm-field w-full pl-14 font-mono text-xs font-semibold text-cyan-300" style="height:44px;" />
+                    </div>
+                    <p class="mt-1 text-[11px] text-slate-500">Letters, numbers, and hyphens. Auto-generated if left blank.</p>
+                  </div>
+
+                  <!-- Target Destination -->
+                  <div class="md:col-span-3">
+                    <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">
+                      Target Landing Page
+                    </label>
+                    <select id="campTargetInput" class="status-sel w-full text-xs font-semibold" style="height:44px;">
+                      <option value="/">Home Page (/)</option>
+                      <option value="/register/">Registration Page (/register/)</option>
+                    </select>
+                    <p class="mt-1 text-[11px] text-slate-500">Where visitors land when opening link.</p>
+                  </div>
+                </div>
+
+                <!-- Submit Button & Live Preview Box -->
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                  <div id="campLivePreview" class="hidden flex-1 min-w-[260px] items-center gap-2 rounded-xl bg-black/40 border border-cyan-500/25 px-3 py-2 text-xs">
+                    <span class="text-slate-400 text-[11px]">Ready Link:</span>
+                    <span id="campLivePreviewUrl" class="font-mono font-bold text-cyan-400 truncate flex-1">—</span>
+                    <button type="button" id="campLiveCopyBtn" onclick="copyCreatedCampaignLink()" class="flex-shrink-0 inline-flex items-center gap-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 px-2.5 py-1 text-[11px] font-bold transition">
+                      <span class="material-symbols-outlined text-[14px]">content_copy</span> Copy
+                    </button>
+                  </div>
+
+                  <button type="submit" id="btnCreateCampaign"
+                    class="ml-auto inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-black text-white transition shadow-lg active:scale-95"
+                    style="background:linear-gradient(135deg,#06b6d4,#2563eb);box-shadow:0 4px 18px rgba(6,182,212,0.35);height:44px;">
+                    <span class="material-symbols-outlined text-[18px]">add_link</span>
+                    <span>Generate Tracking Link</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- 2. KPI Metrics Counters Row -->
+          <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div class="stat-card px-4 py-3 border-cyan-500/20">
+              <p class="text-[10px] font-black uppercase tracking-wider text-cyan-400">Total Campaigns</p>
+              <p id="trackStatTotal" class="mt-1 text-2xl font-black text-white">0</p>
+            </div>
+            <div class="stat-card px-4 py-3 border-emerald-500/20">
+              <p class="text-[10px] font-black uppercase tracking-wider text-emerald-400">Total Clicks</p>
+              <p id="trackStatClicks" class="mt-1 text-2xl font-black text-emerald-400">0</p>
+            </div>
+            <div class="stat-card px-4 py-3 border-blue-500/20">
+              <p class="text-[10px] font-black uppercase tracking-wider text-blue-400">Total Registrations</p>
+              <p id="trackStatSignups" class="mt-1 text-2xl font-black text-blue-400">0</p>
+            </div>
+            <div class="stat-card px-4 py-3 border-purple-500/20">
+              <p class="text-[10px] font-black uppercase tracking-wider text-purple-400">Avg. Conversion Rate</p>
+              <p id="trackStatConv" class="mt-1 text-2xl font-black text-purple-400">0.0%</p>
+            </div>
+          </div>
+
+          <!-- 3. Search & Sort Bar -->
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="relative flex-1">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" style="font-size:18px">search</span>
+              <input id="trackSearchInput" oninput="filterCampaigns()" type="text" placeholder="Search campaign name, code, or link URL…"
+                class="adm-field w-full pl-10" style="height:44px;" />
+            </div>
+            <div class="flex items-center gap-2">
+              <select id="trackSortFilter" onchange="filterCampaigns()" class="status-sel text-xs font-semibold" style="height:44px;">
+                <option value="newest">Sort: Newest First</option>
+                <option value="clicks">Sort: Most Clicks</option>
+                <option value="signups">Sort: Most Registrations</option>
+                <option value="conversion">Sort: High Conversion %</option>
+              </select>
+              <button onclick="loadAllCampaigns()" title="Refresh tracking data" aria-label="Refresh tracking data"
+                class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition hover:bg-white/10 hover:text-white active:scale-95">
+                <span class="material-symbols-outlined" style="font-size:18px">refresh</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. Campaign Cards Grid -->
+          <div id="campaignsGrid" class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <!-- Populated via JS -->
+          </div>
+
+          <!-- Empty State -->
+          <div id="campaignsEmptyState" class="hidden rounded-2xl border border-white/8 bg-[#0d1628] p-12 text-center text-slate-500">
+            <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+              <span class="material-symbols-outlined text-3xl">link_off</span>
+            </div>
+            <h4 class="text-base font-bold text-white mb-1">No Tracking Links Found</h4>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto">Create your first custom tracking link using the generator form above to start tracking clicks and user registrations in real time.</p>
+          </div>
+
+        </div><!-- /trackingListView -->
+
+        <!-- ══════════════════════════════════════════════════
+             VIEW B: DEDICATED CAMPAIGN DETAIL & REGISTERED USERS VIEW (SPA)
+             ══════════════════════════════════════════════════ -->
+        <div id="trackingDetailView" class="hidden space-y-6">
+
+          <!-- Top Breadcrumb & Action Bar -->
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/8 pb-4">
+            <button onclick="closeTrackingDetailView()"
+              class="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-slate-200 transition hover:bg-white/10 active:scale-95">
+              <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+              <span>All Tracking Links</span>
+            </button>
+            <div class="flex items-center gap-2">
+              <span id="detailCampActiveBadge" class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-[11px] font-bold text-emerald-400">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Active Campaign
+              </span>
+              <button id="detailCampDeleteBtn" onclick="deleteCurrentCampaign()"
+                class="inline-flex items-center gap-1 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition">
+                <span class="material-symbols-outlined text-[16px]">delete</span>
+                <span>Delete Link</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Campaign Hero Overview Box -->
+          <div class="rounded-2xl border border-white/10 bg-gradient-to-br from-[#0e1b30] to-[#091120] p-6 shadow-xl space-y-5">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div class="space-y-1">
+                <h2 id="detailCampName" class="text-2xl font-black text-white tracking-tight">—</h2>
+                <p class="text-xs text-slate-400 flex items-center gap-2">
+                  <span>Created: <b id="detailCampDate" class="text-slate-300 font-semibold">—</b></span>
+                  <span>·</span>
+                  <span>Target: <b id="detailCampTarget" class="text-cyan-400 font-semibold">/</b></span>
+                </p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <button id="detailCampCopyBtn" onclick="copyDetailCampaignUrl()"
+                  class="inline-flex items-center gap-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 px-4 py-2.5 text-xs font-bold text-slate-950 transition shadow-md active:scale-95">
+                  <span class="material-symbols-outlined text-[16px]">content_copy</span>
+                  <span>Copy Link</span>
+                </button>
+                <a id="detailCampVisitBtn" href="#" target="_blank" rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 px-4 py-2.5 text-xs font-bold text-slate-200 transition active:scale-95">
+                  <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                  <span>Test Link</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Full Tracking URL Banner -->
+            <div class="flex items-center justify-between gap-2 rounded-xl bg-black/40 border border-white/8 px-4 py-3 text-xs">
+              <div class="flex items-center gap-2 min-w-0 flex-1">
+                <span class="material-symbols-outlined text-cyan-400 text-[18px]">link</span>
+                <span id="detailCampFullUrl" class="font-mono text-cyan-300 font-bold truncate select-all">—</span>
+              </div>
+            </div>
+
+            <!-- Campaign Metrics Row -->
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 pt-2 border-t border-white/6">
+              <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                <p class="text-[10px] font-bold uppercase text-slate-400">Total Clicks</p>
+                <p id="detailCampClicks" class="text-2xl font-black text-emerald-400 mt-1">0</p>
+              </div>
+              <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                <p class="text-[10px] font-bold uppercase text-slate-400">Signups / Users</p>
+                <p id="detailCampSignups" class="text-2xl font-black text-blue-400 mt-1">0</p>
+              </div>
+              <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                <p class="text-[10px] font-bold uppercase text-slate-400">Conversion Rate</p>
+                <p id="detailCampConvRate" class="text-2xl font-black text-purple-400 mt-1">0.0%</p>
+              </div>
+              <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                <p class="text-[10px] font-bold uppercase text-slate-400">Referred Users Spent</p>
+                <p id="detailCampSpent" class="text-2xl font-black text-amber-400 mt-1">₹0.00</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Registered Users Section -->
+          <div class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/20 text-blue-400">
+                  <span class="material-symbols-outlined text-[18px]">group</span>
+                </div>
+                <h3 class="text-base font-bold text-white">Registered Users via This Link</h3>
+                <span id="detailCampUsersCountBadge" class="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-bold text-slate-300">0</span>
+              </div>
+              <div class="relative min-w-[240px]">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" style="font-size:16px">search</span>
+                <input id="detailUserSearchInput" oninput="filterDetailCampaignUsers()" type="text" placeholder="Search user by email, name…"
+                  class="adm-field w-full pl-9 text-xs" style="height:38px;" />
+              </div>
+            </div>
+
+            <!-- Users Desktop Table -->
+            <div class="hidden md:block overflow-hidden rounded-2xl border border-white/8 bg-[#0d1628]">
+              <table class="w-full text-left text-xs">
+                <thead class="border-b border-white/8 bg-white/[0.02] font-bold uppercase tracking-wider text-slate-400">
+                  <tr>
+                    <th class="py-3.5 px-4">User Details</th>
+                    <th class="py-3.5 px-4">Phone / Contact</th>
+                    <th class="py-3.5 px-4">Registered Date & Time</th>
+                    <th class="py-3.5 px-4">Wallet Balance</th>
+                    <th class="py-3.5 px-4">Orders & Spent</th>
+                    <th class="py-3.5 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="detailUsersTableBody" class="divide-y divide-white/5 font-medium text-slate-300">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Users Mobile Cards List -->
+            <div id="detailUsersMobileList" class="md:hidden space-y-3">
+              <!-- Populated via JS -->
+            </div>
+
+            <!-- Empty Users State -->
+            <div id="detailUsersEmptyState" class="hidden rounded-2xl border border-white/8 bg-[#0d1628] p-10 text-center text-slate-500">
+              <span class="material-symbols-outlined text-4xl text-slate-600 mb-2">person_off</span>
+              <p class="text-sm font-bold text-slate-300">No Registered Users Yet</p>
+              <p class="text-xs text-slate-500 mt-1">Share this tracking link. As soon as visitors sign up, their profile and activity will appear here in real time.</p>
+            </div>
+          </div>
+
+        </div><!-- /trackingDetailView -->
+
+      </div><!-- /trackingTab -->
 
       <!-- ── ADD / EDIT BLOG MODAL ────────────────────────── -->
       <div id="adminBlogEditorModal"
@@ -1947,6 +2236,13 @@
         </div>
         <span class="text-sm font-bold text-slate-300">Fund History</span>
       </button>
+      <button onclick="switchTab('tracking');closeMobileMenu()"
+        class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left hover:bg-white/5">
+        <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-cyan-500/15">
+          <span class="material-symbols-outlined text-cyan-400" style="font-size:16px">link</span>
+        </div>
+        <span class="text-sm font-bold text-slate-300">Tracking Links</span>
+      </button>
       <div class="mx-2 my-3 h-px bg-white/10"></div>
       <a href="/dashboard"
         class="mb-1 flex items-center gap-3 rounded-xl border border-transparent px-4 py-3 hover:bg-white/5">
@@ -2167,6 +2463,8 @@
       if (bTab) bTab.classList.toggle('hidden', tab !== 'blogs');
       var fTab = document.getElementById('fundsTab');
       if (fTab) fTab.classList.toggle('hidden', tab !== 'funds');
+      var trTab = document.getElementById('trackingTab');
+      if (trTab) trTab.classList.toggle('hidden', tab !== 'tracking');
 
       var tabBase = 'flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition whitespace-nowrap ';
       var oBtn = document.getElementById('tabBtnOrders');
@@ -2175,14 +2473,16 @@
       var sBtn = document.getElementById('tabBtnServices');
       var bBtn = document.getElementById('tabBtnBlogs');
       var fBtn = document.getElementById('tabBtnFunds');
+      var trBtn = document.getElementById('tabBtnTracking');
       if (oBtn) oBtn.className = tabBase + (tab === 'orders' ? 'bg-white/8 text-white' : 'text-slate-400');
       if (tBtn) tBtn.className = tabBase + (tab === 'tickets' ? 'bg-white/8 text-white' : 'text-slate-400');
       if (uBtn) uBtn.className = tabBase + (tab === 'users' ? 'bg-white/8 text-white' : 'text-slate-400');
       if (sBtn) sBtn.className = tabBase + (tab === 'services' ? 'bg-white/8 text-white' : 'text-slate-400');
       if (bBtn) bBtn.className = tabBase + (tab === 'blogs' ? 'bg-white/8 text-white' : 'text-slate-400');
       if (fBtn) fBtn.className = tabBase + (tab === 'funds' ? 'bg-white/8 text-white' : 'text-slate-400');
+      if (trBtn) trBtn.className = tabBase + (tab === 'tracking' ? 'bg-white/8 text-white' : 'text-slate-400');
 
-      var activeBtn = tab === 'orders' ? oBtn : (tab === 'tickets' ? tBtn : (tab === 'users' ? uBtn : (tab === 'services' ? sBtn : (tab === 'funds' ? fBtn : bBtn))));
+      var activeBtn = tab === 'orders' ? oBtn : (tab === 'tickets' ? tBtn : (tab === 'users' ? uBtn : (tab === 'services' ? sBtn : (tab === 'funds' ? fBtn : (tab === 'tracking' ? trBtn : bBtn)))));
       if (activeBtn && activeBtn.scrollIntoView) {
         activeBtn.scrollIntoView({ inline: 'nearest', behavior: 'smooth' });
       }
@@ -2193,24 +2493,28 @@
       var navS = document.getElementById('navServices');
       var navB = document.getElementById('navBlogs');
       var navF = document.getElementById('navFunds');
+      var navTR = document.getElementById('navTracking');
       if (navO) navO.style.cssText = '';
       if (navT) navT.style.cssText = '';
       if (navU) navU.style.cssText = '';
       if (navS) navS.style.cssText = '';
       if (navB) navB.style.cssText = '';
       if (navF) navF.style.cssText = '';
+      if (navTR) navTR.style.cssText = '';
       var noText = document.getElementById('navOrdersText');
       var ntText = document.getElementById('navTicketsText');
       var nuText = document.getElementById('navUsersText');
       var nsText = document.getElementById('navServicesText');
       var nbText = document.getElementById('navBlogsText');
       var nfText = document.getElementById('navFundsText');
+      var ntrText = document.getElementById('navTrackingText');
       if (noText) noText.className = 'text-sm font-bold text-slate-300';
       if (ntText) ntText.className = 'text-sm font-bold text-slate-300';
       if (nuText) nuText.className = 'text-sm font-bold text-slate-300';
       if (nsText) nsText.className = 'text-sm font-bold text-slate-300';
       if (nbText) nbText.className = 'text-sm font-bold text-slate-300';
       if (nfText) nfText.className = 'text-sm font-bold text-slate-300';
+      if (ntrText) ntrText.className = 'text-sm font-bold text-slate-300';
 
       if (tab === 'orders') {
         if (navO) navO.style.cssText = 'background:linear-gradient(135deg,rgba(239,68,68,.13),rgba(220,38,38,.08));border:1px solid rgba(239,68,68,.22);';
@@ -2234,6 +2538,19 @@
         if (navF) navF.style.cssText = 'background:linear-gradient(135deg,rgba(16,185,129,.14),rgba(5,150,105,.09));border:1px solid rgba(16,185,129,.24);';
         if (nfText) nfText.className = 'text-sm font-bold text-white';
         if (typeof renderFundHistory === 'function') renderFundHistory();
+      } else if (tab === 'tracking') {
+        if (navTR) navTR.style.cssText = 'background:linear-gradient(135deg,rgba(6,182,212,.14),rgba(14,165,233,.09));border:1px solid rgba(6,182,212,.24);';
+        if (ntrText) ntrText.className = 'text-sm font-bold text-white';
+        if (typeof filterCampaigns === 'function') filterCampaigns();
+      }
+
+      if (window.history && window.history.replaceState) {
+        try {
+          var curU = new URL(window.location.href);
+          curU.searchParams.set('tab', tab);
+          if (tab !== 'tracking') curU.searchParams.delete('id');
+          window.history.replaceState({ tab: tab }, '', curU.toString());
+        } catch (_) {}
       }
     }
 
@@ -4079,6 +4396,7 @@
           const bt = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : (Number(b.createdAt) || 0);
           return bt - at;
         });
+        window._allOrders = orders;
         renderOrders(orders);
 
         snap.docChanges().forEach(change => {
@@ -4199,9 +4517,34 @@
           }
         });
         _isInitialUserDataAlert = false;
-      }, err => {
-        console.warn('UserData alert listener error:', err);
       });
+
+      // Real-time Users & Balances Sync
+      if (typeof loadAllUsers === 'function') {
+        loadAllUsers();
+      }
+
+      // Real-time Tracking Campaigns Listener
+      if (typeof loadAllCampaigns === 'function') {
+        loadAllCampaigns();
+      }
+
+      // Handle deep-link parameters on initial admin unlock
+      try {
+        const _params = new URLSearchParams(window.location.search);
+        const _initialTab = _params.get('tab');
+        const _initialId = _params.get('id');
+        if (_initialTab) {
+          switchTab(_initialTab);
+          if (_initialTab === 'tracking' && _initialId) {
+            setTimeout(() => {
+              if (typeof openTrackingDetailView === 'function') {
+                openTrackingDetailView(_initialId, false);
+              }
+            }, 300);
+          }
+        }
+      } catch (_) {}
 
       // Messages Listener
       window.startMsgListener = function (ticketId) {
@@ -5043,6 +5386,736 @@
         btn.textContent = 'Delete Post';
       }
     };
+
+    // ════════════════════════════════════════════════════
+    // ── CAMPAIGN & REFERRAL TRACKING LINKS MODULE ────────
+    // ════════════════════════════════════════════════════
+
+    let _unsubCampaigns = null;
+    let _unsubCampaignReferrals = null;
+    window._allCampaigns = [];
+    window._currentDetailCampaignId = null;
+    window._currentDetailReferrals = [];
+
+    // 1. Slug auto-suggestion and dynamic preview
+    window.autoSuggestSlug = function(name) {
+      const slugInput = document.getElementById('campSlugInput');
+      if (!slugInput) return;
+      if (!slugInput.dataset.manualEdited || !slugInput.value) {
+        const slug = (name || '')
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        slugInput.value = slug;
+      }
+      window.updateCampPreview();
+    };
+
+    window.updateCampPreview = function() {
+      const previewBox = document.getElementById('campLivePreview');
+      const previewUrl = document.getElementById('campLivePreviewUrl');
+      const slugInput = document.getElementById('campSlugInput');
+      const targetInput = document.getElementById('campTargetInput');
+      if (!previewBox || !previewUrl || !slugInput) return;
+
+      const slug = slugInput.value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '');
+      if (!slug) {
+        previewBox.classList.add('hidden');
+        previewBox.classList.remove('flex');
+        return;
+      }
+
+      const target = (targetInput && targetInput.value) || '/';
+      const baseUrl = 'https://getxh.in' + (target === '/' ? '/' : target);
+      const fullUrl = baseUrl + '?ref=' + encodeURIComponent(slug);
+      previewUrl.textContent = fullUrl;
+      previewBox.dataset.fullUrl = fullUrl;
+      previewBox.classList.remove('hidden');
+      previewBox.classList.add('flex');
+    };
+
+    // Attach listeners for live form preview
+    setTimeout(() => {
+      const slugInput = document.getElementById('campSlugInput');
+      if (slugInput) {
+        slugInput.addEventListener('input', () => {
+          slugInput.dataset.manualEdited = "1";
+          window.updateCampPreview();
+        });
+      }
+      const targetInput = document.getElementById('campTargetInput');
+      if (targetInput) {
+        targetInput.addEventListener('change', window.updateCampPreview);
+      }
+    }, 200);
+
+    // 2. Create new Campaign Link
+    window.submitCreateCampaign = async function() {
+      const nameInput = document.getElementById('campNameInput');
+      const slugInput = document.getElementById('campSlugInput');
+      const targetInput = document.getElementById('campTargetInput');
+      const btn = document.getElementById('btnCreateCampaign');
+
+      const name = (nameInput?.value || '').trim();
+      let slug = (slugInput?.value || '').trim().toLowerCase().replace(/[^a-z0-9-_]/g, '');
+      const target = targetInput?.value || '/';
+
+      if (!name) {
+        showAdminToast('Please enter a campaign name', true);
+        nameInput?.focus();
+        return;
+      }
+
+      if (!slug) {
+        slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        if (!slug) slug = 'ref-' + Math.random().toString(36).substring(2, 8);
+      }
+
+      if (slug.length < 2) {
+        showAdminToast('Link code / slug must be at least 2 characters', true);
+        slugInput?.focus();
+        return;
+      }
+
+      const baseUrl = 'https://getxh.in' + (target === '/' ? '/' : target);
+      const fullUrl = baseUrl + '?ref=' + encodeURIComponent(slug);
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span><span>Generating...</span>`;
+      }
+
+      try {
+        const campRef = doc(db, 'campaigns', slug);
+        const existingSnap = await getDoc(campRef);
+        if (existingSnap.exists()) {
+          showAdminToast(`Link code "${slug}" already exists! Please use a unique slug.`, true);
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<span class="material-symbols-outlined text-[18px]">add_link</span><span>Generate Tracking Link</span>`;
+          }
+          return;
+        }
+
+        const newCamp = {
+          id: slug,
+          name: name,
+          slug: slug,
+          target: target,
+          fullUrl: fullUrl,
+          clicks: 0,
+          conversions: 0,
+          createdAt: serverTimestamp(),
+          createdMillis: Date.now(),
+          active: true
+        };
+
+        await setDoc(campRef, newCamp);
+        showAdminToast(`Tracking Link Created: ?ref=${slug}`, false);
+
+        // Reset inputs
+        if (nameInput) nameInput.value = '';
+        if (slugInput) {
+          slugInput.value = '';
+          delete slugInput.dataset.manualEdited;
+        }
+        window.updateCampPreview();
+
+        // Auto copy link to clipboard
+        try {
+          await navigator.clipboard.writeText(fullUrl);
+          showAdminToast(`Link copied: ${fullUrl}`, false);
+        } catch (_) {}
+
+      } catch (err) {
+        console.error('Error creating campaign:', err);
+        showAdminToast('Failed to create tracking link: ' + (err.message || 'Unknown error'), true);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<span class="material-symbols-outlined text-[18px]">add_link</span><span>Generate Tracking Link</span>`;
+        }
+      }
+    };
+
+    // 3. Copy functions
+    window.copyCreatedCampaignLink = async function() {
+      const box = document.getElementById('campLivePreview');
+      const url = box?.dataset?.fullUrl || document.getElementById('campLivePreviewUrl')?.textContent;
+      const btn = document.getElementById('campLiveCopyBtn');
+      if (!url || url === '—') return;
+      try {
+        await navigator.clipboard.writeText(url);
+        if (btn) {
+          const orig = btn.innerHTML;
+          btn.innerHTML = `<span class="material-symbols-outlined text-[14px]">check</span> Copied!`;
+          setTimeout(() => { btn.innerHTML = orig; }, 2000);
+        }
+        showAdminToast('Link copied to clipboard!', false);
+      } catch (_) {
+        showAdminToast('Please copy manually: ' + url, false);
+      }
+    };
+
+    window.copyCampaignCardUrl = async function(url, evt, btn) {
+      if (evt && typeof evt.stopPropagation === 'function') evt.stopPropagation();
+      if (!url) return;
+      try {
+        await navigator.clipboard.writeText(url);
+        if (btn) {
+          const orig = btn.innerHTML;
+          btn.innerHTML = `<span class="material-symbols-outlined text-[13px]">check</span> Copied!`;
+          setTimeout(() => { btn.innerHTML = orig; }, 2000);
+        }
+        showAdminToast('Link copied to clipboard!', false);
+      } catch (_) {
+        showAdminToast('Link: ' + url, false);
+      }
+    };
+
+    window.copyDetailCampaignUrl = async function() {
+      const url = document.getElementById('detailCampFullUrl')?.textContent;
+      const btn = document.getElementById('detailCampCopyBtn');
+      if (!url || url === '—') return;
+      try {
+        await navigator.clipboard.writeText(url);
+        if (btn) {
+          const orig = btn.innerHTML;
+          btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">check</span><span>Copied!</span>`;
+          setTimeout(() => { btn.innerHTML = orig; }, 2000);
+        }
+        showAdminToast('Tracking link copied to clipboard!', false);
+      } catch (_) {}
+    };
+
+    // 4. Load all Campaigns & Real-time KPI counters
+    window.loadAllCampaigns = function() {
+      if (!db) return;
+      if (_unsubCampaigns) {
+        _unsubCampaigns();
+        _unsubCampaigns = null;
+      }
+
+      _unsubCampaigns = onSnapshot(collection(db, 'campaigns'), snap => {
+        const list = snap.docs.map(d => {
+          const data = d.data();
+          const createdMillis = data.createdAt?.toMillis?.() || (data.createdAt?.seconds ? data.createdAt.seconds * 1000 : (data.createdMillis || 0));
+          return {
+            id: d.id,
+            ...data,
+            createdMillis: createdMillis
+          };
+        });
+
+        window._allCampaigns = list;
+
+        // Aggregate KPI metrics
+        let totalClicks = 0;
+        let totalSignups = 0;
+        list.forEach(c => {
+          totalClicks += (Number(c.clicks) || 0);
+          totalSignups += (Number(c.conversions) || 0);
+        });
+
+        const totalCampEl = document.getElementById('trackStatTotal');
+        const clicksEl = document.getElementById('trackStatClicks');
+        const signupsEl = document.getElementById('trackStatSignups');
+        const convEl = document.getElementById('trackStatConv');
+
+        if (totalCampEl) totalCampEl.textContent = list.length;
+        if (clicksEl) clicksEl.textContent = totalClicks.toLocaleString('en-IN');
+        if (signupsEl) signupsEl.textContent = totalSignups.toLocaleString('en-IN');
+        if (convEl) {
+          const rate = totalClicks > 0 ? ((totalSignups / totalClicks) * 100).toFixed(1) : '0.0';
+          convEl.textContent = rate + '%';
+        }
+
+        // If detail view is currently open, refresh its hero stats
+        if (window._currentDetailCampaignId) {
+          const curCamp = list.find(c => c.id === window._currentDetailCampaignId);
+          if (curCamp) {
+            updateTrackingDetailHero(curCamp);
+          }
+        }
+
+        window.filterCampaigns();
+      }, err => {
+        console.error('Campaigns listener error:', err);
+        showAdminToast('Campaigns sync error: ' + (err.message || 'Error'), true);
+      });
+    };
+
+    // 5. Filter & Render Campaigns Grid
+    window.filterCampaigns = function() {
+      const search = (document.getElementById('trackSearchInput')?.value || '').toLowerCase().trim();
+      const sort = document.getElementById('trackSortFilter')?.value || 'newest';
+
+      let list = (window._allCampaigns || []).slice();
+
+      if (search) {
+        list = list.filter(c => {
+          const name = (c.name || '').toLowerCase();
+          const slug = (c.slug || c.id || '').toLowerCase();
+          const url = (c.fullUrl || '').toLowerCase();
+          return name.includes(search) || slug.includes(search) || url.includes(search);
+        });
+      }
+
+      // Sort
+      if (sort === 'newest') {
+        list.sort((a, b) => (b.createdMillis || 0) - (a.createdMillis || 0));
+      } else if (sort === 'clicks') {
+        list.sort((a, b) => (Number(b.clicks) || 0) - (Number(a.clicks) || 0));
+      } else if (sort === 'signups') {
+        list.sort((a, b) => (Number(b.conversions) || 0) - (Number(a.conversions) || 0));
+      } else if (sort === 'conversion') {
+        list.sort((a, b) => {
+          const rateA = a.clicks ? (a.conversions || 0) / a.clicks : 0;
+          const rateB = b.clicks ? (b.conversions || 0) / b.clicks : 0;
+          return rateB - rateA;
+        });
+      }
+
+      window.renderCampaigns(list);
+    };
+
+    window.renderCampaigns = function(list) {
+      const grid = document.getElementById('campaignsGrid');
+      const emptyState = document.getElementById('campaignsEmptyState');
+      if (!grid) return;
+
+      if (!list || list.length === 0) {
+        grid.innerHTML = '';
+        grid.classList.add('hidden');
+        if (emptyState) emptyState.classList.remove('hidden');
+        return;
+      }
+
+      grid.classList.remove('hidden');
+      if (emptyState) emptyState.classList.add('hidden');
+
+      grid.innerHTML = list.map(c => {
+        const clicks = Number(c.clicks) || 0;
+        const signups = Number(c.conversions) || 0;
+        const convRate = clicks > 0 ? ((signups / clicks) * 100).toFixed(1) : '0.0';
+        const fullUrl = c.fullUrl || ('https://getxh.in' + (c.target || '/') + '?ref=' + c.slug);
+
+        return `
+        <div class="group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-[#0d1628] to-[#0a1120] p-5 shadow-lg transition-all duration-200 hover:border-cyan-500/40 hover:shadow-[0_10px_30px_rgba(6,182,212,0.12)]">
+          
+          <div>
+            <!-- Header: Name & Target -->
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 border border-cyan-500/25 text-cyan-400">
+                  <span class="material-symbols-outlined text-[20px]">campaign</span>
+                </div>
+                <div class="min-w-0">
+                  <h4 class="font-bold text-white text-sm truncate group-hover:text-cyan-300 transition-colors" title="${escAttr(c.name)}">${escHtml(c.name)}</h4>
+                  <span class="inline-flex items-center gap-1 text-[10px] text-slate-400">
+                    Target: <b class="text-slate-300 font-mono">${escHtml(c.target || '/')}</b>
+                  </span>
+                </div>
+              </div>
+              <span class="inline-flex flex-shrink-0 items-center gap-1 rounded-md border border-cyan-500/25 bg-cyan-500/10 px-2 py-0.5 font-mono text-[11px] font-bold text-cyan-300">
+                ?ref=${escHtml(c.slug)}
+              </span>
+            </div>
+
+            <!-- URL bar with 1-click copy -->
+            <div class="flex items-center justify-between gap-2 rounded-xl bg-black/40 border border-white/6 px-3 py-2 text-xs mb-4">
+              <span class="font-mono text-[11px] text-slate-300 truncate select-all flex-1">${escHtml(fullUrl)}</span>
+              <button onclick="copyCampaignCardUrl('${escAttr(fullUrl)}', event, this)" title="Copy Link"
+                class="flex-shrink-0 inline-flex items-center gap-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 px-2 py-1 text-[10px] font-bold transition active:scale-95">
+                <span class="material-symbols-outlined text-[13px]">content_copy</span> Copy
+              </button>
+            </div>
+
+            <!-- Stats 3-box row -->
+            <div class="grid grid-cols-3 gap-2 rounded-xl bg-white/[0.02] border border-white/5 p-2.5 mb-4 text-center">
+              <div>
+                <p class="text-[10px] font-bold uppercase text-slate-500">Clicks</p>
+                <p class="text-base font-black text-emerald-400 mt-0.5">${clicks.toLocaleString('en-IN')}</p>
+              </div>
+              <div class="border-x border-white/5">
+                <p class="text-[10px] font-bold uppercase text-slate-500">Users</p>
+                <p class="text-base font-black text-blue-400 mt-0.5">${signups.toLocaleString('en-IN')}</p>
+              </div>
+              <div>
+                <p class="text-[10px] font-bold uppercase text-slate-500">Conv %</p>
+                <p class="text-base font-black text-purple-400 mt-0.5">${convRate}%</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons -->
+          <div class="flex items-center justify-between gap-2 border-t border-white/6 pt-3">
+            <button onclick="openTrackingDetailView('${escAttr(c.id)}')"
+              class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 px-3 py-2 text-xs font-bold text-cyan-300 transition active:scale-95">
+              <span>View Details & Users</span>
+              <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </button>
+            <button onclick="deleteCampaign('${escAttr(c.id)}', '${escAttr(c.name)}', event)" title="Delete tracking link"
+              class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-rose-500/25 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 transition active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">delete</span>
+            </button>
+          </div>
+
+        </div>`;
+      }).join('');
+    };
+
+    // 6. Dedicated Detail Page View (SPA Deep-Linking)
+    function updateTrackingDetailHero(camp) {
+      const nameEl = document.getElementById('detailCampName');
+      const dateEl = document.getElementById('detailCampDate');
+      const targetEl = document.getElementById('detailCampTarget');
+      const fullUrlEl = document.getElementById('detailCampFullUrl');
+      const clicksEl = document.getElementById('detailCampClicks');
+      const signupsEl = document.getElementById('detailCampSignups');
+      const convRateEl = document.getElementById('detailCampConvRate');
+      const visitBtn = document.getElementById('detailCampVisitBtn');
+
+      const fullUrl = camp.fullUrl || ('https://getxh.in' + (camp.target || '/') + '?ref=' + camp.slug);
+
+      if (nameEl) nameEl.textContent = camp.name || camp.slug;
+      if (dateEl) {
+        const d = camp.createdMillis ? new Date(camp.createdMillis) : new Date();
+        dateEl.textContent = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      }
+      if (targetEl) targetEl.textContent = camp.target || '/';
+      if (fullUrlEl) fullUrlEl.textContent = fullUrl;
+      if (visitBtn) visitBtn.href = fullUrl;
+
+      const clicks = Number(camp.clicks) || 0;
+      const signups = Number(camp.conversions) || 0;
+      const convRate = clicks > 0 ? ((signups / clicks) * 100).toFixed(1) : '0.0';
+
+      if (clicksEl) clicksEl.textContent = clicks.toLocaleString('en-IN');
+      if (signupsEl) signupsEl.textContent = signups.toLocaleString('en-IN');
+      if (convRateEl) convRateEl.textContent = convRate + '%';
+    }
+
+    window.openTrackingDetailView = function(campaignId, pushState = true) {
+      const listView = document.getElementById('trackingListView');
+      const detailView = document.getElementById('trackingDetailView');
+      if (!listView || !detailView) return;
+
+      const camp = (window._allCampaigns || []).find(c => c.id === campaignId) || {
+        id: campaignId,
+        slug: campaignId,
+        name: campaignId,
+        target: '/',
+        clicks: 0,
+        conversions: 0
+      };
+
+      window._currentDetailCampaignId = campaignId;
+
+      // SPA Deep-linking URL update
+      if (pushState) {
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.set('tab', 'tracking');
+          url.searchParams.set('id', campaignId);
+          window.history.pushState({ tab: 'tracking', id: campaignId }, '', url.toString());
+        } catch (_) {}
+      }
+
+      // Switch views
+      listView.classList.add('hidden');
+      detailView.classList.remove('hidden');
+
+      // Scroll to top of tab
+      document.getElementById('trackingTab')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      updateTrackingDetailHero(camp);
+      window.loadCampaignReferrals(campaignId);
+    };
+
+    window.closeTrackingDetailView = function(pushState = true) {
+      const listView = document.getElementById('trackingListView');
+      const detailView = document.getElementById('trackingDetailView');
+      if (!listView || !detailView) return;
+
+      if (_unsubCampaignReferrals) {
+        _unsubCampaignReferrals();
+        _unsubCampaignReferrals = null;
+      }
+      window._currentDetailCampaignId = null;
+
+      detailView.classList.add('hidden');
+      listView.classList.remove('hidden');
+
+      if (pushState) {
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.set('tab', 'tracking');
+          url.searchParams.delete('id');
+          window.history.pushState({ tab: 'tracking' }, '', url.toString());
+        } catch (_) {}
+      }
+    };
+
+    // 7. Load Campaign Referrals & Sync with Master Users / Orders
+    window.loadCampaignReferrals = function(campaignId) {
+      if (!db || !campaignId) return;
+
+      if (_unsubCampaignReferrals) {
+        _unsubCampaignReferrals();
+        _unsubCampaignReferrals = null;
+      }
+
+      const tableBody = document.getElementById('detailUsersTableBody');
+      const mobileList = document.getElementById('detailUsersMobileList');
+      const emptyState = document.getElementById('detailUsersEmptyState');
+      const countBadge = document.getElementById('detailCampUsersCountBadge');
+
+      if (tableBody) {
+        tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">
+          <div class="inline-block h-6 w-6 rounded-full border-2 border-slate-700 border-t-cyan-400 animate-spin mb-2"></div>
+          <p class="text-xs font-semibold">Loading registered users for this campaign…</p>
+        </td></tr>`;
+      }
+      if (mobileList) mobileList.innerHTML = '';
+      if (emptyState) emptyState.classList.add('hidden');
+
+      _unsubCampaignReferrals = onSnapshot(collection(db, 'campaigns', campaignId, 'referrals'), snap => {
+        const referrals = snap.docs.map(d => {
+          const data = d.data();
+          return {
+            uid: d.id,
+            ...data
+          };
+        });
+
+        // Sort newest registered first
+        referrals.sort((a, b) => {
+          const ta = a.registeredAt?.toMillis?.() || (a.registeredAt?.seconds ? a.registeredAt.seconds * 1000 : 0) || a.createdAt?.toMillis?.() || (a.createdAt?.seconds ? a.createdAt.seconds * 1000 : 0) || (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+          const tb = b.registeredAt?.toMillis?.() || (b.registeredAt?.seconds ? b.registeredAt.seconds * 1000 : 0) || b.createdAt?.toMillis?.() || (b.createdAt?.seconds ? b.createdAt.seconds * 1000 : 0) || (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+          return tb - ta;
+        });
+
+        window._currentDetailReferrals = referrals;
+        if (countBadge) countBadge.textContent = referrals.length;
+
+        window.filterDetailCampaignUsers();
+      }, err => {
+        console.error('Error loading referrals:', err);
+        if (tableBody) {
+          tableBody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-rose-400 text-xs">Failed to load referrals: ${escHtml(err.message || 'Error')}</td></tr>`;
+        }
+      });
+    };
+
+    window.filterDetailCampaignUsers = function() {
+      const search = (document.getElementById('detailUserSearchInput')?.value || '').toLowerCase().trim();
+      let list = (window._currentDetailReferrals || []).slice();
+
+      if (search) {
+        list = list.filter(r => {
+          const master = window._masterUserMap ? (window._masterUserMap[r.uid] || {}) : {};
+          const email = (r.email || master.email || '').toLowerCase();
+          const name = (r.username || master.username || '').toLowerCase();
+          const mobile = (r.mobile || master.mobile || '').toLowerCase();
+          const uid = (r.uid || '').toLowerCase();
+          return email.includes(search) || name.includes(search) || mobile.includes(search) || uid.includes(search);
+        });
+      }
+
+      window.renderDetailCampaignUsers(list);
+    };
+
+    window.renderDetailCampaignUsers = function(list) {
+      const tableBody = document.getElementById('detailUsersTableBody');
+      const mobileList = document.getElementById('detailUsersMobileList');
+      const emptyState = document.getElementById('detailUsersEmptyState');
+      const spentStatEl = document.getElementById('detailCampSpent');
+
+      let totalReferredSpent = 0;
+
+      if (!list || list.length === 0) {
+        if (tableBody) tableBody.innerHTML = '';
+        if (mobileList) mobileList.innerHTML = '';
+        if (emptyState) emptyState.classList.remove('hidden');
+        if (spentStatEl) spentStatEl.textContent = '₹0.00';
+        return;
+      }
+
+      if (emptyState) emptyState.classList.add('hidden');
+
+      const desktopRows = [];
+      const mobileCards = [];
+
+      list.forEach(r => {
+        const uid = r.uid;
+        const m = window._masterUserMap ? (window._masterUserMap[uid] || {}) : {};
+
+        const email = r.email || m.email || '—';
+        const name = r.username || m.username || 'User';
+        const mobile = r.mobile || m.mobile || '—';
+
+        // Balance from userBalanceMap
+        const bal = (window._userBalanceMap && window._userBalanceMap[uid] !== undefined)
+          ? window._userBalanceMap[uid]
+          : (m.balance !== undefined ? m.balance : 0);
+
+        // Orders & Spent
+        const userOrders = (window._allOrders || []).filter(o => o.userId === uid);
+        const orderCount = userOrders.length || Number(m.totalOrders || 0);
+        let userSpent = userOrders.reduce((sum, o) => sum + (Number(o.amount || o.charge || o.cost || 0)), 0);
+        if (!userSpent && m.totalSpent) userSpent = Number(m.totalSpent);
+
+        totalReferredSpent += userSpent;
+
+        // Date formatting
+        const rawDate = r.registeredAt || r.createdAt || m.createdAt;
+        let dateObj = null;
+        if (rawDate && rawDate.toDate) dateObj = rawDate.toDate();
+        else if (rawDate && rawDate.seconds) dateObj = new Date(rawDate.seconds * 1000);
+        else if (rawDate) dateObj = new Date(rawDate);
+        else dateObj = new Date();
+
+        const dateFormatted = isNaN(dateObj.getTime()) ? '—' : dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        const timeFormatted = isNaN(dateObj.getTime()) ? '' : dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+        desktopRows.push(`
+          <tr class="hover:bg-white/[0.02] transition">
+            <td class="py-3 px-4">
+              <div class="flex items-center gap-2.5">
+                <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 text-cyan-400 font-bold border border-cyan-500/30 text-xs">
+                  ${escHtml(name.charAt(0).toUpperCase())}
+                </div>
+                <div>
+                  <p class="font-bold text-white text-xs">${escHtml(name)}</p>
+                  <p class="text-[11px] text-slate-400 font-mono">${escHtml(email)}</p>
+                </div>
+              </div>
+            </td>
+            <td class="py-3 px-4">
+              <span class="font-mono text-xs text-slate-300">${escHtml(mobile)}</span>
+            </td>
+            <td class="py-3 px-4">
+              <p class="text-xs text-slate-300">${escHtml(dateFormatted)}</p>
+              <p class="text-[10px] text-slate-500 font-mono">${escHtml(timeFormatted)}</p>
+            </td>
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1 font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20 text-xs">
+                ₹${Number(bal).toFixed(2)}
+              </span>
+            </td>
+            <td class="py-3 px-4">
+              <p class="font-bold text-white text-xs">₹${Number(userSpent).toFixed(2)}</p>
+              <p class="text-[11px] text-slate-400">${orderCount} order${orderCount === 1 ? '' : 's'}</p>
+            </td>
+            <td class="py-3 px-4 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                <button onclick="switchTab('users'); if (typeof searchUsers === 'function') { const inp = document.getElementById('userSearchInput'); if(inp){inp.value='${escAttr(email)}'; searchUsers();}} "
+                  title="View in Users Tab"
+                  class="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 px-2.5 py-1 text-[11px] font-bold text-slate-300 transition">
+                  <span class="material-symbols-outlined text-[14px]">person_search</span>
+                  <span>Inspect</span>
+                </button>
+                <button onclick="navigator.clipboard.writeText('${escAttr(uid)}'); showAdminToast('User ID copied!', false);"
+                  title="Copy UID"
+                  class="p-1 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition">
+                  <span class="material-symbols-outlined text-[14px]">fingerprint</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `);
+
+        mobileCards.push(`
+          <div class="rounded-2xl border border-white/8 bg-[#0d1628] p-4 space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5">
+                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-500/20 text-cyan-400 font-bold border border-cyan-500/30 text-xs">
+                  ${escHtml(name.charAt(0).toUpperCase())}
+                </div>
+                <div>
+                  <p class="font-bold text-white text-xs">${escHtml(name)}</p>
+                  <p class="text-[11px] text-slate-400 font-mono">${escHtml(email)}</p>
+                </div>
+              </div>
+              <span class="font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20 text-xs">
+                ₹${Number(bal).toFixed(2)}
+              </span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[11px] border-t border-white/5 pt-2 text-slate-400">
+              <div>Contact: <b class="text-slate-300 font-mono">${escHtml(mobile)}</b></div>
+              <div>Registered: <b class="text-slate-300">${escHtml(dateFormatted)}</b></div>
+              <div>Orders: <b class="text-white">${orderCount}</b></div>
+              <div>Spent: <b class="text-amber-400">₹${Number(userSpent).toFixed(2)}</b></div>
+            </div>
+            <div class="flex items-center justify-between pt-1 border-t border-white/5 text-xs">
+              <button onclick="switchTab('users'); if (typeof searchUsers === 'function') { const inp = document.getElementById('userSearchInput'); if(inp){inp.value='${escAttr(email)}'; searchUsers();}} "
+                class="inline-flex items-center gap-1 text-cyan-400 font-bold hover:underline">
+                <span class="material-symbols-outlined text-[14px]">person_search</span>
+                <span>View in Users Tab</span>
+              </button>
+              <button onclick="navigator.clipboard.writeText('${escAttr(uid)}'); showAdminToast('User UID copied!', false);"
+                class="text-slate-400 hover:text-white inline-flex items-center gap-1 font-mono text-[11px]">
+                <span class="material-symbols-outlined text-[12px]">fingerprint</span>
+                <span>Copy UID</span>
+              </button>
+            </div>
+          </div>
+        `);
+      });
+
+      if (tableBody) tableBody.innerHTML = desktopRows.join('');
+      if (mobileList) mobileList.innerHTML = mobileCards.join('');
+      if (spentStatEl) spentStatEl.textContent = '₹' + totalReferredSpent.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
+
+    // 8. Delete Campaign
+    window.deleteCampaign = async function(campaignId, name, evt) {
+      if (evt && typeof evt.stopPropagation === 'function') evt.stopPropagation();
+      if (!campaignId) return;
+
+      const displayName = name || campaignId;
+      if (!confirm(`Are you sure you want to delete tracking link "${displayName}"?\n\nNew clicks on this link will no longer be tracked.`)) {
+        return;
+      }
+
+      try {
+        await deleteDoc(doc(db, 'campaigns', campaignId));
+        showAdminToast(`Tracking link "${displayName}" deleted`, false);
+        if (window._currentDetailCampaignId === campaignId) {
+          window.closeTrackingDetailView(true);
+        }
+      } catch (err) {
+        console.error('Error deleting campaign:', err);
+        showAdminToast('Failed to delete tracking link: ' + (err.message || 'Error'), true);
+      }
+    };
+
+    window.deleteCurrentCampaign = function() {
+      if (!window._currentDetailCampaignId) return;
+      const camp = (window._allCampaigns || []).find(c => c.id === window._currentDetailCampaignId);
+      window.deleteCampaign(window._currentDetailCampaignId, camp?.name || window._currentDetailCampaignId);
+    };
+
+    // 9. Browser History Popstate Navigation (SPA deep-links)
+    window.addEventListener('popstate', evt => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        const id = params.get('id');
+        if (tab) {
+          switchTab(tab);
+          if (tab === 'tracking') {
+            if (id) {
+              window.openTrackingDetailView(id, false);
+            } else {
+              window.closeTrackingDetailView(false);
+            }
+          }
+        }
+      } catch (_) {}
+    });
 
     // ── Auth Guard ───────────────────────────────────────
     onAuthStateChanged(auth, async user => {
