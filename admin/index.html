@@ -554,6 +554,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         <span id="navServicesText" class="text-sm font-bold text-slate-300">Services</span>
       </button>
 
+      <button id="navBlogs" onclick="switchTab('blogs')"
+        class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left transition-all hover:bg-white/5 hover:border-white/10">
+        <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-purple-500/15">
+          <span class="material-symbols-outlined text-purple-400" style="font-size:16px">article</span>
+        </div>
+        <span id="navBlogsText" class="text-sm font-bold text-slate-300">Blogs</span>
+      </button>
+
       <div class="mx-2 my-3 h-px bg-white/10"></div>
 
       <a href="/dashboard"
@@ -608,6 +616,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
           <button id="tabBtnServices" onclick="switchTab('services')"
             class="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold text-slate-400 transition whitespace-nowrap">
             <span class="material-symbols-outlined" style="font-size:14px">category</span>Services
+          </button>
+          <button id="tabBtnBlogs" onclick="switchTab('blogs')"
+            class="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold text-slate-400 transition whitespace-nowrap">
+            <span class="material-symbols-outlined" style="font-size:14px">article</span>Blogs
           </button>
         </div>
       </div>
@@ -850,6 +862,244 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       </div>
 
     </div><!-- /servicesTab -->
+
+    <!-- ── BLOGS TAB ──────────────────────────── -->
+    <div id="blogsTab" class="hidden flex-1 p-4 lg:p-6">
+      
+      <!-- Stats Row -->
+      <div class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div class="stat-card px-4 py-3">
+          <p class="text-[10px] font-black uppercase tracking-wider text-slate-500">Total Posts</p>
+          <p id="blogStatTotal" class="mt-1 text-2xl font-black text-white">0</p>
+        </div>
+        <div class="stat-card px-4 py-3">
+          <p class="text-[10px] font-black uppercase tracking-wider text-emerald-600">Published</p>
+          <p id="blogStatPublished" class="mt-1 text-2xl font-black text-emerald-400">0</p>
+        </div>
+        <div class="stat-card px-4 py-3">
+          <p class="text-[10px] font-black uppercase tracking-wider text-amber-600">Drafts</p>
+          <p id="blogStatDrafts" class="mt-1 text-2xl font-black text-amber-400">0</p>
+        </div>
+      </div>
+
+      <!-- Action & Filter Bar -->
+      <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center">
+          <div class="relative flex-1">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" style="font-size:18px">search</span>
+            <input id="blogSearchInput" oninput="filterAdminBlogs()" type="text"
+              placeholder="Search blog title, category, or excerpt…"
+              class="adm-field w-full pl-10" style="height:44px;"/>
+          </div>
+          <select id="blogCategoryFilter" onchange="filterAdminBlogs()" class="status-sel h-11 py-2 text-xs">
+            <option value="">All Categories</option>
+          </select>
+          <select id="blogStatusFilter" onchange="filterAdminBlogs()" class="status-sel h-11 py-2 text-xs">
+            <option value="">All Status</option>
+            <option value="published">Published Only</option>
+            <option value="draft">Drafts Only</option>
+          </select>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="openAdminNewBlog()"
+            class="flex h-11 items-center gap-1.5 rounded-xl px-4 text-xs font-bold text-white transition active:scale-95"
+            style="background:linear-gradient(135deg,#a855f7,#9333ea);box-shadow:0 4px 14px rgba(168,85,247,.3);">
+            <span class="material-symbols-outlined" style="font-size:16px">add</span>
+            <span>New Blog Post</span>
+          </button>
+          <a href="/blogs" target="_blank"
+            class="flex h-11 items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-bold text-slate-200 transition hover:bg-white/10 active:scale-95">
+            <span class="material-symbols-outlined" style="font-size:16px">open_in_new</span>
+            <span class="hidden sm:inline">View Live Blog</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Blogs List Container -->
+      <div id="adminBlogsList" class="space-y-3">
+        <div class="rounded-2xl border border-white/8 bg-[#0d1628] p-10 text-center text-slate-500">
+          <div class="mx-auto mb-3 h-8 w-8 rounded-full border-2 border-[#1e2a4a] border-t-purple-400" style="animation:spin .7s linear infinite"></div>
+          <p class="text-sm font-semibold">Loading blog posts from Firestore…</p>
+        </div>
+      </div>
+
+    </div><!-- /blogsTab -->
+
+<!-- ── ADD / EDIT BLOG MODAL ────────────────────────── -->
+<div id="adminBlogEditorModal" class="fixed inset-0 z-[130] hidden items-center justify-center bg-black/75 p-4 backdrop-blur-md" onclick="if(event.target===this)closeAdminBlogEditorModal()">
+  <div class="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-white/10 bg-[#0d1628] p-6 shadow-2xl" style="background:linear-gradient(180deg,#0f1b33 0%,#09101f 100%);">
+    <div class="mb-4 flex items-center justify-between border-b border-white/8 pb-3">
+      <div class="flex items-center gap-2">
+        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/20">
+          <span class="material-symbols-outlined text-purple-400" style="font-size:18px">article</span>
+        </div>
+        <h3 id="adminBlogModalTitle" class="text-base font-bold text-white">New Blog Post</h3>
+      </div>
+      <button onclick="closeAdminBlogEditorModal()" class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 text-slate-400 hover:text-white">
+        <span class="material-symbols-outlined" style="font-size:18px">close</span>
+      </button>
+    </div>
+
+    <form onsubmit="event.preventDefault();saveAdminBlog();" class="space-y-4">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Post Title *</label>
+          <input type="text" id="adminBlogTitle" required placeholder="e.g. How to Grow Instagram Followers Fast in 2026" class="adm-field w-full" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Category</label>
+          <input type="text" id="adminBlogCategory" placeholder="e.g. Instagram Growth" list="blogCatDatalist" class="adm-field w-full" />
+          <datalist id="blogCatDatalist">
+            <option value="Instagram Growth"></option>
+            <option value="YouTube Tips"></option>
+            <option value="SMM Guide"></option>
+            <option value="Panel Updates"></option>
+            <option value="Marketing Strategy"></option>
+          </datalist>
+        </div>
+      </div>
+
+      <div>
+        <label class="mb-1 block text-xs font-semibold text-slate-400">Excerpt / Short Summary * (For SEO & Listing Card)</label>
+        <textarea id="adminBlogExcerpt" rows="2" required placeholder="A 2-3 line brief summary shown on the blog list page..." class="adm-field w-full text-xs"></textarea>
+      </div>
+
+      <!-- Cover Image Section -->
+      <div class="rounded-xl border border-white/8 bg-white/3 p-4">
+        <label class="mb-2 block text-xs font-bold text-white">Header / Cover Image</label>
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <!-- File Upload Button -->
+          <label class="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-xl bg-purple-600/20 px-4 text-xs font-bold text-purple-300 border border-purple-500/30 transition hover:bg-purple-600/30">
+            <span class="material-symbols-outlined" style="font-size:18px">cloud_upload</span>
+            <span>Upload Image File</span>
+            <input type="file" id="adminBlogFileInput" accept="image/*" class="hidden" onchange="handleAdminBlogFileUpload(this)" />
+          </label>
+          <span class="text-xs text-slate-500 text-center font-semibold sm:text-left">OR</span>
+          <!-- Image URL Input -->
+          <input type="text" id="adminBlogCoverImage" oninput="updateAdminBlogImagePreview(this.value)" placeholder="Paste Image URL (https://...)" class="adm-field flex-1 text-xs" />
+        </div>
+        <!-- Live Preview Frame -->
+        <div id="adminBlogImgPreviewFrame" class="mt-3 hidden relative rounded-xl overflow-hidden border border-white/10 max-h-48 bg-slate-900">
+          <img id="adminBlogPreviewImg" src="" alt="Preview" class="w-full h-44 object-cover" />
+          <button type="button" onclick="clearAdminBlogCoverImage()" class="absolute top-2 right-2 flex h-7 px-2 items-center gap-1 rounded-lg bg-black/70 text-[11px] font-bold text-red-400 backdrop-blur border border-red-500/30 hover:bg-red-500 hover:text-white transition">
+            <span class="material-symbols-outlined" style="font-size:14px">delete</span> Remove Image
+          </button>
+        </div>
+      </div>
+
+      <!-- Body Content with Formatting Toolbar -->
+      <div>
+        <div class="mb-1 flex items-center justify-between flex-wrap gap-2">
+          <label class="text-xs font-semibold text-slate-400">Body Content * (HTML format allowed)</label>
+          <!-- Formatting Quick Toolbar -->
+          <div class="flex items-center gap-1 flex-wrap">
+            <button type="button" onclick="insertBlogTag('<h2>','</h2>')" class="px-2 py-1 rounded bg-white/5 border border-white/8 text-[11px] font-bold text-slate-300 hover:bg-white/10" title="Add Heading 2">H2</button>
+            <button type="button" onclick="insertBlogTag('<h3>','</h3>')" class="px-2 py-1 rounded bg-white/5 border border-white/8 text-[11px] font-bold text-slate-300 hover:bg-white/10" title="Add Heading 3">H3</button>
+            <button type="button" onclick="insertBlogTag('<p>','</p>')" class="px-2 py-1 rounded bg-white/5 border border-white/8 text-[11px] font-bold text-slate-300 hover:bg-white/10" title="Add Paragraph">P</button>
+            <button type="button" onclick="insertBlogTag('<strong>','</strong>')" class="px-2 py-1 rounded bg-white/5 border border-white/8 text-[11px] font-bold text-slate-300 hover:bg-white/10" title="Bold">B</button>
+            <button type="button" onclick="insertBlogTag('<em>','</em>')" class="px-2 py-1 rounded bg-white/5 border border-white/8 text-[11px] font-bold text-slate-300 hover:bg-white/10" title="Italic">I</button>
+            <button type="button" onclick="insertBlogTag('<a href=\&quot;https://\&quot;>','</a>')" class="px-2 py-1 rounded bg-white/5 border border-white/8 text-[11px] font-bold text-slate-300 hover:bg-white/10" title="Link">Link</button>
+            <button type="button" onclick="insertBlogTag('<ul>\n  <li>','</li>\n</ul>')" class="px-2 py-1 rounded bg-white/5 border border-white/8 text-[11px] font-bold text-slate-300 hover:bg-white/10" title="Bullet List">List</button>
+            <button type="button" onclick="insertBlogTag('<blockquote>','</blockquote>')" class="px-2 py-1 rounded bg-white/5 border border-white/8 text-[11px] font-bold text-slate-300 hover:bg-white/10" title="Quote">Quote</button>
+          </div>
+        </div>
+        <textarea id="adminBlogBody" rows="14" required placeholder="Write your full blog article content here... HTML tags like <h2>, <p>, <ul>, <strong> are supported." class="adm-field w-full text-xs font-mono leading-relaxed"></textarea>
+      </div>
+
+      <!-- Published Toggle -->
+      <div class="flex items-center justify-between rounded-xl border border-white/8 bg-white/3 p-3">
+        <div>
+          <p class="text-xs font-bold text-white">Publishing Status</p>
+          <p id="adminBlogStatusText" class="text-[11px] text-slate-400">Draft (hidden from main blog section)</p>
+        </div>
+        <label class="relative inline-flex cursor-pointer items-center">
+          <input type="checkbox" id="adminBlogPublishedToggle" onchange="document.getElementById('adminBlogStatusText').textContent = this.checked ? 'Published (visible on /blogs and /blog)' : 'Draft (hidden from main blog section)'" class="sr-only peer">
+          <div class="h-6 w-11 rounded-full bg-slate-700 peer-checked:bg-purple-600 peer-focus:outline-none after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full"></div>
+        </label>
+      </div>
+
+      <div class="flex items-center justify-between pt-2">
+        <button type="button" onclick="previewAdminBlogForm()" class="flex items-center gap-1.5 rounded-xl border border-sky-500/30 bg-sky-500/10 px-4 py-2 text-xs font-bold text-sky-400 hover:bg-sky-500/20 transition">
+          <span class="material-symbols-outlined" style="font-size:16px">visibility</span>
+          <span>Live Preview</span>
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="closeAdminBlogEditorModal()" class="rounded-xl border border-white/10 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-white/5">Cancel</button>
+          <button type="submit" id="btnSaveBlogModal" class="flex items-center gap-1.5 rounded-xl bg-purple-600 px-5 py-2 text-xs font-bold text-white transition hover:bg-purple-500">
+            <span class="material-symbols-outlined" style="font-size:16px">check</span>
+            <span>Save Post</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── LIVE BLOG PREVIEW MODAL ───────────────────────── -->
+<div id="adminBlogPreviewModal" class="fixed inset-0 z-[150] hidden flex-col bg-[#090a0f] text-slate-100 overflow-y-auto">
+  <!-- Top Preview Bar -->
+  <div class="sticky top-0 z-50 flex items-center justify-between border-b border-purple-500/30 bg-[#0f172a]/95 px-6 py-3 backdrop-blur shadow-lg">
+    <div class="flex items-center gap-2">
+      <span class="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span class="text-xs font-extrabold uppercase tracking-wider text-purple-300">Live Blog Preview Mode</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="closeAdminBlogPreviewModal()" class="flex items-center gap-1.5 rounded-xl bg-purple-600 px-4 py-2 text-xs font-bold text-white hover:bg-purple-500 transition">
+        <span class="material-symbols-outlined" style="font-size:16px">edit</span>
+        <span>Back to Editor</span>
+      </button>
+      <button onclick="closeAdminBlogPreviewModal()" class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-slate-300 hover:text-white">
+        <span class="material-symbols-outlined" style="font-size:18px">close</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Preview Rendering Container (matches /blog page styling) -->
+  <div class="mx-auto w-full max-w-3xl px-4 py-10">
+    <!-- Category & Date Meta -->
+    <div class="mb-4 flex items-center gap-3 text-xs flex-wrap">
+      <span id="prevBlogCategory" class="rounded-full bg-purple-500/15 border border-purple-500/30 px-3 py-1 font-extrabold uppercase tracking-wider text-purple-400">Category</span>
+      <span id="prevBlogDate" class="text-slate-400 font-semibold">Today</span>
+      <span class="h-1 w-1 rounded-full bg-slate-600"></span>
+      <span id="prevBlogReadingTime" class="text-slate-400 font-semibold">2 min read</span>
+      <span class="h-1 w-1 rounded-full bg-slate-600"></span>
+      <span class="text-slate-400 font-semibold">By GETXH Team</span>
+    </div>
+
+    <!-- Title -->
+    <h1 id="prevBlogTitle" class="mb-6 text-3xl font-black text-white sm:text-4xl leading-tight">Post Title</h1>
+
+    <!-- Excerpt Callout -->
+    <div id="prevBlogExcerpt" class="mb-8 rounded-2xl border border-white/10 bg-white/5 p-5 text-base font-medium text-slate-300 leading-relaxed italic">
+      Excerpt text...
+    </div>
+
+    <!-- Cover Image Frame -->
+    <div id="prevBlogCoverFrame" class="mb-8 overflow-hidden rounded-2xl border border-white/10 bg-slate-900 shadow-2xl">
+      <img id="prevBlogCoverImg" src="" alt="Cover" class="w-full max-h-[440px] object-cover" onerror="this.parentElement.style.display='none'" />
+    </div>
+
+    <!-- Article Body HTML Content -->
+    <div id="prevBlogBody" class="prose prose-invert max-w-none text-slate-200 leading-relaxed space-y-4 text-base" style="font-size:1rem;line-height:1.8;">
+      <!-- Body HTML inserted here -->
+    </div>
+  </div>
+</div>
+
+<!-- ── DELETE BLOG CONFIRMATION MODAL ────────────────── -->
+<div id="adminBlogDeleteModal" class="fixed inset-0 z-[140] hidden items-center justify-center bg-black/75 p-4 backdrop-blur-sm" onclick="if(event.target===this)closeAdminBlogDeleteModal()">
+  <div class="w-full max-w-sm rounded-2xl border border-red-500/20 bg-[#0d1628] p-6 text-center shadow-2xl">
+    <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/15 text-red-400">
+      <span class="material-symbols-outlined" style="font-size:24px">delete_forever</span>
+    </div>
+    <h3 class="mb-1 text-lg font-black text-white">Delete Blog Post?</h3>
+    <p id="deleteBlogTitlePreview" class="mb-4 text-xs font-semibold text-slate-400 truncate">Are you sure?</p>
+    <div class="flex items-center justify-center gap-3">
+      <button onclick="closeAdminBlogDeleteModal()" class="rounded-xl border border-white/10 px-4 py-2.5 text-xs font-bold text-slate-300 hover:bg-white/5">Cancel</button>
+      <button onclick="executeAdminBlogDelete()" id="btnConfirmDeleteBlog" class="rounded-xl bg-red-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-red-500 transition">Delete Post</button>
+    </div>
+  </div>
+</div>
 
   </div><!-- /main content -->
 </div><!-- /adminPanel -->
@@ -1094,6 +1344,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       </div>
       <span class="text-sm font-bold text-slate-300">Services</span>
     </button>
+    <button onclick="switchTab('blogs');closeMobileMenu()"
+      class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left hover:bg-white/5">
+      <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-purple-500/15">
+        <span class="material-symbols-outlined text-purple-400" style="font-size:16px">article</span>
+      </div>
+      <span class="text-sm font-bold text-slate-300">Blogs</span>
+    </button>
     <div class="mx-2 my-3 h-px bg-white/10"></div>
     <a href="/dashboard"
       class="mb-1 flex items-center gap-3 rounded-xl border border-transparent px-4 py-3 hover:bg-white/5">
@@ -1187,18 +1444,22 @@ function switchTab(tab) {
   document.getElementById('usersTab').classList.toggle('hidden',   tab !== 'users');
   var sTab = document.getElementById('servicesTab');
   if (sTab) sTab.classList.toggle('hidden', tab !== 'services');
+  var bTab = document.getElementById('blogsTab');
+  if (bTab) bTab.classList.toggle('hidden', tab !== 'blogs');
 
   var tabBase = 'flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition whitespace-nowrap ';
   var oBtn = document.getElementById('tabBtnOrders');
   var tBtn = document.getElementById('tabBtnTickets');
   var uBtn = document.getElementById('tabBtnUsers');
   var sBtn = document.getElementById('tabBtnServices');
+  var bBtn = document.getElementById('tabBtnBlogs');
   if (oBtn) oBtn.className = tabBase + (tab === 'orders' ? 'bg-white/8 text-white' : 'text-slate-400');
   if (tBtn) tBtn.className = tabBase + (tab === 'tickets' ? 'bg-white/8 text-white' : 'text-slate-400');
   if (uBtn) uBtn.className = tabBase + (tab === 'users' ? 'bg-white/8 text-white' : 'text-slate-400');
   if (sBtn) sBtn.className = tabBase + (tab === 'services' ? 'bg-white/8 text-white' : 'text-slate-400');
+  if (bBtn) bBtn.className = tabBase + (tab === 'blogs' ? 'bg-white/8 text-white' : 'text-slate-400');
 
-  var activeBtn = tab === 'orders' ? oBtn : (tab === 'tickets' ? tBtn : (tab === 'users' ? uBtn : sBtn));
+  var activeBtn = tab === 'orders' ? oBtn : (tab === 'tickets' ? tBtn : (tab === 'users' ? uBtn : (tab === 'services' ? sBtn : bBtn)));
   if (activeBtn && activeBtn.scrollIntoView) {
     activeBtn.scrollIntoView({ inline: 'nearest', behavior: 'smooth' });
   }
@@ -1207,18 +1468,22 @@ function switchTab(tab) {
   var navT = document.getElementById('navTickets');
   var navU = document.getElementById('navUsers');
   var navS = document.getElementById('navServices');
+  var navB = document.getElementById('navBlogs');
   if (navO) navO.style.cssText = ''; 
   if (navT) navT.style.cssText = ''; 
   if (navU) navU.style.cssText = '';
   if (navS) navS.style.cssText = '';
+  if (navB) navB.style.cssText = '';
   var noText = document.getElementById('navOrdersText');
   var ntText = document.getElementById('navTicketsText');
   var nuText = document.getElementById('navUsersText');
   var nsText = document.getElementById('navServicesText');
+  var nbText = document.getElementById('navBlogsText');
   if (noText) noText.className = 'text-sm font-bold text-slate-300';
   if (ntText) ntText.className = 'text-sm font-bold text-slate-300';
   if (nuText) nuText.className = 'text-sm font-bold text-slate-300';
   if (nsText) nsText.className = 'text-sm font-bold text-slate-300';
+  if (nbText) nbText.className = 'text-sm font-bold text-slate-300';
 
   if (tab === 'orders') {
     if (navO) navO.style.cssText = 'background:linear-gradient(135deg,rgba(239,68,68,.13),rgba(220,38,38,.08));border:1px solid rgba(239,68,68,.22);';
@@ -1234,6 +1499,10 @@ function switchTab(tab) {
     if (navS) navS.style.cssText = 'background:linear-gradient(135deg,rgba(99,102,241,.14),rgba(79,70,229,.09));border:1px solid rgba(99,102,241,.24);';
     if (nsText) nsText.className = 'text-sm font-bold text-white';
     if (typeof renderAdminServices === 'function') renderAdminServices();
+  } else if (tab === 'blogs') {
+    if (navB) navB.style.cssText = 'background:linear-gradient(135deg,rgba(168,85,247,.14),rgba(147,51,234,.09));border:1px solid rgba(168,85,247,.24);';
+    if (nbText) nbText.className = 'text-sm font-bold text-white';
+    if (typeof loadAdminBlogs === 'function') loadAdminBlogs();
   }
 }
 
@@ -2062,7 +2331,7 @@ import { initializeApp }                          from "https://www.gstatic.com/
 import { getAuth, onAuthStateChanged, signOut }   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
   addDoc, collection, doc, getDoc, getFirestore,
-  increment, onSnapshot, orderBy, query, setDoc, updateDoc, where, getDocs, limit
+  increment, onSnapshot, orderBy, query, setDoc, updateDoc, where, getDocs, limit, deleteDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 // ── Admin identity (defined above in Security Config) ─
@@ -2705,6 +2974,414 @@ window._deductBalance = async function() {
   } finally {
     addBtn.disabled = false; deductBtn.disabled = false;
     deductBtn.textContent = '− Deduct';
+  }
+};
+
+// ── BLOG MANAGEMENT SYSTEM ─────────────────────────
+window._adminBlogs = [];
+window._editingBlogId = null;
+window._deletingBlogId = null;
+
+window.loadAdminBlogs = async function() {
+  const container = document.getElementById('adminBlogsList');
+  if (container) {
+    container.innerHTML = `
+      <div class="rounded-2xl border border-white/8 bg-[#0d1628] p-10 text-center text-slate-500">
+        <div class="mx-auto mb-3 h-8 w-8 rounded-full border-2 border-[#1e2a4a] border-t-purple-400" style="animation:spin .7s linear infinite"></div>
+        <p class="text-sm font-semibold">Loading blog posts from Firestore…</p>
+      </div>`;
+  }
+
+  try {
+    const snap = await getDocs(collection(db, 'blogs'));
+    window._adminBlogs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => {
+        const ta = a.publishedAt?.toMillis?.() || a.createdAt?.toMillis?.() || (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+        const tb = b.publishedAt?.toMillis?.() || b.createdAt?.toMillis?.() || (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+        return tb - ta;
+      });
+    
+    // Update stats
+    const total = window._adminBlogs.length;
+    const published = window._adminBlogs.filter(p => p.published === true).length;
+    const drafts = total - published;
+    document.getElementById('blogStatTotal').textContent = total;
+    document.getElementById('blogStatPublished').textContent = published;
+    document.getElementById('blogStatDrafts').textContent = drafts;
+
+    // Populate Category Dropdown filter
+    const catSet = new Set();
+    window._adminBlogs.forEach(p => { if (p.category) catSet.add(p.category.trim()); });
+    const catSelect = document.getElementById('blogCategoryFilter');
+    if (catSelect) {
+      const cur = catSelect.value;
+      catSelect.innerHTML = '<option value="">All Categories</option>' + 
+        Array.from(catSet).map(c => `<option value="${escAttr(c)}">${escHtml(c)}</option>`).join('');
+      catSelect.value = cur;
+    }
+
+    renderAdminBlogsList();
+  } catch(e) {
+    console.error("Error loading blogs:", e);
+    if (container) {
+      container.innerHTML = `<div class="rounded-2xl border border-red-500/20 bg-red-500/10 p-6 text-center text-red-400 text-xs font-semibold">Failed to load blogs: ${escHtml(e.message)}</div>`;
+    }
+  }
+};
+
+window.filterAdminBlogs = function() {
+  renderAdminBlogsList();
+};
+
+function renderAdminBlogsList() {
+  const container = document.getElementById('adminBlogsList');
+  if (!container) return;
+
+  const search = (document.getElementById('blogSearchInput')?.value || '').toLowerCase().trim();
+  const catFilter = (document.getElementById('blogCategoryFilter')?.value || '').toLowerCase().trim();
+  const statusFilter = (document.getElementById('blogStatusFilter')?.value || '').toLowerCase().trim();
+
+  let filtered = window._adminBlogs.filter(post => {
+    if (search) {
+      const matchT = (post.title || '').toLowerCase().includes(search);
+      const matchC = (post.category || '').toLowerCase().includes(search);
+      const matchE = (post.excerpt || '').toLowerCase().includes(search);
+      if (!matchT && !matchC && !matchE) return false;
+    }
+    if (catFilter && (post.category || '').toLowerCase() !== catFilter) return false;
+    if (statusFilter === 'published' && post.published !== true) return false;
+    if (statusFilter === 'draft' && post.published === true) return false;
+    return true;
+  });
+
+  if (!filtered.length) {
+    container.innerHTML = `
+      <div class="rounded-2xl border border-white/8 bg-[#0d1628] p-10 text-center text-slate-500">
+        <span class="material-symbols-outlined text-4xl mb-2 text-slate-600 block">article</span>
+        <p class="text-sm font-semibold text-slate-400">No blog posts found</p>
+        <p class="text-xs text-slate-500 mt-1">Try adjusting your filters or click "+ New Blog Post" to publish one.</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(post => {
+    const isPub = post.published === true;
+    const postDate = post.publishedAt || post.createdAt;
+    let formattedDate = '—';
+    if (postDate?.toDate) {
+      formattedDate = postDate.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    } else if (postDate) {
+      formattedDate = new Date(postDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+    const safeId = escAttr(post.id);
+
+    const thumbHtml = post.coverImage
+      ? `<img src="${escAttr(post.coverImage)}" alt="" class="h-16 w-24 flex-shrink-0 rounded-xl object-cover bg-slate-900 border border-white/10" onerror="this.outerHTML='<div class=\\'h-16 w-24 flex-shrink-0 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-xl font-black\\'>📝</div>'" />`
+      : `<div class="h-16 w-24 flex-shrink-0 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-xl font-black">📝</div>`;
+
+    return `
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-white/8 bg-linear-to-r from-[#131b2e] to-[#0d1525] p-4 transition hover:border-purple-500/30 shadow-md">
+        <div class="flex items-center gap-3.5 min-w-0 flex-1">
+          ${thumbHtml}
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2 flex-wrap mb-1">
+              <span class="rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider ${isPub ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/15 text-amber-400 border border-amber-500/30'}">
+                ${isPub ? '● Published' : '○ Draft'}
+              </span>
+              ${post.category ? `<span class="rounded-full bg-purple-500/15 px-2.5 py-0.5 text-[10px] font-bold text-purple-300 border border-purple-500/20">${escHtml(post.category)}</span>` : ''}
+              <span class="text-[11px] font-semibold text-slate-500">${formattedDate}</span>
+            </div>
+            <h4 class="text-sm font-bold text-white truncate leading-snug">${escHtml(post.title || 'Untitled Post')}</h4>
+            <p class="text-xs text-slate-400 truncate mt-0.5">${escHtml(post.excerpt || post.body || '')}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 flex-shrink-0 justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-white/5">
+          <button onclick="openAdminBlogPreview('${safeId}')" class="flex h-9 items-center gap-1 px-3 rounded-xl border border-white/10 bg-white/5 text-xs font-bold text-slate-300 hover:bg-white/10 transition" title="Preview Live Post">
+            <span class="material-symbols-outlined" style="font-size:15px">visibility</span>
+            <span class="hidden md:inline">Preview</span>
+          </button>
+          <button onclick="openAdminEditBlog('${safeId}')" class="flex h-9 items-center gap-1 px-3 rounded-xl border border-purple-500/30 bg-purple-500/10 text-xs font-bold text-purple-300 hover:bg-purple-500/20 transition" title="Edit Post">
+            <span class="material-symbols-outlined" style="font-size:15px">edit</span>
+            <span>Edit</span>
+          </button>
+          <button onclick="openAdminDeleteBlogModal('${safeId}')" class="flex h-9 w-9 items-center justify-center rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition" title="Delete Post">
+            <span class="material-symbols-outlined" style="font-size:16px">delete</span>
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+window.openAdminNewBlog = function() {
+  window._editingBlogId = null;
+  document.getElementById('adminBlogModalTitle').textContent = 'New Blog Post';
+  document.getElementById('adminBlogTitle').value = '';
+  document.getElementById('adminBlogCategory').value = '';
+  document.getElementById('adminBlogExcerpt').value = '';
+  document.getElementById('adminBlogCoverImage').value = '';
+  document.getElementById('adminBlogFileInput').value = '';
+  document.getElementById('adminBlogBody').value = '';
+  document.getElementById('adminBlogPublishedToggle').checked = false;
+  document.getElementById('adminBlogStatusText').textContent = 'Draft (hidden from main blog section)';
+  updateAdminBlogImagePreview('');
+
+  const modal = document.getElementById('adminBlogEditorModal');
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+};
+
+window.openAdminEditBlog = function(id) {
+  const post = window._adminBlogs.find(p => p.id === id);
+  if (!post) return;
+  window._editingBlogId = id;
+  document.getElementById('adminBlogModalTitle').textContent = 'Edit Blog Post';
+  document.getElementById('adminBlogTitle').value = post.title || '';
+  document.getElementById('adminBlogCategory').value = post.category || '';
+  document.getElementById('adminBlogExcerpt').value = post.excerpt || '';
+  document.getElementById('adminBlogCoverImage').value = post.coverImage || '';
+  document.getElementById('adminBlogFileInput').value = '';
+  document.getElementById('adminBlogBody').value = post.body || '';
+  const isPub = post.published === true;
+  document.getElementById('adminBlogPublishedToggle').checked = isPub;
+  document.getElementById('adminBlogStatusText').textContent = isPub ? 'Published (visible on /blogs and /blog)' : 'Draft (hidden from main blog section)';
+  updateAdminBlogImagePreview(post.coverImage || '');
+
+  const modal = document.getElementById('adminBlogEditorModal');
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+};
+
+window.closeAdminBlogEditorModal = function() {
+  const modal = document.getElementById('adminBlogEditorModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+  }
+};
+
+window.handleAdminBlogFileUpload = function(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    alert('Please select a valid image file (JPG, PNG, WebP).');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const rawDataUrl = e.target.result;
+    const img = new Image();
+    img.onload = function() {
+      const maxDim = 1200;
+      let w = img.width, h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+        else { w = Math.round((w * maxDim) / h); h = maxDim; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      
+      document.getElementById('adminBlogCoverImage').value = compressedDataUrl;
+      updateAdminBlogImagePreview(compressedDataUrl);
+    };
+    img.src = rawDataUrl;
+  };
+  reader.readAsDataURL(file);
+};
+
+window.updateAdminBlogImagePreview = function(url) {
+  const frame = document.getElementById('adminBlogImgPreviewFrame');
+  const img = document.getElementById('adminBlogPreviewImg');
+  if (url && url.trim()) {
+    img.src = url;
+    frame.classList.remove('hidden');
+  } else {
+    frame.classList.add('hidden');
+    img.src = '';
+  }
+};
+
+window.clearAdminBlogCoverImage = function() {
+  document.getElementById('adminBlogCoverImage').value = '';
+  document.getElementById('adminBlogFileInput').value = '';
+  updateAdminBlogImagePreview('');
+};
+
+window.insertBlogTag = function(openTag, closeTag) {
+  const textarea = document.getElementById('adminBlogBody');
+  if (!textarea) return;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selectedText = textarea.value.substring(start, end);
+  const replacement = openTag + (selectedText || 'Sample text') + (closeTag || '');
+  textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+  textarea.focus();
+  textarea.selectionStart = start + openTag.length;
+  textarea.selectionEnd = start + openTag.length + (selectedText || 'Sample text').length;
+};
+
+window.saveAdminBlog = async function() {
+  const title = document.getElementById('adminBlogTitle').value.trim();
+  const excerpt = document.getElementById('adminBlogExcerpt').value.trim();
+  const body = document.getElementById('adminBlogBody').value.trim();
+  const category = document.getElementById('adminBlogCategory').value.trim();
+  const coverImage = document.getElementById('adminBlogCoverImage').value.trim();
+  const isPublished = document.getElementById('adminBlogPublishedToggle').checked;
+
+  if (!title) { alert("Post title is required!"); return; }
+  if (!excerpt) { alert("Excerpt is required!"); return; }
+  if (!body) { alert("Body content is required!"); return; }
+
+  const btn = document.getElementById('btnSaveBlogModal');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="material-symbols-outlined animate-spin" style="font-size:16px">sync</span> Saving…`;
+
+  const blogData = {
+    title,
+    excerpt,
+    body,
+    category: category || 'General',
+    coverImage: coverImage || '',
+    published: isPublished
+  };
+
+  try {
+    if (window._editingBlogId) {
+      const existing = window._adminBlogs.find(p => p.id === window._editingBlogId);
+      await updateDoc(doc(db, 'blogs', window._editingBlogId), {
+        ...blogData,
+        updatedAt: serverTimestamp(),
+        ...(isPublished && !existing?.publishedAt ? { publishedAt: serverTimestamp() } : {})
+      });
+    } else {
+      await addDoc(collection(db, 'blogs'), {
+        ...blogData,
+        createdAt: serverTimestamp(),
+        ...(isPublished ? { publishedAt: serverTimestamp() } : {})
+      });
+    }
+    closeAdminBlogEditorModal();
+    window.loadAdminBlogs();
+  } catch(e) {
+    alert("Error saving blog: " + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">check</span> <span>Save Post</span>`;
+  }
+};
+
+window.previewAdminBlogForm = function() {
+  const title = document.getElementById('adminBlogTitle').value.trim() || 'Untitled Post Preview';
+  const category = document.getElementById('adminBlogCategory').value.trim() || 'Category';
+  const excerpt = document.getElementById('adminBlogExcerpt').value.trim() || 'No excerpt provided yet.';
+  const coverImage = document.getElementById('adminBlogCoverImage').value.trim();
+  const body = document.getElementById('adminBlogBody').value.trim() || '<p>No body content written yet...</p>';
+
+  document.getElementById('prevBlogTitle').textContent = title;
+  document.getElementById('prevBlogCategory').textContent = category;
+  document.getElementById('prevBlogExcerpt').textContent = excerpt;
+  
+  // Calculate reading time
+  const words = body.replace(/<[^>]*>/g, '').split(/\s+/).length;
+  const readTime = Math.max(1, Math.ceil(words / 200));
+  document.getElementById('prevBlogReadingTime').textContent = `${readTime} min read`;
+
+  const coverImg = document.getElementById('prevBlogCoverImg');
+  const coverFrame = document.getElementById('prevBlogCoverFrame');
+  if (coverImage) {
+    coverImg.src = coverImage;
+    coverFrame.style.display = 'block';
+  } else {
+    coverFrame.style.display = 'none';
+  }
+
+  document.getElementById('prevBlogBody').innerHTML = body;
+
+  const modal = document.getElementById('adminBlogPreviewModal');
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+};
+
+window.openAdminBlogPreview = function(id) {
+  const post = window._adminBlogs.find(p => p.id === id);
+  if (!post) return;
+
+  document.getElementById('prevBlogTitle').textContent = post.title || 'Untitled Post';
+  document.getElementById('prevBlogCategory').textContent = post.category || 'General';
+  document.getElementById('prevBlogExcerpt').textContent = post.excerpt || '';
+
+  const postDate = post.publishedAt || post.createdAt;
+  let dateStr = 'Today';
+  if (postDate?.toDate) {
+    dateStr = postDate.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  } else if (postDate) {
+    dateStr = new Date(postDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+  document.getElementById('prevBlogDate').textContent = dateStr;
+
+  const words = (post.body || '').replace(/<[^>]*>/g, '').split(/\s+/).length;
+  const readTime = Math.max(1, Math.ceil(words / 200));
+  document.getElementById('prevBlogReadingTime').textContent = `${readTime} min read`;
+
+  const coverImg = document.getElementById('prevBlogCoverImg');
+  const coverFrame = document.getElementById('prevBlogCoverFrame');
+  if (post.coverImage) {
+    coverImg.src = post.coverImage;
+    coverFrame.style.display = 'block';
+  } else {
+    coverFrame.style.display = 'none';
+  }
+
+  document.getElementById('prevBlogBody').innerHTML = post.body || '<p>No content</p>';
+
+  const modal = document.getElementById('adminBlogPreviewModal');
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+};
+
+window.closeAdminBlogPreviewModal = function() {
+  const modal = document.getElementById('adminBlogPreviewModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+  }
+};
+
+window.openAdminDeleteBlogModal = function(id) {
+  const post = window._adminBlogs.find(p => p.id === id);
+  if (!post) return;
+  window._deletingBlogId = id;
+  document.getElementById('deleteBlogTitlePreview').textContent = `"${post.title || 'Untitled'}"`;
+  const modal = document.getElementById('adminBlogDeleteModal');
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+};
+
+window.closeAdminBlogDeleteModal = function() {
+  window._deletingBlogId = null;
+  const modal = document.getElementById('adminBlogDeleteModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+  }
+};
+
+window.executeAdminBlogDelete = async function() {
+  if (!window._deletingBlogId) return;
+  const btn = document.getElementById('btnConfirmDeleteBlog');
+  btn.disabled = true;
+  btn.textContent = 'Deleting…';
+  try {
+    await deleteDoc(doc(db, 'blogs', window._deletingBlogId));
+    closeAdminBlogDeleteModal();
+    window.loadAdminBlogs();
+  } catch(e) {
+    alert("Error deleting blog: " + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Delete Post';
   }
 };
 
