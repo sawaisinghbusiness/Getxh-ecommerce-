@@ -80,7 +80,15 @@ service cloud.firestore {
     match /walletTxns/{txnId} {
       allow list: if isSignedIn();
       allow get: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
-      allow create, update, delete: if isAdmin();
+      allow create: if isSignedIn() && (request.resource.data.uid == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    // ── 10. Fund Payments (BharatPe UPI & Wallet Deposits) ──
+    match /fundPayments/{paymentId} {
+      allow list, get: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
+      allow create: if isSignedIn() && (request.resource.data.uid == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
     }
 
     // ── 10. App Config & Dynamic Services Catalog ──

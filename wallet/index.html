@@ -465,7 +465,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, updateDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, updateDoc, setDoc, increment, addDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -744,6 +744,50 @@ window.verifyPayment = async function() {
           console.error("Firestore balance update failed:", e2);
         }
       }
+
+      // Save complete BharatPe payment transaction to Firestore fundPayments & walletTxns
+      try {
+        const _now = Date.now();
+        const _readableDate = new Date(_now).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+        const bData = data.transaction || data.details || data.data || data.bharatpe || {};
+        const paymentRecord = {
+          uid: currentUser.uid,
+          email: currentUser.email || "",
+          username: currentUser.displayName || currentUser.email?.split("@")[0] || "User",
+          utr: String(utr).trim(),
+          amount: Number(amount),
+          status: "SUCCESS",
+          type: "credit",
+          method: "BharatPe UPI / QR",
+          requestId: requestId || "",
+          createdAt: _now,
+          createdAtReadable: _readableDate,
+          payerName: bData.payerName || bData.senderName || bData.customerName || data.payerName || "",
+          payerVpa: bData.payerVpa || bData.senderVpa || bData.vpa || bData.upiId || data.payerVpa || "",
+          bankReferenceNo: bData.bankReferenceNo || bData.bank_ref_no || bData.rrn || String(utr).trim(),
+          bharatpeData: bData,
+          rawResponse: data
+        };
+
+        // 1. Save to fundPayments (for Admin Panel Fund History)
+        await addDoc(collection(db, "fundPayments"), paymentRecord);
+
+        // 2. Save to walletTxns (so user's wallet history updates too)
+        await addDoc(collection(db, "walletTxns"), {
+          uid: currentUser.uid,
+          amount: Number(amount),
+          type: "credit",
+          method: "bharatpe",
+          status: "success",
+          utr: String(utr).trim(),
+          reason: "UPI Deposit (BharatPe UTR: " + utr + ")",
+          notified: false,
+          createdAt: _now
+        });
+      } catch(saveErr) {
+        console.warn("Could not save fund payment document to Firestore:", saveErr);
+      }
+
       // Populate success popup
       const popupAmt = document.getElementById("popupAmount");
       popupAmt.textContent = "₹0.00";

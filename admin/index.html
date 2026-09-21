@@ -762,6 +762,14 @@
           <span id="navServicesText" class="text-sm font-bold text-slate-300">Services</span>
         </button>
 
+        <button id="navFunds" onclick="switchTab('funds')"
+          class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left transition-all hover:bg-white/5 hover:border-white/10">
+          <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-500/15">
+            <span class="material-symbols-outlined text-emerald-400" style="font-size:16px">payments</span>
+          </div>
+          <span id="navFundsText" class="text-sm font-bold text-slate-300">Fund History</span>
+        </button>
+
         <button id="navBlogs" onclick="switchTab('blogs')"
           class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left transition-all hover:bg-white/5 hover:border-white/10">
           <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-purple-500/15">
@@ -809,6 +817,12 @@
           <span class="text-base font-bold text-white whitespace-nowrap"
             style="font-size:16px;white-space:nowrap;">Admin Panel</span>
         </div>
+        <!-- Rapido-Style Sound Alert Toggle Button -->
+        <button id="alertSoundToggleBtn" onclick="toggleAlertSound()" title="Rapido Style Sound Alerts (Click to test)"
+          class="flex h-8 items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2 py-1 text-[11px] font-bold text-emerald-400 hover:bg-emerald-500/25 transition">
+          <span class="material-symbols-outlined" id="alertSoundIcon" style="font-size:16px">notifications_active</span>
+          <span id="alertSoundLabel" class="hidden sm:inline">Alert: ON</span>
+        </button>
         <!-- Tab switcher wrapper with fade mask below 768px -->
         <div class="tabs-wrapper-fade ml-auto flex items-center min-w-0">
           <div class="tab-row-scroll flex items-center gap-1 rounded-xl bg-white/5 p-1">
@@ -827,6 +841,10 @@
             <button id="tabBtnServices" onclick="switchTab('services')"
               class="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold text-slate-400 transition whitespace-nowrap">
               <span class="material-symbols-outlined" style="font-size:14px">category</span>Services
+            </button>
+            <button id="tabBtnFunds" onclick="switchTab('funds')"
+              class="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold text-slate-400 transition whitespace-nowrap">
+              <span class="material-symbols-outlined" style="font-size:14px">payments</span>Fund History
             </button>
             <button id="tabBtnBlogs" onclick="switchTab('blogs')"
               class="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold text-slate-400 transition whitespace-nowrap">
@@ -1132,6 +1150,159 @@
         </div>
 
       </div><!-- /blogsTab -->
+
+      <!-- ── FUNDS TAB (FUND HISTORY & BHARATPE TRACKING) ── -->
+      <div id="fundsTab" class="hidden flex-1 p-4 lg:p-6">
+        <!-- Header Row -->
+        <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-xl font-black text-white">Fund History</h2>
+              <span class="flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Live Sync
+              </span>
+            </div>
+            <p class="mt-1 text-xs text-slate-400">Real-time BharatPe deposits, user payments, and wallet recharges</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="renderFundHistory()" class="flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white transition">
+              <span class="material-symbols-outlined text-[16px]">refresh</span> Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI Stat Cards (2x2 on mobile, 4 in row on desktop) -->
+        <div class="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <!-- Card 1: 7-Day Total (Primary) -->
+          <div class="stat-card rounded-2xl p-4 border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 to-transparent">
+            <div class="flex items-center justify-between">
+              <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Last 7 Days Fund</p>
+              <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/20">
+                <span class="material-symbols-outlined text-emerald-400" style="font-size:16px">date_range</span>
+              </div>
+            </div>
+            <p id="statFund7Days" class="mt-2 text-xl font-black text-white sm:text-2xl">₹0.00</p>
+            <p class="mt-1 text-[10px] font-medium text-emerald-400/80">Rolling last 7 days total</p>
+          </div>
+
+          <!-- Card 2: Filtered Period Total -->
+          <div class="stat-card rounded-2xl p-4">
+            <div class="flex items-center justify-between">
+              <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Filtered Total</p>
+              <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500/15">
+                <span class="material-symbols-outlined text-sky-400" style="font-size:16px">filter_alt</span>
+              </div>
+            </div>
+            <p id="statFundFiltered" class="mt-2 text-xl font-black text-sky-400 sm:text-2xl">₹0.00</p>
+            <p id="statFundRangeLabel" class="mt-1 text-[10px] font-medium text-slate-400 truncate">Last 7 Days</p>
+          </div>
+
+          <!-- Card 3: Lifetime Total -->
+          <div class="stat-card rounded-2xl p-4">
+            <div class="flex items-center justify-between">
+              <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">All-Time Lifetime</p>
+              <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-500/15">
+                <span class="material-symbols-outlined text-indigo-400" style="font-size:16px">account_balance_wallet</span>
+              </div>
+            </div>
+            <p id="statFundLifetime" class="mt-2 text-xl font-black text-white sm:text-2xl">₹0.00</p>
+            <p class="mt-1 text-[10px] font-medium text-slate-400">Total received in Firebase</p>
+          </div>
+
+          <!-- Card 4: Payments Count -->
+          <div class="stat-card rounded-2xl p-4">
+            <div class="flex items-center justify-between">
+              <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Payments</p>
+              <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/15">
+                <span class="material-symbols-outlined text-amber-400" style="font-size:16px">receipt</span>
+              </div>
+            </div>
+            <p id="statFundCount" class="mt-2 text-xl font-black text-white sm:text-2xl">0</p>
+            <p id="statFundCountFiltered" class="mt-1 text-[10px] font-medium text-slate-400">0 in selected filter</p>
+          </div>
+        </div>
+
+        <!-- Filter & Search Section -->
+        <div class="mb-5 rounded-2xl border border-white/8 bg-[#0d1628] p-4 space-y-3.5">
+          <!-- Preset Filter Buttons (Scrollable on small mobile screens) -->
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs font-bold">
+            <span class="text-slate-400 text-xs font-semibold mr-1 flex items-center gap-1 flex-shrink-0">
+              <span class="material-symbols-outlined text-[15px]">tune</span> Filter:
+            </span>
+            <button id="preset7Days" onclick="setFundPreset('7days')" class="fund-preset-btn rounded-xl px-3 py-1.5 border transition whitespace-nowrap bg-emerald-500/20 border-emerald-500/40 text-emerald-300">Last 7 Days</button>
+            <button id="presetToday" onclick="setFundPreset('today')" class="fund-preset-btn rounded-xl px-3 py-1.5 border border-white/10 bg-white/5 text-slate-400 hover:text-white transition whitespace-nowrap">Today</button>
+            <button id="presetYesterday" onclick="setFundPreset('yesterday')" class="fund-preset-btn rounded-xl px-3 py-1.5 border border-white/10 bg-white/5 text-slate-400 hover:text-white transition whitespace-nowrap">Yesterday</button>
+            <button id="preset30Days" onclick="setFundPreset('30days')" class="fund-preset-btn rounded-xl px-3 py-1.5 border border-white/10 bg-white/5 text-slate-400 hover:text-white transition whitespace-nowrap">Last 30 Days</button>
+            <button id="presetAll" onclick="setFundPreset('all')" class="fund-preset-btn rounded-xl px-3 py-1.5 border border-white/10 bg-white/5 text-slate-400 hover:text-white transition whitespace-nowrap">All Time</button>
+          </div>
+
+          <!-- Date Inputs & Search Input -->
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-12">
+            <!-- Custom Date Pickers -->
+            <div class="sm:col-span-6 flex flex-wrap sm:flex-nowrap items-center gap-2">
+              <div class="flex-1 min-w-[130px]">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">From Date</label>
+                <input type="date" id="fundDateFrom" onchange="onCustomDateChange()" class="adm-field w-full text-xs py-2 px-3" />
+              </div>
+              <div class="flex-1 min-w-[130px]">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">To Date</label>
+                <input type="date" id="fundDateTo" onchange="onCustomDateChange()" class="adm-field w-full text-xs py-2 px-3" />
+              </div>
+              <div class="flex items-end self-end pb-[1px]">
+                <button onclick="resetFundDateFilter()" title="Reset to Last 7 Days" class="h-[38px] px-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 hover:text-white transition flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px]">restart_alt</span> Reset
+                </button>
+              </div>
+            </div>
+
+            <!-- Search Input -->
+            <div class="sm:col-span-6 flex items-end">
+              <div class="relative w-full">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" style="font-size:16px">search</span>
+                <input type="text" id="fundSearchInput" oninput="onFundSearchInput()" placeholder="Search by UTR, User Email, Name, Amount..." class="adm-field w-full pl-9 pr-8 text-xs py-2 h-[38px]" />
+                <button id="fundSearchClearBtn" onclick="clearFundSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">
+                  <span class="material-symbols-outlined" style="font-size:16px">close</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payments Container: Desktop Table + Mobile Cards -->
+        <!-- Desktop Table (visible md and up) -->
+        <div class="hidden md:block overflow-hidden rounded-2xl border border-white/8 bg-[#0d1628]">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="border-b border-white/8 bg-white/[0.02] text-[10px] font-black uppercase tracking-wider text-slate-400">
+                <tr>
+                  <th class="py-3 px-4">Date & Time</th>
+                  <th class="py-3 px-4">User Details</th>
+                  <th class="py-3 px-4">Amount</th>
+                  <th class="py-3 px-4">UTR Number</th>
+                  <th class="py-3 px-4">Gateway</th>
+                  <th class="py-3 px-4">Status</th>
+                  <th class="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="fundTableBody" class="divide-y divide-white/5 font-medium text-slate-300">
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Mobile Cards List (visible below md) -->
+        <div id="fundMobileCards" class="md:hidden space-y-3">
+          <!-- Populated via JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="fundEmptyState" class="hidden rounded-2xl border border-white/8 bg-[#0d1628] p-12 text-center text-slate-500">
+          <span class="material-symbols-outlined text-4xl text-slate-600 mb-2">payments</span>
+          <p class="text-sm font-bold text-slate-300">No Fund Payments Found</p>
+          <p class="text-xs text-slate-500 mt-1">Try changing your date filters or search query.</p>
+        </div>
+      </div><!-- /fundsTab -->
 
       <!-- ── ADD / EDIT BLOG MODAL ────────────────────────── -->
       <div id="adminBlogEditorModal"
@@ -1696,6 +1867,13 @@
         </div>
         <span class="text-sm font-bold text-slate-300">Blogs</span>
       </button>
+      <button onclick="switchTab('funds');closeMobileMenu()"
+        class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left hover:bg-white/5">
+        <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-500/15">
+          <span class="material-symbols-outlined text-emerald-400" style="font-size:16px">payments</span>
+        </div>
+        <span class="text-sm font-bold text-slate-300">Fund History</span>
+      </button>
       <div class="mx-2 my-3 h-px bg-white/10"></div>
       <a href="/dashboard"
         class="mb-1 flex items-center gap-3 rounded-xl border border-transparent px-4 py-3 hover:bg-white/5">
@@ -1710,6 +1888,113 @@
           <span class="material-symbols-outlined text-red-400" style="font-size:16px">logout</span>
         </div>
         <span class="font-bold text-red-400 text-sm">Sign Out</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── BHARATPE PAYMENT DETAILS MODAL ───────────────────── -->
+  <div id="fundDetailsModal"
+    class="fixed inset-0 z-[150] hidden items-center justify-center bg-black/80 p-4 backdrop-blur-md"
+    onclick="if(event.target===this)closeFundDetailsModal()">
+    <div
+      class="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-white/10 bg-[#0d1628] p-5 sm:p-6 shadow-2xl space-y-4"
+      style="background:linear-gradient(180deg,#0f1b33 0%,#09101f 100%);">
+      <div class="flex items-center justify-between border-b border-white/8 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/20 border border-emerald-500/30">
+            <span class="material-symbols-outlined text-emerald-400" style="font-size:20px">verified</span>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white leading-tight">BharatPe Payment Details</h3>
+            <p class="text-xs text-slate-400">Verified transaction record in Firebase</p>
+          </div>
+        </div>
+        <button onclick="closeFundDetailsModal()" class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 text-slate-400 hover:text-white transition">
+          <span class="material-symbols-outlined" style="font-size:18px">close</span>
+        </button>
+      </div>
+
+      <!-- Key Details Grid -->
+      <div class="grid grid-cols-2 gap-3 text-xs">
+        <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Amount Paid</p>
+          <p id="modalFundAmount" class="text-lg font-black text-emerald-400 mt-0.5">₹0.00</p>
+        </div>
+        <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status</p>
+          <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400 mt-1">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> SUCCESS
+          </span>
+        </div>
+        <div class="col-span-2 p-3 rounded-xl bg-white/[0.02] border border-white/5 space-y-1">
+          <div class="flex items-center justify-between">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">UTR / Bank Ref Number</p>
+            <button id="modalFundCopyUtrBtn" class="text-sky-400 hover:underline flex items-center gap-1 text-[11px] font-semibold">
+              Copy <span class="material-symbols-outlined text-[13px]">content_copy</span>
+            </button>
+          </div>
+          <p id="modalFundUtr" class="text-sm font-mono font-bold text-white select-all break-all">—</p>
+        </div>
+        <div class="col-span-2 p-3 rounded-xl bg-white/[0.02] border border-white/5 space-y-1">
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">User Account</p>
+          <p id="modalFundUserEmail" class="text-xs font-semibold text-white break-all">—</p>
+          <p id="modalFundUserId" class="text-[10px] font-mono text-slate-400 break-all">UID: —</p>
+        </div>
+        <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Payer Name</p>
+          <p id="modalFundPayerName" class="text-xs font-bold text-slate-200 mt-0.5 truncate">—</p>
+        </div>
+        <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Payer UPI ID / VPA</p>
+          <p id="modalFundPayerVpa" class="text-xs font-mono text-slate-200 mt-0.5 truncate">—</p>
+        </div>
+        <div class="col-span-2 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Verification Date & Time</p>
+          <p id="modalFundDate" class="text-xs font-semibold text-slate-200 mt-0.5">—</p>
+        </div>
+      </div>
+
+      <!-- Raw BharatPe Response JSON Viewer -->
+      <div class="rounded-xl border border-white/8 bg-black/40 p-3 space-y-1.5">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px]">data_object</span> Raw Response Data
+          </span>
+          <button onclick="toggleModalJsonViewer()" id="modalJsonToggleBtn" class="text-[10px] text-sky-400 font-bold hover:underline">
+            Collapse
+          </button>
+        </div>
+        <pre id="modalFundJson" class="max-h-48 overflow-y-auto rounded-lg bg-black/50 p-2.5 text-[11px] font-mono text-emerald-400/90 whitespace-pre-wrap break-all"></pre>
+      </div>
+
+      <div class="flex justify-end pt-1">
+        <button onclick="closeFundDetailsModal()" class="rounded-xl bg-white/10 hover:bg-white/15 px-4 py-2 text-xs font-bold text-white transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RAPIDO FLASH ALERT BANNER (TOP SCREEN) ───────────── -->
+  <div id="rapidoAlertBanner"
+    class="fixed top-3 left-1/2 -translate-x-1/2 z-[300] hidden w-[94vw] max-w-lg items-center gap-3 rounded-2xl border border-emerald-500/40 bg-[#0c1626]/98 p-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-all duration-300">
+    <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 border border-emerald-500/40 animate-bounce">
+      <span class="material-symbols-outlined text-emerald-400" id="rapidoAlertIcon" style="font-size:24px">payments</span>
+    </div>
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-2">
+        <span id="rapidoAlertTag" class="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black uppercase text-emerald-400">NEW PAYMENT</span>
+        <span class="text-[11px] font-bold text-slate-400" id="rapidoAlertTime">Just now</span>
+      </div>
+      <p id="rapidoAlertTitle" class="text-sm font-black text-white truncate mt-0.5">+₹500.00 Received</p>
+      <p id="rapidoAlertSub" class="text-xs text-slate-300 truncate">UTR: 426789123456</p>
+    </div>
+    <div class="flex flex-col gap-1.5 flex-shrink-0">
+      <button id="rapidoAlertActionBtn" class="rounded-lg bg-emerald-500 hover:bg-emerald-600 px-3 py-1.5 text-xs font-black text-white transition shadow-sm">
+        View
+      </button>
+      <button onclick="dismissRapidoAlert()" class="rounded-lg bg-white/5 hover:bg-white/10 px-3 py-1 text-[11px] font-bold text-slate-400 hover:text-white transition">
+        Stop
       </button>
     </div>
   </div>
@@ -1807,6 +2092,8 @@
       if (sTab) sTab.classList.toggle('hidden', tab !== 'services');
       var bTab = document.getElementById('blogsTab');
       if (bTab) bTab.classList.toggle('hidden', tab !== 'blogs');
+      var fTab = document.getElementById('fundsTab');
+      if (fTab) fTab.classList.toggle('hidden', tab !== 'funds');
 
       var tabBase = 'flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition whitespace-nowrap ';
       var oBtn = document.getElementById('tabBtnOrders');
@@ -1814,13 +2101,15 @@
       var uBtn = document.getElementById('tabBtnUsers');
       var sBtn = document.getElementById('tabBtnServices');
       var bBtn = document.getElementById('tabBtnBlogs');
+      var fBtn = document.getElementById('tabBtnFunds');
       if (oBtn) oBtn.className = tabBase + (tab === 'orders' ? 'bg-white/8 text-white' : 'text-slate-400');
       if (tBtn) tBtn.className = tabBase + (tab === 'tickets' ? 'bg-white/8 text-white' : 'text-slate-400');
       if (uBtn) uBtn.className = tabBase + (tab === 'users' ? 'bg-white/8 text-white' : 'text-slate-400');
       if (sBtn) sBtn.className = tabBase + (tab === 'services' ? 'bg-white/8 text-white' : 'text-slate-400');
       if (bBtn) bBtn.className = tabBase + (tab === 'blogs' ? 'bg-white/8 text-white' : 'text-slate-400');
+      if (fBtn) fBtn.className = tabBase + (tab === 'funds' ? 'bg-white/8 text-white' : 'text-slate-400');
 
-      var activeBtn = tab === 'orders' ? oBtn : (tab === 'tickets' ? tBtn : (tab === 'users' ? uBtn : (tab === 'services' ? sBtn : bBtn)));
+      var activeBtn = tab === 'orders' ? oBtn : (tab === 'tickets' ? tBtn : (tab === 'users' ? uBtn : (tab === 'services' ? sBtn : (tab === 'funds' ? fBtn : bBtn))));
       if (activeBtn && activeBtn.scrollIntoView) {
         activeBtn.scrollIntoView({ inline: 'nearest', behavior: 'smooth' });
       }
@@ -1830,21 +2119,25 @@
       var navU = document.getElementById('navUsers');
       var navS = document.getElementById('navServices');
       var navB = document.getElementById('navBlogs');
+      var navF = document.getElementById('navFunds');
       if (navO) navO.style.cssText = '';
       if (navT) navT.style.cssText = '';
       if (navU) navU.style.cssText = '';
       if (navS) navS.style.cssText = '';
       if (navB) navB.style.cssText = '';
+      if (navF) navF.style.cssText = '';
       var noText = document.getElementById('navOrdersText');
       var ntText = document.getElementById('navTicketsText');
       var nuText = document.getElementById('navUsersText');
       var nsText = document.getElementById('navServicesText');
       var nbText = document.getElementById('navBlogsText');
+      var nfText = document.getElementById('navFundsText');
       if (noText) noText.className = 'text-sm font-bold text-slate-300';
       if (ntText) ntText.className = 'text-sm font-bold text-slate-300';
       if (nuText) nuText.className = 'text-sm font-bold text-slate-300';
       if (nsText) nsText.className = 'text-sm font-bold text-slate-300';
       if (nbText) nbText.className = 'text-sm font-bold text-slate-300';
+      if (nfText) nfText.className = 'text-sm font-bold text-slate-300';
 
       if (tab === 'orders') {
         if (navO) navO.style.cssText = 'background:linear-gradient(135deg,rgba(239,68,68,.13),rgba(220,38,38,.08));border:1px solid rgba(239,68,68,.22);';
@@ -1864,6 +2157,10 @@
         if (navB) navB.style.cssText = 'background:linear-gradient(135deg,rgba(168,85,247,.14),rgba(147,51,234,.09));border:1px solid rgba(168,85,247,.24);';
         if (nbText) nbText.className = 'text-sm font-bold text-white';
         if (typeof loadAdminBlogs === 'function') loadAdminBlogs();
+      } else if (tab === 'funds') {
+        if (navF) navF.style.cssText = 'background:linear-gradient(135deg,rgba(16,185,129,.14),rgba(5,150,105,.09));border:1px solid rgba(16,185,129,.24);';
+        if (nfText) nfText.className = 'text-sm font-bold text-white';
+        if (typeof renderFundHistory === 'function') renderFundHistory();
       }
     }
 
@@ -1895,66 +2192,8 @@
     }
 
     function switchUserSubTab(tab) {
-      _activeUserSubTab = tab;You are a senior frontend engineer and product designer working on the GETXH™ website
-        (an Indian SMM - panel service).The public blog section is currently unprofessional and
-must be upgraded in place.Do NOT create a parallel site; refactor the existing codebase.
-
-CURRENT DEFECTS(confirmed by screenshot):
-      1. The article page prints raw HTML tags(<p>, <strong>, <h2>) as visible text instead
-        of rendering them. Authors type HTML into the admin "Body Content" field, so the
-        stored content IS markup; the frontend is escaping it.
-        2. The pages use a flat black background, cramped spacing and default typography.
-
-        TASK 1 — CRITICAL BUG FIX (do first):
-        Locate where the blog article body is rendered and output the stored content as real
-        HTML instead of escaped text (use the correct mechanism for the stack found in this
-        repo: innerHTML, template safe-filter, {!!$content!!}, dangerouslySetInnerHTML, etc.).
-        Sanitize if a sanitizer already exists, but under no circumstance may angle-bracket tags
-        appear as visible text on the page.
-
-        TASK 2 — VISUAL UPGRADE to a professional, light, modern SaaS-style design:
-        - Font: "Plus Jakarta Sans" (headings 700–800, body 400–600), fallback Segoe UI.
-        - Page background: light gradient #f7f8fd → #eef2ff plus two soft fixed radial glows:
-        violet rgba(124,58,237,.10) top-right, blue rgba(37,99,235,.09) mid-left.
-        - Accent: violet→blue gradient (#7c3aed → #2563eb) for primary buttons, active nav pill,
-        category badges, heading underline bars, and a 3px accent line under the navbar.
-        - Colors: headings #0f172a, body text #3f4a5c, muted #64748b; cards pure white with
-        1px #e6e9f2 borders, 16–18px radius and soft shadow 0 10px 30px rgba(15,23,42,.06).
-        - Navbar: sticky, rgba(255,255,255,.78) with backdrop-blur; left = logo image
-        "/getxh new logo.png"; right = Home (/), Blog (/blogs, active = gradient pill),
-        Contact (/contact), outlined button "▶ Watch Demo" (keep the existing YouTube Shorts
-        URL, target=_blank), gradient button "Register" (/register).
-        - Listing page (/blogs): centred hero — gradient-text eyebrow "GETXH BLOG",
-        H1 "Tips, Guides & Updates", subtitle "Learn how to grow your social media presence.
-        Guides, tips and latest news from GETXH.", then an "All Posts" pill. Below it a
-        responsive card grid (3 cols desktop, 2 < 900px, 1 < 640px). Each card: cover image
-        (gradient placeholder if none), category badge pill, 17px bold title, 14px muted
-        excerpt, meta row "date • N min read" + "Read →". Hover: translateY(-5px) + deeper
-        shadow. Only posts with status Published are listed; Drafts stay hidden.
-        - Article page: centred 820px column; "← All Posts" back link to /blogs; category badge
-        + meta row; H1 clamp(30px,5vw,44px) weight 800; 18px muted lead paragraph; 1px divider;
-        article typography p 16.5px/1.85 with <strong> in #0f172a; every <h2> 25px weight 800
-          with a 64px×4px gradient underline bar; tables wrapped in white cards with a gradient
-          header row; callout/note boxes in #f5f3ff with 5px violet left border; FAQs as styled
-          <details> accordions; finish with a full-width gradient CTA card linking to /register.
-            - Footer: white bar, centred muted small text.
-
-            CONSTRAINTS:
-            - Preserve ALL existing routes and links exactly: /, /blogs, /contact, /register and the
-            YouTube Shorts demo URL. Keep the logo path unchanged.
-            - Do not modify the blog admin panel or its fields (Title, Category, Excerpt ≤160 chars,
-            Cover Image URL, Body Content HTML, Draft/Published). Touch only public blog templates
-            and shared CSS.
-            - Fully responsive, no horizontal scrolling on mobile, no heavy UI frameworks.
-
-            DELIVERABLES:
-            1. The patched templates/CSS committed in the repo.
-            2. A brief summary listing changed files and the exact line where escaped output was
-            replaced by raw-HTML rendering.
-            3. Self-verification: load /blogs and one article URL and confirm (a) no literal "<p>",
-              "<strong>" or "<h2>" strings are visible anywhere, (b) the background is the light
-                gradient, (c) navbar, cards and article typography match the specification above.
-                var isApp = tab === 'app';
+      _activeUserSubTab = tab;
+      var isApp = tab === 'app';
 
                 var appBtn = document.getElementById('userSubTabApp');
                 var fbBtn  = document.getElementById('userSubTabFirebase');
@@ -2792,6 +3031,564 @@ CURRENT DEFECTS(confirmed by screenshot):
         closeCategoryModal();
       }
     }
+
+    // ══════════════════════════════════════════════════════
+    // RAPIDO STYLE SOUND ALERT & VIBRATION
+    // ══════════════════════════════════════════════════════
+    var _alertSoundEnabled = localStorage.getItem('gx_alert_sound') !== 'false';
+    var _audioCtx = null;
+    var _rapidoBannerTimer = null;
+
+    function getAudioContext() {
+      if (!_audioCtx) {
+        var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) _audioCtx = new AudioContextClass();
+      }
+      if (_audioCtx && _audioCtx.state === 'suspended') {
+        _audioCtx.resume().catch(function () {});
+      }
+      return _audioCtx;
+    }
+
+    document.addEventListener('click', function () { getAudioContext(); }, { once: true });
+    document.addEventListener('touchstart', function () { getAudioContext(); }, { once: true });
+
+    function toggleAlertSound() {
+      _alertSoundEnabled = !_alertSoundEnabled;
+      localStorage.setItem('gx_alert_sound', _alertSoundEnabled ? 'true' : 'false');
+      updateAlertSoundBtn();
+      if (_alertSoundEnabled) {
+        playRapidoChime();
+        showAdminToast('Rapido Alert Sound: ENABLED 🔔', false);
+      } else {
+        showAdminToast('Rapido Alert Sound: MUTED 🔕', false);
+      }
+    }
+
+    function updateAlertSoundBtn() {
+      var btn = document.getElementById('alertSoundToggleBtn');
+      var icon = document.getElementById('alertSoundIcon');
+      var lbl = document.getElementById('alertSoundLabel');
+      if (!btn) return;
+      if (_alertSoundEnabled) {
+        btn.className = 'flex h-8 items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2 py-1 text-[11px] font-bold text-emerald-400 hover:bg-emerald-500/25 transition';
+        if (icon) icon.textContent = 'notifications_active';
+        if (lbl) lbl.textContent = 'Alert: ON';
+      } else {
+        btn.className = 'flex h-8 items-center gap-1.5 rounded-lg border border-slate-700 bg-white/5 px-2 py-1 text-[11px] font-bold text-slate-400 hover:bg-white/10 transition';
+        if (icon) icon.textContent = 'notifications_off';
+        if (lbl) lbl.textContent = 'Alert: OFF';
+      }
+    }
+
+    function playRapidoTone(freq, type, startTime, duration, gainValue) {
+      var ctx = getAudioContext();
+      if (!ctx) return;
+      try {
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = type || 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + startTime);
+        gain.gain.setValueAtTime(gainValue || 0.4, ctx.currentTime + startTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + startTime);
+        osc.stop(ctx.currentTime + startTime + duration);
+      } catch (e) {}
+    }
+
+    function playRapidoChime() {
+      if (!_alertSoundEnabled) return;
+      try {
+        var ctx = getAudioContext();
+        if (!ctx) return;
+        var notes = [
+          { f: 587.33, t: 'triangle', s: 0.00, d: 0.12, v: 0.45 },
+          { f: 739.99, t: 'triangle', s: 0.10, d: 0.12, v: 0.45 },
+          { f: 880.00, t: 'sine',     s: 0.20, d: 0.14, v: 0.50 },
+          { f: 1174.66, t: 'sine',    s: 0.32, d: 0.35, v: 0.55 },
+          { f: 880.00, t: 'triangle', s: 0.55, d: 0.14, v: 0.45 },
+          { f: 1174.66, t: 'sine',    s: 0.67, d: 0.40, v: 0.55 }
+        ];
+        notes.forEach(function (n) { playRapidoTone(n.f, n.t, n.s, n.d, n.v); });
+      } catch (e) {
+        console.warn('Audio alert error:', e);
+      }
+    }
+
+    function triggerRapidoAlert(type, data, docId) {
+      playRapidoChime();
+      if (navigator.vibrate) {
+        try { navigator.vibrate([350, 150, 350, 150, 600]); } catch (e) {}
+      }
+
+      var tag = 'NEW PAYMENT';
+      var title = '+₹' + (data.amount || 0) + ' Received';
+      var sub = 'UTR: ' + (data.utr || '—') + ' · ' + (data.email || 'User');
+      var icon = 'payments';
+
+      if (type === 'order') {
+        tag = 'NEW ORDER';
+        title = 'Order #' + (data.orderId || docId || '') + ' (₹' + (data.price || 0) + ')';
+        sub = (data.serviceName || data.service || 'Service') + ' · ' + (data.email || 'User');
+        icon = 'receipt_long';
+      } else if (type === 'ticket') {
+        tag = 'NEW TICKET';
+        title = 'Support: ' + (data.subject || 'Ticket #' + (docId || ''));
+        sub = 'From: ' + (data.userEmail || data.userName || 'User');
+        icon = 'support_agent';
+      }
+
+      if ('Notification' in window) {
+        if (Notification.permission === 'granted') {
+          try { new Notification('🚨 ' + tag + ': ' + title, { body: sub, icon: '/GETXH WEB NEW LOGO.png', tag: 'gx-' + docId }); } catch (e) {}
+        } else if (Notification.permission === 'default') {
+          Notification.requestPermission().catch(function () {});
+        }
+      }
+
+      showRapidoBanner(type, tag, title, sub, docId);
+    }
+
+    function showRapidoBanner(type, tag, title, sub, docId) {
+      var banner = document.getElementById('rapidoAlertBanner');
+      if (!banner) return;
+      document.getElementById('rapidoAlertTag').textContent = tag;
+      document.getElementById('rapidoAlertTitle').textContent = title;
+      document.getElementById('rapidoAlertSub').textContent = sub;
+      document.getElementById('rapidoAlertIcon').textContent = type === 'order' ? 'receipt_long' : (type === 'ticket' ? 'support_agent' : 'payments');
+      document.getElementById('rapidoAlertTime').textContent = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+      var actionBtn = document.getElementById('rapidoAlertActionBtn');
+      if (actionBtn) {
+        actionBtn.onclick = function () {
+          dismissRapidoAlert();
+          if (type === 'fund') switchTab('funds');
+          else if (type === 'order') switchTab('orders');
+          else if (type === 'ticket') switchTab('tickets');
+        };
+      }
+
+      banner.classList.remove('hidden');
+      banner.style.display = 'flex';
+
+      if (_rapidoBannerTimer) clearTimeout(_rapidoBannerTimer);
+      _rapidoBannerTimer = setTimeout(function () {
+        dismissRapidoAlert();
+      }, 14000);
+    }
+
+    function dismissRapidoAlert() {
+      var banner = document.getElementById('rapidoAlertBanner');
+      if (banner) {
+        banner.classList.add('hidden');
+        banner.style.display = 'none';
+      }
+      if (_rapidoBannerTimer) {
+        clearTimeout(_rapidoBannerTimer);
+        _rapidoBannerTimer = null;
+      }
+    }
+
+    // ══════════════════════════════════════════════════════
+    // FUND HISTORY & BHARATPE TRACKING
+    // ══════════════════════════════════════════════════════
+    window._allFundPayments = [];
+    var _activeFundPreset = '7days';
+    var _fundSearchQuery = '';
+
+    function formatFundDateIST(timestamp) {
+      if (!timestamp) return '—';
+      var d = new Date(timestamp);
+      if (isNaN(d.getTime())) return '—';
+      return d.toLocaleString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: 'Asia/Kolkata'
+      });
+    }
+
+    function copyToClipboard(text, msg) {
+      if (!text) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(String(text)).then(function () {
+          showAdminToast(msg || 'Copied to clipboard!', false);
+        }).catch(function () {
+          fallbackCopy(text, msg);
+        });
+      } else {
+        fallbackCopy(text, msg);
+      }
+    }
+
+    function fallbackCopy(text, msg) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showAdminToast(msg || 'Copied to clipboard!', false);
+      } catch (e) {}
+      document.body.removeChild(ta);
+    }
+
+    function setFundPreset(preset) {
+      _activeFundPreset = preset;
+      var fromEl = document.getElementById('fundDateFrom');
+      var toEl = document.getElementById('fundDateTo');
+      if (fromEl) fromEl.value = '';
+      if (toEl) toEl.value = '';
+
+      var presetBtns = {
+        '7days': 'preset7Days',
+        'today': 'presetToday',
+        'yesterday': 'presetYesterday',
+        '30days': 'preset30Days',
+        'all': 'presetAll'
+      };
+      Object.keys(presetBtns).forEach(function (k) {
+        var btn = document.getElementById(presetBtns[k]);
+        if (btn) {
+          if (k === preset) {
+            btn.className = 'fund-preset-btn rounded-xl px-3 py-1.5 border transition whitespace-nowrap bg-emerald-500/20 border-emerald-500/40 text-emerald-300';
+          } else {
+            btn.className = 'fund-preset-btn rounded-xl px-3 py-1.5 border border-white/10 bg-white/5 text-slate-400 hover:text-white transition whitespace-nowrap';
+          }
+        }
+      });
+
+      renderFundHistory();
+    }
+
+    function onCustomDateChange() {
+      var fromVal = document.getElementById('fundDateFrom') ? document.getElementById('fundDateFrom').value : '';
+      var toVal = document.getElementById('fundDateTo') ? document.getElementById('fundDateTo').value : '';
+      if (fromVal || toVal) {
+        _activeFundPreset = 'custom';
+        ['preset7Days', 'presetToday', 'presetYesterday', 'preset30Days', 'presetAll'].forEach(function (id) {
+          var btn = document.getElementById(id);
+          if (btn) btn.className = 'fund-preset-btn rounded-xl px-3 py-1.5 border border-white/10 bg-white/5 text-slate-400 hover:text-white transition whitespace-nowrap';
+        });
+        renderFundHistory();
+      }
+    }
+
+    function resetFundDateFilter() {
+      setFundPreset('7days');
+    }
+
+    function onFundSearchInput() {
+      var inp = document.getElementById('fundSearchInput');
+      var clearBtn = document.getElementById('fundSearchClearBtn');
+      _fundSearchQuery = (inp && inp.value ? inp.value : '').trim().toLowerCase();
+      if (clearBtn) {
+        clearBtn.classList.toggle('hidden', !_fundSearchQuery);
+      }
+      renderFundHistory();
+    }
+
+    function clearFundSearch() {
+      var inp = document.getElementById('fundSearchInput');
+      var clearBtn = document.getElementById('fundSearchClearBtn');
+      if (inp) inp.value = '';
+      if (clearBtn) clearBtn.classList.add('hidden');
+      _fundSearchQuery = '';
+      renderFundHistory();
+    }
+
+    function renderFundHistory() {
+      var payments = window._allFundPayments || [];
+      var now = Date.now();
+      var dayMs = 24 * 60 * 60 * 1000;
+
+      // 1. Primary Metric: Rolling Last 7 Days Total
+      var sevenDaysAgo = now - (7 * dayMs);
+      var total7Days = 0;
+      var totalLifetime = 0;
+
+      payments.forEach(function (p) {
+        var amt = Number(p.amount) || 0;
+        var isSuccess = !p.status || String(p.status).toUpperCase() === 'SUCCESS';
+        if (isSuccess) {
+          totalLifetime += amt;
+          var t = p.createdAt && p.createdAt.seconds ? p.createdAt.seconds * 1000 : (Number(p.createdAt) || 0);
+          if (t >= sevenDaysAgo) {
+            total7Days += amt;
+          }
+        }
+      });
+
+      var s7El = document.getElementById('statFund7Days');
+      if (s7El) s7El.textContent = '₹' + total7Days.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      var sLtEl = document.getElementById('statFundLifetime');
+      if (sLtEl) sLtEl.textContent = '₹' + totalLifetime.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      var sCtEl = document.getElementById('statFundCount');
+      if (sCtEl) sCtEl.textContent = payments.length;
+
+      // 2. Filter by Date
+      var filtered = payments.filter(function (p) {
+        var t = p.createdAt && p.createdAt.seconds ? p.createdAt.seconds * 1000 : (Number(p.createdAt) || 0);
+        if (!t) return true;
+
+        if (_activeFundPreset === 'today') {
+          var startOfToday = new Date();
+          startOfToday.setHours(0, 0, 0, 0);
+          return t >= startOfToday.getTime();
+        } else if (_activeFundPreset === 'yesterday') {
+          var sToday = new Date();
+          sToday.setHours(0, 0, 0, 0);
+          var sYest = new Date(sToday.getTime() - dayMs);
+          return t >= sYest.getTime() && t < sToday.getTime();
+        } else if (_activeFundPreset === '7days') {
+          return t >= (now - 7 * dayMs);
+        } else if (_activeFundPreset === '30days') {
+          return t >= (now - 30 * dayMs);
+        } else if (_activeFundPreset === 'all') {
+          return true;
+        } else if (_activeFundPreset === 'custom') {
+          var fromVal = document.getElementById('fundDateFrom') ? document.getElementById('fundDateFrom').value : '';
+          var toVal = document.getElementById('fundDateTo') ? document.getElementById('fundDateTo').value : '';
+          var ok = true;
+          if (fromVal) {
+            var fromDate = new Date(fromVal);
+            fromDate.setHours(0, 0, 0, 0);
+            if (t < fromDate.getTime()) ok = false;
+          }
+          if (toVal) {
+            var toDate = new Date(toVal);
+            toDate.setHours(23, 59, 59, 999);
+            if (t > toDate.getTime()) ok = false;
+          }
+          return ok;
+        }
+        return true;
+      });
+
+      // Filtered Total
+      var filteredPeriodTotal = 0;
+      filtered.forEach(function (p) {
+        var amt = Number(p.amount) || 0;
+        var isSuccess = !p.status || String(p.status).toUpperCase() === 'SUCCESS';
+        if (isSuccess) filteredPeriodTotal += amt;
+      });
+
+      var sFiltEl = document.getElementById('statFundFiltered');
+      if (sFiltEl) sFiltEl.textContent = '₹' + filteredPeriodTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      var sLabelEl = document.getElementById('statFundRangeLabel');
+      if (sLabelEl) {
+        if (_activeFundPreset === '7days') sLabelEl.textContent = 'Last 7 Days';
+        else if (_activeFundPreset === 'today') sLabelEl.textContent = 'Today';
+        else if (_activeFundPreset === 'yesterday') sLabelEl.textContent = 'Yesterday';
+        else if (_activeFundPreset === '30days') sLabelEl.textContent = 'Last 30 Days';
+        else if (_activeFundPreset === 'all') sLabelEl.textContent = 'All Time';
+        else if (_activeFundPreset === 'custom') {
+          var fv = document.getElementById('fundDateFrom') ? document.getElementById('fundDateFrom').value : '';
+          var tv = document.getElementById('fundDateTo') ? document.getElementById('fundDateTo').value : '';
+          sLabelEl.textContent = (fv || 'Start') + ' to ' + (tv || 'Now');
+        }
+      }
+
+      // 3. Filter by Search Query
+      if (_fundSearchQuery) {
+        var q = _fundSearchQuery;
+        filtered = filtered.filter(function (p) {
+          var utr = String(p.utr || '').toLowerCase();
+          var email = String(p.email || '').toLowerCase();
+          var name = String(p.username || p.payerName || '').toLowerCase();
+          var uid = String(p.uid || '').toLowerCase();
+          var amt = String(p.amount || '');
+          var bankRef = String(p.bankReferenceNo || '').toLowerCase();
+          return utr.includes(q) || email.includes(q) || name.includes(q) || uid.includes(q) || amt.includes(q) || bankRef.includes(q);
+        });
+      }
+
+      var sCountFiltEl = document.getElementById('statFundCountFiltered');
+      if (sCountFiltEl) sCountFiltEl.textContent = filtered.length + ' in selected view';
+
+      var emptyEl = document.getElementById('fundEmptyState');
+      if (emptyEl) emptyEl.classList.toggle('hidden', filtered.length > 0);
+
+      // 4. Render Table and Cards
+      renderFundTable(filtered);
+      renderFundCards(filtered);
+    }
+
+    function renderFundTable(list) {
+      var tbody = document.getElementById('fundTableBody');
+      if (!tbody) return;
+      if (!list.length) {
+        tbody.innerHTML = '';
+        return;
+      }
+
+      var html = list.map(function (p) {
+        var t = p.createdAt && p.createdAt.seconds ? p.createdAt.seconds * 1000 : (Number(p.createdAt) || 0);
+        var dateStr = formatFundDateIST(t);
+        var amt = Number(p.amount) || 0;
+        var utr = p.utr || p.bankReferenceNo || '—';
+        var userEmail = p.email || '—';
+        var userName = p.username || (p.payerName ? p.payerName : 'User');
+        var uid = p.uid || '';
+        var method = p.method || 'BharatPe UPI';
+
+        return '<tr class="hover:bg-white/[0.02] transition border-b border-white/5">' +
+          '<td class="py-3.5 px-4 whitespace-nowrap">' +
+            '<div class="font-bold text-white text-xs">' + dateStr + '</div>' +
+            '<div class="text-[10px] text-slate-500 font-mono">' + (p.requestId ? p.requestId.slice(0, 14) + '…' : '') + '</div>' +
+          '</td>' +
+          '<td class="py-3.5 px-4">' +
+            '<div class="font-bold text-white text-xs truncate max-w-[200px]" title="' + userEmail + '">' + userEmail + '</div>' +
+            '<div class="text-[10px] text-slate-400 flex items-center gap-1.5 mt-0.5">' +
+              '<span>' + userName + '</span>' +
+              (uid ? '<button onclick="copyToClipboard(\'' + uid + '\', \'UID copied!\')" class="text-slate-500 hover:text-sky-400 font-mono text-[9px] underline">copy UID</button>' : '') +
+            '</div>' +
+          '</td>' +
+          '<td class="py-3.5 px-4 whitespace-nowrap">' +
+            '<span class="text-sm font-black text-emerald-400">+₹' + amt.toFixed(2) + '</span>' +
+          '</td>' +
+          '<td class="py-3.5 px-4 whitespace-nowrap">' +
+            '<div class="flex items-center gap-1.5">' +
+              '<span class="font-mono text-xs font-bold text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2 py-0.5 rounded-lg">' + utr + '</span>' +
+              '<button onclick="copyToClipboard(\'' + utr + '\', \'UTR copied!\')" title="Copy UTR" class="p-1 rounded text-slate-400 hover:text-white transition">' +
+                '<span class="material-symbols-outlined text-[14px]">content_copy</span>' +
+              '</button>' +
+            '</div>' +
+          '</td>' +
+          '<td class="py-3.5 px-4 whitespace-nowrap">' +
+            '<span class="inline-flex items-center gap-1 rounded-md bg-white/5 border border-white/5 px-2 py-0.5 text-[10px] font-semibold text-slate-300">' +
+              '<span class="material-symbols-outlined text-[12px] text-emerald-400">qr_code_2</span> ' + method +
+            '</span>' +
+          '</td>' +
+          '<td class="py-3.5 px-4 whitespace-nowrap">' +
+            '<span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400">' +
+              '<span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> SUCCESS' +
+            '</span>' +
+          '</td>' +
+          '<td class="py-3.5 px-4 text-right whitespace-nowrap">' +
+            '<button onclick="viewFundDetails(\'' + p.id + '\')" class="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 px-2.5 py-1 text-xs font-bold text-slate-300 hover:text-white transition">' +
+              '<span class="material-symbols-outlined text-[14px]">visibility</span> Details' +
+            '</button>' +
+          '</td>' +
+        '</tr>';
+      }).join('');
+
+      tbody.innerHTML = html;
+    }
+
+    function renderFundCards(list) {
+      var container = document.getElementById('fundMobileCards');
+      if (!container) return;
+      if (!list.length) {
+        container.innerHTML = '';
+        return;
+      }
+
+      var html = list.map(function (p) {
+        var t = p.createdAt && p.createdAt.seconds ? p.createdAt.seconds * 1000 : (Number(p.createdAt) || 0);
+        var dateStr = formatFundDateIST(t);
+        var amt = Number(p.amount) || 0;
+        var utr = p.utr || p.bankReferenceNo || '—';
+        var userEmail = p.email || '—';
+        var userName = p.username || (p.payerName ? p.payerName : 'User');
+        var method = p.method || 'BharatPe UPI';
+
+        return '<div class="rounded-2xl border border-white/8 bg-[#0d1628] p-4 space-y-3 shadow-md">' +
+          '<div class="flex items-center justify-between text-xs">' +
+            '<span class="text-slate-400 font-semibold flex items-center gap-1">' +
+              '<span class="material-symbols-outlined text-[14px]">schedule</span> ' + dateStr +
+            '</span>' +
+            '<span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">' +
+              '<span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> SUCCESS' +
+            '</span>' +
+          '</div>' +
+          '<div class="flex items-baseline justify-between pt-0.5">' +
+            '<span class="text-2xl font-black text-emerald-400 tracking-tight">+₹' + amt.toFixed(2) + '</span>' +
+            '<span class="text-[10px] font-bold text-slate-400 bg-white/5 border border-white/5 px-2 py-0.5 rounded-md">' + method + '</span>' +
+          '</div>' +
+          '<div class="rounded-xl bg-black/25 border border-white/5 p-3 space-y-2 text-xs">' +
+            '<div class="flex items-start justify-between gap-2">' +
+              '<span class="text-slate-400 font-medium flex-shrink-0">User:</span>' +
+              '<div class="text-right truncate">' +
+                '<p class="font-bold text-white truncate max-w-[200px]" title="' + userEmail + '">' + userEmail + '</p>' +
+                '<p class="text-[10px] text-slate-400">' + userName + '</p>' +
+              '</div>' +
+            '</div>' +
+            '<div class="flex items-center justify-between gap-2 pt-1 border-t border-white/5">' +
+              '<span class="text-slate-400 font-medium flex-shrink-0">UTR:</span>' +
+              '<button onclick="copyToClipboard(\'' + utr + '\', \'UTR copied!\')" class="inline-flex items-center gap-1 text-sky-400 font-mono font-bold text-xs bg-sky-500/10 px-2 py-0.5 rounded-md border border-sky-500/20">' +
+                utr + ' <span class="material-symbols-outlined text-[13px]">content_copy</span>' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+          '<button onclick="viewFundDetails(\'' + p.id + '\')" class="w-full flex items-center justify-center gap-1.5 rounded-xl bg-white/5 border border-white/10 py-2.5 text-xs font-bold text-slate-200 hover:bg-white/10 transition">' +
+            '<span class="material-symbols-outlined text-[15px] text-sky-400">info</span> View BharatPe Details' +
+          '</button>' +
+        '</div>';
+      }).join('');
+
+      container.innerHTML = html;
+    }
+
+    window.viewFundDetails = function (paymentId) {
+      var p = (window._allFundPayments || []).find(function (x) { return x.id === paymentId; });
+      if (!p) return;
+      var amt = Number(p.amount) || 0;
+      var utr = p.utr || p.bankReferenceNo || '—';
+      document.getElementById('modalFundAmount').textContent = '₹' + amt.toFixed(2);
+      document.getElementById('modalFundUtr').textContent = utr;
+      document.getElementById('modalFundUserEmail').textContent = p.email || '—';
+      document.getElementById('modalFundUserId').textContent = 'UID: ' + (p.uid || '—');
+      document.getElementById('modalFundPayerName').textContent = p.payerName || (p.bharatpeData && p.bharatpeData.payerName) || '—';
+      document.getElementById('modalFundPayerVpa').textContent = p.payerVpa || (p.bharatpeData && p.bharatpeData.payerVpa) || '—';
+      var t = p.createdAt && p.createdAt.seconds ? p.createdAt.seconds * 1000 : (Number(p.createdAt) || 0);
+      document.getElementById('modalFundDate').textContent = formatFundDateIST(t);
+
+      var copyBtn = document.getElementById('modalFundCopyUtrBtn');
+      if (copyBtn) {
+        copyBtn.onclick = function () { copyToClipboard(utr, 'UTR copied to clipboard!'); };
+      }
+
+      var jsonEl = document.getElementById('modalFundJson');
+      if (jsonEl) {
+        jsonEl.textContent = JSON.stringify(p.bharatpeData || p.rawResponse || p, null, 2);
+      }
+
+      var modal = document.getElementById('fundDetailsModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+    };
+
+    window.closeFundDetailsModal = function () {
+      var modal = document.getElementById('fundDetailsModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    };
+
+    window.toggleModalJsonViewer = function () {
+      var pre = document.getElementById('modalFundJson');
+      var btn = document.getElementById('modalJsonToggleBtn');
+      if (pre.style.display === 'none') {
+        pre.style.display = 'block';
+        if (btn) btn.textContent = 'Collapse';
+      } else {
+        pre.style.display = 'none';
+        if (btn) btn.textContent = 'Expand';
+      }
+    };
   </script>
 
   <!-- ════════════════════════════════════════════════════
@@ -3020,7 +3817,9 @@ CURRENT DEFECTS(confirmed by screenshot):
       document.getElementById('signOutBtn').addEventListener('click', doSignOut);
       document.getElementById('mobileSignOutBtn').addEventListener('click', doSignOut);
 
-      // Real-time Orders
+      // Real-time Orders Listener (with Rapido Alert for new orders)
+      let _isInitialOrders = true;
+      const _knownOrderIds = new Set();
       unsubOrders = onSnapshot(collection(db, 'orders'), snap => {
         const orders = snap.docs.map(d => {
           const o = d.data();
@@ -3035,9 +3834,23 @@ CURRENT DEFECTS(confirmed by screenshot):
           return bt - at;
         });
         renderOrders(orders);
+
+        snap.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            if (!_isInitialOrders && !_knownOrderIds.has(change.doc.id)) {
+              if (typeof triggerRapidoAlert === 'function') {
+                triggerRapidoAlert('order', change.doc.data(), change.doc.id);
+              }
+            }
+            _knownOrderIds.add(change.doc.id);
+          }
+        });
+        _isInitialOrders = false;
       }, () => { });
 
-      // Real-time Tickets
+      // Real-time Tickets Listener (with Rapido Alert for new tickets)
+      let _isInitialTickets = true;
+      const _knownTicketIds = new Set();
       unsubTickets = onSnapshot(collection(db, 'tickets'), snap => {
         const tickets = snap.docs.map(d => {
           const t = d.data();
@@ -3052,6 +3865,19 @@ CURRENT DEFECTS(confirmed by screenshot):
           return bt - at;
         });
         renderTickets(tickets);
+
+        snap.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            if (!_isInitialTickets && !_knownTicketIds.has(change.doc.id)) {
+              if (typeof triggerRapidoAlert === 'function') {
+                triggerRapidoAlert('ticket', change.doc.data(), change.doc.id);
+              }
+            }
+            _knownTicketIds.add(change.doc.id);
+          }
+        });
+        _isInitialTickets = false;
+
         if (activeTicketId) {
           const t = tickets.find(x => x.id === activeTicketId);
           if (t) {
@@ -3060,6 +3886,37 @@ CURRENT DEFECTS(confirmed by screenshot):
           }
         }
       }, () => { });
+
+      // Real-time Fund Payments Listener (BharatPe Deposits with Rapido Alert)
+      let _isInitialFundPayments = true;
+      const _knownFundPaymentIds = new Set();
+      let unsubFundPayments = onSnapshot(collection(db, 'fundPayments'), snap => {
+        const payments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        payments.sort((a, b) => {
+          const at = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : (Number(a.createdAt) || 0);
+          const bt = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : (Number(b.createdAt) || 0);
+          return bt - at;
+        });
+        window._allFundPayments = payments;
+
+        snap.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            if (!_isInitialFundPayments && !_knownFundPaymentIds.has(change.doc.id)) {
+              if (typeof triggerRapidoAlert === 'function') {
+                triggerRapidoAlert('fund', change.doc.data(), change.doc.id);
+              }
+            }
+            _knownFundPaymentIds.add(change.doc.id);
+          }
+        });
+        _isInitialFundPayments = false;
+
+        if (typeof renderFundHistory === 'function') {
+          renderFundHistory();
+        }
+      }, err => {
+        console.warn('Fund payments subscription error:', err);
+      });
 
       // Messages Listener
       window.startMsgListener = function (ticketId) {
