@@ -7,38 +7,15 @@
 <title>Admin Orders | GETXH</title>
 <meta name="robots" content="noindex, nofollow"/>
 <script>
-  // Strict Admin Guard with Primary Trusted Mobile Device Support:
   (function () {
     try {
       var e = (localStorage.getItem('getxh_current_user') || '').toLowerCase().trim();
       var loggedIn = localStorage.getItem('getxh_user_logged_in');
-      var navAuthRaw = sessionStorage.getItem('gx_admin_nav_auth');
-      var persistentNav = localStorage.getItem('gx_admin_nav_auth_persistent');
-      var isTrustedDev = localStorage.getItem('gx_trusted_admin_device_v2');
-
-      // On trusted primary device, automatically re-hydrate session
-      if (!navAuthRaw && persistentNav && isTrustedDev) {
-        navAuthRaw = persistentNav;
-        try { sessionStorage.setItem('gx_admin_nav_auth', persistentNav); } catch (_) {}
-      }
-
-      if (!loggedIn || e !== 'agency@getxh.in' || !navAuthRaw) {
+      if (loggedIn === 'yes' && e && e !== 'agency@getxh.in') {
         document.documentElement.style.display = 'none';
-        window.location.replace('/');
-        return;
+        window.location.replace('/dashboard');
       }
-
-      var navAuth = JSON.parse(navAuthRaw);
-      if (!navAuth || !navAuth.t) {
-        document.documentElement.style.display = 'none';
-        sessionStorage.removeItem('gx_admin_nav_auth');
-        window.location.replace('/');
-        return;
-      }
-    } catch (err) {
-      document.documentElement.style.display = 'none';
-      window.location.replace('/');
-    }
+    } catch (_) {}
   })();
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -590,13 +567,33 @@ onAuthStateChanged(auth, async user => {
     return;
   }
 
+  try {
+    localStorage.setItem('getxh_user_logged_in', 'yes');
+    localStorage.setItem('getxh_current_user', ADMIN_EMAIL);
+    const pPayload = JSON.stringify({ t: Date.now(), persistent: true, role: 'admin' });
+    sessionStorage.setItem('gx_admin_nav_auth', pPayload);
+    localStorage.setItem('gx_admin_nav_auth_persistent', pPayload);
+  } catch (_) {}
+
   document.getElementById('headerEmail').textContent = user.email;
   document.getElementById('loadingScreen').classList.add('hidden');
   document.getElementById('mainPanel').classList.remove('hidden');
 
   // Sign out
   document.getElementById('signOutBtn').addEventListener('click', () => {
-    sessionStorage.removeItem('gx_admin_nav_auth');
+    try {
+      sessionStorage.clear();
+      localStorage.removeItem('gx_admin_unlocked');
+      localStorage.removeItem('gx_admin_device_unlocked');
+      localStorage.removeItem('gx_admin_permanent_unlocked');
+      localStorage.removeItem('gx_admin_unlocked_session_v3');
+      localStorage.removeItem('gx_admin_nav_auth_persistent');
+      localStorage.removeItem('gx_trusted_admin_unlocked_v2');
+      localStorage.removeItem('gx_trusted_admin_device_v2');
+      localStorage.removeItem('gx_admin_nav_auth');
+      localStorage.removeItem('getxh_user_logged_in');
+      localStorage.removeItem('getxh_current_user');
+    } catch (_) {}
     return signOut(auth).then(() => window.location.replace('/'));
   });
 
