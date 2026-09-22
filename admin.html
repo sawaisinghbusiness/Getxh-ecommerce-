@@ -4304,17 +4304,13 @@
 
     // ── Security Config ──────────────────────────────────
     const ADMIN_UID = 'XVQ4WNIRyKbJz7HCDUmU0Lv9squ2';
-    const ADMIN_PWD_HASH = '293eb1d8c34e37ba440073ce3c81e30969c74633f05b160b193174d5c03c6532';
+    // SECURITY: Password hash removed from client-side code.
+    // Verification is now done server-side via the backend.
     const MAX_ATTEMPTS = 3;
     const LOCKOUT_MS = 5 * 60 * 1000; // 5 minutes
 
     let _adminUnlocked = false;
     let _failedAttempts = 0;
-
-    async function _hashStr(str) {
-      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
 
     function _isLockedOut() {
       const until = parseInt(sessionStorage.getItem('_adm_lock') || '0');
@@ -4349,36 +4345,47 @@
       const typed = input.value;
       input.value = '';
 
-      const hash = await _hashStr(typed);
+      if (!typed) { showGateErr('Please enter the admin password.'); return; }
 
-      if (hash === ADMIN_PWD_HASH) {
-        _failedAttempts = 0;
-        // Password correct — now require OTP
-        document.getElementById('passwordGate').style.display = 'none';
-        const otpGate = document.getElementById('otpGate');
-        otpGate.style.display = 'flex';
-        setTimeout(() => document.getElementById('otpInput').focus(), 150);
-        // Auto-send OTP
-        try {
-          await fetch(BACKEND_URL + '/send-otp', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: ADMIN_EMAIL })
-          });
-        } catch { }
-      } else {
-        _failedAttempts++;
-        if (_failedAttempts >= MAX_ATTEMPTS) {
-          sessionStorage.setItem('_adm_lock', Date.now() + LOCKOUT_MS);
+      btn.disabled = true;
+      btn.textContent = 'Verifying…';
+
+      try {
+        // SECURITY: Send password to backend for server-side verification + OTP dispatch.
+        // Backend validates the password hash server-side and sends OTP only if correct.
+        const res = await fetch(BACKEND_URL + '/send-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: ADMIN_EMAIL, adminPassword: typed })
+        });
+        const data = await res.json();
+
+        if (res.ok || data.success) {
           _failedAttempts = 0;
-          showGateErr('Too many failed attempts. Locked for 5 minutes.');
-          setTimeout(() => window.location.replace('/dashboard'), 2500);
+          // Password verified server-side — now require OTP
+          document.getElementById('passwordGate').style.display = 'none';
+          const otpGate = document.getElementById('otpGate');
+          otpGate.style.display = 'flex';
+          setTimeout(() => document.getElementById('otpInput').focus(), 150);
         } else {
-          const left = MAX_ATTEMPTS - _failedAttempts;
-          showGateErr('Wrong password. ' + left + ' attempt' + (left > 1 ? 's' : '') + ' remaining.');
-          input.focus();
-          setTimeout(() => hideGateErr(), 3000);
+          _failedAttempts++;
+          if (_failedAttempts >= MAX_ATTEMPTS) {
+            sessionStorage.setItem('_adm_lock', Date.now() + LOCKOUT_MS);
+            _failedAttempts = 0;
+            showGateErr('Too many failed attempts. Locked for 5 minutes.');
+            setTimeout(() => window.location.replace('/dashboard'), 2500);
+          } else {
+            const left = MAX_ATTEMPTS - _failedAttempts;
+            showGateErr((data.message || 'Wrong password.') + ' ' + left + ' attempt' + (left > 1 ? 's' : '') + ' remaining.');
+            input.focus();
+            setTimeout(() => hideGateErr(), 3000);
+          }
         }
+      } catch (e) {
+        showGateErr('Network error. Check connection and try again.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Unlock';
       }
     }
 

@@ -20,10 +20,23 @@ service cloud.firestore {
     }
 
     // ── 1. Users Wallet & Balance ──
+    // SECURITY: Users can only CREATE their doc with zero balance.
+    //           Only admin (or backend via Admin SDK) can modify Balance/TotalOrders/TotalSpent.
+    //           Self-update restricted to Balance-only increments as interim until backend migration.
     match /Users/{userId} {
       allow read: if isAdmin() || isOwner(userId);
-      allow create: if isAdmin() || isOwner(userId);
-      allow update, delete: if isAdmin() || isOwner(userId);
+      allow create: if isAdmin() || (isOwner(userId) &&
+        request.resource.data.Balance == 0 &&
+        request.resource.data.TotalOrders == 0 &&
+        request.resource.data.TotalSpent == 0);
+      // Interim: allow user to increment Balance ONLY (for wallet add-funds flow).
+      // The user cannot set Balance arbitrarily — only increment via onlyChanged(['Balance']).
+      // TODO: Move balance updates to server-side backend (Firebase Admin SDK) and change this to isAdmin() only.
+      allow update: if isAdmin() || (isOwner(userId) &&
+        onlyChanged(['Balance']) &&
+        request.resource.data.Balance > resource.data.Balance &&
+        (request.resource.data.Balance - resource.data.Balance) <= 50000);
+      allow delete: if isAdmin();
     }
 
     // ── 2. User Profiles ──
@@ -40,10 +53,12 @@ service cloud.firestore {
     }
 
     // ── 3. Orders ──
+    // SECURITY: Users can only update status-related fields on their own orders.
     match /orders/{orderId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow update: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid &&
+        onlyChanged(['status', 'apiStatus', 'updatedAt', 'remains', 'start_count', 'completedAt']));
       allow delete: if isAdmin();
     }
 
@@ -60,14 +75,18 @@ service cloud.firestore {
     }
 
     // ── 6. App User Data (Admin Panel Users) ──
+    // SECURITY: Block password field from being stored in Firestore.
     match /userData/{userId} {
-      allow create, update: if isOwner(userId);
+      allow create: if isOwner(userId) && !('password' in request.resource.data);
+      allow update: if isOwner(userId) && !('password' in request.resource.data);
       allow read: if isAdmin() || isOwner(userId);
     }
 
     // ── 7. OTP Codes ──
+    // SECURITY: Only admin should read/write OTP codes.
+    // Backend uses Admin SDK (bypasses rules), so client access is fully blocked.
     match /otp_codes/{docId} {
-      allow read, write: if isSignedIn();
+      allow read, write: if isAdmin();
     }
 
     // ── 8. Blogs ──
@@ -77,36 +96,43 @@ service cloud.firestore {
     }
 
     // ── 9. Wallet Transactions ──
+    // SECURITY: list now requires uid filter to prevent cross-user data leaks.
     match /walletTxns/{txnId} {
-      allow list: if isSignedIn();
+      allow list: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
       allow get: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
-      allow create: if isSignedIn() && (request.resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
       allow update, delete: if isAdmin();
     }
 
     // ── 10. Fund Payments (BharatPe UPI & Wallet Deposits) ──
     match /fundPayments/{paymentId} {
       allow list, get: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
-      allow create: if isSignedIn() && (request.resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
       allow update, delete: if isAdmin();
     }
 
-    // ── 10. App Config & Dynamic Services Catalog ──
+    // ── 11. App Config & Dynamic Services Catalog ──
+    // SECURITY: Only admin can write. Was previously writable by any signed-in user.
     match /app_config/{configId} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow write: if isAdmin();
     }
 
-    // ── 11. Custom Campaign & Tracking Links ──
+    // ── 12. Custom Campaign & Tracking Links ──
     match /campaigns/{campaignId} {
       allow read: if true;
       allow create, delete: if isAdmin();
+      // SECURITY: Non-admin can ONLY update click/conversion counters, nothing else.
+      // Changed hasAny → hasOnly to prevent piggybacking other field changes.
       allow update: if isAdmin() || (
-        request.resource.data.diff(resource.data).changedKeys().hasAny(['clicks', 'lastClickedAt', 'conversions'])
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(['clicks', 'lastClickedAt', 'conversions', 'lastReferralAt'])
       );
 
+      // SECURITY: Click tracking — require minimum data validation.
+      // No auth required (public tracking pixel), but limited fields.
       match /clicks/{clickId} {
-        allow create: if true;
+        allow create: if request.resource.data.keys().hasOnly(['timestamp', 'referrer', 'userAgent', 'ip', 'createdAt', 'page', 'source', 'ua', 'ts', 'ref']) &&
+          request.resource.data.keys().size() <= 8;
         allow read: if isAdmin();
       }
 

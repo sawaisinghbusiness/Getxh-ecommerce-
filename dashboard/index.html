@@ -1960,6 +1960,13 @@ function cancelLogout() {
     document.body.style.touchAction = '';
   }, 240);
 }
+// ── SECURITY: HTML Sanitization Helper ──
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+window.escapeHtml = escapeHtml;
+
 // ── READ USER DATA ──
 let username = localStorage.getItem('getxh_user_name');
 if(!username){ const e=localStorage.getItem('getxh_current_user'); if(e) username=e.split('@')[0]; }
@@ -1973,7 +1980,8 @@ if(username){
   if(muDesktop) muDesktop.textContent=username;
 }
 const savedPhoto = localStorage.getItem('getxh_user_photo');
-if(savedPhoto) { const av = document.getElementById('userAvatarContainer'); if(av) av.innerHTML = `<img src="${savedPhoto}" style="width:100%;height:100%;object-fit:cover;display:block;" />`; }
+// SECURITY: Validate photo URL before injecting — only allow https: and data: URLs
+if(savedPhoto && /^(https:\/\/|data:image\/)/.test(savedPhoto)) { const av = document.getElementById('userAvatarContainer'); if(av) av.innerHTML = `<img src="${escapeHtml(savedPhoto)}" style="width:100%;height:100%;object-fit:cover;display:block;" />`; }
 if(_email){ 
   document.getElementById('popupEmail').innerText=_email;
   const me = document.getElementById('menuEmail');
@@ -2098,7 +2106,7 @@ function buildServiceDropdown() {
   dd.innerHTML='';
   (SERVICES[_selCat]||[]).filter(s=>s.status !== 'inactive' && (!q||s.name.toLowerCase().includes(q))).forEach(s=>{
     const d=document.createElement('div');d.className='svc-item'+(_selSvc&&_selSvc.id===s.id?' selected':'');
-    d.innerHTML=`<div class="svc-num-badge">${s.id}</div><span class="flex-1 leading-snug">${s.name}</span><span class="text-[#2196f3] font-black text-xs flex-shrink-0 ml-2">₹${fmtPrice(s.price)}/1K</span>`;
+    d.innerHTML=`<div class="svc-num-badge">${escapeHtml(String(s.id))}</div><span class="flex-1 leading-snug">${escapeHtml(s.name)}</span><span class="text-[#2196f3] font-black text-xs flex-shrink-0 ml-2">₹${fmtPrice(s.price)}/1K</span>`;
     d.onclick=()=>selectService(s);dd.appendChild(d);
   });
 }
@@ -2306,9 +2314,9 @@ function buildGlobalSearch(q) {
     const d = document.createElement('div');
     d.className = 'search-result-item';
     d.innerHTML = `
-      <div class="svc-num-badge">${svc.id}</div>
-      <span class="flex-1 leading-snug text-xs font-semibold text-gray-200">${svc.name}</span>
-      <span class="search-cat-badge">${cat.label.split(' - ')[1] || cat.label}</span>
+      <div class="svc-num-badge">${escapeHtml(String(svc.id))}</div>
+      <span class="flex-1 leading-snug text-xs font-semibold text-gray-200">${escapeHtml(svc.name)}</span>
+      <span class="search-cat-badge">${escapeHtml((cat.label.split(' - ')[1] || cat.label))}</span>
       <span class="text-[#2196f3] font-black text-xs flex-shrink-0 ml-1">₹${fmtPrice(svc.price)}/1K</span>
     `;
     d.onclick = () => {

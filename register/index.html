@@ -681,7 +681,8 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
             username,
             email,
             mobile:    document.getElementById("mobile").value.trim(),
-            password,
+            // SECURITY: password removed — Firebase Auth handles password hashing securely.
+            // Never store plaintext passwords in Firestore.
             uid:       cred.user.uid,
             createdAt: serverTimestamp(),
             ...(_refCode ? { refSource: _refCode, referredAt: Date.now() } : {})
