@@ -909,14 +909,14 @@
           <span class="text-base font-bold text-white whitespace-nowrap"
             style="font-size:16px;white-space:nowrap;">Admin Panel</span>
         </div>
-        <!-- Rapido-Style Sound & Real Phone Vibration Alert Button -->
+        <!-- GetXH Live Sound & Real Phone Vibration Alert Button -->
         <div class="flex items-center gap-1.5 flex-shrink-0">
-          <button id="alertSoundToggleBtn" onclick="toggleAlertSound()" title="Rapido Sound & Phone Vibration Alerts"
+          <button id="alertSoundToggleBtn" onclick="toggleAlertSound()" title="GetXH Live Sound & Phone Vibration Alerts"
             class="flex h-8 items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-emerald-400 hover:bg-emerald-500/25 transition">
             <span class="material-symbols-outlined" id="alertSoundIcon" style="font-size:16px">notifications_active</span>
             <span id="alertSoundLabel">Alert: ON</span>
           </button>
-          <button type="button" onclick="testAlertSoundAndVibration()" title="Test Loud Chime & Real Phone Hardware Vibration"
+          <button type="button" onclick="testAlertSoundAndVibration()" title="Test GetXH Live Sound & Real Phone Vibration"
             class="flex h-8 items-center gap-1 rounded-lg border border-sky-500/30 bg-sky-500/15 px-2.5 py-1 text-[11px] font-bold text-sky-400 hover:bg-sky-500/25 transition">
             <span class="material-symbols-outlined" style="font-size:15px">vibration</span>
             <span>Test Vibrate</span>
@@ -3553,7 +3553,7 @@
     }
 
     // ══════════════════════════════════════════════════════
-    // RAPIDO STYLE SOUND ALERT & VIBRATION
+    // GETXH LIVE SOUND ALERT & VIBRATION
     // ══════════════════════════════════════════════════════
     var _alertSoundEnabled = localStorage.getItem('gx_alert_sound') !== 'false';
     var _audioCtx = null;
@@ -3710,13 +3710,13 @@
       localStorage.setItem('gx_alert_sound', _alertSoundEnabled ? 'true' : 'false');
       updateAlertSoundBtn();
       if (_alertSoundEnabled) {
-        playRapidoChime();
+        playGetXhChime();
         triggerHeavyVibration();
         triggerSystemVibrationNotification('🚨 GetXH Alert Enabled', 'Alerts and phone vibration are now active.', 'sound-on');
-        showAdminToast('Rapido Alert & Phone Vibration: ENABLED 🔔📳', false);
+        showAdminToast('GetXH Sound & Phone Vibration: ENABLED 🔔📳', false);
       } else {
         stopHeavyVibration();
-        showAdminToast('Rapido Alert & Vibration: MUTED 🔕', false);
+        showAdminToast('GetXH Sound Alert: MUTED 🔕', false);
       }
     }
 
@@ -3853,8 +3853,8 @@
     }
     window.playTicketSound = playTicketSound;
 
-    // ── 5. DEFAULT / RAPIDO CHIME ──
-    function playRapidoChime() {
+    // ── 5. GETXH LIVE CHIME (DEFAULT) ──
+    function playGetXhChime() {
       if (!_alertSoundEnabled) return;
       try {
         var ctx = getAudioContext();
@@ -3872,6 +3872,8 @@
         console.warn('Audio alert error:', e);
       }
     }
+    window.playGetXhChime = playGetXhChime;
+    var playRapidoChime = playGetXhChime;
 
     // ══════════════════════════════════════════════════════
     // PERSISTENT OFFLINE TRACKING & CATCH-UP SYSTEM
