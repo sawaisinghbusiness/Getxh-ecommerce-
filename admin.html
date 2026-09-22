@@ -611,39 +611,47 @@
     }
   </script>
   <script>
-    // Strict Admin Guard with Primary Trusted Mobile Device Support:
-    // On the primary trusted device, session remains permanently active.
-    // On other devices, standard session guard applies.
+    // Strict Admin Guard with Persistent Session Support:
+    // When the admin is logged in as agency@getxh.in, keep session active across page refreshes.
     (function () {
       try {
         var e = (localStorage.getItem('getxh_current_user') || '').toLowerCase().trim();
         var loggedIn = localStorage.getItem('getxh_user_logged_in');
         var navAuthRaw = sessionStorage.getItem('gx_admin_nav_auth');
         var persistentNav = localStorage.getItem('gx_admin_nav_auth_persistent');
+        var unlockedSess = localStorage.getItem('gx_admin_unlocked_session_v3');
         var isTrustedDev = localStorage.getItem('gx_trusted_admin_device_v2');
 
-        // On trusted primary device, automatically re-hydrate session
-        if (!navAuthRaw && persistentNav && isTrustedDev) {
-          navAuthRaw = persistentNav;
-          try { sessionStorage.setItem('gx_admin_nav_auth', persistentNav); } catch (_) {}
+        // If admin user is verified, re-hydrate navigation token on refresh so page never gets kicked out
+        if (e === 'agency@getxh.in') {
+          if (!navAuthRaw && (persistentNav || unlockedSess || isTrustedDev)) {
+            var p = persistentNav || JSON.stringify({ t: Date.now(), persistent: true });
+            navAuthRaw = p;
+            try {
+              sessionStorage.setItem('gx_admin_nav_auth', p);
+              localStorage.setItem('gx_admin_nav_auth_persistent', p);
+            } catch (_) {}
+          }
         }
 
-        if (!loggedIn || e !== 'agency@getxh.in' || !navAuthRaw) {
+        // If not logged in as the admin, redirect to homepage
+        if (!loggedIn || e !== 'agency@getxh.in') {
           document.documentElement.style.display = 'none';
           window.location.replace('/');
           return;
         }
 
-        var navAuth = JSON.parse(navAuthRaw);
-        if (!navAuth || !navAuth.t) {
-          document.documentElement.style.display = 'none';
-          sessionStorage.removeItem('gx_admin_nav_auth');
-          window.location.replace('/');
-          return;
+        // Validate navigation payload if present
+        if (navAuthRaw) {
+          try {
+            var navAuth = JSON.parse(navAuthRaw);
+            if (!navAuth || !navAuth.t) {
+              sessionStorage.removeItem('gx_admin_nav_auth');
+            }
+          } catch (_) {}
         }
       } catch (err) {
-        document.documentElement.style.display = 'none';
-        window.location.replace('/');
+        console.warn('Admin guard check notice:', err);
       }
     })();
   </script>
@@ -4703,10 +4711,19 @@
         const data = await res.json();
         if (res.ok || data.success) {
           _adminUnlocked = true;
-          if (localStorage.getItem('gx_trusted_admin_device_v2')) {
+          // Set persistent 7-day session token so refresh never forces re-login
+          const _sessPayload = JSON.stringify({ unlocked: true, t: Date.now(), email: ADMIN_EMAIL });
+          try {
+            localStorage.setItem('gx_admin_unlocked_session_v3', _sessPayload);
+            sessionStorage.setItem('gx_admin_unlocked_session_v3', _sessPayload);
             localStorage.setItem('gx_trusted_admin_unlocked_v2', 'true');
-          }
+            const pPayload = JSON.stringify({ t: Date.now(), persistent: true });
+            localStorage.setItem('gx_admin_nav_auth_persistent', pPayload);
+            sessionStorage.setItem('gx_admin_nav_auth', pPayload);
+          } catch (_) {}
+
           document.getElementById('otpGate').style.display = 'none';
+          document.getElementById('passwordGate').style.display = 'none';
           document.getElementById('adminPanel').style.display = 'block';
           initAdminData();
         } else {
@@ -4766,8 +4783,14 @@
 
       // Sign out buttons
       const doSignOut = () => {
-        sessionStorage.removeItem('gx_admin_nav_auth');
-        sessionStorage.removeItem('_adm_lock');
+        try {
+          sessionStorage.removeItem('gx_admin_nav_auth');
+          sessionStorage.removeItem('_adm_lock');
+          sessionStorage.removeItem('gx_admin_unlocked_session_v3');
+          localStorage.removeItem('gx_admin_nav_auth_persistent');
+          localStorage.removeItem('gx_trusted_admin_unlocked_v2');
+          localStorage.removeItem('gx_admin_unlocked_session_v3');
+        } catch (_) {}
         return signOut(auth).then(() => window.location.replace('/'));
       };
       document.getElementById('signOutBtn').addEventListener('click', doSignOut);
@@ -6617,10 +6640,15 @@
       _currentUser = user;
       window._adminUser = user;
       window._gateSignOut = () => {
-        sessionStorage.removeItem('gx_admin_nav_auth');
-        sessionStorage.removeItem('_adm_lock');
-        localStorage.removeItem('gx_admin_nav_auth_persistent');
-        localStorage.removeItem('gx_trusted_admin_unlocked_v2');
+        try {
+          sessionStorage.removeItem('gx_admin_nav_auth');
+          sessionStorage.removeItem('_adm_lock');
+          sessionStorage.removeItem('gx_admin_unlocked_session_v3');
+          localStorage.removeItem('gx_admin_nav_auth_persistent');
+          localStorage.removeItem('gx_trusted_admin_unlocked_v2');
+          localStorage.removeItem('gx_trusted_admin_device_v2');
+          localStorage.removeItem('gx_admin_unlocked_session_v3');
+        } catch (_) {}
         return signOut(auth).then(() => window.location.replace('/'));
       };
       document.getElementById('sidebarEmail').textContent = user.email;
@@ -6654,12 +6682,28 @@
         console.warn('Trusted device sync notice:', devErr);
       }
 
-      // Check if trusted device was already unlocked
-      const isTrusted = !!localStorage.getItem('gx_trusted_admin_device_v2');
-      const isAlreadyUnlocked = isTrusted && localStorage.getItem('gx_trusted_admin_unlocked_v2') === 'true';
+      // Check if session was already unlocked (7-day persistence so refresh never re-prompts password)
+      let isAlreadyUnlocked = false;
+      try {
+        const rawSess = localStorage.getItem('gx_admin_unlocked_session_v3') || sessionStorage.getItem('gx_admin_unlocked_session_v3');
+        if (rawSess) {
+          const parsed = JSON.parse(rawSess);
+          if (parsed && parsed.unlocked && (Date.now() - (parsed.t || 0) < 604800000)) {
+            isAlreadyUnlocked = true;
+          }
+        }
+        if (!isAlreadyUnlocked && localStorage.getItem('gx_trusted_admin_unlocked_v2') === 'true') {
+          isAlreadyUnlocked = true;
+        }
+      } catch (_) {}
 
       if (isAlreadyUnlocked) {
         _adminUnlocked = true;
+        const pPayload = JSON.stringify({ t: Date.now(), persistent: true });
+        try {
+          localStorage.setItem('gx_admin_nav_auth_persistent', pPayload);
+          sessionStorage.setItem('gx_admin_nav_auth', pPayload);
+        } catch (_) {}
         document.getElementById('passwordGate').style.display = 'none';
         document.getElementById('otpGate').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
@@ -6673,26 +6717,19 @@
       // Lock page if window regains focus and password not entered
       window.addEventListener('focus', async () => {
         const cu = auth.currentUser;
-        if (!cu || cu.uid !== ADMIN_UID) {
+        if (!cu || cu.uid !== ADMIN_UID || cu.email !== ADMIN_EMAIL) {
           window.location.replace('/');
           return;
         }
-        if (cu.email !== ADMIN_EMAIL) {
-          window.location.replace('/');
-          return;
+        if (isAlreadyUnlocked || _adminUnlocked) {
+          return; // Stay unlocked
         }
-        if (isAlreadyUnlocked || (_adminUnlocked && localStorage.getItem('gx_trusted_admin_device_v2'))) {
-          return; // Stay unlocked on trusted device
-        }
-        if (!_adminUnlocked) {
-          // agar OTP gate already open hai toh wahan se mat hatao
-          const otpVisible = document.getElementById('otpGate').style.display === 'flex';
-          if (!otpVisible) {
-            document.getElementById('adminPanel').style.display = 'none';
-            document.getElementById('otpGate').style.display = 'none';
-            document.getElementById('passwordGate').style.display = 'flex';
-            document.getElementById('gatePasswordInput').focus();
-          }
+        const otpVisible = document.getElementById('otpGate').style.display === 'flex';
+        if (!otpVisible) {
+          document.getElementById('adminPanel').style.display = 'none';
+          document.getElementById('otpGate').style.display = 'none';
+          document.getElementById('passwordGate').style.display = 'flex';
+          document.getElementById('gatePasswordInput').focus();
         }
       });
     });

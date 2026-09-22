@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" href="/GETXH WEB NEW LOGO.png" type="image/png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>Orders – GETXH</title>
 <meta name="robots" content="noindex, nofollow"/>
 <meta name="theme-color" content="#0b1220">
@@ -1042,7 +1042,7 @@ function updateAllOrders() {
 function startOrderPolling() {
   if (_ordersInterval) clearInterval(_ordersInterval);
   updateAllOrders();
-  _ordersInterval = setInterval(updateAllOrders, 5000);
+  _ordersInterval = setInterval(updateAllOrders, 15000);
 }
 
 window.addEventListener('beforeunload', () => { if (_ordersInterval) clearInterval(_ordersInterval); });

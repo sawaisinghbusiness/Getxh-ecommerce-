@@ -358,7 +358,7 @@ document.querySelectorAll('[data-eye]').forEach(function(btn){
   });
 });
 
-// Auth wiring: Real fetch POST to panel login endpoint
+// Auth wiring: Real Firebase Authentication
 var form = document.getElementById('loginForm');
 var submitBtn = document.getElementById('submitBtn');
 var note = document.getElementById('formNote');
@@ -373,48 +373,63 @@ form.addEventListener('submit', function(e){
 
   var email = form.email.value.trim();
   var password = form.password.value;
-  var remember = form.remember.checked;
 
-  // TODO: Replace '/api/auth/login' placeholder with live panel auth endpoint
-  fetch('/api/auth/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      email: email,
-      password: password,
-      remember: remember
-    })
-  })
-  .then(function(res){
-    return res.json().then(function(data){
-      return { ok: res.ok, status: res.status, data: data };
-    }).catch(function(){
-      return { ok: res.ok, status: res.status, data: {} };
-    });
-  })
-  .then(function(result){
-    if(result.ok){
+  if (typeof window._firebaseSignIn === 'function') {
+    window._firebaseSignIn(email, password, submitBtn, note);
+  } else {
+    note.style.color = '#F6465D';
+    note.textContent = 'Authentication service loading, please try again in a moment.';
+    submitBtn.classList.remove('is-loading');
+    submitBtn.disabled = false;
+    submitBtn.querySelector('.btn-label').textContent = 'Sign In';
+  }
+});
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window._firebaseSignIn = function(email, password, submitBtn, note) {
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      localStorage.setItem("getxh_user_name", user.displayName || user.email.split('@')[0]);
+      localStorage.setItem("getxh_current_user_uid", user.uid);
+      localStorage.setItem("getxh_user_logged_in", "yes");
+      localStorage.setItem("getxh_current_user", user.email);
       note.style.color = 'var(--up)';
-      note.textContent = 'Verified. Redirecting to dashboard…';
-      window.location.href = result.data.redirect || '/dashboard';
-    } else {
+      note.textContent = 'Verified! Redirecting to dashboard…';
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 500);
+    })
+    .catch((error) => {
       submitBtn.classList.remove('is-loading');
       submitBtn.disabled = false;
       submitBtn.querySelector('.btn-label').textContent = 'Sign In';
       note.style.color = '#F6465D';
-      note.textContent = result.data.message || result.data.error || 'Invalid email or password. Please try again.';
-    }
-  })
-  .catch(function(err){
-    submitBtn.classList.remove('is-loading');
-    submitBtn.disabled = false;
-    submitBtn.querySelector('.btn-label').textContent = 'Sign In';
-    note.style.color = '#F6465D';
-    note.textContent = 'Network error. Please check your connection and try again.';
-  });
-});
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+        note.textContent = 'Invalid email or password. Please try again.';
+      } else if (error.code === 'auth/too-many-requests') {
+        note.textContent = 'Too many failed attempts. Please try again in a few minutes.';
+      } else {
+        note.textContent = error.message || 'Unable to sign in. Please check details.';
+      }
+    });
+};
 </script>
 </body>
 </html>

@@ -743,7 +743,10 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
         cred = await createUserWithEmailAndPassword(auth, email, password);
       } catch (signUpErr) {
         if (signUpErr.code === "auth/email-already-in-use") {
-          cred = await signInWithEmailAndPassword(auth, email, password);
+          hideSuccessPopup();
+          showError('An account with this email already exists. <a href="/" style="color:#60a5fa;text-decoration:underline;margin-left:4px;font-weight:700">Sign in here →</a>');
+          setBtn("Send OTP", false);
+          return;
         } else {
           throw signUpErr;
         }

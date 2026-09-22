@@ -30,13 +30,18 @@ service cloud.firestore {
         request.resource.data.Balance <= 500 &&
         request.resource.data.TotalOrders == 0 &&
         request.resource.data.TotalSpent == 0);
-      // Interim: allow user to increment Balance ONLY (for wallet add-funds flow).
-      // The user cannot set Balance arbitrarily — only increment via onlyChanged(['Balance']).
-      // TODO: Move balance updates to server-side backend (Firebase Admin SDK) and change this to isAdmin() only.
-      allow update: if isAdmin() || (isOwner(userId) &&
-        onlyChanged(['Balance']) &&
-        request.resource.data.Balance > resource.data.Balance &&
-        (request.resource.data.Balance - resource.data.Balance) <= 50000);
+      allow update: if isAdmin() || (isOwner(userId) && (
+        // Case A: Adding funds via verified wallet recharge (Balance increment only)
+        (onlyChanged(['Balance']) &&
+         request.resource.data.Balance > resource.data.Balance &&
+         (request.resource.data.Balance - resource.data.Balance) <= 50000) ||
+        // Case B: Placing an order (Balance decrement, TotalOrders/TotalSpent increment)
+        (onlyChanged(['Balance', 'TotalOrders', 'TotalSpent']) &&
+         request.resource.data.Balance >= 0 &&
+         request.resource.data.Balance <= resource.data.Balance &&
+         request.resource.data.TotalOrders >= resource.data.TotalOrders &&
+         request.resource.data.TotalSpent >= resource.data.TotalSpent)
+      ));
       allow delete: if isAdmin();
     }
 
@@ -59,7 +64,7 @@ service cloud.firestore {
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow update: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid &&
-        onlyChanged(['status', 'apiStatus', 'updatedAt', 'remains', 'start_count', 'completedAt']));
+        onlyChanged(['status', 'apiStatus', 'updatedAt', 'remains', 'start_count', 'end_count', 'completedAt']));
       allow delete: if isAdmin();
     }
 

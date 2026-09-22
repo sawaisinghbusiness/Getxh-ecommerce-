@@ -378,21 +378,6 @@ async function sendOTP() {
   }
 
   btn.disabled = true;
-  btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;animation:spin 0.7s linear infinite;display:inline-block"></span>Verifying email…</span>';
-
-  // Check if user is registered in Firestore
-  if (typeof window._checkUserExists === 'function') {
-    const isRegistered = await window._checkUserExists(email);
-    if (!isRegistered) {
-      setErr("email", "err-email", "User Not Found! No account registered with this email.");
-      showError("User Not Found! No account registered with this email address.");
-      shake("email");
-      btn.disabled = false;
-      btn.textContent = "Send OTP";
-      return;
-    }
-  }
-
   btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;animation:spin 0.7s linear infinite;display:inline-block"></span>Sending OTP…</span>';
 
   try {
@@ -424,57 +409,6 @@ async function sendOTP() {
     btn.textContent = "Send OTP";
   }
 }
-</script>
-
-<!-- Firebase Firestore Integration for Registered User Check -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey:            "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
-  authDomain:        "getxh-42588.firebaseapp.com",
-  projectId:         "getxh-42588",
-  storageBucket:     "getxh-42588.firebasestorage.app",
-  messagingSenderId: "170770122888",
-  appId:             "1:170770122888:web:7adcf91077d5695b06b73d"
-};
-
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-
-window._checkUserExists = async function(email) {
-  try {
-    const cleanEmail = String(email || '').trim().toLowerCase();
-    if (!cleanEmail) return false;
-
-    // Check userData collection
-    const q1 = query(collection(db, "userData"), where("email", "==", cleanEmail));
-    const snap1 = await getDocs(q1);
-    if (!snap1.empty) return true;
-
-    // Check users collection
-    const q2 = query(collection(db, "users"), where("email", "==", cleanEmail));
-    const snap2 = await getDocs(q2);
-    if (!snap2.empty) return true;
-
-    // Check Users collection (lowercase email)
-    const q3 = query(collection(db, "Users"), where("email", "==", cleanEmail));
-    const snap3 = await getDocs(q3);
-    if (!snap3.empty) return true;
-
-    // Check Users collection (capitalized Email)
-    const q4 = query(collection(db, "Users"), where("Email", "==", cleanEmail));
-    const snap4 = await getDocs(q4);
-    if (!snap4.empty) return true;
-
-    return false;
-  } catch (err) {
-    console.warn("User existence check warning:", err);
-    // Safety fallback: If Firestore fails or offline, return true to avoid locking out user
-    return true;
-  }
-};
 </script>
 <style>@keyframes spin{to{transform:rotate(360deg);}}</style>
 </body>

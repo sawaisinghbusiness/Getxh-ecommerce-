@@ -6,7 +6,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <link rel="icon" href="/GETXH WEB NEW LOGO.png" type="image/png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>GETXH Dashboard</title>
 <meta name="robots" content="noindex, nofollow"/>
 <meta name="theme-color" content="#060810">
@@ -2685,16 +2685,19 @@ function showToast(type, title, msg) {
 async function fetchInstagramCount(url) {
   try {
     if (!url || typeof url !== 'string' || !url.includes('instagram.com')) return null;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 6000);
     const res = await fetch('https://backend-for-api-connect-g8ta.onrender.com/instagram-count', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url })
+      body: JSON.stringify({ url }),
+      signal: ctrl.signal
     });
+    clearTimeout(timer);
     if (!res.ok) return null;
     const data = await res.json();
     return (data && data.count !== undefined && data.count !== null) ? String(data.count) : null;
   } catch (err) {
-    console.warn('Instagram count fetch error:', err);
     return null;
   }
 }
