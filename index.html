@@ -1156,6 +1156,10 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
     const _urlParams = new URLSearchParams(window.location.search);
     const _refParam = (_urlParams.get('ref') || _urlParams.get('r') || '').trim();
     if (_refParam) {
+      // User explicitly clicked a referral link in this session
+      sessionStorage.setItem('gx_ref_code', _refParam);
+      sessionStorage.setItem('gx_ref_from_click', '1');
+      sessionStorage.setItem('gx_ref_time', String(Date.now()));
       localStorage.setItem('gx_ref_code', _refParam);
       localStorage.setItem('gx_ref_time', String(Date.now()));
 
@@ -1167,6 +1171,44 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
           clicks: increment(1),
           lastClickedAt: Date.now()
         }).catch(() => {});
+      }
+
+      // Forward referral param to all registration links on this page
+      const forwardRef = () => {
+        document.querySelectorAll('a[href^="/register"]').forEach(a => {
+          try {
+            const u = new URL(a.href, window.location.origin);
+            u.searchParams.set('ref', _refParam);
+            a.href = u.pathname + u.search;
+          } catch (_) {}
+        });
+      };
+      if (document.readyState !== 'loading') forwardRef();
+      else document.addEventListener('DOMContentLoaded', forwardRef);
+    } else {
+      // User came directly without ?ref= in URL.
+      // ONLY allow if they arrived via link click in this exact browsing session!
+      const activeSessionRef = sessionStorage.getItem('gx_ref_code');
+      const isFromClick = sessionStorage.getItem('gx_ref_from_click');
+      if (activeSessionRef && isFromClick === '1') {
+        const forwardRef = () => {
+          document.querySelectorAll('a[href^="/register"]').forEach(a => {
+            try {
+              const u = new URL(a.href, window.location.origin);
+              u.searchParams.set('ref', activeSessionRef);
+              a.href = u.pathname + u.search;
+            } catch (_) {}
+          });
+        };
+        if (document.readyState !== 'loading') forwardRef();
+        else document.addEventListener('DOMContentLoaded', forwardRef);
+      } else {
+        // Direct / Organic visit — wipe all old/stale referral keys so no false bonus is given!
+        localStorage.removeItem('gx_ref_code');
+        localStorage.removeItem('gx_ref_time');
+        sessionStorage.removeItem('gx_ref_code');
+        sessionStorage.removeItem('gx_ref_time');
+        sessionStorage.removeItem('gx_ref_from_click');
       }
     }
   } catch (e) {}
@@ -1351,20 +1393,30 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 
       // Ensure Firestore records exist for Admin Panel & Dashboard
       try {
-        const _refCode = localStorage.getItem('gx_ref_code') || '';
+        // ONLY credit bonus if user came via a verified link click in this active session
+        const _urlParams = new URLSearchParams(window.location.search);
+        const _directRef = (_urlParams.get('ref') || _urlParams.get('r') || '').trim();
+        const _sessionRef = sessionStorage.getItem('gx_ref_code') || '';
+        const _isFromClick = sessionStorage.getItem('gx_ref_from_click') === '1';
+        const _refCode = _directRef || (_isFromClick ? _sessionRef : '');
+
         const userBalSnap = await getDoc(doc(db, "Users", user.uid));
         const isNewUser = !userBalSnap.exists();
 
         // Check welcome bonus
         let welcomeBonus = 0;
         let campName = '';
+        let validCamp = false;
         if (isNewUser && _refCode) {
           try {
             const campSnap = await getDoc(doc(db, "campaigns", _refCode));
             if (campSnap.exists()) {
               const cData = campSnap.data();
-              welcomeBonus = Math.max(0, Number(cData.welcomeBonus) || 0);
-              campName = cData.name || _refCode;
+              if (cData.active !== false) {
+                validCamp = true;
+                welcomeBonus = Math.max(0, Number(cData.welcomeBonus) || 0);
+                campName = cData.name || _refCode;
+              }
             }
           } catch (_) {}
         }
@@ -1376,7 +1428,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
             mobile: "",
             uid: user.uid,
             createdAt: serverTimestamp(),
-            ...(isNewUser && _refCode ? { refSource: _refCode, referredAt: Date.now(), ...(welcomeBonus > 0 ? { welcomeBonus } : {}) } : {})
+            ...(isNewUser && validCamp && _refCode ? { refSource: _refCode, referredAt: Date.now(), ...(welcomeBonus > 0 ? { welcomeBonus } : {}) } : {})
           }, { merge: true }),
           setDoc(doc(db, "userData", user.uid), {
             username: username,
@@ -1384,11 +1436,11 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
             mobile: "",
             uid: user.uid,
             createdAt: serverTimestamp(),
-            ...(isNewUser && _refCode ? { refSource: _refCode, referredAt: Date.now(), ...(welcomeBonus > 0 ? { welcomeBonus } : {}) } : {})
+            ...(isNewUser && validCamp && _refCode ? { refSource: _refCode, referredAt: Date.now(), ...(welcomeBonus > 0 ? { welcomeBonus } : {}) } : {})
           }, { merge: true })
         ];
 
-        // CRITICAL FIX: Only set Balance if user record does NOT exist yet!
+        // CRITICAL: Only set Balance if user record does NOT exist yet!
         if (isNewUser) {
           writes.push(
             setDoc(doc(db, "Users", user.uid), {
@@ -1397,7 +1449,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
               TotalSpent: 0
             }, { merge: true })
           );
-          if (_refCode) {
+          if (validCamp && _refCode) {
             writes.push(
               setDoc(doc(db, "campaigns", _refCode, "referrals", user.uid), {
                 uid: user.uid,
@@ -1434,6 +1486,13 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
           }
         }
         await Promise.allSettled(writes);
+
+        // One-time consumption: Clear referral data immediately so future signups don't inherit it
+        localStorage.removeItem('gx_ref_code');
+        localStorage.removeItem('gx_ref_time');
+        sessionStorage.removeItem('gx_ref_code');
+        sessionStorage.removeItem('gx_ref_time');
+        sessionStorage.removeItem('gx_ref_from_click');
       } catch(e) {
         console.warn("Firestore user sync warning:", e);
       }
