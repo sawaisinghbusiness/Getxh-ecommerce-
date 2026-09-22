@@ -20,13 +20,14 @@ service cloud.firestore {
     }
 
     // ── 1. Users Wallet & Balance ──
-    // SECURITY: Users can only CREATE their doc with zero balance.
+    // SECURITY: Users can only CREATE their doc with zero or welcome bonus balance (up to 500).
     //           Only admin (or backend via Admin SDK) can modify Balance/TotalOrders/TotalSpent.
     //           Self-update restricted to Balance-only increments as interim until backend migration.
     match /Users/{userId} {
       allow read: if isAdmin() || isOwner(userId);
       allow create: if isAdmin() || (isOwner(userId) &&
-        request.resource.data.Balance == 0 &&
+        request.resource.data.Balance >= 0 &&
+        request.resource.data.Balance <= 500 &&
         request.resource.data.TotalOrders == 0 &&
         request.resource.data.TotalSpent == 0);
       // Interim: allow user to increment Balance ONLY (for wallet add-funds flow).
@@ -45,7 +46,7 @@ service cloud.firestore {
       allow create: if isOwner(userId) &&
         request.resource.data.uid == request.auth.uid &&
         !('password' in request.resource.data) &&
-        (!('balance' in request.resource.data) || request.resource.data.balance == 0);
+        (!('balance' in request.resource.data) || (request.resource.data.balance >= 0 && request.resource.data.balance <= 500));
       allow update: if isOwner(userId) &&
         !('password' in request.resource.data) &&
         onlyChanged(['username', 'mobile', 'email', 'uid', 'createdAt', 'authProvider']);
@@ -97,11 +98,14 @@ service cloud.firestore {
 
     // ── 9. Wallet Transactions ──
     // SECURITY: list now requires uid filter to prevent cross-user data leaks.
+    // Users can mark their own transactions as 'notified' for real-time notification popups.
     match /walletTxns/{txnId} {
       allow list: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
       allow get: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
       allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
-      allow update, delete: if isAdmin();
+      allow update: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid &&
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(['notified']));
+      allow delete: if isAdmin();
     }
 
     // ── 10. Fund Payments (BharatPe UPI & Wallet Deposits) ──

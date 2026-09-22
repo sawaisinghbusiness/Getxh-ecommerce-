@@ -1135,7 +1135,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, signOut }
   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -1355,6 +1355,20 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
         const userBalSnap = await getDoc(doc(db, "Users", user.uid));
         const isNewUser = !userBalSnap.exists();
 
+        // Check welcome bonus
+        let welcomeBonus = 0;
+        let campName = '';
+        if (isNewUser && _refCode) {
+          try {
+            const campSnap = await getDoc(doc(db, "campaigns", _refCode));
+            if (campSnap.exists()) {
+              const cData = campSnap.data();
+              welcomeBonus = Math.max(0, Number(cData.welcomeBonus) || 0);
+              campName = cData.name || _refCode;
+            }
+          } catch (_) {}
+        }
+
         const writes = [
           setDoc(doc(db, "users", user.uid), {
             username: username,
@@ -1362,7 +1376,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
             mobile: "",
             uid: user.uid,
             createdAt: serverTimestamp(),
-            ...(isNewUser && _refCode ? { refSource: _refCode, referredAt: Date.now() } : {})
+            ...(isNewUser && _refCode ? { refSource: _refCode, referredAt: Date.now(), ...(welcomeBonus > 0 ? { welcomeBonus } : {}) } : {})
           }, { merge: true }),
           setDoc(doc(db, "userData", user.uid), {
             username: username,
@@ -1370,15 +1384,15 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
             mobile: "",
             uid: user.uid,
             createdAt: serverTimestamp(),
-            ...(isNewUser && _refCode ? { refSource: _refCode, referredAt: Date.now() } : {})
+            ...(isNewUser && _refCode ? { refSource: _refCode, referredAt: Date.now(), ...(welcomeBonus > 0 ? { welcomeBonus } : {}) } : {})
           }, { merge: true })
         ];
 
-        // CRITICAL FIX: Only set Balance: 0 if user record does NOT exist yet!
+        // CRITICAL FIX: Only set Balance if user record does NOT exist yet!
         if (isNewUser) {
           writes.push(
             setDoc(doc(db, "Users", user.uid), {
-              Balance: 0,
+              Balance: welcomeBonus,
               TotalOrders: 0,
               TotalSpent: 0
             }, { merge: true })
@@ -1390,7 +1404,8 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
                 email: email,
                 username: username,
                 createdAt: Date.now(),
-                authProvider: 'google'
+                authProvider: 'google',
+                ...(welcomeBonus > 0 ? { bonusGiven: welcomeBonus, bonusClaimedAt: Date.now() } : {})
               }, { merge: true }).catch(() => {})
             );
             try {
@@ -1399,6 +1414,23 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
                 lastReferralAt: Date.now()
               }).catch(() => {});
             } catch (_) {}
+
+            if (welcomeBonus > 0) {
+              writes.push(
+                addDoc(collection(db, "walletTxns"), {
+                  uid: user.uid,
+                  amount: welcomeBonus,
+                  type: "credit",
+                  title: "Welcome Bonus",
+                  reason: `Welcome Bonus from referral (${campName})`,
+                  method: "admin",
+                  status: "success",
+                  notified: false,
+                  createdAt: Date.now()
+                }).catch(() => {})
+              );
+              localStorage.setItem("gx_wallet_bal_" + user.uid, "₹" + welcomeBonus.toFixed(2));
+            }
           }
         }
         await Promise.allSettled(writes);

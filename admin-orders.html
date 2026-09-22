@@ -7,13 +7,20 @@
 <title>Admin Orders | GETXH</title>
 <meta name="robots" content="noindex, nofollow"/>
 <script>
-  // Strict Admin Guard:
-  // Direct URL access is strictly blocked.
+  // Strict Admin Guard with Primary Trusted Mobile Device Support:
   (function () {
     try {
       var e = (localStorage.getItem('getxh_current_user') || '').toLowerCase().trim();
       var loggedIn = localStorage.getItem('getxh_user_logged_in');
       var navAuthRaw = sessionStorage.getItem('gx_admin_nav_auth');
+      var persistentNav = localStorage.getItem('gx_admin_nav_auth_persistent');
+      var isTrustedDev = localStorage.getItem('gx_trusted_admin_device_v2');
+
+      // On trusted primary device, automatically re-hydrate session
+      if (!navAuthRaw && persistentNav && isTrustedDev) {
+        navAuthRaw = persistentNav;
+        try { sessionStorage.setItem('gx_admin_nav_auth', persistentNav); } catch (_) {}
+      }
 
       if (!loggedIn || e !== 'agency@getxh.in' || !navAuthRaw) {
         document.documentElement.style.display = 'none';

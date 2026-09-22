@@ -104,18 +104,17 @@
 
 html {
   background-color: #0b1220 !important;
-  overscroll-behavior: none !important;
-  overscroll-behavior-y: none !important;
-  -webkit-overscroll-behavior: none !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
 }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: #0b1220 !important;
   min-height: 100vh;
   min-height: 100dvh;
-  overscroll-behavior: none !important;
-  overscroll-behavior-y: none !important;
-  -webkit-overscroll-behavior: none !important;
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
 }
 .brand-badge {
   display:inline-flex; align-items:center; gap:6px;
@@ -270,7 +269,7 @@ button:focus-visible, input:focus-visible, a:focus-visible, select:focus-visible
 }
 </style>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
-  <style>html,body{overflow-x:hidden !important;max-width:100vw;overscroll-behavior:none !important;overscroll-behavior-y:none !important;-webkit-overscroll-behavior:none !important;}body{opacity:0;transition:opacity .18s ease;}</style>
+  <style>html,body{overflow-x:hidden !important;max-width:100vw;overflow-y:auto !important;-webkit-overflow-scrolling:touch !important;}body{opacity:0;transition:opacity .18s ease;}</style>
 </head>
 
 <body class="bg-[#0b1220] text-white min-h-screen">
@@ -452,13 +451,8 @@ button:focus-visible, input:focus-visible, a:focus-visible, select:focus-visible
 <div id="accountPopup"
   class="hidden"
   style="display: none;"
-  touch-action="none"
-  ontouchmove="event.preventDefault();"
-  onwheel="event.preventDefault();"
   onclick="if(event.target===this)closeAccountPopup()">
   <div class="account-popup-card w-full mx-auto animate-slideUp"
-       touch-action="none"
-       ontouchmove="event.preventDefault();event.stopPropagation();"
        onclick="event.stopPropagation()">
     <!-- Header with Username & Email -->
     <div style="padding: 18px 20px 14px;">
@@ -630,11 +624,15 @@ if(med) med.textContent = _email;
 function openAdminPanel(e) {
   if (e && e.preventDefault) e.preventDefault();
   try {
-    sessionStorage.setItem('gx_admin_nav_auth', JSON.stringify({
+    const pPayload = JSON.stringify({
       t: Date.now(),
       role: 'admin',
       source: 'menu_click'
-    }));
+    });
+    sessionStorage.setItem('gx_admin_nav_auth', pPayload);
+    if (localStorage.getItem('gx_trusted_admin_device_v2')) {
+      localStorage.setItem('gx_admin_nav_auth_persistent', pPayload);
+    }
   } catch (err) {}
   window.location.href = '/admin';
 }

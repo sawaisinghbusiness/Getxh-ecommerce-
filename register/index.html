@@ -208,6 +208,10 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 #errorBox{display:none;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#fca5a5;font-size:12.5px;font-weight:500;margin-bottom:14px;}
 #infoBox{display:none;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);color:#86efac;font-size:12.5px;font-weight:500;margin-bottom:14px;}
 
+/* Referral Welcome Bonus Banner */
+.ref-bonus-banner{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(6,182,212,0.1));border:1px solid rgba(16,185,129,0.35);margin-bottom:14px;box-shadow:0 4px 16px rgba(16,185,129,0.12);}
+.ref-bonus-icon{width:32px;height:32px;border-radius:9px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
 /* Form inputs */
 .fgroup{margin-bottom:11px;}
 .flabel{display:block;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px;}
@@ -321,7 +325,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
     from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut }
     from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp }
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp, collection, addDoc }
     from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -339,7 +343,26 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
   const googleProvider = new GoogleAuthProvider();
   googleProvider.setCustomParameters({ prompt: 'select_account' });
 
-  // ── CAMPAIGN REFERRAL TRACKING ──
+  // ── CAMPAIGN REFERRAL TRACKING & WELCOME BONUS CHECK ──
+  async function checkCampaignBonus(code) {
+    if (!code) return;
+    try {
+      const snap = await getDoc(doc(db, "campaigns", code));
+      if (snap.exists()) {
+        const data = snap.data();
+        const bonus = Number(data.welcomeBonus) || 0;
+        const banner = document.getElementById("refBonusBanner");
+        const titleEl = document.getElementById("refBonusTitle");
+        const subEl = document.getElementById("refBonusSub");
+        if (bonus > 0 && banner) {
+          banner.style.display = "flex";
+          if (titleEl) titleEl.textContent = `🎁 ₹${bonus} Welcome Bonus Applied!`;
+          if (subEl) subEl.textContent = `Invited by ${data.name || code}. Register now to receive ₹${bonus} instantly in your wallet!`;
+        }
+      }
+    } catch (_) {}
+  }
+
   try {
     const _urlParams = new URLSearchParams(window.location.search);
     const _refParam = (_urlParams.get('ref') || _urlParams.get('r') || '').trim();
@@ -356,6 +379,10 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
           lastClickedAt: Date.now()
         }).catch(() => {});
       }
+      checkCampaignBonus(_refParam);
+    } else {
+      const existingRef = localStorage.getItem('gx_ref_code');
+      if (existingRef) checkCampaignBonus(existingRef);
     }
   } catch (e) {}
 
@@ -409,6 +436,20 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
         const userBalSnap = await getDoc(doc(db, "Users", user.uid));
         const isNewUser = !userBalSnap.exists();
 
+        // Check if referral campaign has a welcome bonus
+        let welcomeBonus = 0;
+        let campName = '';
+        if (isNewUser && _refCode) {
+          try {
+            const campSnap = await getDoc(doc(db, "campaigns", _refCode));
+            if (campSnap.exists()) {
+              const cData = campSnap.data();
+              welcomeBonus = Math.max(0, Number(cData.welcomeBonus) || 0);
+              campName = cData.name || _refCode;
+            }
+          } catch (_) {}
+        }
+
         const writes = [
           setDoc(doc(db, "users", user.uid), {
             username: username,
@@ -416,7 +457,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
             mobile: "",
             uid: user.uid,
             createdAt: serverTimestamp(),
-            ...(isNewUser && _refCode ? { refSource: _refCode, referredAt: Date.now() } : {})
+            ...(isNewUser && _refCode ? { refSource: _refCode, referredAt: Date.now(), ...(welcomeBonus > 0 ? { welcomeBonus } : {}) } : {})
           }, { merge: true }),
           setDoc(doc(db, "userData", user.uid), {
             username: username,
@@ -424,15 +465,15 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
             mobile: "",
             uid: user.uid,
             createdAt: serverTimestamp(),
-            ...(isNewUser && _refCode ? { refSource: _refCode, referredAt: Date.now() } : {})
+            ...(isNewUser && _refCode ? { refSource: _refCode, referredAt: Date.now(), ...(welcomeBonus > 0 ? { welcomeBonus } : {}) } : {})
           }, { merge: true })
         ];
 
-        // CRITICAL FIX: Only set Balance: 0 if user record does NOT exist yet!
+        // CRITICAL FIX: Only set Balance if user record does NOT exist yet!
         if (isNewUser) {
           writes.push(
             setDoc(doc(db, "Users", user.uid), {
-              Balance: 0,
+              Balance: welcomeBonus,
               TotalOrders: 0,
               TotalSpent: 0
             }, { merge: true })
@@ -444,7 +485,8 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
                 email: email,
                 username: username,
                 createdAt: Date.now(),
-                authProvider: 'google'
+                authProvider: 'google',
+                ...(welcomeBonus > 0 ? { bonusGiven: welcomeBonus, bonusClaimedAt: Date.now() } : {})
               }, { merge: true }).catch(() => {})
             );
             try {
@@ -453,6 +495,23 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
                 lastReferralAt: Date.now()
               }).catch(() => {});
             } catch (_) {}
+
+            if (welcomeBonus > 0) {
+              writes.push(
+                addDoc(collection(db, "walletTxns"), {
+                  uid: user.uid,
+                  amount: welcomeBonus,
+                  type: "credit",
+                  title: "Welcome Bonus",
+                  reason: `Welcome Bonus from referral (${campName})`,
+                  method: "admin",
+                  status: "success",
+                  notified: false,
+                  createdAt: Date.now()
+                }).catch(() => {})
+              );
+              localStorage.setItem("gx_wallet_bal_" + user.uid, "₹" + welcomeBonus.toFixed(2));
+            }
           }
         }
         await Promise.allSettled(writes);
@@ -668,14 +727,27 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 
       try {
         const _refCode = localStorage.getItem('gx_ref_code') || '';
+        let welcomeBonus = 0;
+        let campName = '';
+        if (_refCode) {
+          try {
+            const campSnap = await getDoc(doc(db, "campaigns", _refCode));
+            if (campSnap.exists()) {
+              const cData = campSnap.data();
+              welcomeBonus = Math.max(0, Number(cData.welcomeBonus) || 0);
+              campName = cData.name || _refCode;
+            }
+          } catch (_) {}
+        }
+
         const writes = [
           setDoc(doc(db, "users", cred.user.uid), {
             username,
             email,
             uid:       cred.user.uid,
             createdAt: serverTimestamp(),
-            balance:   0,
-            ...(_refCode ? { refSource: _refCode, referredAt: Date.now() } : {})
+            balance:   welcomeBonus,
+            ...(_refCode ? { refSource: _refCode, referredAt: Date.now(), ...(welcomeBonus > 0 ? { welcomeBonus } : {}) } : {})
           }, { merge: true }),
           setDoc(doc(db, "userData", cred.user.uid), {
             username,
@@ -685,10 +757,10 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
             // Never store plaintext passwords in Firestore.
             uid:       cred.user.uid,
             createdAt: serverTimestamp(),
-            ...(_refCode ? { refSource: _refCode, referredAt: Date.now() } : {})
+            ...(_refCode ? { refSource: _refCode, referredAt: Date.now(), ...(welcomeBonus > 0 ? { welcomeBonus } : {}) } : {})
           }, { merge: true }),
           setDoc(doc(db, "Users", cred.user.uid), {
-            Balance: 0,
+            Balance: welcomeBonus,
             TotalOrders: 0,
             TotalSpent: 0
           }, { merge: true })
@@ -702,7 +774,8 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
               username: username,
               mobile: document.getElementById("mobile").value.trim(),
               createdAt: Date.now(),
-              authProvider: 'email'
+              authProvider: 'email',
+              ...(welcomeBonus > 0 ? { bonusGiven: welcomeBonus, bonusClaimedAt: Date.now() } : {})
             }, { merge: true }).catch(() => {})
           );
           try {
@@ -711,6 +784,23 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
               lastReferralAt: Date.now()
             }).catch(() => {});
           } catch (_) {}
+
+          if (welcomeBonus > 0) {
+            writes.push(
+              addDoc(collection(db, "walletTxns"), {
+                uid: cred.user.uid,
+                amount: welcomeBonus,
+                type: "credit",
+                title: "Welcome Bonus",
+                reason: `Welcome Bonus from referral (${campName})`,
+                method: "admin",
+                status: "success",
+                notified: false,
+                createdAt: Date.now()
+              }).catch(() => {})
+            );
+            localStorage.setItem("gx_wallet_bal_" + cred.user.uid, "₹" + welcomeBonus.toFixed(2));
+          }
         }
 
         await Promise.allSettled(writes);
@@ -824,6 +914,17 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
       </div>
 
       <!-- Feedback boxes -->
+      <!-- Referral Welcome Bonus Banner -->
+      <div id="refBonusBanner" style="display:none;" class="ref-bonus-banner">
+        <div class="ref-bonus-icon">
+          <span class="material-symbols-outlined" style="font-size:20px;color:#34d399;">featured_seasonal_and_gifts</span>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <p id="refBonusTitle" style="margin:0;font-size:12.5px;font-weight:800;color:#34d399;letter-spacing:-0.01em;">Welcome Bonus Applied!</p>
+          <p id="refBonusSub" style="margin:2px 0 0;font-size:11px;color:#94a3b8;line-height:1.35;">Register now to get your welcome bonus added instantly to your wallet.</p>
+        </div>
+      </div>
+
       <div id="errorBox"></div>
       <div id="infoBox"></div>
 

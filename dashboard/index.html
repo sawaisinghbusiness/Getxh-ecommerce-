@@ -1881,11 +1881,15 @@ let _selCat=null,_selSvc=null,_catOpen=false,_svcOpen=false;
 function openAdminPanel(e) {
   if (e && e.preventDefault) e.preventDefault();
   try {
-    sessionStorage.setItem('gx_admin_nav_auth', JSON.stringify({
+    const pPayload = JSON.stringify({
       t: Date.now(),
       role: 'admin',
       source: 'menu_click'
-    }));
+    });
+    sessionStorage.setItem('gx_admin_nav_auth', pPayload);
+    if (localStorage.getItem('gx_trusted_admin_device_v2')) {
+      localStorage.setItem('gx_admin_nav_auth_persistent', pPayload);
+    }
   } catch (err) {}
   window.location.href = '/admin';
 }
@@ -3478,41 +3482,61 @@ onAuthStateChanged(auth, async (user) => {
     }
   });
 
-  // ── CHECK FOR ADMIN BALANCE NOTIFICATIONS (REAL-TIME & ON LOGIN) ──
-  // Uses Firestore to track "seen" state so popup shows ONCE per txn across all devices/logins
+  // ── CHECK FOR ADMIN / BONUS BALANCE NOTIFICATIONS (REAL-TIME & ON LOGIN) ──
+  // Uses Firestore & sessionStorage to ensure popup shows reliably across all devices
   try {
     const nq = query(
       collection(db, 'walletTxns'),
       where('uid', '==', currentUid),
-      where('method', '==', 'admin'),
       where('notified', '==', false)
     );
     onSnapshot(nq, async (snap) => {
       if (snap.empty) return;
-      // Get the latest UNSEEN admin txn
+      // Get the latest UNSEEN admin or bonus txn
       const adminTxns = snap.docs
         .map(d => ({ id: d.id, ...d.data() }))
+        .filter(t => t.method === 'admin' || t.title === 'Welcome Bonus' || (t.reason && /bonus|admin/i.test(t.reason)))
         .sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0));
 
       if (adminTxns.length > 0) {
         const txnDoc = adminTxns[0];
-        const txnTime = Number(txnDoc.createdAt || 0);
-        // Guard: only show once — mark as notified immediately in Firestore before showing
-        try {
-          await updateDoc(doc(db, 'walletTxns', txnDoc.id), { notified: true });
-        } catch(e) { console.warn('Failed to mark txn notified:', e); return; }
+        const seenKey = 'gx_seen_bal_' + txnDoc.id;
+        if (sessionStorage.getItem(seenKey)) return;
+        sessionStorage.setItem(seenKey, '1');
+
+        // Mark as notified in Firestore in background (non-blocking)
+        updateDoc(doc(db, 'walletTxns', txnDoc.id), { notified: true }).catch(e => {
+          console.warn('Non-fatal: could not update txn notified state:', e);
+        });
 
         const isCredit = txnDoc.type === 'credit';
         const amt = Number(txnDoc.amount || 0);
         const note = txnDoc.reason || '';
+        const isWelcome = txnDoc.title === 'Welcome Bonus' || (note && /welcome bonus/i.test(note));
         const el = document.getElementById('balNotifyOverlay');
+
         if (el) {
           window._hasPendingNotify = true;
 
           // Compute exact old and new balance mathematically
-          // Guard: skip if balance hasn't loaded from Firestore yet
-          if (window._currentBalance === null) return;
-          const currentBal = window._currentBalance;
+          // If balance hasn't finished loading from snapshot, fetch or calculate from cache
+          let currentBal = (window._currentBalance !== null && !isNaN(window._currentBalance)) ? window._currentBalance : null;
+          if (currentBal === null) {
+            try {
+              const uSnap = await getDoc(doc(db, 'Users', currentUid));
+              if (uSnap.exists()) {
+                currentBal = Number(uSnap.data().Balance || 0);
+                window._currentBalance = currentBal;
+              }
+            } catch (_) {}
+          }
+          if (currentBal === null) {
+            const cachedStr = localStorage.getItem('gx_wallet_bal_' + currentUid);
+            const parsed = parseFloat((cachedStr || '').replace(/[^0-9.-]+/g, ''));
+            currentBal = !isNaN(parsed) ? parsed : (isCredit ? amt : 0);
+            window._currentBalance = currentBal;
+          }
+
           let oldBal, newBal;
           if (isCredit) {
             newBal = currentBal;
@@ -3522,74 +3546,76 @@ onAuthStateChanged(auth, async (user) => {
             oldBal = currentBal + amt;
           }
 
-            // Immediately set DOM text to display oldBal while notification is open!
-            const oldBalStr = `\u20b9${oldBal.toFixed(2)}`;
-            const userBalEl = document.getElementById("userBalance");
-            const topBalEl  = document.getElementById("walletBalanceTop");
-            if (userBalEl) userBalEl.textContent = oldBalStr;
-            if (topBalEl)  topBalEl.textContent  = oldBalStr;
+          // Immediately set DOM text to display oldBal while notification is open
+          const oldBalStr = `\u20b9${oldBal.toFixed(2)}`;
+          const userBalEl = document.getElementById("userBalance");
+          const topBalEl  = document.getElementById("walletBalanceTop");
+          if (userBalEl) userBalEl.textContent = oldBalStr;
+          if (topBalEl)  topBalEl.textContent  = oldBalStr;
 
-            window._pendingAnimData = { oldBal, newBal, isCredit };
+          window._pendingAnimData = { oldBal, newBal, isCredit };
 
-            document.getElementById('balNotifyTitle').textContent = isCredit
-              ? 'Balance Added' : 'Balance Deducted';
+          document.getElementById('balNotifyTitle').textContent = isWelcome
+            ? '🎉 Welcome Bonus Added!'
+            : (isCredit ? 'Balance Added' : 'Balance Deducted');
 
-            document.getElementById('balNotifySub').textContent =
-              'Your wallet has been updated successfully.';
+          document.getElementById('balNotifySub').textContent = isWelcome
+            ? 'Welcome to GETXH! Your referral bonus has been credited to your wallet.'
+            : 'Your wallet has been updated successfully.';
 
-            const accentBar = document.getElementById('balNotifyAccentBar');
-            if (accentBar) {
-              accentBar.style.background = isCredit ? '#22c55e' : '#ef4444';
-              accentBar.style.boxShadow = isCredit ? '0 0 12px #22c55e' : '0 0 12px #ef4444';
-            }
-
-            const iconWrap = document.getElementById('balNotifyIconWrap');
-            if (iconWrap) {
-              iconWrap.style.background = isCredit ? 'rgba(34,197,94,0.14)' : 'rgba(239,68,68,0.14)';
-              iconWrap.style.borderColor = isCredit ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
-            }
-
-            const iconEl = document.getElementById('balNotifyIcon');
-            if (iconEl) {
-              iconEl.textContent = 'campaign';
-              iconEl.style.color = isCredit ? '#22c55e' : '#ef4444';
-            }
-
-            const amtLbl = document.getElementById('balNotifyAmountLabel');
-            if (amtLbl) {
-              amtLbl.textContent = isCredit ? 'AMOUNT ADDED' : 'AMOUNT DEDUCTED';
-            }
-
-            const amtEl = document.getElementById('balNotifyAmount');
-            if (amtEl) {
-              amtEl.textContent = (isCredit ? '+ ' : '- ') + '\u20b9' + amt.toFixed(2);
-              amtEl.style.color = isCredit ? '#4ade80' : '#f87171';
-              amtEl.style.background = isCredit ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)';
-              amtEl.style.borderColor = isCredit ? 'rgba(34,197,94,0.28)' : 'rgba(239,68,68,0.28)';
-            }
-
-            const noteEl = document.getElementById('balNotifyNote');
-            if (note) {
-              noteEl.style.display = 'block';
-              document.getElementById('balNotifyNoteText').textContent = note;
-            } else {
-              noteEl.style.display = 'none';
-            }
-
-            // Hide page loader immediately so banner is visible instantly
-            const loader = document.getElementById('gx-loader');
-            if (loader) { loader.classList.add('hide'); setTimeout(() => { try { loader.remove(); } catch(e){} }, 200); }
-
-            el.classList.add('active');
-
-            // Clear any existing auto-close timer
-            if (window._balAutoCloseTimer) clearTimeout(window._balAutoCloseTimer);
-
-            // AUTO-CLOSE TOP BANNER IN 6 SECONDS IF USER DOESN'T CLICK CLOSE "X"
-            window._balAutoCloseTimer = setTimeout(() => {
-              window._closeBalNotifyAndAnimate();
-            }, 6000);
+          const accentBar = document.getElementById('balNotifyAccentBar');
+          if (accentBar) {
+            accentBar.style.background = isCredit ? '#22c55e' : '#ef4444';
+            accentBar.style.boxShadow = isCredit ? '0 0 12px #22c55e' : '0 0 12px #ef4444';
           }
+
+          const iconWrap = document.getElementById('balNotifyIconWrap');
+          if (iconWrap) {
+            iconWrap.style.background = isCredit ? 'rgba(34,197,94,0.14)' : 'rgba(239,68,68,0.14)';
+            iconWrap.style.borderColor = isCredit ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
+          }
+
+          const iconEl = document.getElementById('balNotifyIcon');
+          if (iconEl) {
+            iconEl.textContent = isWelcome ? 'featured_seasonal_and_gifts' : 'campaign';
+            iconEl.style.color = isCredit ? '#22c55e' : '#ef4444';
+          }
+
+          const amtLbl = document.getElementById('balNotifyAmountLabel');
+          if (amtLbl) {
+            amtLbl.textContent = isWelcome ? 'WELCOME BONUS CREDITED' : (isCredit ? 'AMOUNT ADDED' : 'AMOUNT DEDUCTED');
+          }
+
+          const amtEl = document.getElementById('balNotifyAmount');
+          if (amtEl) {
+            amtEl.textContent = (isCredit ? '+ ' : '- ') + '\u20b9' + amt.toFixed(2);
+            amtEl.style.color = isCredit ? '#4ade80' : '#f87171';
+            amtEl.style.background = isCredit ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)';
+            amtEl.style.borderColor = isCredit ? 'rgba(34,197,94,0.28)' : 'rgba(239,68,68,0.28)';
+          }
+
+          const noteEl = document.getElementById('balNotifyNote');
+          if (note) {
+            noteEl.style.display = 'block';
+            document.getElementById('balNotifyNoteText').textContent = note;
+          } else {
+            noteEl.style.display = 'none';
+          }
+
+          // Hide page loader immediately so banner is visible instantly
+          const loader = document.getElementById('gx-loader');
+          if (loader) { loader.classList.add('hide'); setTimeout(() => { try { loader.remove(); } catch(e){} }, 200); }
+
+          el.classList.add('active');
+
+          // Clear any existing auto-close timer
+          if (window._balAutoCloseTimer) clearTimeout(window._balAutoCloseTimer);
+
+          // AUTO-CLOSE TOP BANNER IN 6.5 SECONDS IF USER DOESN'T CLICK CLOSE "X"
+          window._balAutoCloseTimer = setTimeout(() => {
+            window._closeBalNotifyAndAnimate();
+          }, 6500);
+        }
       }
     }, (err) => {
       console.warn("Wallet notify snapshot error:", err);

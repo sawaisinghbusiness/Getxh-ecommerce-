@@ -611,14 +611,22 @@
     }
   </script>
   <script>
-    // Strict Admin Guard:
-    // Direct URL access or searching getxh.in/admin/ is strictly blocked.
-    // ONLY opens if user is logged into admin account AND navigated via 'Admin Panel' menu click.
+    // Strict Admin Guard with Primary Trusted Mobile Device Support:
+    // On the primary trusted device, session remains permanently active.
+    // On other devices, standard session guard applies.
     (function () {
       try {
         var e = (localStorage.getItem('getxh_current_user') || '').toLowerCase().trim();
         var loggedIn = localStorage.getItem('getxh_user_logged_in');
         var navAuthRaw = sessionStorage.getItem('gx_admin_nav_auth');
+        var persistentNav = localStorage.getItem('gx_admin_nav_auth_persistent');
+        var isTrustedDev = localStorage.getItem('gx_trusted_admin_device_v2');
+
+        // On trusted primary device, automatically re-hydrate session
+        if (!navAuthRaw && persistentNav && isTrustedDev) {
+          navAuthRaw = persistentNav;
+          try { sessionStorage.setItem('gx_admin_nav_auth', persistentNav); } catch (_) {}
+        }
 
         if (!loggedIn || e !== 'agency@getxh.in' || !navAuthRaw) {
           document.documentElement.style.display = 'none';
@@ -1437,7 +1445,7 @@
               <form onsubmit="event.preventDefault();submitCreateCampaign();" class="space-y-4">
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
                   <!-- Campaign Name -->
-                  <div class="md:col-span-5">
+                  <div class="md:col-span-4">
                     <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">
                       Campaign / Influencer Name <span class="text-red-400">*</span>
                     </label>
@@ -1447,7 +1455,7 @@
                   </div>
 
                   <!-- Custom Slug / Ref Code -->
-                  <div class="md:col-span-4">
+                  <div class="md:col-span-3">
                     <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">
                       Custom Link Code / Slug
                     </label>
@@ -1469,6 +1477,20 @@
                       <option value="/register/">Registration Page (/register/)</option>
                     </select>
                     <p class="mt-1 text-[11px] text-slate-500">Where visitors land when opening link.</p>
+                  </div>
+
+                  <!-- Welcome Bonus (₹) -->
+                  <div class="md:col-span-2">
+                    <label class="mb-1.5 flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-emerald-400">
+                      <span class="material-symbols-outlined text-[15px]">featured_seasonal_and_gifts</span>
+                      Bonus (₹)
+                    </label>
+                    <div class="relative">
+                      <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-xs text-emerald-400">₹</span>
+                      <input type="number" id="campBonusInput" min="0" step="1" value="0" placeholder="0"
+                        class="adm-field w-full pl-8 font-bold text-xs text-emerald-300" style="height:44px;" />
+                    </div>
+                    <p class="mt-1 text-[11px] text-slate-500">Signup bonus added to wallet (0 = none).</p>
                   </div>
                 </div>
 
@@ -1608,7 +1630,7 @@
             </div>
 
             <!-- Campaign Metrics Row -->
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 pt-2 border-t border-white/6">
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-5 pt-2 border-t border-white/6">
               <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
                 <p class="text-[10px] font-bold uppercase text-slate-400">Total Clicks</p>
                 <p id="detailCampClicks" class="text-2xl font-black text-emerald-400 mt-1">0</p>
@@ -1616,6 +1638,10 @@
               <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
                 <p class="text-[10px] font-bold uppercase text-slate-400">Signups / Users</p>
                 <p id="detailCampSignups" class="text-2xl font-black text-blue-400 mt-1">0</p>
+              </div>
+              <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                <p class="text-[10px] font-bold uppercase text-slate-400">Welcome Bonus</p>
+                <p id="detailCampBonus" class="text-2xl font-black text-emerald-400 mt-1">₹0.00</p>
               </div>
               <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
                 <p class="text-[10px] font-bold uppercase text-slate-400">Conversion Rate</p>
@@ -4420,6 +4446,9 @@
         const data = await res.json();
         if (res.ok || data.success) {
           _adminUnlocked = true;
+          if (localStorage.getItem('gx_trusted_admin_device_v2')) {
+            localStorage.setItem('gx_trusted_admin_unlocked_v2', 'true');
+          }
           document.getElementById('otpGate').style.display = 'none';
           document.getElementById('adminPanel').style.display = 'block';
           initAdminData();
@@ -5562,11 +5591,13 @@
       const nameInput = document.getElementById('campNameInput');
       const slugInput = document.getElementById('campSlugInput');
       const targetInput = document.getElementById('campTargetInput');
+      const bonusInput = document.getElementById('campBonusInput');
       const btn = document.getElementById('btnCreateCampaign');
 
       const name = (nameInput?.value || '').trim();
       let slug = (slugInput?.value || '').trim().toLowerCase().replace(/[^a-z0-9-_]/g, '');
       const target = targetInput?.value || '/';
+      const welcomeBonus = Math.max(0, parseFloat(bonusInput?.value || '0') || 0);
 
       if (!name) {
         showAdminToast('Please enter a campaign name', true);
@@ -5611,6 +5642,7 @@
           slug: slug,
           target: target,
           fullUrl: fullUrl,
+          welcomeBonus: welcomeBonus,
           clicks: 0,
           conversions: 0,
           createdAt: serverTimestamp(),
@@ -5619,10 +5651,11 @@
         };
 
         await setDoc(campRef, newCamp);
-        showAdminToast(`Tracking Link Created: ?ref=${slug}`, false);
+        showAdminToast(`Tracking Link Created: ?ref=${slug}${welcomeBonus > 0 ? ' (₹' + welcomeBonus + ' Bonus)' : ''}`, false);
 
         // Reset inputs
         if (nameInput) nameInput.value = '';
+        if (bonusInput) bonusInput.value = '0';
         if (slugInput) {
           slugInput.value = '';
           delete slugInput.dataset.manualEdited;
@@ -5807,6 +5840,14 @@
         const signups = Number(c.conversions) || 0;
         const convRate = clicks > 0 ? ((signups / clicks) * 100).toFixed(1) : '0.0';
         const fullUrl = c.fullUrl || ('https://getxh.in' + (c.target || '/') + '?ref=' + c.slug);
+        const bonus = Number(c.welcomeBonus) || 0;
+        const bonusBadge = bonus > 0
+          ? `<span class="inline-flex items-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-500/15 px-2 py-0.5 text-[11px] font-bold text-emerald-300">
+               <span class="material-symbols-outlined text-[13px]">featured_seasonal_and_gifts</span> ₹${bonus} Bonus
+             </span>`
+          : `<span class="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-slate-400">
+               No Bonus
+             </span>`;
 
         return `
         <div class="group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-[#0d1628] to-[#0a1120] p-5 shadow-lg transition-all duration-200 hover:border-cyan-500/40 hover:shadow-[0_10px_30px_rgba(6,182,212,0.12)]">
@@ -5820,9 +5861,12 @@
                 </div>
                 <div class="min-w-0">
                   <h4 class="font-bold text-white text-sm truncate group-hover:text-cyan-300 transition-colors" title="${escAttr(c.name)}">${escHtml(c.name)}</h4>
-                  <span class="inline-flex items-center gap-1 text-[10px] text-slate-400">
-                    Target: <b class="text-slate-300 font-mono">${escHtml(c.target || '/')}</b>
-                  </span>
+                  <div class="flex flex-wrap items-center gap-2 mt-0.5">
+                    <span class="inline-flex items-center gap-1 text-[10px] text-slate-400">
+                      Target: <b class="text-slate-300 font-mono">${escHtml(c.target || '/')}</b>
+                    </span>
+                    ${bonusBadge}
+                  </div>
                 </div>
               </div>
               <span class="inline-flex flex-shrink-0 items-center gap-1 rounded-md border border-cyan-500/25 bg-cyan-500/10 px-2 py-0.5 font-mono text-[11px] font-bold text-cyan-300">
@@ -5882,6 +5926,7 @@
       const clicksEl = document.getElementById('detailCampClicks');
       const signupsEl = document.getElementById('detailCampSignups');
       const convRateEl = document.getElementById('detailCampConvRate');
+      const bonusEl = document.getElementById('detailCampBonus');
       const visitBtn = document.getElementById('detailCampVisitBtn');
 
       const fullUrl = camp.fullUrl || ('https://getxh.in' + (camp.target || '/') + '?ref=' + camp.slug);
@@ -5902,6 +5947,7 @@
       if (clicksEl) clicksEl.textContent = clicks.toLocaleString('en-IN');
       if (signupsEl) signupsEl.textContent = signups.toLocaleString('en-IN');
       if (convRateEl) convRateEl.textContent = convRate + '%';
+      if (bonusEl) bonusEl.textContent = '₹' + (Number(camp.welcomeBonus) || 0).toFixed(2);
     }
 
     window.openTrackingDetailView = function(campaignId, pushState = true) {
@@ -6087,6 +6133,13 @@
         const dateFormatted = isNaN(dateObj.getTime()) ? '—' : dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
         const timeFormatted = isNaN(dateObj.getTime()) ? '' : dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
+        const bonusGiven = Number(r.bonusGiven) || 0;
+        const bonusTag = bonusGiven > 0
+          ? `<span class="inline-flex items-center gap-0.5 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+               <span class="material-symbols-outlined text-[11px]">featured_seasonal_and_gifts</span> ₹${bonusGiven}
+             </span>`
+          : '';
+
         desktopRows.push(`
           <tr class="hover:bg-white/[0.02] transition">
             <td class="py-3 px-4">
@@ -6095,7 +6148,10 @@
                   ${escHtml(name.charAt(0).toUpperCase())}
                 </div>
                 <div>
-                  <p class="font-bold text-white text-xs">${escHtml(name)}</p>
+                  <div class="flex items-center gap-1.5">
+                    <p class="font-bold text-white text-xs">${escHtml(name)}</p>
+                    ${bonusTag}
+                  </div>
                   <p class="text-[11px] text-slate-400 font-mono">${escHtml(email)}</p>
                 </div>
               </div>
@@ -6239,9 +6295,15 @@
         return;
       }
 
-      // Check menu navigation token
+      // Check menu navigation token (support trusted mobile device)
       try {
-        const navRaw = sessionStorage.getItem('gx_admin_nav_auth');
+        let navRaw = sessionStorage.getItem('gx_admin_nav_auth');
+        const persistentNav = localStorage.getItem('gx_admin_nav_auth_persistent');
+        const trustedDevKey = localStorage.getItem('gx_trusted_admin_device_v2');
+        if (!navRaw && persistentNav && trustedDevKey) {
+          navRaw = persistentNav;
+          sessionStorage.setItem('gx_admin_nav_auth', persistentNav);
+        }
         if (!navRaw) {
           window.location.replace('/');
           return;
@@ -6257,15 +6319,56 @@
       window._gateSignOut = () => {
         sessionStorage.removeItem('gx_admin_nav_auth');
         sessionStorage.removeItem('_adm_lock');
+        localStorage.removeItem('gx_admin_nav_auth_persistent');
+        localStorage.removeItem('gx_trusted_admin_unlocked_v2');
         return signOut(auth).then(() => window.location.replace('/'));
       };
       document.getElementById('sidebarEmail').textContent = user.email;
       document.getElementById('loadingScreen').style.display = 'none';
 
-      // Show password gate — ALWAYS, no skip
-      const gate = document.getElementById('passwordGate');
-      gate.style.display = 'flex';
-      setTimeout(() => document.getElementById('gatePasswordInput').focus(), 150);
+      // ── TRUSTED MOBILE DEVICE AUTO-REGISTRATION & SESSION RETENTION ──
+      try {
+        const devDocRef = doc(db, 'app_config', 'admin_device_v2');
+        const devSnap = await getDoc(devDocRef);
+        const myDevKey = localStorage.getItem('gx_trusted_admin_device_v2');
+
+        if (!devSnap.exists()) {
+          // FIRST ADMIN LOGIN AFTER PUSH: Auto-register this device as the permanent trusted phone
+          const newKey = 'gx_dev_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10);
+          localStorage.setItem('gx_trusted_admin_device_v2', newKey);
+          const pPayload = JSON.stringify({ t: Date.now(), persistent: true, devKey: newKey });
+          localStorage.setItem('gx_admin_nav_auth_persistent', pPayload);
+          sessionStorage.setItem('gx_admin_nav_auth', pPayload);
+          await setDoc(devDocRef, {
+            trustedDeviceKey: newKey,
+            userAgent: navigator.userAgent,
+            registeredAt: Date.now()
+          });
+          showAdminToast('📱 Primary Admin Device Registered! Session will remain active on this phone.', false);
+        } else if (myDevKey && myDevKey === devSnap.data()?.trustedDeviceKey) {
+          const pPayload = JSON.stringify({ t: Date.now(), persistent: true, devKey: myDevKey });
+          localStorage.setItem('gx_admin_nav_auth_persistent', pPayload);
+          sessionStorage.setItem('gx_admin_nav_auth', pPayload);
+        }
+      } catch (devErr) {
+        console.warn('Trusted device sync notice:', devErr);
+      }
+
+      // Check if trusted device was already unlocked
+      const isTrusted = !!localStorage.getItem('gx_trusted_admin_device_v2');
+      const isAlreadyUnlocked = isTrusted && localStorage.getItem('gx_trusted_admin_unlocked_v2') === 'true';
+
+      if (isAlreadyUnlocked) {
+        _adminUnlocked = true;
+        document.getElementById('passwordGate').style.display = 'none';
+        document.getElementById('otpGate').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        initAdminData();
+      } else {
+        const gate = document.getElementById('passwordGate');
+        gate.style.display = 'flex';
+        setTimeout(() => document.getElementById('gatePasswordInput').focus(), 150);
+      }
 
       // Lock page if window regains focus and password not entered
       window.addEventListener('focus', async () => {
@@ -6277,6 +6380,9 @@
         if (cu.email !== ADMIN_EMAIL) {
           window.location.replace('/');
           return;
+        }
+        if (isAlreadyUnlocked || (_adminUnlocked && localStorage.getItem('gx_trusted_admin_device_v2'))) {
+          return; // Stay unlocked on trusted device
         }
         if (!_adminUnlocked) {
           // agar OTP gate already open hai toh wahan se mat hatao

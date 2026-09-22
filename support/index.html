@@ -884,11 +884,15 @@ if (menuEmailMobileEl) menuEmailMobileEl.textContent = _menuEmail;
 function openAdminPanel(e) {
   if (e && e.preventDefault) e.preventDefault();
   try {
-    sessionStorage.setItem('gx_admin_nav_auth', JSON.stringify({
+    const pPayload = JSON.stringify({
       t: Date.now(),
       role: 'admin',
       source: 'menu_click'
-    }));
+    });
+    sessionStorage.setItem('gx_admin_nav_auth', pPayload);
+    if (localStorage.getItem('gx_trusted_admin_device_v2')) {
+      localStorage.setItem('gx_admin_nav_auth_persistent', pPayload);
+    }
   } catch (err) {}
   window.location.href = '/admin';
 }
