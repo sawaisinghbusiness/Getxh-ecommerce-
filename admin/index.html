@@ -886,27 +886,22 @@
           <span class="text-base font-bold text-white whitespace-nowrap"
             style="font-size:16px;white-space:nowrap;">Admin Panel</span>
         </div>
-        <!-- GetXH Live Sound & Real Phone Vibration Alert Button -->
+        <!-- GetXH Live Sound & Real Phone Vibration Alert Toggle Buttons -->
         <div class="flex items-center gap-1.5 flex-shrink-0">
-          <button id="alertSoundToggleBtn" onclick="toggleAlertSound()" title="GetXH Live Sound & Phone Vibration Alerts"
+          <button id="alertSoundToggleBtn" onclick="toggleAlertSound()" title="Sound Alerts ON/OFF"
             class="flex h-8 items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-emerald-400 hover:bg-emerald-500/25 transition">
             <span class="material-symbols-outlined" id="alertSoundIcon" style="font-size:16px">notifications_active</span>
-            <span id="alertSoundLabel">Alert: ON</span>
+            <span id="alertSoundLabel">Sound: ON</span>
           </button>
-          <button type="button" onclick="testAlertSoundAndVibration()" title="Test GetXH Live Sound & Real Phone Vibration"
-            class="flex h-8 items-center gap-1 rounded-lg border border-sky-500/30 bg-sky-500/15 px-2.5 py-1 text-[11px] font-bold text-sky-400 hover:bg-sky-500/25 transition">
-            <span class="material-symbols-outlined" style="font-size:15px">vibration</span>
-            <span>Test Vibrate</span>
+          <button id="vibrationToggleBtn" type="button" onclick="toggleVibrationAlert()" title="Phone Vibration ON/OFF"
+            class="flex h-8 items-center gap-1.5 rounded-lg border border-sky-500/30 bg-sky-500/15 px-2.5 py-1 text-[11px] font-bold text-sky-400 hover:bg-sky-500/25 transition">
+            <span class="material-symbols-outlined" id="vibrationIcon" style="font-size:15px">vibration</span>
+            <span id="vibrationLabel">Vibrate: ON</span>
           </button>
           <button id="btnGrantVibration" type="button" onclick="requestNotificationAndVibratePermission()" title="Enable Real Phone Hardware Vibration"
             class="hidden flex h-8 items-center gap-1 rounded-lg border border-amber-500/40 bg-amber-500/20 px-2.5 py-1 text-[11px] font-bold text-amber-300 animate-pulse hover:bg-amber-500/30 transition">
             <span class="material-symbols-outlined" style="font-size:15px">sensors</span>
             <span class="hidden sm:inline">Enable Vibrate</span>
-          </button>
-          <button id="btnTelegramAlert" type="button" onclick="openTelegramModal()" title="Telegram Instant Alerts Setup"
-            class="flex h-8 items-center gap-1 rounded-lg border border-cyan-500/40 bg-cyan-500/15 px-2.5 py-1 text-[11px] font-bold text-cyan-300 hover:bg-cyan-500/25 transition">
-            <span class="material-symbols-outlined" style="font-size:15px">send</span>
-            <span class="hidden sm:inline">Telegram</span>
           </button>
         </div>
         <!-- Tab switcher wrapper with fade mask below 768px -->
@@ -3779,6 +3774,7 @@
     // GETXH LIVE SOUND ALERT & VIBRATION
     // ══════════════════════════════════════════════════════
     var _alertSoundEnabled = localStorage.getItem('gx_alert_sound') !== 'false';
+    var _vibrationEnabled = localStorage.getItem('gx_vibration_enabled') !== 'false';
     var _audioCtx = null;
     var _rapidoBannerTimer = null;
 
@@ -3810,6 +3806,7 @@
 
     // Direct hardware vibration
     function triggerHeavyVibration() {
+      if (!_vibrationEnabled) return false;
       if (!('vibrate' in navigator)) {
         console.warn('Vibration API not available on this browser/platform');
         return false;
@@ -3937,43 +3934,15 @@
       _alertSoundEnabled = !_alertSoundEnabled;
       localStorage.setItem('gx_alert_sound', _alertSoundEnabled ? 'true' : 'false');
       updateAlertSoundBtn();
-      if (_alertSoundEnabled) {
-        playGetXhChime();
-        triggerHeavyVibration();
-        triggerSystemVibrationNotification('🚨 GetXH Alert Enabled', 'Alerts and phone vibration are now active.', 'sound-on');
-        showAdminToast('GetXH Sound & Phone Vibration: ENABLED 🔔📳', false);
-      } else {
-        stopHeavyVibration();
-        showAdminToast('GetXH Sound Alert: MUTED 🔕', false);
-      }
+      showAdminToast(_alertSoundEnabled ? 'Sound Alerts: ON 🔔' : 'Sound Alerts: OFF 🔕', false);
     }
 
-    window.testAlertSoundAndVibration = async function () {
-      getAudioContext();
-
-      // If notification permission not yet granted, request immediately on this user click!
-      if ('Notification' in window && Notification.permission === 'default') {
-        try {
-          var p = await Notification.requestPermission();
-          updateVibrationStatusUi();
-        } catch (_) {}
-      }
-
-      playMoneySound();
-      triggerHeavyVibration();
-
-      await triggerSystemVibrationNotification(
-        '💰 Test Alert: Money Collect Sound & Vibrate!',
-        'Cash register sound ("Cha-Ching!") and phone vibration activated.',
-        'test-alert-' + Date.now()
-      );
-
-      var hasVibrate = ('vibrate' in navigator);
-      if (hasVibrate) {
-        showAdminToast('💰 Money Collect Sound ("Cha-Ching!") & 📳 Phone Vibrating!', false);
-      } else {
-        showAdminToast('💰 Money Sound Playing! (Note: iOS Safari requires Home Screen PWA for vibration)', false);
-      }
+    window.toggleVibrationAlert = function () {
+      _vibrationEnabled = !_vibrationEnabled;
+      localStorage.setItem('gx_vibration_enabled', _vibrationEnabled ? 'true' : 'false');
+      stopHeavyVibration();
+      updateVibrationBtn();
+      showAdminToast(_vibrationEnabled ? 'Phone Vibration: ON 📳' : 'Phone Vibration: OFF', false);
     };
 
     function updateAlertSoundBtn() {
@@ -3984,13 +3953,35 @@
       if (_alertSoundEnabled) {
         btn.className = 'flex h-8 items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-emerald-400 hover:bg-emerald-500/25 transition';
         if (icon) icon.textContent = 'notifications_active';
-        if (lbl) lbl.textContent = 'Alert: ON';
+        if (lbl) lbl.textContent = 'Sound: ON';
       } else {
         btn.className = 'flex h-8 items-center gap-1.5 rounded-lg border border-slate-700 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-400 hover:bg-white/10 transition';
         if (icon) icon.textContent = 'notifications_off';
-        if (lbl) lbl.textContent = 'Alert: OFF';
+        if (lbl) lbl.textContent = 'Sound: OFF';
       }
     }
+
+    function updateVibrationBtn() {
+      var btn = document.getElementById('vibrationToggleBtn');
+      var icon = document.getElementById('vibrationIcon');
+      var lbl = document.getElementById('vibrationLabel');
+      if (!btn) return;
+      if (_vibrationEnabled) {
+        btn.className = 'flex h-8 items-center gap-1.5 rounded-lg border border-sky-500/30 bg-sky-500/15 px-2.5 py-1 text-[11px] font-bold text-sky-400 hover:bg-sky-500/25 transition';
+        if (icon) icon.textContent = 'vibration';
+        if (lbl) lbl.textContent = 'Vibrate: ON';
+      } else {
+        btn.className = 'flex h-8 items-center gap-1.5 rounded-lg border border-slate-700 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-400 hover:bg-white/10 transition';
+        if (icon) icon.textContent = 'mobile_off';
+        if (lbl) lbl.textContent = 'Vibrate: OFF';
+      }
+    }
+
+    // Initialize button states on load
+    try {
+      updateAlertSoundBtn();
+      updateVibrationBtn();
+    } catch (_) {}
 
     function playRapidoTone(freq, type, startTime, duration, gainValue) {
       var ctx = getAudioContext();
