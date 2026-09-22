@@ -3541,19 +3541,24 @@
         var AudioContextClass = window.AudioContext || window.webkitAudioContext;
         if (AudioContextClass) _audioCtx = new AudioContextClass();
       }
-      if (_audioCtx && _audioCtx.state === 'suspended') {
-        _audioCtx.resume().catch(function () {});
-      }
       return _audioCtx;
     }
 
-    // Prime Audio Context on any touch/click
-    function primeAudioContext() {
-      getAudioContext();
+    async function ensureAudioReady() {
+      var ctx = getAudioContext();
+      if (ctx && ctx.state === 'suspended') {
+        try { await ctx.resume(); } catch (_) {}
+      }
+      return ctx;
     }
-    window.addEventListener('click', primeAudioContext);
-    window.addEventListener('touchstart', primeAudioContext);
-    window.addEventListener('pointerdown', primeAudioContext);
+
+    // Prime Audio Context on any user interaction
+    async function primeAudioContext() {
+      await ensureAudioReady();
+    }
+    window.addEventListener('click', primeAudioContext, { passive: true });
+    window.addEventListener('touchstart', primeAudioContext, { passive: true });
+    window.addEventListener('pointerdown', primeAudioContext, { passive: true });
 
     var _vibrationInterval = null;
 
@@ -3853,10 +3858,10 @@
     var playRapidoChime = playGetXhChime;
 
     // ══════════════════════════════════════════════════════
-    // PERSISTENT OFFLINE TRACKING & CATCH-UP SYSTEM
+    // PERSISTENT OFFLINE TRACKING & FORCEFUL CATCH-UP SYSTEM
     // ══════════════════════════════════════════════════════
-    var _seenAlertIdsKey = 'gx_seen_alert_ids';
-    var _lastOnlineKey = 'gx_last_admin_online';
+    var _seenAlertIdsKey = 'gx_seen_alert_ids_v3';
+    var MAX_OFFLINE_LOOKBACK_MS = 24 * 60 * 60 * 1000; // Look back up to 24 hours
 
     function getSeenAlertIds() {
       try {
@@ -3867,13 +3872,14 @@
     }
 
     var _seenAlertIds = getSeenAlertIds();
+    var _hasSeededAlertIds = localStorage.getItem('gx_alerts_seeded_v3') === 'true';
 
     function markAsAlerted(id) {
       if (!id) return;
       _seenAlertIds.add(String(id));
       try {
         var arr = Array.from(_seenAlertIds);
-        if (arr.length > 400) arr = arr.slice(arr.length - 400);
+        if (arr.length > 500) arr = arr.slice(arr.length - 500);
         localStorage.setItem(_seenAlertIdsKey, JSON.stringify(arr));
       } catch (_) {}
     }
@@ -3901,36 +3907,6 @@
       return 0;
     }
 
-    var _prevAdminOnlineTime = Number(localStorage.getItem(_lastOnlineKey)) || 0;
-    var _isFirstEverSession = (_prevAdminOnlineTime === 0);
-    if (_isFirstEverSession) {
-      _prevAdminOnlineTime = Date.now();
-      localStorage.setItem(_lastOnlineKey, String(_prevAdminOnlineTime));
-    }
-
-    // Heartbeat: update last active timestamp while admin has tab open
-    setInterval(function () {
-      localStorage.setItem(_lastOnlineKey, String(Date.now()));
-    }, 5000);
-
-    window.addEventListener('beforeunload', function () {
-      localStorage.setItem(_lastOnlineKey, String(Date.now()));
-    });
-
-    document.addEventListener('visibilitychange', function () {
-      if (document.visibilityState === 'visible') {
-        getAudioContext();
-        updateVibrationStatusUi();
-      } else {
-        localStorage.setItem(_lastOnlineKey, String(Date.now()));
-      }
-    });
-
-    window.addEventListener('online', function () {
-      getAudioContext();
-      showAdminToast('🌐 Back Online! Syncing latest orders & payments...', false);
-    });
-
     // Offline Catch-up queue
     var _offlineQueue = {
       orders: [],
@@ -3948,7 +3924,7 @@
       else if (type === 'ticket') _offlineQueue.tickets.push({ id: id, data: data });
 
       if (_catchUpTimer) clearTimeout(_catchUpTimer);
-      _catchUpTimer = setTimeout(processOfflineCatchUp, 1400);
+      _catchUpTimer = setTimeout(processOfflineCatchUp, 1200);
     }
 
     function processOfflineCatchUp() {
@@ -4014,10 +3990,81 @@
       _offlineQueue.funds = [];
       _offlineQueue.users = [];
       _offlineQueue.tickets = [];
-      localStorage.setItem(_lastOnlineKey, String(Date.now()));
     }
 
+    // Unified item alert router
+    function checkAndAlertItem(type, data, docId, isInitialBatch) {
+      if (!docId) return;
+      if (isAlreadyAlerted(docId)) return;
+
+      const docTime = getDocMillis(data);
+      const now = Date.now();
+      const isWithin24h = docTime > 0 && (now - docTime < MAX_OFFLINE_LOOKBACK_MS);
+
+      if (!_hasSeededAlertIds) {
+        // First session on this device: mark existing docs as seen silently
+        markAsAlerted(docId);
+        return;
+      }
+
+      if (isWithin24h) {
+        if (isInitialBatch) {
+          queueOfflineItem(type, data, docId);
+        } else {
+          markAsAlerted(docId);
+          if (typeof triggerRapidoAlert === 'function') {
+            triggerRapidoAlert(type, data, docId);
+          }
+        }
+      } else {
+        markAsAlerted(docId);
+      }
+    }
+
+    // Active audit: checks in-memory data for any missed items within 24 hours
+    function triggerOfflineCatchUpAudit() {
+      if (!_hasSeededAlertIds) return;
+      var now = Date.now();
+
+      if (Array.isArray(window._allOrders)) {
+        window._allOrders.forEach(function (o) {
+          if (!o || !o.id || isAlreadyAlerted(o.id)) return;
+          var t = getDocMillis(o);
+          if (t > 0 && (now - t < MAX_OFFLINE_LOOKBACK_MS)) {
+            queueOfflineItem('order', o, o.id);
+          }
+        });
+      }
+
+      if (Array.isArray(window._allFundPayments)) {
+        window._allFundPayments.forEach(function (f) {
+          if (!f || !f.id || isAlreadyAlerted(f.id)) return;
+          var t = getDocMillis(f);
+          if (t > 0 && (now - t < MAX_OFFLINE_LOOKBACK_MS)) {
+            queueOfflineItem('fund', f, f.id);
+          }
+        });
+      }
+    }
+
+    // Reconnect & visibility handlers: immediately resume AudioContext & audit missed items
+    window.addEventListener('online', async function () {
+      await ensureAudioReady();
+      showAdminToast('🌐 Back Online! Checking for missed orders & payments...', false);
+      triggerOfflineCatchUpAudit();
+    });
+
+    document.addEventListener('visibilitychange', async function () {
+      if (document.visibilityState === 'visible') {
+        await ensureAudioReady();
+        updateVibrationStatusUi();
+        triggerOfflineCatchUpAudit();
+      }
+    });
+
     function triggerRapidoAlert(type, data, docId) {
+      if (docId) markAsAlerted(docId);
+      ensureAudioReady();
       if (type === 'fund') {
         playMoneySound();
       } else if (type === 'order') {
@@ -4796,22 +4843,17 @@
           if (change.type === 'added') {
             const docId = change.doc.id;
             const data = change.doc.data();
-            if (_isInitialOrders) {
-              const docTime = getDocMillis(data);
-              if (!_isFirstEverSession && docTime > _prevAdminOnlineTime && !isAlreadyAlerted(docId)) {
-                queueOfflineItem('order', data, docId);
-              }
-            } else {
-              if (!_knownOrderIds.has(docId) && !isAlreadyAlerted(docId)) {
-                if (typeof triggerRapidoAlert === 'function') {
-                  triggerRapidoAlert('order', data, docId);
-                }
-              }
-            }
+            checkAndAlertItem('order', data, docId, _isInitialOrders);
             _knownOrderIds.add(docId);
           }
         });
-        _isInitialOrders = false;
+        if (_isInitialOrders) {
+          _isInitialOrders = false;
+          if (!_hasSeededAlertIds) {
+            _hasSeededAlertIds = true;
+            try { localStorage.setItem('gx_alerts_seeded_v3', 'true'); } catch (_) {}
+          }
+        }
       }, () => { });
 
       // Real-time Tickets Listener (with Rapido Alert for new tickets)
@@ -4836,22 +4878,17 @@
           if (change.type === 'added') {
             const docId = change.doc.id;
             const data = change.doc.data();
-            if (_isInitialTickets) {
-              const docTime = getDocMillis(data);
-              if (!_isFirstEverSession && docTime > _prevAdminOnlineTime && !isAlreadyAlerted(docId)) {
-                queueOfflineItem('ticket', data, docId);
-              }
-            } else {
-              if (!_knownTicketIds.has(docId) && !isAlreadyAlerted(docId)) {
-                if (typeof triggerRapidoAlert === 'function') {
-                  triggerRapidoAlert('ticket', data, docId);
-                }
-              }
-            }
+            checkAndAlertItem('ticket', data, docId, _isInitialTickets);
             _knownTicketIds.add(docId);
           }
         });
-        _isInitialTickets = false;
+        if (_isInitialTickets) {
+          _isInitialTickets = false;
+          if (!_hasSeededAlertIds) {
+            _hasSeededAlertIds = true;
+            try { localStorage.setItem('gx_alerts_seeded_v3', 'true'); } catch (_) {}
+          }
+        }
 
         if (activeTicketId) {
           const t = tickets.find(x => x.id === activeTicketId);
@@ -4878,22 +4915,17 @@
           if (change.type === 'added') {
             const docId = change.doc.id;
             const data = change.doc.data();
-            if (_isInitialFundPayments) {
-              const docTime = getDocMillis(data);
-              if (!_isFirstEverSession && docTime > _prevAdminOnlineTime && !isAlreadyAlerted(docId)) {
-                queueOfflineItem('fund', data, docId);
-              }
-            } else {
-              if (!_knownFundPaymentIds.has(docId) && !isAlreadyAlerted(docId)) {
-                if (typeof triggerRapidoAlert === 'function') {
-                  triggerRapidoAlert('fund', data, docId);
-                }
-              }
-            }
+            checkAndAlertItem('fund', data, docId, _isInitialFundPayments);
             _knownFundPaymentIds.add(docId);
           }
         });
-        _isInitialFundPayments = false;
+        if (_isInitialFundPayments) {
+          _isInitialFundPayments = false;
+          if (!_hasSeededAlertIds) {
+            _hasSeededAlertIds = true;
+            try { localStorage.setItem('gx_alerts_seeded_v3', 'true'); } catch (_) {}
+          }
+        }
 
         if (typeof renderFundHistory === 'function') {
           renderFundHistory();
@@ -4910,22 +4942,17 @@
           if (change.type === 'added') {
             const uid = change.doc.id;
             const data = change.doc.data();
-            if (_isInitialUsersAlert) {
-              const docTime = getDocMillis(data);
-              if (!_isFirstEverSession && docTime > _prevAdminOnlineTime && !isAlreadyAlerted(uid)) {
-                queueOfflineItem('user', data, uid);
-              }
-            } else {
-              if (!_knownUserAlertIds.has(uid) && !isAlreadyAlerted(uid)) {
-                if (typeof triggerRapidoAlert === 'function') {
-                  triggerRapidoAlert('user', data, uid);
-                }
-              }
-            }
+            checkAndAlertItem('user', data, uid, _isInitialUsersAlert);
             _knownUserAlertIds.add(uid);
           }
         });
-        _isInitialUsersAlert = false;
+        if (_isInitialUsersAlert) {
+          _isInitialUsersAlert = false;
+          if (!_hasSeededAlertIds) {
+            _hasSeededAlertIds = true;
+            try { localStorage.setItem('gx_alerts_seeded_v3', 'true'); } catch (_) {}
+          }
+        }
       }, err => {
         console.warn('Users alert listener error:', err);
       });
@@ -4937,22 +4964,15 @@
           if (change.type === 'added') {
             const uid = change.doc.id;
             const data = change.doc.data();
-            if (_isInitialUserDataAlert) {
-              const docTime = getDocMillis(data);
-              if (!_isFirstEverSession && docTime > _prevAdminOnlineTime && !isAlreadyAlerted(uid) && !_knownUserAlertIds.has(uid)) {
-                queueOfflineItem('user', data, uid);
-              }
-            } else {
-              if (!_knownUserAlertIds.has(uid) && !isAlreadyAlerted(uid)) {
-                if (typeof triggerRapidoAlert === 'function') {
-                  triggerRapidoAlert('user', data, uid);
-                }
-              }
+            if (!_knownUserAlertIds.has(uid)) {
+              checkAndAlertItem('user', data, uid, _isInitialUserDataAlert);
+              _knownUserAlertIds.add(uid);
             }
-            _knownUserAlertIds.add(uid);
           }
         });
-        _isInitialUserDataAlert = false;
+        if (_isInitialUserDataAlert) {
+          _isInitialUserDataAlert = false;
+        }
       });
 
       // Real-time Users & Balances Sync
