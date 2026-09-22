@@ -3731,20 +3731,20 @@
         } catch (_) {}
       }
 
-      playRapidoChime();
+      playMoneySound();
       triggerHeavyVibration();
 
       await triggerSystemVibrationNotification(
-        '🚨 Test Alert: Phone Vibrating!',
-        'Rapido chime and phone vibration successfully activated.',
+        '💰 Test Alert: Money Collect Sound & Vibrate!',
+        'Cash register sound ("Cha-Ching!") and phone vibration activated.',
         'test-alert-' + Date.now()
       );
 
       var hasVibrate = ('vibrate' in navigator);
       if (hasVibrate) {
-        showAdminToast('🔔 Rapido Chime Playing & 📳 Phone Vibrating!', false);
+        showAdminToast('💰 Money Collect Sound ("Cha-Ching!") & 📳 Phone Vibrating!', false);
       } else {
-        showAdminToast('🔔 Chime Playing! (Note: iOS Safari requires Home Screen PWA for vibration)', false);
+        showAdminToast('💰 Money Sound Playing! (Note: iOS Safari requires Home Screen PWA for vibration)', false);
       }
     };
 
@@ -3768,19 +3768,92 @@
       var ctx = getAudioContext();
       if (!ctx) return;
       try {
+        var now = ctx.currentTime;
+        var start = now + (startTime || 0);
+        var dur = duration || 0.2;
+        var gVal = (typeof gainValue === 'number') ? gainValue : 0.65;
         var osc = ctx.createOscillator();
         var gain = ctx.createGain();
         osc.type = type || 'sine';
-        osc.frequency.setValueAtTime(freq, ctx.currentTime + startTime);
-        gain.gain.setValueAtTime(gainValue || 0.65, ctx.currentTime + startTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startTime + duration);
+        osc.frequency.setValueAtTime(freq, start);
+        gain.gain.setValueAtTime(gVal, start);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
         osc.connect(gain);
         gain.connect(ctx.destination);
-        osc.start(ctx.currentTime + startTime);
-        osc.stop(ctx.currentTime + startTime + duration);
+        osc.start(start);
+        osc.stop(start + dur + 0.05);
       } catch (e) {}
     }
 
+    // ── 1. MONEY COLLECT / PAYMENT SOUND (Cash Register & Coin Clink "Cha-Ching!") ──
+    function playMoneySound() {
+      if (!_alertSoundEnabled) return;
+      try {
+        var ctx = getAudioContext();
+        if (!ctx) return;
+        // Two crisp metallic coin drops followed by ringing cash register chime
+        playRapidoTone(1760.00, 'sine',     0.00, 0.08, 0.70); // A6 coin clink
+        playRapidoTone(2637.02, 'triangle', 0.02, 0.07, 0.45); // E7 metallic ring
+        playRapidoTone(1975.53, 'sine',     0.07, 0.09, 0.75); // B6 coin clink 2
+        playRapidoTone(3135.96, 'triangle', 0.09, 0.08, 0.50); // G7 metallic ping
+        playRapidoTone(1318.51, 'triangle', 0.16, 0.28, 0.75); // E6
+        playRapidoTone(2093.00, 'sine',     0.18, 0.45, 0.90); // C7 (loud bell ring)
+        playRapidoTone(2637.02, 'sine',     0.22, 0.55, 0.85); // E7 (resonant harmonic)
+        playRapidoTone(4186.01, 'sine',     0.26, 0.40, 0.40); // C8 (sparkle shimmer)
+      } catch (e) {
+        console.warn('Money sound error:', e);
+      }
+    }
+    window.playMoneySound = playMoneySound;
+
+    // ── 2. NEW ORDER SOUND (Upbeat 4-Note Ascending Delivery Bell) ──
+    function playOrderSound() {
+      if (!_alertSoundEnabled) return;
+      try {
+        var ctx = getAudioContext();
+        if (!ctx) return;
+        playRapidoTone(587.33, 'triangle', 0.00, 0.12, 0.65); // D5
+        playRapidoTone(783.99, 'triangle', 0.10, 0.14, 0.70); // G5
+        playRapidoTone(987.77, 'sine',     0.20, 0.16, 0.80); // B5
+        playRapidoTone(1174.66, 'sine',    0.30, 0.38, 0.90); // D6
+        playRapidoTone(1760.00, 'triangle', 0.34, 0.32, 0.45); // A6 overtone
+      } catch (e) {
+        console.warn('Order sound error:', e);
+      }
+    }
+    window.playOrderSound = playOrderSound;
+
+    // ── 3. NEW USER REGISTRATION SOUND (Warm Friendly Marimba Chime) ──
+    function playUserSound() {
+      if (!_alertSoundEnabled) return;
+      try {
+        var ctx = getAudioContext();
+        if (!ctx) return;
+        playRapidoTone(523.25, 'sine', 0.00, 0.14, 0.60); // C5
+        playRapidoTone(659.25, 'sine', 0.09, 0.14, 0.65); // E5
+        playRapidoTone(783.99, 'sine', 0.18, 0.18, 0.70); // G5
+        playRapidoTone(1046.50, 'sine', 0.28, 0.35, 0.75); // C6
+      } catch (e) {
+        console.warn('User sound error:', e);
+      }
+    }
+    window.playUserSound = playUserSound;
+
+    // ── 4. SUPPORT TICKET SOUND (Dual-Tone Attention Ping) ──
+    function playTicketSound() {
+      if (!_alertSoundEnabled) return;
+      try {
+        var ctx = getAudioContext();
+        if (!ctx) return;
+        playRapidoTone(698.46, 'triangle', 0.00, 0.14, 0.60); // F5
+        playRapidoTone(932.33, 'sine',     0.12, 0.35, 0.85); // Bb5
+      } catch (e) {
+        console.warn('Ticket sound error:', e);
+      }
+    }
+    window.playTicketSound = playTicketSound;
+
+    // ── 5. DEFAULT / RAPIDO CHIME ──
     function playRapidoChime() {
       if (!_alertSoundEnabled) return;
       try {
@@ -3800,8 +3873,184 @@
       }
     }
 
+    // ══════════════════════════════════════════════════════
+    // PERSISTENT OFFLINE TRACKING & CATCH-UP SYSTEM
+    // ══════════════════════════════════════════════════════
+    var _seenAlertIdsKey = 'gx_seen_alert_ids';
+    var _lastOnlineKey = 'gx_last_admin_online';
+
+    function getSeenAlertIds() {
+      try {
+        var raw = localStorage.getItem(_seenAlertIdsKey);
+        if (raw) return new Set(JSON.parse(raw));
+      } catch (_) {}
+      return new Set();
+    }
+
+    var _seenAlertIds = getSeenAlertIds();
+
+    function markAsAlerted(id) {
+      if (!id) return;
+      _seenAlertIds.add(String(id));
+      try {
+        var arr = Array.from(_seenAlertIds);
+        if (arr.length > 400) arr = arr.slice(arr.length - 400);
+        localStorage.setItem(_seenAlertIdsKey, JSON.stringify(arr));
+      } catch (_) {}
+    }
+
+    function isAlreadyAlerted(id) {
+      if (!id) return true;
+      return _seenAlertIds.has(String(id));
+    }
+
+    function getDocMillis(d) {
+      if (!d) return 0;
+      if (d.createdAt) {
+        if (typeof d.createdAt.toMillis === 'function') return d.createdAt.toMillis();
+        if (d.createdAt.seconds) return d.createdAt.seconds * 1000;
+        if (typeof d.createdAt === 'number') return d.createdAt;
+        var p = Date.parse(d.createdAt);
+        if (!isNaN(p)) return p;
+      }
+      if (d.timestamp) {
+        if (typeof d.timestamp.toMillis === 'function') return d.timestamp.toMillis();
+        if (d.timestamp.seconds) return d.timestamp.seconds * 1000;
+        if (typeof d.timestamp === 'number') return d.timestamp;
+      }
+      if (d.createdMillis) return Number(d.createdMillis) || 0;
+      return 0;
+    }
+
+    var _prevAdminOnlineTime = Number(localStorage.getItem(_lastOnlineKey)) || 0;
+    var _isFirstEverSession = (_prevAdminOnlineTime === 0);
+    if (_isFirstEverSession) {
+      _prevAdminOnlineTime = Date.now();
+      localStorage.setItem(_lastOnlineKey, String(_prevAdminOnlineTime));
+    }
+
+    // Heartbeat: update last active timestamp while admin has tab open
+    setInterval(function () {
+      localStorage.setItem(_lastOnlineKey, String(Date.now()));
+    }, 5000);
+
+    window.addEventListener('beforeunload', function () {
+      localStorage.setItem(_lastOnlineKey, String(Date.now()));
+    });
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') {
+        getAudioContext();
+        updateVibrationStatusUi();
+      } else {
+        localStorage.setItem(_lastOnlineKey, String(Date.now()));
+      }
+    });
+
+    window.addEventListener('online', function () {
+      getAudioContext();
+      showAdminToast('🌐 Back Online! Syncing latest orders & payments...', false);
+    });
+
+    // Offline Catch-up queue
+    var _offlineQueue = {
+      orders: [],
+      funds: [],
+      users: [],
+      tickets: []
+    };
+    var _catchUpTimer = null;
+
+    function queueOfflineItem(type, data, id) {
+      if (isAlreadyAlerted(id)) return;
+      if (type === 'order') _offlineQueue.orders.push({ id: id, data: data });
+      else if (type === 'fund') _offlineQueue.funds.push({ id: id, data: data });
+      else if (type === 'user') _offlineQueue.users.push({ id: id, data: data });
+      else if (type === 'ticket') _offlineQueue.tickets.push({ id: id, data: data });
+
+      if (_catchUpTimer) clearTimeout(_catchUpTimer);
+      _catchUpTimer = setTimeout(processOfflineCatchUp, 1400);
+    }
+
+    function processOfflineCatchUp() {
+      var oCount = _offlineQueue.orders.length;
+      var fCount = _offlineQueue.funds.length;
+      var uCount = _offlineQueue.users.length;
+      var tCount = _offlineQueue.tickets.length;
+      var total = oCount + fCount + uCount + tCount;
+
+      if (total === 0) return;
+
+      _offlineQueue.orders.forEach(function (x) { markAsAlerted(x.id); });
+      _offlineQueue.funds.forEach(function (x) { markAsAlerted(x.id); });
+      _offlineQueue.users.forEach(function (x) { markAsAlerted(x.id); });
+      _offlineQueue.tickets.forEach(function (x) { markAsAlerted(x.id); });
+
+      if (total === 1) {
+        if (fCount === 1) {
+          triggerRapidoAlert('fund', _offlineQueue.funds[0].data, _offlineQueue.funds[0].id);
+        } else if (oCount === 1) {
+          triggerRapidoAlert('order', _offlineQueue.orders[0].data, _offlineQueue.orders[0].id);
+        } else if (uCount === 1) {
+          triggerRapidoAlert('user', _offlineQueue.users[0].data, _offlineQueue.users[0].id);
+        } else if (tCount === 1) {
+          triggerRapidoAlert('ticket', _offlineQueue.tickets[0].data, _offlineQueue.tickets[0].id);
+        }
+      } else {
+        // Multiple items arrived while offline!
+        // Play most prominent sound: Money > Order > User > Ticket
+        if (fCount > 0) playMoneySound();
+        else if (oCount > 0) playOrderSound();
+        else if (uCount > 0) playUserSound();
+        else playTicketSound();
+
+        triggerHeavyVibration();
+
+        var parts = [];
+        if (fCount > 0) {
+          var totalAmt = _offlineQueue.funds.reduce(function (sum, item) {
+            return sum + (Number(item.data.amount) || 0);
+          }, 0);
+          parts.push('💰 ' + fCount + ' Payment' + (fCount > 1 ? 's' : '') + ' (₹' + totalAmt + ')');
+        }
+        if (oCount > 0) {
+          parts.push('📦 ' + oCount + ' Order' + (oCount > 1 ? 's' : ''));
+        }
+        if (uCount > 0) {
+          parts.push('👤 ' + uCount + ' User' + (uCount > 1 ? 's' : ''));
+        }
+        if (tCount > 0) {
+          parts.push('🎫 ' + tCount + ' Ticket' + (tCount > 1 ? 's' : ''));
+        }
+
+        var catchupTitle = '⚡ ' + total + ' New Activities While Offline!';
+        var catchupSub = parts.join(' · ');
+
+        triggerSystemVibrationNotification('🚨 ' + catchupTitle, catchupSub, 'gx-offline-catchup');
+        showRapidoBanner('catchup', 'WHILE YOU WERE OFFLINE', catchupTitle, catchupSub, 'catchup');
+        showAdminToast(catchupTitle + ': ' + catchupSub, false);
+      }
+
+      _offlineQueue.orders = [];
+      _offlineQueue.funds = [];
+      _offlineQueue.users = [];
+      _offlineQueue.tickets = [];
+      localStorage.setItem(_lastOnlineKey, String(Date.now()));
+    }
+
     function triggerRapidoAlert(type, data, docId) {
-      playRapidoChime();
+      if (type === 'fund') {
+        playMoneySound();
+      } else if (type === 'order') {
+        playOrderSound();
+      } else if (type === 'user') {
+        playUserSound();
+      } else if (type === 'ticket') {
+        playTicketSound();
+      } else {
+        playRapidoChime();
+      }
+
       triggerHeavyVibration();
 
       var tag = 'NEW PAYMENT';
@@ -3826,10 +4075,11 @@
         icon = 'person_add';
       }
 
-      // Hardware notification with vibration pattern (Service Worker + Android Notification)
+      // Hardware notification with vibration pattern
       triggerSystemVibrationNotification('🚨 ' + tag + ': ' + title, sub, 'gx-' + docId, docId);
 
       showRapidoBanner(type, tag, title, sub, docId);
+      markAsAlerted(docId);
     }
 
     function showRapidoBanner(type, tag, title, sub, docId) {
@@ -3838,7 +4088,11 @@
       document.getElementById('rapidoAlertTag').textContent = tag;
       document.getElementById('rapidoAlertTitle').textContent = title;
       document.getElementById('rapidoAlertSub').textContent = sub;
-      document.getElementById('rapidoAlertIcon').textContent = type === 'order' ? 'receipt_long' : (type === 'ticket' ? 'support_agent' : (type === 'user' ? 'person_add' : 'payments'));
+      document.getElementById('rapidoAlertIcon').textContent = 
+        type === 'order' ? 'receipt_long' : 
+        (type === 'ticket' ? 'support_agent' : 
+        (type === 'user' ? 'person_add' : 
+        (type === 'catchup' ? 'bolt' : 'payments')));
       document.getElementById('rapidoAlertTime').textContent = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
 
       var actionBtn = document.getElementById('rapidoAlertActionBtn');
@@ -3850,6 +4104,7 @@
           else if (type === 'order') switchTab('orders');
           else if (type === 'ticket') switchTab('tickets');
           else if (type === 'user') switchTab('users');
+          else if (type === 'catchup') switchTab('funds');
         };
       }
 
@@ -4537,12 +4792,21 @@
 
         snap.docChanges().forEach(change => {
           if (change.type === 'added') {
-            if (!_isInitialOrders && !_knownOrderIds.has(change.doc.id)) {
-              if (typeof triggerRapidoAlert === 'function') {
-                triggerRapidoAlert('order', change.doc.data(), change.doc.id);
+            const docId = change.doc.id;
+            const data = change.doc.data();
+            if (_isInitialOrders) {
+              const docTime = getDocMillis(data);
+              if (!_isFirstEverSession && docTime > _prevAdminOnlineTime && !isAlreadyAlerted(docId)) {
+                queueOfflineItem('order', data, docId);
+              }
+            } else {
+              if (!_knownOrderIds.has(docId) && !isAlreadyAlerted(docId)) {
+                if (typeof triggerRapidoAlert === 'function') {
+                  triggerRapidoAlert('order', data, docId);
+                }
               }
             }
-            _knownOrderIds.add(change.doc.id);
+            _knownOrderIds.add(docId);
           }
         });
         _isInitialOrders = false;
@@ -4568,12 +4832,21 @@
 
         snap.docChanges().forEach(change => {
           if (change.type === 'added') {
-            if (!_isInitialTickets && !_knownTicketIds.has(change.doc.id)) {
-              if (typeof triggerRapidoAlert === 'function') {
-                triggerRapidoAlert('ticket', change.doc.data(), change.doc.id);
+            const docId = change.doc.id;
+            const data = change.doc.data();
+            if (_isInitialTickets) {
+              const docTime = getDocMillis(data);
+              if (!_isFirstEverSession && docTime > _prevAdminOnlineTime && !isAlreadyAlerted(docId)) {
+                queueOfflineItem('ticket', data, docId);
+              }
+            } else {
+              if (!_knownTicketIds.has(docId) && !isAlreadyAlerted(docId)) {
+                if (typeof triggerRapidoAlert === 'function') {
+                  triggerRapidoAlert('ticket', data, docId);
+                }
               }
             }
-            _knownTicketIds.add(change.doc.id);
+            _knownTicketIds.add(docId);
           }
         });
         _isInitialTickets = false;
@@ -4601,12 +4874,21 @@
 
         snap.docChanges().forEach(change => {
           if (change.type === 'added') {
-            if (!_isInitialFundPayments && !_knownFundPaymentIds.has(change.doc.id)) {
-              if (typeof triggerRapidoAlert === 'function') {
-                triggerRapidoAlert('fund', change.doc.data(), change.doc.id);
+            const docId = change.doc.id;
+            const data = change.doc.data();
+            if (_isInitialFundPayments) {
+              const docTime = getDocMillis(data);
+              if (!_isFirstEverSession && docTime > _prevAdminOnlineTime && !isAlreadyAlerted(docId)) {
+                queueOfflineItem('fund', data, docId);
+              }
+            } else {
+              if (!_knownFundPaymentIds.has(docId) && !isAlreadyAlerted(docId)) {
+                if (typeof triggerRapidoAlert === 'function') {
+                  triggerRapidoAlert('fund', data, docId);
+                }
               }
             }
-            _knownFundPaymentIds.add(change.doc.id);
+            _knownFundPaymentIds.add(docId);
           }
         });
         _isInitialFundPayments = false;
@@ -4625,9 +4907,17 @@
         snap.docChanges().forEach(change => {
           if (change.type === 'added') {
             const uid = change.doc.id;
-            if (!_isInitialUsersAlert && !_knownUserAlertIds.has(uid)) {
-              if (typeof triggerRapidoAlert === 'function') {
-                triggerRapidoAlert('user', change.doc.data(), uid);
+            const data = change.doc.data();
+            if (_isInitialUsersAlert) {
+              const docTime = getDocMillis(data);
+              if (!_isFirstEverSession && docTime > _prevAdminOnlineTime && !isAlreadyAlerted(uid)) {
+                queueOfflineItem('user', data, uid);
+              }
+            } else {
+              if (!_knownUserAlertIds.has(uid) && !isAlreadyAlerted(uid)) {
+                if (typeof triggerRapidoAlert === 'function') {
+                  triggerRapidoAlert('user', data, uid);
+                }
               }
             }
             _knownUserAlertIds.add(uid);
@@ -4644,9 +4934,17 @@
         snap.docChanges().forEach(change => {
           if (change.type === 'added') {
             const uid = change.doc.id;
-            if (!_isInitialUserDataAlert && !_knownUserAlertIds.has(uid)) {
-              if (typeof triggerRapidoAlert === 'function') {
-                triggerRapidoAlert('user', change.doc.data(), uid);
+            const data = change.doc.data();
+            if (_isInitialUserDataAlert) {
+              const docTime = getDocMillis(data);
+              if (!_isFirstEverSession && docTime > _prevAdminOnlineTime && !isAlreadyAlerted(uid) && !_knownUserAlertIds.has(uid)) {
+                queueOfflineItem('user', data, uid);
+              }
+            } else {
+              if (!_knownUserAlertIds.has(uid) && !isAlreadyAlerted(uid)) {
+                if (typeof triggerRapidoAlert === 'function') {
+                  triggerRapidoAlert('user', data, uid);
+                }
               }
             }
             _knownUserAlertIds.add(uid);
