@@ -772,6 +772,18 @@ window.verifyPayment = async function() {
         // 1. Save to fundPayments (for Admin Panel Fund History)
         await addDoc(collection(db, "fundPayments"), paymentRecord);
 
+        // Instant Telegram Alert to Admin
+        try {
+          fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "payment",
+              data: paymentRecord
+            })
+          }).catch(() => {});
+        } catch (_) {}
+
         // 2. Save to walletTxns (so user's wallet history updates too)
         await addDoc(collection(db, "walletTxns"), {
           uid: currentUser.uid,

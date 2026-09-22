@@ -765,6 +765,22 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
         body: JSON.stringify({ uid: cred.user.uid, email, mobile: document.getElementById("mobile").value.trim(), username })
       }).catch(() => {});
 
+      /* Instant Telegram Alert to Admin */
+      try {
+        fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "user",
+            data: {
+              email: email,
+              name: username,
+              phone: document.getElementById("mobile").value.trim()
+            }
+          })
+        }).catch(() => {});
+      } catch (_) {}
+
       /* Firestore + profile update */
       updateProfile(cred.user, { displayName: username }).catch(() => {});
 

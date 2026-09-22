@@ -903,6 +903,11 @@
             <span class="material-symbols-outlined" style="font-size:15px">sensors</span>
             <span class="hidden sm:inline">Enable Vibrate</span>
           </button>
+          <button id="btnTelegramAlert" type="button" onclick="openTelegramModal()" title="Telegram Instant Alerts Setup"
+            class="flex h-8 items-center gap-1 rounded-lg border border-cyan-500/40 bg-cyan-500/15 px-2.5 py-1 text-[11px] font-bold text-cyan-300 hover:bg-cyan-500/25 transition">
+            <span class="material-symbols-outlined" style="font-size:15px">send</span>
+            <span class="hidden sm:inline">Telegram</span>
+          </button>
         </div>
         <!-- Tab switcher wrapper with fade mask below 768px -->
         <div class="tabs-wrapper-fade ml-auto flex items-center min-w-0">
@@ -2090,6 +2095,74 @@
             Category</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ── TELEGRAM ALERTS MODAL ────────────────────────────── -->
+  <div id="telegramModal"
+    class="fixed inset-0 z-[120] hidden items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+    onclick="if(event.target===this)closeTelegramModal()">
+    <div class="w-full max-w-md rounded-2xl border border-cyan-500/20 bg-[#0d1628] p-6 shadow-2xl"
+      style="background:linear-gradient(180deg,#0e1f3d 0%,#09101f 100%);">
+      <div class="mb-4 flex items-center justify-between border-b border-white/8 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/20 text-cyan-400">
+            <span class="material-symbols-outlined" style="font-size:18px">send</span>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Telegram Instant Alerts</h3>
+            <p class="text-[11px] text-cyan-400/80">Orders &amp; Payments directly to your phone</p>
+          </div>
+        </div>
+        <button onclick="closeTelegramModal()"
+          class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 text-slate-400 hover:text-white">
+          <span class="material-symbols-outlined" style="font-size:18px">close</span>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div class="rounded-xl border border-white/8 bg-white/[0.02] p-3.5 text-xs text-slate-300 space-y-2">
+          <p class="font-bold text-white flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-amber-400" style="font-size:16px">info</span>
+            Setup Instructions (Sirf 1 Minute):
+          </p>
+          <ol class="list-decimal list-inside space-y-1.5 text-[12px] text-slate-400">
+            <li>Telegram par bot <a href="https://t.me/Getxhforssnbot" target="_blank" class="text-cyan-400 underline font-bold hover:text-cyan-300">@Getxhforssnbot</a> open karein aur <b class="text-white">/start</b> send karein.</li>
+            <li>Niche <b class="text-cyan-300 font-semibold">"⚡ Auto-Detect &amp; Connect"</b> button dabayein!</li>
+            <li>Direct link ho jayega aur aapke Telegram par alert aana shuru ho jayega.</li>
+          </ol>
+          <div class="pt-1">
+            <a href="https://t.me/Getxhforssnbot" target="_blank"
+              class="inline-flex items-center gap-1.5 rounded-lg bg-sky-500/15 border border-sky-400/30 px-3 py-1.5 text-xs font-semibold text-sky-300 hover:bg-sky-500/25 transition">
+              <span class="material-symbols-outlined" style="font-size:15px">open_in_new</span>
+              <span>1. Open @Getxhforssnbot in Telegram</span>
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-400">Telegram Chat ID</label>
+          <div class="flex gap-2">
+            <input type="text" id="modalTelegramChatId" placeholder="e.g. 123456789" class="adm-field flex-1 text-xs" />
+            <button type="button" onclick="saveTelegramChatId()" id="btnSaveTelegramChat"
+              class="rounded-xl bg-cyan-600 px-4 py-2 text-xs font-bold text-white hover:bg-cyan-500 transition active:scale-95">Save</button>
+          </div>
+          <p id="telegramStatusNote" class="mt-1.5 text-[11px] text-slate-500">Checking connection status…</p>
+        </div>
+
+        <div class="flex flex-col gap-2 pt-2 border-t border-white/8">
+          <button type="button" onclick="autoDetectTelegram()" id="btnAutoConnectTelegram"
+            class="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 py-2.5 text-xs font-bold text-white shadow-lg transition hover:brightness-110 active:scale-[0.98]">
+            <span class="material-symbols-outlined" style="font-size:16px">bolt</span>
+            <span>2. ⚡ Auto-Detect &amp; Connect</span>
+          </button>
+          <button type="button" onclick="testTelegramAlert()" id="btnTestTelegramAlert"
+            class="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs font-bold text-slate-300 transition hover:bg-white/10 active:scale-[0.98]">
+            <span class="material-symbols-outlined" style="font-size:16px">notifications_active</span>
+            <span>3. Send Test Alert to My Telegram</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -3528,6 +3601,124 @@
         closeCategoryModal();
       }
     }
+
+    // ══════════════════════════════════════════════════════
+    // TELEGRAM INSTANT ALERTS MODAL & ACTIONS
+    // ══════════════════════════════════════════════════════
+    window.openTelegramModal = async function () {
+      var modal = document.getElementById('telegramModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+      checkTelegramStatusUi();
+    };
+
+    window.closeTelegramModal = function () {
+      var modal = document.getElementById('telegramModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    };
+
+    async function checkTelegramStatusUi() {
+      var note = document.getElementById('telegramStatusNote');
+      var inp = document.getElementById('modalTelegramChatId');
+      if (!note) return;
+      try {
+        var res = await fetch(BACKEND_URL + '/api/telegram-status');
+        var data = await res.json();
+        if (data.configured && data.chatId) {
+          if (inp && !inp.value) inp.value = data.chatId;
+          note.innerHTML = '<span class="text-emerald-400 font-bold">🟢 Connected!</span> Chat ID: <code>' + data.chatId + '</code>';
+        } else {
+          note.innerHTML = '<span class="text-amber-400 font-bold">🟡 Not Connected yet.</span> Bot par <b>/start</b> bhej kar Auto-Detect dabayein.';
+        }
+      } catch (e) {
+        note.textContent = 'Could not fetch status from backend.';
+      }
+    }
+
+    window.saveTelegramChatId = async function () {
+      var inp = document.getElementById('modalTelegramChatId');
+      var btn = document.getElementById('btnSaveTelegramChat');
+      var val = (inp.value || '').trim();
+      if (!val) {
+        alert('Please enter a valid Telegram Chat ID');
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+      try {
+        var res = await fetch(BACKEND_URL + '/api/telegram-set-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chatId: val })
+        });
+        var data = await res.json();
+        if (data.success) {
+          showAdminToast('✅ Telegram Connected! Test message sent to your phone.', false);
+          checkTelegramStatusUi();
+        } else {
+          showAdminToast('Failed to save Telegram Chat ID: ' + (data.message || 'Error'), true);
+        }
+      } catch (err) {
+        showAdminToast('Error connecting to backend: ' + err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save';
+      }
+    };
+
+    window.autoDetectTelegram = async function () {
+      var btn = document.getElementById('btnAutoConnectTelegram');
+      btn.disabled = true;
+      btn.textContent = 'Connecting…';
+      try {
+        var res = await fetch(BACKEND_URL + '/api/telegram-auto-connect');
+        var data = await res.json();
+        if (data.success && data.chatId) {
+          document.getElementById('modalTelegramChatId').value = data.chatId;
+          showAdminToast('🎉 Connected to ' + (data.sender || 'your Telegram') + '! Check Telegram app for confirmation.', false);
+          checkTelegramStatusUi();
+        } else {
+          alert(data.message || 'Koi message nahi mila. Pehle apne bot par /start send karein, fir dubara click karein.');
+        }
+      } catch (err) {
+        showAdminToast('Connection error: ' + err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '⚡ Auto-Detect & Connect';
+      }
+    };
+
+    window.testTelegramAlert = async function () {
+      var btn = document.getElementById('btnTestTelegramAlert');
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      try {
+        var res = await fetch(BACKEND_URL + '/api/telegram-alert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: '🚨 GetXH Telegram Alert Test!',
+            message: 'Aapka Telegram Alert System 100% active aur working hai! 🚀 Ab sabhi new orders aur payments ka instant alert yahan aayega.'
+          })
+        });
+        var data = await res.json();
+        if (data.success) {
+          showAdminToast('🔔 Test Alert sent! Check your Telegram app.', false);
+        } else {
+          showAdminToast('Could not send test alert: ' + (data.message || 'Configure Chat ID first'), true);
+        }
+      } catch (err) {
+        showAdminToast('Network error: ' + err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Send Test Alert to My Telegram';
+      }
+    };
 
     // ══════════════════════════════════════════════════════
     // GETXH LIVE SOUND ALERT & VIBRATION

@@ -2856,6 +2856,25 @@ async function placeOrder(serviceId) {
             } else if (docRef && docRef.id && link && link.includes('instagram.com')) {
               fetchAndSaveInstagramStartCount(link, docRef.id);
             }
+            // Trigger instant Telegram alert to admin
+            try {
+              fetch('https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'order',
+                  data: {
+                    id: (docRef && docRef.id) ? docRef.id : orderId,
+                    userEmail: dbOrderData.userEmail,
+                    service: dbOrderData.service,
+                    price: dbOrderData.price,
+                    charge: dbOrderData.charge,
+                    quantity: dbOrderData.quantity,
+                    link: dbOrderData.link
+                  }
+                })
+              }).catch(() => {});
+            } catch (_) {}
           })
           .catch(e => console.error('Order save error:', e));
 

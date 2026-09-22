@@ -1414,6 +1414,23 @@ window.createTicket = async function () {
 
     await batch.commit();
 
+    // Instant Telegram Alert to Admin
+    try {
+      fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "ticket",
+          data: {
+            ticketId: ticketRef.id,
+            userEmail: currentUser.email || '',
+            subject: (currentCategory || 'Support') + (currentSubCategory ? (' - ' + currentSubCategory) : ''),
+            message: message
+          }
+        })
+      }).catch(() => {});
+    } catch (_) {}
+
     resetCreateForm();
     closeCreatePanel();
     showNotice('pageNotice', 'Ticket submitted successfully.', 'info');
