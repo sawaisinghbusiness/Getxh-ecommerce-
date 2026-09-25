@@ -2773,6 +2773,7 @@ async function placeOrder(serviceId) {
     const requestId = (crypto.randomUUID && crypto.randomUUID()) || String(Date.now()) + "-" + Math.random().toString(36).slice(2);
     
     const requestBody = {
+      category: _selCat,
       service: serviceId,
       link: link,
       quantity: quantity,
@@ -2802,9 +2803,16 @@ async function placeOrder(serviceId) {
       body: JSON.stringify(requestBody)
     });
     if (!res.ok) {
-      const errText = await res.text().catch(() => res.status);
+      const errText = await res.text().catch(() => String(res.status));
+      let errData = {};
+      try { errData = JSON.parse(errText); } catch (_) {}
       console.error('Order HTTP error:', res.status, errText);
-      showToast('error', 'Order Failed (' + res.status + ')', String(errText).slice(0, 120));
+      if (res.status === 402) {
+        if (typeof errData.balance === 'number') window._currentBalance = errData.balance;
+        showInsufficientModal(typeof errData.price === 'number' ? errData.price : orderPrice);
+        return;
+      }
+      showToast('error', 'Order Failed (' + res.status + ')', String(errData.error || errText).slice(0, 120));
       return;
     }
     let data;
@@ -2815,92 +2823,44 @@ async function placeOrder(serviceId) {
     const smmSuccess = data.status && ['completed','processing','pending','in progress','partial'].includes(String(data.status).toLowerCase());
 
     if (orderId || smmSuccess) {
-      const uid = (window.auth && window.auth.currentUser) ? window.auth.currentUser.uid : (window.currentUid || '');
-      const userEmail = (window.auth && window.auth.currentUser) ? window.auth.currentUser.email : (window.currentEmail || '');
+      // The backend has already charged the wallet and saved the order with the server-side price
+      const chargedPrice = typeof data.price === 'number' ? data.price : orderPrice;
+      const orderDocId = data.orderDocId || null;
 
-      // Save order to Firestore so it appears in orders tab
-      if (uid && window._addDoc && window.db) {
-        const _now = Date.now();
-        const _readableDate = new Date(_now).toLocaleString('en-IN');
-        const dbOrderData = {
-          userId:           uid,
-          email:            userEmail,
-          orderId:          orderId ? String(orderId) : null,
-          apiOrderId:       orderId ? String(orderId) : null,
-          serviceName:      _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—',
-          service:          _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—',
-          serviceId:        _selSvc ? String(_selSvc.id) : '',
-          link:             link,
-          quantity:         parseInt(quantity),
-          price:            orderPrice,
-          status:           'Pending',
-          remains:          parseInt(quantity),
-          createdAt:        _now,
-          createdAtReadable: _readableDate
-        };
-        if (isDrip) {
-          dbOrderData.runs = runs;
-          dbOrderData.interval = interval;
-          dbOrderData.isDrip = true;
-          dbOrderData.totalQuantity = totalQty;
-        }
-        if (isCustomComment && customComments) {
-          dbOrderData.comments = customComments;
-        }
-        window._addDoc(window._collection(window.db, 'orders'), dbOrderData)
-          .then(docRef => {
-            if (data && data.start_count) {
-              window._updateDoc(window._doc(window.db, 'orders', docRef.id), {
-                start_count: String(data.start_count)
-              }).catch(() => {});
-            } else if (docRef && docRef.id && link && link.includes('instagram.com')) {
-              fetchAndSaveInstagramStartCount(link, docRef.id);
+      if (orderDocId && !data.start_count && link && link.includes('instagram.com')) {
+        fetchAndSaveInstagramStartCount(link, orderDocId);
+      }
+
+      // Trigger instant Telegram alert to admin
+      try {
+        fetch('https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'order',
+            data: {
+              id: orderId || orderDocId,
+              userEmail: (window.auth && window.auth.currentUser) ? window.auth.currentUser.email : (window.currentEmail || ''),
+              service: data.serviceName || (_selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—'),
+              price: chargedPrice,
+              quantity: data.quantity || parseInt(quantity),
+              link: link
             }
-            // Trigger instant Telegram alert to admin
-            try {
-              fetch('https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  type: 'order',
-                  data: {
-                    id: (docRef && docRef.id) ? docRef.id : orderId,
-                    userEmail: dbOrderData.userEmail,
-                    service: dbOrderData.service,
-                    price: dbOrderData.price,
-                    charge: dbOrderData.charge,
-                    quantity: dbOrderData.quantity,
-                    link: dbOrderData.link
-                  }
-                })
-              }).catch(() => {});
-            } catch (_) {}
           })
-          .catch(e => console.error('Order save error:', e));
+        }).catch(() => {});
+      } catch (_) {}
 
-        // Deduct balance, increment TotalOrders & TotalSpent on Firestore Users collection
-        if (window._updateDoc && window._doc) {
-          const oldBal = (window._currentBalance !== null) ? window._currentBalance : 0;
-          const newBal = Math.max(0, oldBal - orderPrice);
-          window._currentBalance = newBal;
-          window._updateDoc(window._doc(window.db, "Users", uid), {
-            Balance: window._increment(-orderPrice),
-            TotalOrders: window._increment(1),
-            TotalSpent: window._increment(orderPrice)
-          }).then(() => {
-            console.log("Balance deducted successfully! New balance:", newBal);
-          }).catch(e => console.error('Firestore balance deduction error:', e));
-
-          // Trigger red count-down animation for order placement deduction
-          if (typeof window.animateDashboardBalance === 'function') {
-            window.animateDashboardBalance(oldBal, newBal, false);
-          }
-        }
+      // Show the new balance right away (the Users snapshot listener will confirm it)
+      const oldBal = (window._currentBalance !== null) ? window._currentBalance : 0;
+      const newBal = typeof data.balance === 'number' ? data.balance : Math.max(0, oldBal - chargedPrice);
+      window._currentBalance = newBal;
+      if (typeof window.animateDashboardBalance === 'function') {
+        window.animateDashboardBalance(oldBal, newBal, false);
       }
       document.getElementById('smOrderId').textContent  = orderId ? '#' + orderId : 'Confirmed';
       document.getElementById('smService').textContent  = _selSvc ? _selSvc.name.replace(/\|.*/, '').trim() : '—';
       document.getElementById('smQty').textContent      = isDrip ? `${totalQty.toLocaleString()} (${quantity} x ${runs} runs)` : parseInt(quantity).toLocaleString();
-      document.getElementById('smAmount').textContent   = '₹' + orderPrice.toFixed(2);
+      document.getElementById('smAmount').textContent   = '₹' + chargedPrice.toFixed(2);
       const modal = document.getElementById('successModal');
       modal.classList.remove('hidden');
       modal.style.display = 'flex';
