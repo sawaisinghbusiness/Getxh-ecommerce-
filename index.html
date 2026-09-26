@@ -1444,48 +1444,25 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
         if (isNewUser) {
           writes.push(
             setDoc(doc(db, "Users", user.uid), {
-              Balance: welcomeBonus,
+              Balance: 0,
               TotalOrders: 0,
               TotalSpent: 0
             }, { merge: true })
           );
-          if (validCamp && _refCode) {
-            writes.push(
-              setDoc(doc(db, "campaigns", _refCode, "referrals", user.uid), {
-                uid: user.uid,
-                email: email,
-                username: username,
-                createdAt: Date.now(),
-                authProvider: 'google',
-                ...(welcomeBonus > 0 ? { bonusGiven: welcomeBonus, bonusClaimedAt: Date.now() } : {})
-              }, { merge: true }).catch(() => {})
-            );
-            try {
-              updateDoc(doc(db, "campaigns", _refCode), {
-                conversions: increment(1),
-                lastReferralAt: Date.now()
-              }).catch(() => {});
-            } catch (_) {}
-
-            if (welcomeBonus > 0) {
-              writes.push(
-                addDoc(collection(db, "walletTxns"), {
-                  uid: user.uid,
-                  amount: welcomeBonus,
-                  type: "credit",
-                  title: "Welcome Bonus",
-                  reason: `Welcome Bonus from referral (${campName})`,
-                  method: "admin",
-                  status: "success",
-                  notified: false,
-                  createdAt: Date.now()
-                }).catch(() => {})
-              );
-              localStorage.setItem("gx_wallet_bal_" + user.uid, "₹" + welcomeBonus.toFixed(2));
-            }
-          }
         }
         await Promise.allSettled(writes);
+
+        // Welcome bonus is granted server-side after the referral is verified
+        try {
+          if (typeof validCamp !== 'undefined' && validCamp && _refCode && auth.currentUser) {
+            const _bt = await auth.currentUser.getIdToken();
+            await fetch('https://backend-for-api-connect-g8ta.onrender.com/wallet/claim-bonus', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _bt },
+              body: JSON.stringify({ refCode: _refCode })
+            });
+          }
+        } catch (_) {}
 
         // One-time consumption: Clear referral data immediately so future signups don't inherit it
         localStorage.removeItem('gx_ref_code');
