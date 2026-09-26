@@ -465,7 +465,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, updateDoc, setDoc, increment, addDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -477,7 +477,7 @@ const firebaseConfig = {
 };
 
 const BACKEND         = "https://backend-for-email-verification-code-vwip.onrender.com";
-const PAYMENT_BACKEND = "https://backend-for-payment-system-getxh-f7fw.onrender.com";
+const API_BACKEND = "https://backend-for-api-connect-g8ta.onrender.com";
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth();
@@ -709,103 +709,44 @@ window.verifyPayment = async function() {
 
   try {
     const idToken = await currentUser.getIdToken();
-    const requestId = (crypto.randomUUID && crypto.randomUUID()) || String(Date.now()) + "-" + Math.random().toString(36).slice(2);
-    const res  = await fetch(`${PAYMENT_BACKEND}/verify-payment.php`, {
+    // The API server checks the login, verifies the UTR with BharatPe and credits the balance.
+    const res  = await fetch(`${API_BACKEND}/wallet/verify`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + idToken
       },
-      body: JSON.stringify({
-        utr,
-        amount,
-        requestId,
-        uid: currentUser.uid,
-        email: currentUser.email || ""
-      })
+      body: JSON.stringify({ utr, amount })
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
 
     if (data.status === "success") {
-      // Update Firestore balance — try update first, create if doc doesn't exist
+      const creditedUtr = data.utr || String(utr).trim();
+
+      // Instant Telegram Alert to Admin
       try {
-        await updateDoc(doc(db, "Users", currentUser.uid), {
-          Balance: increment(amount)
-        });
-      } catch(e) {
-        // Document doesn't exist yet (new account) — create it
-        try {
-          await setDoc(doc(db, "Users", currentUser.uid), {
-            Balance: amount,
-            TotalOrders: 0,
-            TotalSpent: 0
-          });
-        } catch(e2) {
-          console.error("Firestore balance update failed:", e2);
-        }
-      }
-
-      // Save complete BharatPe payment transaction to Firestore fundPayments & walletTxns
-      try {
-        const _now = Date.now();
-        const _readableDate = new Date(_now).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-        const bData = data.transaction || data.details || data.data || data.bharatpe || {};
-        const paymentRecord = {
-          uid: currentUser.uid,
-          email: currentUser.email || "",
-          username: currentUser.displayName || currentUser.email?.split("@")[0] || "User",
-          utr: String(utr).trim(),
-          amount: Number(amount),
-          status: "SUCCESS",
-          type: "credit",
-          method: "BharatPe UPI / QR",
-          requestId: requestId || "",
-          createdAt: _now,
-          createdAtReadable: _readableDate,
-          payerName: bData.payerName || bData.senderName || bData.customerName || data.payerName || "",
-          payerVpa: bData.payerVpa || bData.senderVpa || bData.vpa || bData.upiId || data.payerVpa || "",
-          bankReferenceNo: bData.bankReferenceNo || bData.bank_ref_no || bData.rrn || String(utr).trim(),
-          bharatpeData: bData,
-          rawResponse: data
-        };
-
-        // 1. Save to fundPayments (for Admin Panel Fund History)
-        await addDoc(collection(db, "fundPayments"), paymentRecord);
-
-        // Instant Telegram Alert to Admin
-        try {
-          fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              type: "payment",
-              data: paymentRecord
-            })
-          }).catch(() => {});
-        } catch (_) {}
-
-        // 2. Save to walletTxns (so user's wallet history updates too)
-        await addDoc(collection(db, "walletTxns"), {
-          uid: currentUser.uid,
-          amount: Number(amount),
-          type: "credit",
-          method: "bharatpe",
-          status: "success",
-          utr: String(utr).trim(),
-          reason: "UPI Deposit (BharatPe UTR: " + utr + ")",
-          notified: false,
-          createdAt: _now
-        });
-      } catch(saveErr) {
-        console.warn("Could not save fund payment document to Firestore:", saveErr);
-      }
+        fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "payment",
+            data: {
+              amount: Number(data.amount || amount),
+              utr: creditedUtr,
+              method: "BharatPe UPI / QR",
+              username: currentUser.displayName || currentUser.email?.split("@")[0] || "User",
+              email: currentUser.email || ""
+            }
+          })
+        }).catch(() => {});
+      } catch (_) {}
 
       // Populate success popup
       const popupAmt = document.getElementById("popupAmount");
       popupAmt.textContent = "₹0.00";
       animateCountUp(popupAmt, 0, amount, 300);
-      document.getElementById("popupUtr").textContent = "UTR: " + utr;
-      document.getElementById("popupNewBal").textContent = "Updating...";
+      document.getElementById("popupUtr").textContent = "UTR: " + creditedUtr;
+      document.getElementById("popupNewBal").textContent = typeof data.balance === "number" ? "₹" + data.balance.toFixed(2) : "Updating...";
       showPopupState("success");
       document.getElementById("utrInput").value  = "";
       document.getElementById("amountInput").value = "";

@@ -21,8 +21,8 @@ service cloud.firestore {
 
     // ── 1. Users Wallet & Balance ──
     // SECURITY: Users can only CREATE their doc with zero or welcome bonus balance (up to 500).
-    //           Only admin (or backend via Admin SDK) can modify Balance/TotalOrders/TotalSpent.
-    //           Self-update restricted to Balance-only increments as interim until backend migration.
+    //           Balance/TotalOrders/TotalSpent change only on the server (Admin SDK):
+    //           /wallet/verify credits top-ups and /order charges orders.
     match /Users/{userId} {
       allow read: if isAdmin() || isOwner(userId);
       allow create: if isAdmin() || (isOwner(userId) &&
@@ -30,18 +30,7 @@ service cloud.firestore {
         request.resource.data.Balance <= 500 &&
         request.resource.data.TotalOrders == 0 &&
         request.resource.data.TotalSpent == 0);
-      allow update: if isAdmin() || (isOwner(userId) && (
-        // Case A: Adding funds via verified wallet recharge (Balance increment only)
-        (onlyChanged(['Balance']) &&
-         request.resource.data.Balance > resource.data.Balance &&
-         (request.resource.data.Balance - resource.data.Balance) <= 50000) ||
-        // Case B: Placing an order (Balance decrement, TotalOrders/TotalSpent increment)
-        (onlyChanged(['Balance', 'TotalOrders', 'TotalSpent']) &&
-         request.resource.data.Balance >= 0 &&
-         request.resource.data.Balance <= resource.data.Balance &&
-         request.resource.data.TotalOrders >= resource.data.TotalOrders &&
-         request.resource.data.TotalSpent >= resource.data.TotalSpent)
-      ));
+      allow update: if isAdmin();
       allow delete: if isAdmin();
     }
 
@@ -59,10 +48,11 @@ service cloud.firestore {
     }
 
     // ── 3. Orders ──
-    // SECURITY: Users can only update status-related fields on their own orders.
+    // SECURITY: Orders are created by the server (/order) with the server-side price.
+    //           Users can only update status-related fields on their own orders.
     match /orders/{orderId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow create: if isAdmin();
       allow update: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid &&
         onlyChanged(['status', 'apiStatus', 'updatedAt', 'remains', 'start_count', 'end_count', 'completedAt']));
       allow delete: if isAdmin();
@@ -114,9 +104,10 @@ service cloud.firestore {
     }
 
     // ── 10. Fund Payments (BharatPe UPI & Wallet Deposits) ──
+    // SECURITY: Created only by the server (/wallet/verify) after BharatPe verification.
     match /fundPayments/{paymentId} {
       allow list, get: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
-      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow create: if isAdmin();
       allow update, delete: if isAdmin();
     }
 
