@@ -26,8 +26,7 @@ service cloud.firestore {
     match /Users/{userId} {
       allow read: if isAdmin() || isOwner(userId);
       allow create: if isAdmin() || (isOwner(userId) &&
-        request.resource.data.Balance >= 0 &&
-        request.resource.data.Balance <= 500 &&
+        request.resource.data.Balance == 0 &&
         request.resource.data.TotalOrders == 0 &&
         request.resource.data.TotalSpent == 0);
       allow update: if isAdmin();
