@@ -2501,26 +2501,11 @@ function validateOrderForm() {
     return false;
   }
 
-  // Drip-Feed service warning on first click, bypass on second click
-  if (checkIsDripSvc(_selSvc) && !isDripActive()) {
-    const svcId = String(_selSvc.id || _selSvc.service);
-    if (window._dripWarningDismissedFor !== svcId) {
-      window._dripWarningDismissedFor = svcId;
-      dbSetErr("dripToggleLabel", "err-dripGeneral", "⚠ Drip-Feed is available for this service! Click ORDER again to proceed without Drip-Feed, or enable DRIP-FEED above.");
-      dbShake("dripToggleLabel");
-      showToast('warn', 'Drip-Feed Available', 'Drip-Feed is available for this service! Click ORDER again to place without Drip-Feed, or check DRIP-FEED above.');
-      const dt = document.getElementById("dripToggleWrap");
-      if (dt) dt.scrollIntoView({ behavior: "smooth", block: "center" });
-      return false;
-    } else {
-      // Second click: user proceeds without drip feed
-      window._dripWarningDismissedFor = null;
-      dbClearErr("dripToggleLabel", "err-dripGeneral");
-    }
-  } else {
-    window._dripWarningDismissedFor = null;
-    dbClearErr("dripToggleLabel", "err-dripGeneral");
-  }
+  // Drip-Feed is OPTIONAL: a drip-capable service can be ordered normally
+  // without enabling it. If the user turns Drip-Feed on, runs/interval are
+  // validated above; otherwise a plain order (just quantity) is placed.
+  window._dripWarningDismissedFor = null;
+  dbClearErr("dripToggleLabel", "err-dripGeneral");
 
   return true;
 }
