@@ -443,7 +443,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 
       // Save user to MongoDB in background
       fetch("https://backend-for-email-verification-code-vwip.onrender.com/save-user", {
-        method: "POST",
+        method: "POST", keepalive: true,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           uid: user.uid,
@@ -517,8 +517,9 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
         // Instant Telegram alert to admin for a brand-new Google signup
         if (isNewUser) {
           try {
-            fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
+            window.__gxAlertP = fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
               method: "POST",
+              keepalive: true,
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ type: "user", data: { email: email, name: username, phone: "" } })
             }).catch(() => {});
@@ -547,6 +548,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
         console.warn("Firestore Google Sign-In sync warning:", e);
       }
 
+      await Promise.race([window.__gxAlertP || Promise.resolve(), new Promise(r => setTimeout(r, 2500))]);
       window.location.replace("/dashboard");
     } catch (err) {
       console.error("Google sign in error:", err);
@@ -748,15 +750,16 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 
       /* Save to MongoDB in background */
       fetch("https://backend-for-email-verification-code-vwip.onrender.com/save-user", {
-        method: "POST",
+        method: "POST", keepalive: true,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uid: cred.user.uid, email, mobile: document.getElementById("mobile").value.trim(), username })
       }).catch(() => {});
 
       /* Instant Telegram Alert to Admin */
       try {
-        fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
+        window.__gxAlertP = fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
           method: "POST",
+          keepalive: true,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             type: "user",
@@ -848,6 +851,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
       }
 
       /* ── 2e: redirect ── */
+      await Promise.race([window.__gxAlertP || Promise.resolve(), new Promise(r => setTimeout(r, 2500))]);
       window.location.replace("/dashboard");
 
     } catch (err) {
