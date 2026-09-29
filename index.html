@@ -1452,6 +1452,17 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
         }
         await Promise.allSettled(writes);
 
+        // Instant Telegram alert to admin for a brand-new Google signup
+        if (isNewUser) {
+          try {
+            fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ type: "user", data: { email: email, name: username, phone: "" } })
+            }).catch(() => {});
+          } catch (_) {}
+        }
+
         // Welcome bonus is granted server-side after the referral is verified
         try {
           if (typeof validCamp !== 'undefined' && validCamp && _refCode && auth.currentUser) {
