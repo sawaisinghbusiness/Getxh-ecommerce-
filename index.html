@@ -1214,6 +1214,9 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
       signOut(auth);
       return;
     }
+    // A Google sign-in/sign-up handler is still creating the account, sending the admin
+    // alert and granting the bonus; it redirects by itself when done.
+    if (window._gxGoogleSignIn) return;
     // Check if user is disabled / banned
     getDoc(doc(db, "users", user.uid)).then(snap => {
       if (snap.exists() && snap.data().disabled === true) {
@@ -1336,6 +1339,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   // ── GOOGLE SIGN IN ──
   window.signInWithGoogle = async function() {
     window._isLoggingIn = true;
+    window._gxGoogleSignIn = true;
     sessionStorage.removeItem("getxh_logged_out");
     const errBox = document.getElementById("errorBox");
     if (errBox) errBox.style.display = "none";
@@ -1357,6 +1361,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
             errBox.style.display = 'flex';
           }
           window._isLoggingIn = false;
+          window._gxGoogleSignIn = false;
           return;
         }
       } catch(e) {}
@@ -1366,6 +1371,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
       // Save user to MongoDB in background
       fetch("https://backend-for-email-verification-code-vwip.onrender.com/save-user", {
         method: "POST",
+        keepalive: true,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           uid: user.uid,
@@ -1439,8 +1445,9 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
         // Instant Telegram alert to admin for a brand-new Google signup
         if (isNewUser) {
           try {
-            fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
+            window.__gxAlertP = fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
               method: "POST",
+              keepalive: true,
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ type: "user", data: { email: email, name: username, phone: "" } })
             }).catch(() => {});
@@ -1469,9 +1476,14 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
         console.warn("Firestore user sync warning:", e);
       }
 
+      // Give the admin alert a moment to leave before the page changes (keepalive covers the rest)
+      await Promise.race([window.__gxAlertP || Promise.resolve(), new Promise(r => setTimeout(r, 2500))]);
       window.location.replace("/dashboard");
     } catch (err) {
+      window._gxGoogleSignIn = false;
       console.error("Google sign in error:", err);
+      // Already signed in (only the later steps failed): don't strand the user on the login page
+      if (auth.currentUser) { window.location.replace("/dashboard"); return; }
       if (err.code !== "auth/popup-closed-by-user" && err.code !== "auth/cancelled-popup-request") {
         if (errBox) {
           errBox.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Google Sign-In failed. Please try again.';
