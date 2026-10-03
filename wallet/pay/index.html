@@ -52,6 +52,14 @@
   .row { display: flex; justify-content: space-between; width: 100%; padding: 12px 0; border-top: 1px solid var(--border); font-size: 14px; color: var(--muted); }
   .row b { color: var(--text); font-weight: 600; word-break: break-all; text-align: right; }
   .msg { font-size: 14px; line-height: 1.6; color: var(--muted); margin-bottom: 24px; }
+  .sheet-back { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: rgba(0,0,0,.6); padding: 12px; opacity: 0; pointer-events: none; transition: opacity .18s ease; }
+  .sheet-back.open { opacity: 1; pointer-events: auto; }
+  .sheet { width: 100%; max-width: 480px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px 18px 18px; transform: translateY(16px); transition: transform .22s cubic-bezier(.2,.8,.2,1); }
+  .sheet-back.open .sheet { transform: none; }
+  .sheet h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+  .sheet p { font-size: 14px; line-height: 1.6; color: var(--muted); margin-bottom: 20px; }
+  .sheet .btn { margin-bottom: 10px; }
+  .sheet .btn.danger { background: transparent; border-color: rgba(248,113,113,.35); color: var(--bad); height: 54px; font-size: 15px; font-weight: 600; margin-bottom: 0; }
   .big-spin { width: 34px; height: 34px; border: 3px solid var(--border-hi); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; margin: 24px 0; }
 </style>
 </head>
@@ -100,6 +108,16 @@
     <a id="endSecondary" class="btn ghost" href="/wallet/?utr=1">I already paid: verify with UTR</a>
   </section>
 </main>
+
+<!-- "Cancel payment?" confirmation -->
+<div id="confirmBack" class="sheet-back" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="sheet">
+    <h3 id="confirmTitle">Cancel this payment?</h3>
+    <p>If you have already paid, <b style="color:var(--text)">do not cancel</b>: wait on this page and the amount will be added by itself.</p>
+    <button type="button" id="keepBtn" class="btn white">Keep waiting</button>
+    <button type="button" id="confirmCancelBtn" class="btn danger">Yes, cancel payment</button>
+  </div>
+</div>
 
 <script src="/assets/qrcode-generator.js"></script>
 <script type="module">
@@ -207,8 +225,20 @@ async function poll() {
   }
 }
 
-$("cancelBtn").onclick = async () => {
+// Cancel asks first: someone who has just paid must not cancel by accident.
+const confirmBack = $("confirmBack");
+const openConfirm = () => { confirmBack.classList.add("open"); $("keepBtn").focus(); };
+const closeConfirm = () => confirmBack.classList.remove("open");
+$("cancelBtn").onclick = () => { if (user && !done) openConfirm(); };
+$("keepBtn").onclick = closeConfirm;
+confirmBack.addEventListener("click", (e) => { if (e.target === confirmBack) closeConfirm(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeConfirm(); });
+$("confirmCancelBtn").onclick = async () => {
   if (!user || done) return;
+  $("confirmCancelBtn").disabled = true; $("confirmCancelBtn").textContent = "Cancelling…";
+  // it may have been paid while the question was open: look once more before cancelling
+  await poll();
+  if (done) { closeConfirm(); return; }
   done = true; stopTimers();
   try { await api("/wallet/qr/" + encodeURIComponent(id) + "/cancel", { method: "POST" }); } catch (_) {}
   location.href = "/wallet/";
