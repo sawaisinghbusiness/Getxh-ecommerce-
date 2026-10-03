@@ -913,7 +913,8 @@ async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
     let finalStartCount = existingStart;
     if (!existingStart && apiStart) {
       finalStartCount = apiStart;
-    } else if (apiStart && apiStart !== '0000' && apiStart !== existingStart) {
+    } else if (apiStart && Number(apiStart) > 0 && apiStart !== existingStart) {
+      // Only a real (non-zero) count may replace a stored one — APIs often report 0 before/after delivery
       finalStartCount = apiStart;
     }
 
@@ -1001,11 +1002,14 @@ async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
     const canRefill = (data.can_refill == 1 || data.can_refill === true || data.can_refill === '1' || data.refill == 1 || data.refill === true);
     const canCancel = (data.can_cancel == 1 || data.can_cancel === true || data.can_cancel === '1' || data.cancel == 1 || data.cancel === true);
 
-    const cancelWrap = document.getElementById('cancelWrap-' + eid);
-    const refillWrap = document.getElementById('refillWrap-' + eid);
+    // Remember the API's answer so a re-render (every Firestore update) doesn't hide the buttons again
+    window._actionFlags[eid] = { refill: canRefill, cancel: canCancel };
+    applyActionFlags(eid);
 
-    if (refillWrap) refillWrap.style.display = canRefill ? 'inline-block' : 'none';
-    if (cancelWrap) cancelWrap.style.display = canCancel ? 'inline-block' : 'none';
+    // The server just refunded this cancelled / partial order to the wallet
+    if (Number(data.refund_amount) > 0) {
+      showToast('success', 'Refund Credited', `₹${Number(data.refund_amount).toFixed(2)} added to your wallet for order #${apiOrderId}.`);
+    }
 
   } catch(err) {
     console.log('Status poll error [' + apiOrderId + ']:', err);
@@ -1074,9 +1078,10 @@ async function refillOrder(apiOrderId, eid) {
     btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#38bdf8;animation:spin 0.7s linear infinite">sync</span> Requesting...';
   }
   try {
+    const token = await window._getIdToken();
     const res  = await fetch('https://backend-for-api-connect-g8ta.onrender.com/refill', {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      headers: {'Content-Type':'application/json', 'Authorization': 'Bearer ' + token},
       body: JSON.stringify({order: apiOrderId})
     });
     const data = await res.json();
@@ -1105,57 +1110,69 @@ async function cancelOrder(apiOrderId, docId, eid) {
   btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#f87171;animation:spin 0.7s linear infinite">sync</span> Cancelling...';
 
   try {
+    const token = await window._getIdToken();
     const res  = await fetch('https://backend-for-api-connect-g8ta.onrender.com/cancel', {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      headers: {'Content-Type':'application/json', 'Authorization': 'Bearer ' + token},
       body: JSON.stringify({order: apiOrderId})
     });
     const data = await res.json();
 
-    if (res.ok && data && (data.cancel || data.status === 'Cancelled' || data.success) && !data.error) {
-      // Update Firestore order status → Cancelled
-      if (typeof window._updateOrderInFirestore === 'function') {
-        await window._updateOrderInFirestore(docId, 'Cancelled');
-      }
-      // Note: Refund is strictly processed server-side by /api/cancel endpoint
-
-      // Update status badge in UI
-      const _bc = 'px-2.5 py-1 rounded-md text-xs font-semibold status-badge-transition';
-      const txtEl   = document.getElementById('statusText-'  + eid);
-      const dotEl   = document.getElementById('statusDot-'   + eid);
-      const badgeEl = document.getElementById('statusBadge-' + eid);
-      const barEl   = document.getElementById('progressBar-' + eid);
-      if (txtEl)   txtEl.textContent = 'Cancelled';
-      if (dotEl)   dotEl.style.background = '#f87171';
-      if (badgeEl) { badgeEl.className = _bc + ' status-cancelled'; badgeEl.style.background=''; badgeEl.style.color=''; badgeEl.style.border=''; }
-      if (barEl)   barEl.style.background = 'transparent';
-      // Hide cancel button
+    if (res.ok && data && data.success && !data.error) {
+      // The provider only *attempts* the cancel. The status turns Cancelled (and the
+      // wallet is refunded by the server) once the provider confirms it.
+      window._actionFlags[eid] = { refill: false, cancel: false };
       if (wrap) wrap.style.display = 'none';
-      showToast('success', 'Order Cancelled', 'Order cancelled successfully. Refund (if applicable) processed by server.');
+      showToast('success', 'Cancellation Requested', data.message || 'If it goes through, the amount will be refunded to your wallet automatically.');
     } else {
       btn.disabled = false;
-      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#f87171">cancel</span> Cancel Order';
+      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#f87171">cancel</span> Cancel';
       showToast('error', 'Cancellation Failed', (data && (data.error || data.message)) || 'Could not cancel this order.');
     }
   } catch(err) {
     btn.disabled = false;
-    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#f87171">cancel</span> Cancel Order';
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;color:#f87171">cancel</span> Cancel';
     showToast('error', 'Network Error', 'Please check connection and try again.');
   }
 }
 
+// Refill / Cancel availability per order (eid), as last reported by the API
+window._actionFlags = window._actionFlags || {};
+// Completed / Partial orders already checked once on this page load
+window._finishedChecked = window._finishedChecked || new Set();
+const FINISHED_CHECKS_PER_TICK = 10;
+
+function applyActionFlags(eid) {
+  const f = window._actionFlags[eid] || {};
+  const refillWrap = document.getElementById('refillWrap-' + eid);
+  const cancelWrap = document.getElementById('cancelWrap-' + eid);
+  if (refillWrap) refillWrap.style.display = f.refill ? 'inline-block' : 'none';
+  if (cancelWrap) cancelWrap.style.display = f.cancel ? 'inline-block' : 'none';
+}
+
 function updateAllOrders() {
-  const terminalStatuses = ['completed', 'canceled', 'cancelled', 'failed', 'partial'];
+  const deadStatuses     = ['canceled', 'cancelled', 'failed'];
+  const finishedStatuses = ['completed', 'partial'];
+  let finishedBudget = FINISHED_CHECKS_PER_TICK;
   document.querySelectorAll('[data-order-id]').forEach(card => {
     const apiOrderId = card.getAttribute('data-order-id');
     const eid        = card.getAttribute('data-eid');
     const docId      = card.getAttribute('data-doc-id');
     const status     = (card.getAttribute('data-status') || '').toLowerCase();
-    
-    // H1: Skip polling for terminal order statuses
-    if (terminalStatuses.includes(status)) return;
-    
-    if (apiOrderId && eid) fetchAndUpdateOrder(apiOrderId, eid, docId);
+    if (!apiOrderId || !eid) return;
+
+    // Cancelled / failed orders never get Refill or Cancel — no need to ask the API
+    if (deadStatuses.includes(status)) return;
+
+    // Completed / partial: ask the API once per page load, so the Refill button
+    // and a missing End Count can still show up. Newest orders first, a few per tick.
+    if (finishedStatuses.includes(status)) {
+      if (window._finishedChecked.has(eid) || finishedBudget <= 0) return;
+      window._finishedChecked.add(eid);
+      finishedBudget--;
+    }
+
+    fetchAndUpdateOrder(apiOrderId, eid, docId);
   });
 }
 
@@ -1376,6 +1393,9 @@ function renderOrders(orders) {
     </div>
   `}).join('');
 
+  // Re-show Refill / Cancel buttons the API already allowed (re-render starts them hidden)
+  orders.forEach(o => { if (o.docId) applyActionFlags(o.docId); });
+
   // Ensure polling is active (without restarting timer if already running)
   if (!_ordersInterval) {
     startOrderPolling();
@@ -1407,6 +1427,11 @@ let _unsubWallet = null;
 
 // Expose Firestore writer so polling JS (non-module) can persist status & remains back
 window._currentUid = null;
+// Login token for backend calls that act on the user's own orders (refill / cancel)
+window._getIdToken = async function() {
+  if (!auth.currentUser) throw new Error('Please log in again.');
+  return auth.currentUser.getIdToken();
+};
 window._updateOrderInFirestore = async function(docId, status, remains, startCount, endCount) {
   if (!docId) return;
   try {
