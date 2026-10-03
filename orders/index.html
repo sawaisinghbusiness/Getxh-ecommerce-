@@ -818,6 +818,7 @@ function cancelLogout() {
 let _ordersInterval = null;
 window._adminOverriddenOrders = new Set(); // docIds where admin manually set status
 window._fetchingEndCounts = new Set(); // Avoid duplicate concurrent Apify calls for same order
+window._fetchingStartCounts = new Set(); // one start-count attempt per order per page visit
 
 // ── INSTAGRAM COUNT AUTO-FETCHER (VIA BACKEND) ──
 async function fetchInstagramCount(url) {
@@ -917,6 +918,25 @@ async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
     } else if (apiStart && Number(apiStart) > 0 && apiStart !== existingStart) {
       // Only a real (non-zero) count may replace a stored one — APIs often report 0 before/after delivery
       finalStartCount = apiStart;
+    }
+
+    // No start count yet (the one taken right after ordering did not finish, e.g. the user left the
+    // dashboard quickly): take it now, while the order has not started delivering.
+    {
+      const _lnk = cardEl ? (cardEl.getAttribute('data-link') || '') : '';
+      if (!finalStartCount && status === 'pending' && _lnk.includes('instagram.com') && docId && !window._fetchingStartCounts.has(docId)) {
+        window._fetchingStartCounts.add(docId);
+        fetchInstagramCount(_lnk).then(cnt => {
+          if (!cnt || !cardEl || cardEl.getAttribute('data-start-count')) return;
+          cardEl.setAttribute('data-start-count', cnt);
+          const el = document.getElementById('startCount-' + eid);
+          if (el) el.textContent = cnt;
+          if (Array.isArray(_allOrders)) { const m = _allOrders.find(x => x.docId === docId); if (m) m.start_count = cnt; }
+          if (typeof window._updateOrderInFirestore === 'function') {
+            window._updateOrderInFirestore(docId, firestoreStatus, data.remains, cnt, undefined);
+          }
+        }).catch(() => {});
+      }
     }
 
     // ONLY calculate / update End Count when status is explicitly Completed!
