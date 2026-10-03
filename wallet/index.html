@@ -285,7 +285,90 @@
     }
   </style>
   <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap"/>
   <style>body{opacity:0;transition:opacity .18s ease}</style>
+
+  <style>
+    /* ── WALLET THEME: Zinc + White CTA (same palette as the dashboard order section and the orders page) ── */
+    :root {
+      --z-bg: #060810;
+      --z-card: #18181b;
+      --z-inner: #111113;
+      --z-border: #2a2a2f;
+      --z-border-hi: #3a3a42;
+      --z-text: #f4f4f5;
+      --z-muted: #a1a1aa;
+      --z-ph: #5c5c63;
+      --z-accent: #1f6fff;
+    }
+    html, body { background: var(--z-bg) !important; }
+    body { font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-feature-settings: "tnum" 1; -webkit-font-smoothing: antialiased; }
+    body > .sticky { background: #0b0b0e !important; border-color: var(--z-border) !important; }
+    body > .sticky button { background: var(--z-card) !important; border: 1px solid var(--z-border); }
+
+    /* balance card, tutorial card, form card, history card: one zinc card style */
+    .balance-card, .watch-demo-card, .section-card, .verify-popup-box {
+      background: var(--z-card) !important;
+      border: 1px solid var(--z-border) !important;
+      border-radius: 16px !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 2px rgba(0,0,0,0.4), 0 16px 40px rgba(0,0,0,0.45) !important;
+    }
+    .balance-card .text-indigo-300\/70 { color: var(--z-muted) !important; }
+    .watch-demo-card:hover { border-color: var(--z-border-hi) !important; }
+
+    /* fields, amount buttons */
+    #addFundsSection label, #addFundsSection .text-gray-500, #addFundsSection .text-gray-400 { color: var(--z-muted); }
+    #addFundsSection .dark-field, .dark-field {
+      background: var(--z-inner) !important;
+      border: 1px solid var(--z-border) !important;
+      border-radius: 10px !important;
+      color: var(--z-text);
+    }
+    #addFundsSection .dark-field::placeholder { color: var(--z-ph); }
+    #addFundsSection .dark-field:focus, .dark-field:focus {
+      border-color: var(--z-accent) !important;
+      box-shadow: 0 0 0 3px rgba(31,111,255,0.25) !important;
+      background: var(--z-inner) !important;
+    }
+    #quickAmounts button { border-radius: 10px !important; font-weight: 600; }
+    #quickAmounts button:hover { border-color: var(--z-border-hi) !important; background: #1d1d21 !important; }
+    #quickAmounts button.qa-on { background: var(--z-inner) !important; border-color: var(--z-accent) !important; box-shadow: 0 0 0 1px var(--z-accent) inset !important; color: #fff; }
+
+    /* terms row */
+    #addFundsSection #policyAcceptLabel { background: var(--z-inner) !important; border: 1px solid var(--z-border) !important; border-radius: 10px !important; }
+    #addFundsSection #policyAcceptLabel span { color: var(--z-muted) !important; }
+    #addFundsSection #policyAcceptLabel a { color: var(--z-accent) !important; }
+    #addFundsSection input[type="checkbox"] { accent-color: var(--z-accent) !important; }
+
+    /* the main button: white CTA */
+    #addFundsSection .pay-btn, #payOpenApp {
+      background: #ffffff !important;
+      color: #0a0a0a !important;
+      border-radius: 10px !important;
+      box-shadow: 0 6px 18px rgba(255,255,255,0.08) !important;
+      font-weight: 700;
+    }
+    #addFundsSection .pay-btn:hover:not(:disabled), #payOpenApp:hover { background: #e9e9ec !important; transform: none; box-shadow: 0 8px 24px rgba(255,255,255,0.12) !important; }
+    #addFundsSection .pay-btn:disabled { background: #3f3f46 !important; color: #8a8a93 !important; opacity: 1; box-shadow: none !important; }
+
+    /* QR card + waiting line */
+    #payQr .rounded-3xl { border: 1px solid var(--z-border) !important; border-radius: 16px !important; }
+    #payWaiting { color: var(--z-muted) !important; }
+    #payTimer { color: var(--z-text); }
+    #payWaiting .verify-spinner { border-color: var(--z-border-hi) !important; border-top-color: #fff !important; }
+
+    /* notices and the UTR fallback box */
+    #manualVerify { background: var(--z-inner) !important; border: 1px solid var(--z-border) !important; border-radius: 10px !important; }
+    #manualVerify summary { color: var(--z-muted); }
+    #manualVerify .pay-btn { box-shadow: none !important; }
+
+    /* history rows */
+    #txList > * { border-color: var(--z-border) !important; }
+    #txList .rounded-2xl { background: var(--z-inner) !important; border: 1px solid var(--z-border) !important; border-radius: 10px !important; }
+    .verify-popup-box .popup-close-btn.success { background: #ffffff !important; color: #0a0a0a !important; border-radius: 10px !important; }
+  </style>
 </head>
 
 <body class="text-white min-h-screen">
