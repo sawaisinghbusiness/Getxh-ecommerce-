@@ -24,6 +24,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Lexend:wght@100..900&display=swap" rel="stylesheet">
 <script src="/assets/default-services.js"></script>
+<script src="/assets/gx-notify.js?v=1"></script>
 
 <style>
 :root {
@@ -1842,7 +1843,53 @@ try {
 }
 
 // ── DYNAMIC CATALOG UPDATE FUNCTION ────────────────
+// ── CATALOG CHANGE CARDS ───────────────────────────
+// The first catalog the page receives is the baseline; every later change (a service or offer
+// added, switched off or removed by the admin) is announced with a card.
+window._gxCatalogBaseline = null;
+function _gxActiveMap(services) {
+  const m = {};
+  if (!services || typeof services !== 'object') return m;
+  Object.keys(services).forEach(cat => {
+    const list = services[cat];
+    if (!Array.isArray(list)) return;
+    list.forEach(sv => {
+      if (!sv || sv.id === undefined || sv.freeOffer) return;
+      m[cat + ':' + sv.id] = { cat: cat, name: String(sv.name || 'Service'), active: sv.status !== 'inactive' };
+    });
+  });
+  return m;
+}
+function _gxAnnounceCatalog(newServices) {
+  const now = _gxActiveMap(newServices);
+  const before = window._gxCatalogBaseline;
+  window._gxCatalogBaseline = now;
+  if (!before || typeof window.gxNotify !== 'function') return;
+  const added = [], removed = [];
+  Object.keys(now).forEach(k => { if (now[k].active && !(before[k] && before[k].active)) added.push(now[k]); });
+  Object.keys(before).forEach(k => { if (before[k].active && !(now[k] && now[k].active)) removed.push(before[k]); });
+  const isOffer = e => e.cat === 'welcome-offer';
+  const card = (e, gone) => ({
+    kind: isOffer(e) ? (gone ? 'service_removed' : 'offer') : (gone ? 'service_removed' : 'service_new'),
+    tag: isOffer(e) ? (gone ? 'Offer ended' : 'New offer') : undefined,
+    title: e.name,
+    message: gone ? (isOffer(e) ? 'This offer is no longer available.' : 'This service is no longer available.')
+                  : (isOffer(e) ? 'A new offer just went live. Grab it before it ends!' : 'A new service is now live on your dashboard.'),
+    duration: 3000
+  });
+  const all = added.map(e => card(e, false)).concat(removed.map(e => card(e, true)));
+  if (!all.length) return;
+  if (all.length <= 3) { all.forEach(c => window.gxNotify(c)); return; }
+  window.gxNotify({
+    kind: 'info',
+    title: 'Services updated',
+    message: added.length + ' added, ' + removed.length + ' removed. Check the service list for what is new.',
+    duration: 3000
+  });
+}
+
 window.applyDynamicServicesCatalog = function(newCategories, newServices) {
+  try { _gxAnnounceCatalog(newServices); } catch (e) { console.warn('catalog card:', e); }
   if (Array.isArray(newCategories) && newCategories.length) {
     CATEGORIES = newCategories;
   }
@@ -3163,11 +3210,51 @@ try {
   console.warn('Could not initialize services catalog listener:', err);
 }
 
+// ── UPDATE CARDS FROM THE ADMIN (broadcast + per-user inbox) ──
+// app_config/live_updates.items  → everyone;  Users/{uid}.inbox → only this user.
+// A card is shown once per browser: the newest timestamp seen is remembered per feed.
+let _unsubFeeds = [];
+function startUpdatesFeed(uid) {
+  _unsubFeeds.forEach(f => { try { f(); } catch (_) {} });
+  _unsubFeeds = [];
+  const FRESH_FIRST_MS = 10 * 60 * 1000, MAX_AGE_MS = 24 * 60 * 60 * 1000, MAX_CARDS = 3;
+  const lsGet = k => { try { return localStorage.getItem(k); } catch (_) { return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (_) {} };
+  const handle = (items, key) => {
+    if (!Array.isArray(items)) return;
+    const raw = lsGet(key), first = raw === null, now = Date.now();
+    const seen = first ? 0 : (Number(raw) || 0);
+    let maxTs = seen;
+    items.forEach(i => { const t = Number(i && i.ts); if (t > maxTs) maxTs = t; });
+    lsSet(key, String(first ? Math.max(maxTs, now) : maxTs));
+    const fresh = items
+      .filter(i => i && typeof i === 'object' && Number(i.ts) > seen &&
+                   now - Number(i.ts) <= (first ? FRESH_FIRST_MS : MAX_AGE_MS))
+      .sort((a, b) => Number(a.ts) - Number(b.ts))
+      .slice(-MAX_CARDS);
+    if (typeof window.gxNotify !== 'function') return;
+    fresh.forEach(i => window.gxNotify({
+      kind: i.kind, title: i.title, message: i.message, amount: i.amount,
+      cta: i.ctaUrl ? { label: i.ctaLabel, url: i.ctaUrl } : null,
+      duration: i.duration === undefined ? 3000 : i.duration
+    }));
+  };
+  try {
+    _unsubFeeds.push(onSnapshot(doc(db, 'app_config', 'live_updates'),
+      snap => handle(snap.exists() ? snap.data().items : [], 'gx_upd_bc_' + uid),
+      err => console.warn('Updates feed warning:', err)));
+    _unsubFeeds.push(onSnapshot(doc(db, 'Users', uid),
+      snap => handle(snap.exists() ? snap.data().inbox : [], 'gx_upd_ib_' + uid),
+      err => console.warn('Inbox feed warning:', err)));
+  } catch (err) { console.warn('Could not start updates feed:', err); }
+}
+
 // ── LOGOUT ──
 window._logoutUser = async function() {
   if (_unsubStats)   _unsubStats();
   if (_unsubOrders)  _unsubOrders();
   if (_unsubCatalog) _unsubCatalog();
+  _unsubFeeds.forEach(f => { try { f(); } catch (_) {} });
   try { await signOut(auth); } catch(_) {}
   sessionStorage.setItem("getxh_logged_out", "yes");
   localStorage.clear();
@@ -3197,6 +3284,7 @@ onAuthStateChanged(auth, async (user) => {
   window.currentUid   = currentUid;
   window.currentEmail = currentEmail;
   window._formUid = user.uid;
+  startUpdatesFeed(user.uid);
   if (typeof window._restoreFormForUser === 'function') window._restoreFormForUser(user.uid);
 
   // Fail-safe: Ensure user document exists in Firestore for Admin Panel visibility
@@ -3522,66 +3610,25 @@ onAuthStateChanged(auth, async (user) => {
 
           window._pendingAnimData = { oldBal, newBal, isCredit };
 
-          document.getElementById('balNotifyTitle').textContent = isWelcome
-            ? '🎉 Welcome Bonus Added!'
-            : (isCredit ? 'Balance Added' : 'Balance Deducted');
-
-          document.getElementById('balNotifySub').textContent = isWelcome
-            ? 'Welcome to GETXH! Your referral bonus has been credited to your wallet.'
-            : 'Your wallet has been updated successfully.';
-
-          const accentBar = document.getElementById('balNotifyAccentBar');
-          if (accentBar) {
-            accentBar.style.background = isCredit ? '#22c55e' : '#ef4444';
-            accentBar.style.boxShadow = isCredit ? '0 0 12px #22c55e' : '0 0 12px #ef4444';
-          }
-
-          const iconWrap = document.getElementById('balNotifyIconWrap');
-          if (iconWrap) {
-            iconWrap.style.background = isCredit ? 'rgba(34,197,94,0.14)' : 'rgba(239,68,68,0.14)';
-            iconWrap.style.borderColor = isCredit ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
-          }
-
-          const iconEl = document.getElementById('balNotifyIcon');
-          if (iconEl) {
-            iconEl.textContent = isWelcome ? 'featured_seasonal_and_gifts' : 'campaign';
-            iconEl.style.color = isCredit ? '#22c55e' : '#ef4444';
-          }
-
-          const amtLbl = document.getElementById('balNotifyAmountLabel');
-          if (amtLbl) {
-            amtLbl.textContent = isWelcome ? 'WELCOME BONUS CREDITED' : (isCredit ? 'AMOUNT ADDED' : 'AMOUNT DEDUCTED');
-          }
-
-          const amtEl = document.getElementById('balNotifyAmount');
-          if (amtEl) {
-            amtEl.textContent = (isCredit ? '+ ' : '- ') + '\u20b9' + amt.toFixed(2);
-            amtEl.style.color = isCredit ? '#4ade80' : '#f87171';
-            amtEl.style.background = isCredit ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)';
-            amtEl.style.borderColor = isCredit ? 'rgba(34,197,94,0.28)' : 'rgba(239,68,68,0.28)';
-          }
-
-          const noteEl = document.getElementById('balNotifyNote');
-          if (note) {
-            noteEl.style.display = 'block';
-            document.getElementById('balNotifyNoteText').textContent = note;
-          } else {
-            noteEl.style.display = 'none';
-          }
-
-          // Hide page loader immediately so banner is visible instantly
+          // Hide page loader immediately so the card is visible instantly
           const loader = document.getElementById('gx-loader');
           if (loader) { loader.classList.add('hide'); setTimeout(() => { try { loader.remove(); } catch(e){} }, 200); }
 
-          el.classList.add('active');
-
-          // Clear any existing auto-close timer
-          if (window._balAutoCloseTimer) clearTimeout(window._balAutoCloseTimer);
-
-          // AUTO-CLOSE TOP BANNER IN 6.5 SECONDS IF USER DOESN'T CLICK CLOSE "X"
-          window._balAutoCloseTimer = setTimeout(() => {
+          if (typeof window.gxNotify === 'function') {
+            window.gxNotify({
+              kind: isCredit ? 'credit' : 'debit',
+              tag: isWelcome ? 'Welcome bonus' : undefined,
+              title: isWelcome ? 'Welcome bonus added!' : (isCredit ? 'Money added to your wallet' : 'Money deducted from your wallet'),
+              amount: amt,
+              message: isWelcome
+                ? 'Welcome to GETXH! Your referral bonus has been credited to your wallet.'
+                : (note || 'Your wallet has been updated.'),
+              duration: 3000,
+              onClose: () => window._closeBalNotifyAndAnimate()
+            });
+          } else {
             window._closeBalNotifyAndAnimate();
-          }, 6500);
+          }
         }
       }
     }, (err) => {
