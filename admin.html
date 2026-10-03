@@ -630,6 +630,7 @@
       transition: opacity .18s ease
     }
   </style>
+  <script src="/assets/gx-notify.js?v=2"></script>
 </head>
 
 <body class="bg-[#0b1220] text-white min-h-screen" style="visibility:hidden">
@@ -796,20 +797,20 @@
           </div>
           <span class="text-sm font-bold text-slate-300">Orders Table</span>
         </a>
-        <a href="/admin-links"
-          class="mb-1 flex items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 transition-all hover:bg-white/5 hover:border-white/10">
+        <button id="navLinks" onclick="switchTab('links')"
+          class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left transition-all hover:bg-white/5 hover:border-white/10">
           <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-violet-500/15">
             <span class="material-symbols-outlined text-violet-400" style="font-size:16px">key</span>
           </div>
-          <span class="text-sm font-bold text-slate-300">Secret Links</span>
-        </a>
-        <a href="/admin-updates"
-          class="mb-1 flex items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 transition-all hover:bg-white/5 hover:border-white/10">
+          <span id="navLinksText" class="text-sm font-bold text-slate-300">Secret Links</span>
+        </button>
+        <button id="navUpdates" onclick="switchTab('updates')"
+          class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left transition-all hover:bg-white/5 hover:border-white/10">
           <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-violet-500/15">
             <span class="material-symbols-outlined text-violet-400" style="font-size:16px">campaign</span>
           </div>
-          <span class="text-sm font-bold text-slate-300">Updates</span>
-        </a>
+          <span id="navUpdatesText" class="text-sm font-bold text-slate-300">Updates</span>
+        </button>
 
         <button id="navTickets" onclick="switchTab('tickets')"
           class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left transition-all hover:bg-white/5 hover:border-white/10">
@@ -944,6 +945,14 @@
             <button id="tabBtnTracking" onclick="switchTab('tracking')"
               class="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold text-slate-400 transition whitespace-nowrap">
               <span class="material-symbols-outlined" style="font-size:14px">link</span>Tracking Links
+            </button>
+            <button id="tabBtnLinks" onclick="switchTab('links')"
+              class="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold text-slate-400 transition whitespace-nowrap">
+              <span class="material-symbols-outlined" style="font-size:14px">key</span>Secret Links
+            </button>
+            <button id="tabBtnUpdates" onclick="switchTab('updates')"
+              class="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold text-slate-400 transition whitespace-nowrap">
+              <span class="material-symbols-outlined" style="font-size:14px">campaign</span>Updates
             </button>
             <button id="tabBtnBlogs" onclick="switchTab('blogs')"
               class="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold text-slate-400 transition whitespace-nowrap">
@@ -1698,6 +1707,132 @@
 
       </div><!-- /trackingTab -->
 
+      <!-- ── SECRET LINKS TAB (free views per person through an admin link) ── -->
+      <div id="linksTab" class="hidden flex-1 p-4 lg:p-6 space-y-5">
+        <div class="rounded-2xl border border-white/8 bg-[#0d1628] p-5 sm:p-6">
+          <div class="mb-5 flex items-center gap-3 border-b border-white/8 pb-4">
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/15">
+              <span class="material-symbols-outlined text-violet-400" style="font-size:22px">key</span>
+            </div>
+            <div>
+              <h3 class="text-base font-black text-white">Create a free-views link</h3>
+              <p class="text-xs text-slate-400">Everyone who opens the link (logged in or after sign-up) gets their own free views in Welcome Offer.</p>
+            </div>
+          </div>
+          <div id="slCreateErr" class="mb-4 hidden rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-300"></div>
+          <div id="slNewLink" class="mb-5 hidden rounded-xl border border-emerald-500/30 bg-emerald-500/8 p-4">
+            <p class="text-sm font-bold text-emerald-300">Link created. Copy it now: it is shown only once and cannot be recovered.</p>
+            <code id="slNewLinkUrl" class="my-3 block break-all rounded-lg border border-white/10 bg-[#0f172a] p-3 font-mono text-xs text-slate-200" style="user-select:all"></code>
+            <button type="button" id="slCopyBtn" class="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500">Copy link</button>
+          </div>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="md:col-span-2">
+              <label for="slService" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Service to give for free</label>
+              <select id="slService" class="status-sel w-full text-sm" style="height:44px"><option value="">Open this tab to load services…</option></select>
+            </div>
+            <div class="md:col-span-2">
+              <label for="slViews" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Free views for each person</label>
+              <input id="slViews" type="number" inputmode="numeric" min="100" max="1000000" value="1000" class="adm-field w-full text-lg font-bold" style="height:48px">
+              <p id="slSummary" class="mt-2 rounded-lg bg-violet-500/10 px-3 py-2 text-xs font-semibold text-violet-200">Each person gets 1,000 free views.</p>
+            </div>
+            <div class="md:col-span-2">
+              <label for="slName" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Name shown to the user <span class="normal-case tracking-normal text-slate-500">(optional, leave empty to use the service name)</span></label>
+              <input id="slName" maxlength="80" placeholder="e.g. Free Instagram Views" class="adm-field w-full" style="height:44px">
+            </div>
+            <div>
+              <label for="slMaxUsers" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Max people <span class="normal-case tracking-normal text-slate-500">(optional)</span></label>
+              <input id="slMaxUsers" type="number" min="1" max="1000000" placeholder="No limit" class="adm-field w-full" style="height:44px">
+            </div>
+            <div>
+              <label for="slExpiry" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Last day to claim <span class="normal-case tracking-normal text-slate-500">(optional)</span></label>
+              <input id="slExpiry" type="datetime-local" class="adm-field w-full" style="height:44px">
+            </div>
+          </div>
+          <p class="mt-3 text-[11px] leading-relaxed text-slate-500">One account and one internet connection (IP address) can claim once per link. Orders are at least 100; the free service disappears when less than 100 is left. Every free view is paid by you to your provider, so a max-people limit caps the cost if the link spreads.</p>
+          <button type="button" id="slCreateBtn" class="mt-4 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-violet-500 disabled:opacity-50">Create link</button>
+        </div>
+
+        <div class="rounded-2xl border border-white/8 bg-[#0d1628] p-5 sm:p-6">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <h3 class="text-base font-black text-white">Links</h3>
+            <button type="button" id="slRefresh" class="rounded-lg bg-white/5 px-3 py-1.5 text-xs font-bold text-slate-300 hover:bg-white/10">Refresh</button>
+          </div>
+          <div id="slListErr" class="mb-3 hidden rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-300"></div>
+          <div id="slIpWarn" class="mb-3 hidden rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">The "one per IP address" check is not active right now (the server did not receive the visitor's IP). Links still work, one claim per account.</div>
+          <div id="slRows" class="space-y-3"></div>
+          <p id="slEmpty" class="text-sm text-slate-500">No links yet.</p>
+        </div>
+      </div><!-- /linksTab -->
+
+      <!-- ── UPDATES TAB (cards on users' dashboards) ─────────────────────── -->
+      <div id="updatesTab" class="hidden flex-1 p-4 lg:p-6">
+        <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
+          <div class="rounded-2xl border border-white/8 bg-[#0d1628] p-5 sm:p-6">
+            <div class="mb-5 flex items-center gap-3 border-b border-white/8 pb-4">
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/15">
+                <span class="material-symbols-outlined text-violet-400" style="font-size:22px">campaign</span>
+              </div>
+              <div>
+                <h3 class="text-base font-black text-white">Send an update</h3>
+                <p class="text-xs text-slate-400">Shows as a card at the top of the user's dashboard.</p>
+              </div>
+            </div>
+            <span class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Type</span>
+            <div id="upKinds" class="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3"></div>
+            <label for="upTitle" class="mb-1.5 flex justify-between text-xs font-bold uppercase tracking-wider text-slate-300">Title <span id="upCTitle" class="font-semibold normal-case tracking-normal text-slate-500">0/120</span></label>
+            <input id="upTitle" maxlength="120" placeholder="e.g. New service live: Instagram Reels Views" autocomplete="off" class="adm-field mb-4 w-full" style="height:44px">
+            <label for="upMsg" class="mb-1.5 flex justify-between text-xs font-bold uppercase tracking-wider text-slate-300">Message <span id="upCMsg" class="font-semibold normal-case tracking-normal text-slate-500">0/400</span></label>
+            <textarea id="upMsg" rows="3" maxlength="400" placeholder="Keep it short. Two lines read best." class="adm-field mb-4 w-full"></textarea>
+            <div class="mb-4 grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="upCtaLabel" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Button text <span class="normal-case tracking-normal text-slate-500">(optional)</span></label>
+                <input id="upCtaLabel" maxlength="28" placeholder="e.g. View offer" autocomplete="off" class="adm-field w-full" style="height:44px">
+              </div>
+              <div>
+                <label for="upCtaUrl" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Button link <span class="normal-case tracking-normal text-slate-500">(optional)</span></label>
+                <input id="upCtaUrl" placeholder="/wallet  or  https://…" autocomplete="off" class="adm-field w-full" style="height:44px">
+              </div>
+            </div>
+            <span class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Stays on screen</span>
+            <div class="mb-4 flex flex-wrap items-center gap-2">
+              <input id="upDur" type="number" min="1" max="60" step="1" value="3" class="adm-field" style="width:90px;height:44px">
+              <span class="text-sm text-slate-400">seconds</span>
+              <label class="ml-2 flex cursor-pointer items-center gap-2 text-sm text-slate-300"><input id="upSticky" type="checkbox" class="h-4 w-4 accent-violet-500"> Until the user closes it</label>
+            </div>
+            <span class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Send to</span>
+            <div class="inline-flex rounded-xl bg-white/5 p-1" role="group" aria-label="Audience">
+              <button type="button" id="upAudAll" aria-pressed="true" class="rounded-lg px-4 py-2 text-xs font-bold">All users</button>
+              <button type="button" id="upAudOne" aria-pressed="false" class="rounded-lg px-4 py-2 text-xs font-bold">One user</button>
+            </div>
+            <div id="upUserBox" class="mt-3 hidden">
+              <input id="upUserSearch" placeholder="Search by email, name or UID…" autocomplete="off" class="adm-field w-full" style="height:44px">
+              <div id="upUserList" class="mt-2 max-h-56 overflow-y-auto rounded-xl border border-white/8 bg-[#0f172a] p-1" role="listbox" aria-label="Users"></div>
+              <p id="upUserPicked" class="mt-2 text-xs font-bold text-slate-500">No user selected</p>
+            </div>
+            <div class="mt-5 flex flex-wrap items-center gap-3">
+              <button type="button" id="upSend" disabled class="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-50">Send update</button>
+              <button type="button" id="upPreview" class="rounded-xl bg-white/5 px-5 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/10">Preview on this screen</button>
+              <span id="upNote" class="text-xs text-slate-500"></span>
+            </div>
+          </div>
+
+          <div class="space-y-5">
+            <div class="rounded-2xl border border-white/8 bg-[#0d1628] p-5">
+              <span class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-300">Live preview</span>
+              <div id="upStage" class="flex min-h-[140px] items-start justify-center rounded-xl border border-white/5 bg-[#0b1422] px-4 py-6"></div>
+            </div>
+            <div class="rounded-2xl border border-white/8 bg-[#0d1628] p-5">
+              <div class="mb-3 flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Sent to everyone</span>
+                <span id="upHistCount" class="text-xs font-bold text-slate-500"></span>
+              </div>
+              <div id="upHistory" class="space-y-2"></div>
+              <p class="mt-3 text-[11px] leading-relaxed text-slate-500">Removing an update only stops people who have not seen it yet.</p>
+            </div>
+          </div>
+        </div>
+      </div><!-- /updatesTab -->
+
       <!-- ── ADD / EDIT BLOG MODAL ────────────────────────── -->
       <div id="adminBlogEditorModal"
         class="fixed inset-0 z-[130] hidden items-center justify-center bg-black/75 p-4 backdrop-blur-md"
@@ -2388,20 +2523,20 @@
         </div>
         <span class="text-sm font-bold text-slate-300">Orders Table</span>
       </a>
-      <a href="/admin-links"
-        class="mb-1 flex items-center gap-3 rounded-xl border border-transparent px-4 py-3 hover:bg-white/5">
+      <button onclick="switchTab('links');closeMobileMenu()"
+        class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left hover:bg-white/5">
         <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-violet-500/15">
           <span class="material-symbols-outlined text-violet-400" style="font-size:16px">key</span>
         </div>
         <span class="text-sm font-bold text-slate-300">Secret Links</span>
-      </a>
-      <a href="/admin-updates"
-        class="mb-1 flex items-center gap-3 rounded-xl border border-transparent px-4 py-3 hover:bg-white/5">
+      </button>
+      <button onclick="switchTab('updates');closeMobileMenu()"
+        class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left hover:bg-white/5">
         <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-violet-500/15">
           <span class="material-symbols-outlined text-violet-400" style="font-size:16px">campaign</span>
         </div>
         <span class="text-sm font-bold text-slate-300">Updates</span>
-      </a>
+      </button>
       <div class="mx-2 my-3 h-px bg-white/10"></div>
       <a href="/dashboard"
         class="mb-1 flex items-center gap-3 rounded-xl border border-transparent px-4 py-3 hover:bg-white/5">
@@ -2624,6 +2759,10 @@
       if (fTab) fTab.classList.toggle('hidden', tab !== 'funds');
       var trTab = document.getElementById('trackingTab');
       if (trTab) trTab.classList.toggle('hidden', tab !== 'tracking');
+      var lkTab = document.getElementById('linksTab');
+      if (lkTab) lkTab.classList.toggle('hidden', tab !== 'links');
+      var upTab = document.getElementById('updatesTab');
+      if (upTab) upTab.classList.toggle('hidden', tab !== 'updates');
 
       var tabBase = 'flex flex-shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition whitespace-nowrap ';
       var oBtn = document.getElementById('tabBtnOrders');
@@ -2641,6 +2780,12 @@
       if (fBtn) fBtn.className = tabBase + (tab === 'funds' ? 'bg-white/8 text-white' : 'text-slate-400');
       if (trBtn) trBtn.className = tabBase + (tab === 'tracking' ? 'bg-white/8 text-white' : 'text-slate-400');
 
+      var lkBtn = document.getElementById('tabBtnLinks');
+      var upBtn = document.getElementById('tabBtnUpdates');
+      if (lkBtn) lkBtn.className = tabBase + (tab === 'links' ? 'bg-white/8 text-white' : 'text-slate-400');
+      if (upBtn) upBtn.className = tabBase + (tab === 'updates' ? 'bg-white/8 text-white' : 'text-slate-400');
+      if (tab === 'links' || tab === 'updates') { var extraBtn = tab === 'links' ? lkBtn : upBtn; if (extraBtn && extraBtn.scrollIntoView) extraBtn.scrollIntoView({ inline: 'nearest', behavior: 'smooth' }); }
+      else
       var activeBtn = tab === 'orders' ? oBtn : (tab === 'tickets' ? tBtn : (tab === 'users' ? uBtn : (tab === 'services' ? sBtn : (tab === 'funds' ? fBtn : (tab === 'tracking' ? trBtn : bBtn)))));
       if (activeBtn && activeBtn.scrollIntoView) {
         activeBtn.scrollIntoView({ inline: 'nearest', behavior: 'smooth' });
@@ -2660,6 +2805,14 @@
       if (navB) navB.style.cssText = '';
       if (navF) navF.style.cssText = '';
       if (navTR) navTR.style.cssText = '';
+      ['Links', 'Updates'].forEach(function (k) {
+        var n = document.getElementById('nav' + k), t = document.getElementById('nav' + k + 'Text');
+        var on = tab === k.toLowerCase();
+        if (n) n.style.cssText = on ? 'background:linear-gradient(135deg,rgba(139,92,246,.14),rgba(124,58,237,.09));border:1px solid rgba(139,92,246,.24);' : '';
+        if (t) t.className = 'text-sm font-bold ' + (on ? 'text-white' : 'text-slate-300');
+      });
+      if (tab === 'links' && typeof window.loadSecretLinksTab === 'function') window.loadSecretLinksTab();
+      if (tab === 'updates' && typeof window.loadUpdatesTab === 'function') window.loadUpdatesTab();
       var noText = document.getElementById('navOrdersText');
       var ntText = document.getElementById('navTicketsText');
       var nuText = document.getElementById('navUsersText');
@@ -6961,6 +7114,342 @@
     });
   </script>
   <script>requestAnimationFrame(() => requestAnimationFrame(() => document.body.style.opacity = 1))</script>
+<!-- Secret Links + Updates tabs -->
+<script type="module">
+import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, collection, doc, getDocs, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const app = getApps()[0] || initializeApp({
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+const $ = (id) => document.getElementById(id);
+const fmt = (ms) => ms ? new Date(ms).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "—";
+function toast(msg) {
+  if (typeof window.showToast === "function") { try { window.showToast(msg); return; } catch (_) {} }
+  if (window.gxNotify) window.gxNotify({ kind: "info", title: msg, duration: 2500 });
+}
+function showErr(id, msg) { const e = $(id); e.textContent = msg; e.classList.toggle("hidden", !msg); }
+function mk(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
+
+// ═════════════ SECRET LINKS ═════════════
+const API = "https://backend-for-api-connect-g8ta.onrender.com/secret-links";
+async function api(method, path, body) {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Please sign in again.");
+  const res = await fetch(API + path, {
+    method, cache: "no-store", referrerPolicy: "no-referrer", credentials: "omit",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + (await user.getIdToken()) },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.message || "Request failed (" + res.status + ")");
+  return data;
+}
+
+let slStarted = false;
+window.loadSecretLinksTab = function () {
+  if (!slStarted) { slStarted = true; slLoadServices(); }
+  slLoadLinks();
+};
+
+async function slLoadServices() {
+  const sel = $("slService");
+  sel.replaceChildren(new Option("Loading services… (the server can take a few seconds to wake up)", ""));
+  try {
+    const { services } = await api("GET", "/admin/services");
+    sel.replaceChildren(new Option("— Choose a service —", ""));
+    if (!services.length) { sel.append(new Option("No service can be given away", "")); return; }
+    const groups = {};
+    for (const s of services) {
+      if (!groups[s.category]) { groups[s.category] = document.createElement("optgroup"); groups[s.category].label = s.categoryLabel; sel.append(groups[s.category]); }
+      groups[s.category].append(new Option("#" + s.id + " — " + s.name, JSON.stringify([s.category, s.id])));
+    }
+  } catch (e) { slStarted = false; sel.replaceChildren(new Option("Could not load services", "")); showErr("slCreateErr", e.message); }
+}
+
+async function slLoadLinks() {
+  showErr("slListErr", "");
+  try {
+    const { links, ipCheck } = await api("GET", "/admin/links");
+    $("slIpWarn").classList.toggle("hidden", ipCheck !== false);
+    $("slRows").replaceChildren(...links.map(slCard));
+    $("slEmpty").classList.toggle("hidden", links.length > 0);
+  } catch (e) { showErr("slListErr", e.message); }
+}
+
+const BADGE = { active: "bg-emerald-500/15 text-emerald-300", revoked: "bg-red-500/15 text-red-300", expired: "bg-amber-500/15 text-amber-300", full: "bg-slate-500/15 text-slate-300" };
+function slBtn(text, cls, onclick) { const b = mk("button", "rounded-lg px-3 py-1.5 text-xs font-bold " + cls, text); b.type = "button"; b.onclick = onclick; return b; }
+
+function slCard(l) {
+  const card = mk("div", "rounded-xl border border-white/8 bg-[#0f172a] p-4");
+  const top = mk("div", "flex flex-wrap items-start justify-between gap-3");
+  const left = mk("div", "min-w-0");
+  left.append(mk("p", "text-sm font-bold text-white", l.name),
+    mk("p", "mt-0.5 text-xs text-slate-400", l.serviceName + " · " + l.viewsPerUser.toLocaleString("en-IN") + " views each · created " + fmt(l.createdAt)));
+  const badge = mk("span", "rounded-full px-2.5 py-1 text-[10px] font-black uppercase " + (BADGE[l.status] || BADGE.full), l.status);
+  top.append(left, badge);
+
+  const meta = mk("div", "mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-slate-400");
+  meta.append(mk("span", "", l.usersClaimed.toLocaleString("en-IN") + (l.maxUsers ? " / " + l.maxUsers.toLocaleString("en-IN") : "") + " people"),
+              mk("span", "", "Claim until: " + fmt(l.expiresAt)));
+  card.append(top, meta);
+  if (l.maxUsers) {
+    const bar = mk("div", "mt-2 h-1.5 overflow-hidden rounded-full bg-white/5");
+    const fill = mk("div", "h-full rounded-full bg-violet-500"); fill.style.width = Math.min(100, (l.usersClaimed / l.maxUsers) * 100) + "%";
+    bar.append(fill); card.append(bar);
+  }
+  const detail = mk("div", "mt-3 hidden rounded-lg bg-[#0b1220] p-3 text-xs text-slate-400");
+  const actions = mk("div", "mt-3 flex flex-wrap gap-2");
+  actions.append(slBtn("People", "bg-white/5 text-slate-200 hover:bg-white/10", async () => {
+    if (detail.classList.toggle("hidden")) return;
+    detail.textContent = "Loading…";
+    try {
+      const { claims } = await api("GET", "/admin/links/" + l.id + "/claims?limit=100");
+      if (!claims.length) { detail.textContent = "Nobody has claimed this link yet."; return; }
+      detail.replaceChildren(...claims.map((c) => {
+        const line = mk("div", "flex flex-wrap justify-between gap-2 border-b border-white/5 py-1.5 last:border-0");
+        line.append(mk("span", "text-slate-200", c.name + (c.mobile ? " · " + c.mobile : "") + (c.email ? " · " + c.email : "")),
+                    mk("span", "", c.used.toLocaleString("en-IN") + " used · " + c.remaining.toLocaleString("en-IN") + " left · " + fmt(c.claimedAt)));
+        return line;
+      }));
+    } catch (e) { detail.textContent = e.message; }
+  }));
+  if (l.status === "active") {
+    actions.append(slBtn("Revoke", "bg-red-500/15 text-red-300 hover:bg-red-500/25", async (ev) => {
+      if (!confirm("Revoke this link? New people can no longer claim it AND the unused free views of everyone who already claimed stop working immediately.")) return;
+      ev.currentTarget.disabled = true;
+      try { await api("POST", "/admin/links/" + l.id + "/revoke"); toast("Link revoked"); slLoadLinks(); }
+      catch (e) { toast(e.message); ev.currentTarget.disabled = false; }
+    }));
+  }
+  card.append(actions, detail);
+  return card;
+}
+
+$("slRefresh").onclick = () => window.loadSecretLinksTab();
+function slSummary() {
+  const v = Math.round(Number($("slViews").value));
+  const opt = $("slService").selectedOptions[0];
+  const svc = opt && opt.value ? opt.textContent.replace(/^#\d+ — /, "") : "the chosen service";
+  $("slSummary").textContent = v >= 100 && v <= 1000000
+    ? "Each person gets " + v.toLocaleString("en-IN") + " free views of " + svc + "."
+    : "Views must be between 100 and 10,00,000.";
+}
+$("slViews").addEventListener("input", slSummary);
+$("slService").addEventListener("change", slSummary);
+$("slCreateBtn").onclick = async () => {
+  showErr("slCreateErr", ""); $("slNewLink").classList.add("hidden");
+  const sel = $("slService").value;
+  if (!sel) return showErr("slCreateErr", "Choose the service to give for free.");
+  const [category, serviceId] = JSON.parse(sel);
+  const views = Math.round(Number($("slViews").value));
+  if (!(views >= 100 && views <= 1000000)) return showErr("slCreateErr", "Free views for each person must be between 100 and 10,00,000.");
+  if (/^\s*[\d,.\s]+\s*$/.test($("slName").value)) return showErr("slCreateErr", "The name is only a number. Put the number of views in \"Free views for each person\" and leave the name empty (or write a real name).");
+  const expiryVal = $("slExpiry").value;
+  const body = { name: $("slName").value, category, serviceId, views, maxUsers: $("slMaxUsers").value.trim(),
+                 expiresAt: expiryVal ? new Date(expiryVal).getTime() : "" };
+  const btn = $("slCreateBtn"); btn.disabled = true; btn.textContent = "Creating…";
+  try {
+    if (!confirm("Create a link where EACH person gets " + views.toLocaleString("en-IN") + " free views?")) { btn.disabled = false; btn.textContent = "Create link"; return; }
+    const r = await api("POST", "/admin/create", body);
+    $("slNewLinkUrl").textContent = r.url;
+    $("slNewLink").classList.remove("hidden");
+    ["slName", "slMaxUsers", "slExpiry"].forEach((i) => ($(i).value = ""));
+    slLoadLinks();
+  } catch (e) { showErr("slCreateErr", e.message); }
+  btn.disabled = false; btn.textContent = "Create link";
+};
+$("slCopyBtn").onclick = async () => {
+  const url = $("slNewLinkUrl").textContent;
+  try { await navigator.clipboard.writeText(url); toast("Link copied"); }
+  catch (_) { const r = document.createRange(); r.selectNodeContents($("slNewLinkUrl")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Press copy on your keyboard"); }
+};
+
+// ═════════════ UPDATES ═════════════
+const BROADCAST_KEEP = 20, INBOX_KEEP = 10;
+const KINDS = [["info", "Update", "#60a5fa"], ["offer", "Offer", "#f472b6"], ["service_new", "New service", "#34d399"],
+               ["service_removed", "Service removed", "#fb923c"], ["warning", "Important", "#f87171"], ["success", "Done", "#4ade80"]];
+const up = { kind: "info", audience: "all", user: null, users: [], busy: false, started: false, usersLoaded: false };
+
+function upValidUrl(u) { return /^https:\/\/\S+$/i.test(u) || /^\/[A-Za-z0-9\-_\/?=&#.%]*$/.test(u); }
+function upForm() {
+  const secs = Math.round(Number($("upDur").value));
+  return { kind: up.kind, title: $("upTitle").value.trim(), message: $("upMsg").value.trim(),
+           ctaLabel: $("upCtaLabel").value.trim(), ctaUrl: $("upCtaUrl").value.trim(),
+           duration: $("upSticky").checked ? 0 : (secs > 0 ? Math.min(secs, 60) : 3) * 1000 };
+}
+function upProblem(f) {
+  if (!f.title) return "Add a title.";
+  if (f.ctaUrl && !upValidUrl(f.ctaUrl)) return "Button link must start with https:// or /";
+  if (f.ctaUrl && !f.ctaLabel) return "Add the button text, or clear the link.";
+  if (up.audience === "one" && !up.user) return "Pick a user to send to.";
+  return "";
+}
+function upCard(f) {
+  return { kind: f.kind, title: f.title || "Your title appears here", message: f.message || (f.title ? "" : "Your message appears here."),
+           cta: f.ctaUrl && f.ctaLabel ? { label: f.ctaLabel, url: f.ctaUrl } : null, duration: f.duration };
+}
+function upRefresh() {
+  const f = upForm();
+  $("upCTitle").textContent = f.title.length + "/120";
+  $("upCMsg").textContent = f.message.length + "/400";
+  $("upDur").disabled = $("upSticky").checked;
+  if (window.gxNotify) $("upStage").replaceChildren(window.gxNotify.createCard(upCard(f)));
+  const p = upProblem(f);
+  $("upSend").disabled = up.busy || !!p;
+  $("upNote").textContent = p && (f.title || f.message) ? p : "";
+}
+function upKinds() {
+  $("upKinds").replaceChildren(...KINDS.map(([k, label, color]) => {
+    const b = mk("button", "flex items-center gap-2 rounded-xl border px-3 py-2 text-left text-xs font-bold transition " +
+      (k === up.kind ? "border-violet-400/60 bg-violet-500/10 text-white" : "border-white/8 bg-[#0f172a] text-slate-300 hover:bg-white/5"));
+    b.type = "button"; b.dataset.kind = k; b.setAttribute("aria-pressed", String(k === up.kind));
+    const dot = mk("span", "h-2.5 w-2.5 flex-none rounded-full"); dot.style.background = color;
+    b.append(dot, document.createTextNode(label));
+    b.onclick = () => { up.kind = k; upKinds(); upRefresh(); };
+    return b;
+  }));
+}
+function upSetAudience(a) {
+  up.audience = a;
+  for (const [id, v] of [["upAudAll", "all"], ["upAudOne", "one"]]) {
+    const b = $(id); b.setAttribute("aria-pressed", String(a === v));
+    b.className = "rounded-lg px-4 py-2 text-xs font-bold " + (a === v ? "bg-violet-600 text-white" : "text-slate-400");
+  }
+  $("upUserBox").classList.toggle("hidden", a !== "one");
+  if (a === "one") { upLoadUsers(); $("upUserSearch").focus(); }
+  upRefresh();
+}
+async function upLoadUsers() {
+  if (up.usersLoaded) return;
+  up.usersLoaded = true;
+  $("upUserList").textContent = "Loading users…";
+  try {
+    const map = new Map();
+    for (const name of ["Users", "users"]) {
+      const snap = await getDocs(collection(db, name));
+      snap.forEach((d) => {
+        const x = d.data() || {}, prev = map.get(d.id) || {};
+        map.set(d.id, { uid: d.id, email: String(x.email || x.Email || prev.email || ""),
+          name: String(x.name || x.Name || x.username || x.displayName || prev.name || ""),
+          mobile: String(x.mobile || x.phone || prev.mobile || ""), inUsers: prev.inUsers || name === "Users" });
+      });
+    }
+    up.users = [...map.values()].filter((u) => u.inUsers).sort((a, b) => (a.email || a.uid).localeCompare(b.email || b.uid));
+    upRenderUsers();
+  } catch (e) { up.usersLoaded = false; $("upUserList").textContent = "Could not load users: " + (e.code || e.message); }
+}
+function upRenderUsers() {
+  const q = $("upUserSearch").value.trim().toLowerCase();
+  const hits = up.users.filter((u) => !q || (u.email + " " + u.name + " " + u.uid + " " + u.mobile).toLowerCase().includes(q)).slice(0, 50);
+  if (!hits.length) { $("upUserList").replaceChildren(mk("p", "p-3 text-sm text-slate-500", "No users match.")); return; }
+  $("upUserList").replaceChildren(...hits.map((u) => {
+    const sel = !!up.user && up.user.uid === u.uid;
+    const b = mk("button", "up-user flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left " + (sel ? "bg-violet-500/15" : "hover:bg-white/5"));
+    b.type = "button"; b.setAttribute("role", "option"); b.setAttribute("aria-selected", String(sel));
+    const av = mk("span", "flex h-8 w-8 flex-none items-center justify-center rounded-full bg-violet-500/20 text-xs font-black text-violet-300",
+                  ((u.name || u.email || "?").trim()[0] || "?").toUpperCase());
+    const t = mk("span", "min-w-0");
+    t.append(mk("span", "block truncate text-sm font-bold text-slate-200", u.email || u.name || u.uid),
+             mk("span", "block truncate text-[11px] text-slate-500", [u.name, u.mobile, u.uid.slice(0, 8) + "…"].filter(Boolean).join(" · ")));
+    b.append(av, t);
+    b.onclick = () => { up.user = u; $("upUserPicked").textContent = "Sending only to: " + (u.email || u.name || u.uid); $("upUserPicked").className = "mt-2 text-xs font-bold text-emerald-400"; upRenderUsers(); upRefresh(); };
+    return b;
+  }));
+}
+const upId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+async function upSend() {
+  const f = upForm(); const p = upProblem(f);
+  if (p) { toast(p); return; }
+  const item = { id: upId(), ts: Date.now(), kind: f.kind, title: f.title, duration: f.duration };
+  if (f.message) item.message = f.message;
+  if (f.ctaUrl && f.ctaLabel) { item.ctaLabel = f.ctaLabel; item.ctaUrl = f.ctaUrl; }
+  const target = up.audience === "one" ? up.user : null;
+  if (!target && !confirm("Send this to ALL users?")) return;
+  up.busy = true; upRefresh(); $("upSend").textContent = "Sending…";
+  try {
+    if (target) {
+      const ref = doc(db, "Users", target.uid);
+      await runTransaction(db, async (tx) => {
+        const s = await tx.get(ref);
+        if (!s.exists()) throw new Error("This user has no account record.");
+        const inbox = Array.isArray(s.data().inbox) ? s.data().inbox : [];
+        tx.update(ref, { inbox: inbox.concat(item).slice(-INBOX_KEEP) });
+      });
+      toast("Sent to " + (target.email || target.name || target.uid));
+    } else {
+      const ref = doc(db, "app_config", "live_updates");
+      await runTransaction(db, async (tx) => {
+        const s = await tx.get(ref);
+        const items = s.exists() && Array.isArray(s.data().items) ? s.data().items : [];
+        tx.set(ref, { items: items.concat(item).slice(-BROADCAST_KEEP) }, { merge: true });
+      });
+      toast("Sent to all users");
+    }
+    ["upTitle", "upMsg", "upCtaLabel", "upCtaUrl"].forEach((i) => ($(i).value = ""));
+  } catch (e) { console.error("update send failed", e); toast("Could not send: " + (e.code || e.message)); }
+  finally { up.busy = false; $("upSend").textContent = "Send update"; upRefresh(); }
+}
+async function upRemove(id) {
+  if (!confirm("Remove this update?")) return;
+  try {
+    const ref = doc(db, "app_config", "live_updates");
+    await runTransaction(db, async (tx) => {
+      const s = await tx.get(ref);
+      const items = s.exists() && Array.isArray(s.data().items) ? s.data().items : [];
+      tx.set(ref, { items: items.filter((i) => i && i.id !== id) }, { merge: true });
+    });
+    toast("Removed");
+  } catch (e) { toast("Could not remove: " + (e.code || e.message)); }
+}
+function upHistory(items) {
+  const list = (Array.isArray(items) ? items : []).filter((i) => i && typeof i === "object").sort((a, b) => Number(b.ts) - Number(a.ts));
+  $("upHistCount").textContent = list.length ? list.length + " saved" : "";
+  if (!list.length) { $("upHistory").replaceChildren(mk("p", "text-sm text-slate-500", "Nothing sent yet.")); return; }
+  $("upHistory").replaceChildren(...list.map((i) => {
+    const row = mk("div", "flex items-start gap-3 rounded-xl border border-white/5 bg-[#0f172a] p-3");
+    const bar = mk("span", "mt-1 h-8 w-1 flex-none rounded-full"); bar.style.background = (KINDS.find((k) => k[0] === i.kind) || KINDS[0])[2];
+    const mid = mk("div", "min-w-0 flex-1");
+    mid.append(mk("p", "truncate text-sm font-bold text-slate-200", String(i.title || "(no title)")), mk("p", "text-[11px] text-slate-500", new Date(Number(i.ts) || 0).toLocaleString()));
+    const del = mk("button", "flex-none rounded-lg px-2 py-1 text-xs font-bold text-red-400 hover:bg-red-500/10", "Remove");
+    del.type = "button"; del.onclick = () => upRemove(i.id);
+    row.append(bar, mid, del);
+    return row;
+  }));
+}
+window.loadUpdatesTab = function () {
+  if (up.started) return;
+  up.started = true;
+  upKinds(); upSetAudience("all");
+  ["upTitle", "upMsg", "upCtaLabel", "upCtaUrl", "upDur"].forEach((id) => $(id).addEventListener("input", upRefresh));
+  $("upSticky").addEventListener("change", upRefresh);
+  $("upAudAll").onclick = () => upSetAudience("all");
+  $("upAudOne").onclick = () => upSetAudience("one");
+  $("upUserSearch").addEventListener("input", upRenderUsers);
+  $("upSend").onclick = upSend;
+  $("upPreview").onclick = () => { if (window.gxNotify) window.gxNotify(upCard(upForm())); };
+  onSnapshot(doc(db, "app_config", "live_updates"), (s) => upHistory(s.exists() ? s.data().items : []),
+    (e) => { $("upHistory").textContent = "Could not load: " + (e.code || e.message); });
+  upRefresh();
+};
+
+// A tab chosen before this module finished loading (e.g. ?tab=links in the address bar).
+try {
+  const t = new URL(location.href).searchParams.get("tab");
+  if (t === "links" || t === "updates") {
+    const go = () => { if (typeof window.switchTab === "function") window.switchTab(t); };
+    if (auth.currentUser) go(); else { const off = auth.onAuthStateChanged((u) => { if (u) { off(); go(); } }); }
+  }
+} catch (_) {}
+</script>
 </body>
 
 </html>
