@@ -83,7 +83,6 @@
     <div class="qr"><div id="qrBox" role="img" aria-label="UPI QR code"></div></div>
     <div class="pill">Valid for <b id="timer">3:00</b></div>
     <p class="waiting"><span class="spin"></span> Waiting for your payment…</p>
-    <a id="openApp" class="btn white" href="#">Open UPI app</a>
     <button type="button" id="cancelBtn" class="btn ghost">Cancel payment</button>
     <p class="hint">PhonePe · GPay · Paytm · Any UPI app.<br>Pay exactly the amount shown, then wait here. This page updates by itself.</p>
   </section>
@@ -174,7 +173,6 @@ function drawQr(text) {
 function showCheckout(c) {
   checkout = c;
   $("amount").textContent = "₹" + Number(c.amount).toLocaleString("en-IN");
-  $("openApp").setAttribute("href", c.upi);
   drawQr(c.upi);
   show("vQr");
   tick();
