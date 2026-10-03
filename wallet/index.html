@@ -154,7 +154,6 @@
     #quickAmounts button.qa-on { background: rgba(99,102,241,0.22); border-color: #818cf8; color: #fff; box-shadow: 0 0 0 1px rgba(129,140,248,0.5) inset; }
     #addFundsSection .pay-btn { height: 56px; padding: 0; font-size: 16px; letter-spacing: 0.02em; }
     #addFundsSection .pay-btn:disabled { opacity: 0.45; box-shadow: none; }
-    #payOpenApp { display: flex !important; align-items: center; justify-content: center; }
 
     .step-item {
       animation: stepFadeIn var(--dur-2) var(--ease-out) both;
@@ -285,7 +284,100 @@
     }
   </style>
   <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap"/>
   <style>body{opacity:0;transition:opacity .18s ease}</style>
+
+  <style>
+    /* ── WALLET THEME: Zinc + White CTA (same palette as the dashboard order section and the orders page) ── */
+    :root {
+      --z-bg: #060810;
+      --z-card: #18181b;
+      --z-inner: #111113;
+      --z-border: #2a2a2f;
+      --z-border-hi: #3a3a42;
+      --z-text: #f4f4f5;
+      --z-muted: #a1a1aa;
+      --z-ph: #5c5c63;
+      --z-accent: #1f6fff;
+    }
+    html, body { background: var(--z-bg) !important; }
+    body { font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-feature-settings: "tnum" 1; -webkit-font-smoothing: antialiased; }
+    body > .sticky { background: #0b0b0e !important; border-color: var(--z-border) !important; }
+    body > .sticky button { background: var(--z-card) !important; border: 1px solid var(--z-border); }
+
+    /* balance card, tutorial card, form card, history card: one zinc card style */
+    .balance-card, .watch-demo-card, .section-card, .verify-popup-box {
+      background: var(--z-card) !important;
+      border: 1px solid var(--z-border) !important;
+      border-radius: 16px !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 2px rgba(0,0,0,0.4), 0 16px 40px rgba(0,0,0,0.45) !important;
+    }
+    .balance-card .text-indigo-300\/70 { color: var(--z-muted) !important; }
+    .watch-demo-card:hover { border-color: var(--z-border-hi) !important; }
+
+    /* fields, amount buttons */
+    #addFundsSection label, #addFundsSection .text-gray-500, #addFundsSection .text-gray-400 { color: var(--z-muted); }
+    #addFundsSection .dark-field, .dark-field {
+      background: var(--z-inner) !important;
+      border: 1px solid var(--z-border) !important;
+      border-radius: 10px !important;
+      color: var(--z-text);
+    }
+    #addFundsSection .dark-field::placeholder { color: var(--z-ph); }
+    #addFundsSection .dark-field:focus, .dark-field:focus {
+      border-color: var(--z-accent) !important;
+      box-shadow: 0 0 0 3px rgba(31,111,255,0.25) !important;
+      background: var(--z-inner) !important;
+    }
+    #quickAmounts button { border-radius: 10px !important; font-weight: 600; }
+    #quickAmounts button:hover { border-color: var(--z-border-hi) !important; background: #1d1d21 !important; }
+    #quickAmounts button.qa-on { background: var(--z-inner) !important; border-color: var(--z-accent) !important; box-shadow: 0 0 0 1px var(--z-accent) inset !important; color: #fff; }
+
+    /* terms row */
+    #addFundsSection #policyAcceptLabel { background: var(--z-inner) !important; border: 1px solid var(--z-border) !important; border-radius: 10px !important; }
+    #addFundsSection #policyAcceptLabel span { color: var(--z-muted) !important; }
+    #addFundsSection #policyAcceptLabel a { color: var(--z-accent) !important; }
+    #addFundsSection input[type="checkbox"] { accent-color: var(--z-accent) !important; }
+
+    /* the main button: white CTA */
+    #addFundsSection .pay-btn {
+      background: #ffffff !important;
+      color: #0a0a0a !important;
+      border-radius: 10px !important;
+      box-shadow: 0 6px 18px rgba(255,255,255,0.08) !important;
+      font-weight: 700;
+    }
+    #addFundsSection .pay-btn:hover:not(:disabled) { background: #e9e9ec !important; transform: none; box-shadow: 0 8px 24px rgba(255,255,255,0.12) !important; }
+    #addFundsSection .pay-btn:disabled { background: #3f3f46 !important; color: #8a8a93 !important; opacity: 1; box-shadow: none !important; }
+
+    /* ── roomier layout: more width, more air, bigger touch targets ── */
+    #addFundsSection { padding: 22px 16px 24px !important; }
+    @media (min-width: 480px) { #addFundsSection { padding: 28px !important; } }
+    #addFundsSection label:not(#policyAcceptLabel) { font-size: 12.5px; letter-spacing: 0.1em; margin-bottom: 10px !important; }
+    #addFundsSection #policyAcceptLabel { letter-spacing: normal; margin-bottom: 0 !important; }
+    #addFundsSection .dark-field { height: 58px !important; font-size: 17px !important; padding: 0 18px !important; }
+    #payForm > .mb-3, #payForm > .mb-4 { margin-bottom: 22px !important; }
+    #quickAmounts button { height: 58px !important; font-size: 17px; }
+    #addFundsSection #policyAcceptLabel { padding: 14px 16px !important; }
+    #addFundsSection #policyAcceptLabel span { font-size: 13px !important; }
+    #policyAcceptWrap { margin-bottom: 22px !important; }
+    #addFundsSection .pay-btn { height: 58px !important; font-size: 17px !important; }
+    .balance-card { padding: 26px 22px !important; }
+    #walletBalance { font-size: 3.4rem; }
+    .watch-demo-card { padding: 16px 18px !important; }
+
+    /* notices and the UTR fallback box */
+    #manualVerify { background: var(--z-inner) !important; border: 1px solid var(--z-border) !important; border-radius: 10px !important; }
+    #manualVerify summary { color: var(--z-muted); }
+    #manualVerify .pay-btn { box-shadow: none !important; }
+
+    /* history rows */
+    #txList > * { border-color: var(--z-border) !important; }
+    #txList .rounded-2xl { background: var(--z-inner) !important; border: 1px solid var(--z-border) !important; border-radius: 10px !important; }
+    .verify-popup-box .popup-close-btn.success { background: #ffffff !important; color: #0a0a0a !important; border-radius: 10px !important; }
+  </style>
 </head>
 
 <body class="text-white min-h-screen">
@@ -298,10 +390,10 @@
   </button>
 </div>
 
-<main class="mx-auto w-full max-w-lg px-4 py-5 pb-24">
+<main class="mx-auto w-full max-w-lg px-3 py-5 pb-24">
 
   <!-- Balance Card -->
-  <section class="balance-card rounded-3xl p-6 mb-5">
+  <section class="balance-card rounded-3xl p-6 mb-4">
     <p class="text-xs uppercase tracking-widest text-indigo-300/70 mb-2">Available Balance</p>
     <h2 id="walletBalance" class="text-5xl font-black tracking-tight">
       <span class="skeleton inline-block w-36 h-12 rounded-xl">&nbsp;</span>
@@ -312,7 +404,7 @@
 
   <!-- Watch Demo Card -->
   <a href="https://youtube.com/shorts/Gh_yxZoPkTU?si=v44GjhfFs-3zNKw-" target="_blank" rel="noopener"
-    class="watch-demo-card rounded-3xl mb-5 overflow-hidden flex items-center gap-4 no-underline"
+    class="watch-demo-card rounded-3xl mb-4 overflow-hidden flex items-center gap-4 no-underline"
     style="display:flex;background:linear-gradient(135deg,rgba(15,23,42,0.95),rgba(20,30,60,0.95));border:1px solid rgba(255,255,255,0.08);padding:14px 18px;text-decoration:none;transition:border-color 0.2s,transform 0.2s;cursor:pointer;">
     <!-- Thumbnail -->
     <div style="position:relative;flex-shrink:0;width:80px;height:56px;border-radius:12px;overflow:hidden;background:#000;">
@@ -336,9 +428,9 @@
   </a>
 
   <!-- Add Funds via UPI -->
-  <section id="addFundsSection" class="section-card rounded-3xl mb-5">
-    <h3 class="text-lg font-black mb-1">Add Funds via UPI</h3>
-    <p class="text-xs text-gray-500 mb-5">Choose an amount, press Pay, and pay the QR with any UPI app. Your balance is added automatically.</p>
+  <section id="addFundsSection" class="section-card rounded-3xl mb-4">
+    <h3 class="text-xl font-black mb-1.5">Add Funds via UPI</h3>
+    <p class="text-[13px] leading-relaxed text-gray-500 mb-6">Choose an amount, press Pay, and pay the QR with any UPI app. Your balance is added automatically.</p>
 
     <!-- Notice -->
     <div id="walletNotice" class="hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold"></div>
@@ -346,7 +438,7 @@
     <!-- 1. Amount + mobile -->
     <div id="payForm">
       <p class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Quick amount</p>
-      <div id="quickAmounts" class="grid grid-cols-3 gap-2.5 mb-5"></div>
+      <div id="quickAmounts" class="grid grid-cols-3 gap-3 mb-6"></div>
 
       <div class="mb-3">
         <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block" for="payAmount">Amount (₹)</label>
@@ -373,20 +465,6 @@
         class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white">
         Pay
       </button>
-    </div>
-
-    <!-- 2. The QR -->
-    <div id="payQr" class="hidden flex flex-col items-center">
-      <p class="text-xs font-black uppercase tracking-widest text-gray-500 mb-1">Scan to pay</p>
-      <p id="payQrAmount" class="text-3xl font-black mb-3">₹0</p>
-      <div class="rounded-3xl p-4 mb-3" style="background:#ffffff;box-shadow:0 8px 32px rgba(0,0,0,0.35);border:3px solid rgba(99,102,241,0.3)">
-        <div id="payQrImg" style="width:220px;height:220px;display:block" role="img" aria-label="UPI QR code"></div>
-      </div>
-      <p class="text-sm text-gray-400 mb-1">Valid for <span id="payTimer" class="font-black text-white">3:00</span></p>
-      <p id="payWaiting" class="text-xs text-indigo-300 font-semibold mb-4 flex items-center gap-2"><span class="verify-spinner" style="width:14px;height:14px;border-width:2px;margin:0"></span> Waiting for your payment…</p>
-      <a id="payOpenApp" href="#" class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white text-center mb-3" style="display:block;text-decoration:none">Open UPI app</a>
-      <p class="text-xs text-gray-500 text-center mb-3">PhonePe · GPay · Paytm · Any UPI app. Pay exactly the amount shown, then wait here.</p>
-      <button type="button" onclick="cancelPayment()" class="text-xs font-bold text-gray-400 underline">Cancel</button>
     </div>
 
     <!-- 3. Fallback: the old way -->
@@ -467,7 +545,6 @@
   </div>
 </div>
 
-<script src="/assets/qrcode-generator.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
@@ -776,7 +853,6 @@ window.verifyPayment = async function() {
 // ═════════ QR CHECKOUT ═════════
 const QUICK_AMOUNTS = [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
 const MIN_PAY = 5, MAX_PAY = 20000;
-let checkout = null, pollTimer = null, tickTimer = null, polling = false;
 
 function showNotice(msg, kind) {
   const n = document.getElementById("walletNotice");
@@ -821,27 +897,6 @@ window.checkPayBtn = function() {
   document.getElementById("payBtn").disabled = !(okAmount && mobile && document.getElementById("policyAcceptCb").checked);
 };
 
-function drawQr(text) {
-  const qr = qrcode(0, "M");
-  qr.addData(text); qr.make();
-  const holder = document.getElementById("payQrImg");
-  holder.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
-  const svg = holder.querySelector("svg");
-  if (svg) { svg.setAttribute("width", "220"); svg.setAttribute("height", "220"); svg.style.display = "block"; }
-}
-
-function showForm() {
-  stopTimers(); checkout = null;
-  document.getElementById("payQr").classList.add("hidden");
-  document.getElementById("payForm").classList.remove("hidden");
-  checkPayBtn();
-}
-
-function stopTimers() {
-  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
-  if (tickTimer) { clearInterval(tickTimer); tickTimer = null; }
-}
-
 async function authFetch(path, options = {}) {
   const idToken = await currentUser.getIdToken();
   const res = await fetch(`${API_BACKEND}${path}`, {
@@ -871,17 +926,10 @@ window.startPayment = async function() {
   try {
     const { res, data } = await authFetch("/wallet/qr/create", { method: "POST", body: JSON.stringify({ amount, mobile }) });
     if (!res.ok || data.status !== "success") { showNotice(data.message || "Could not create the payment. Please try again."); return; }
-    checkout = { id: data.id, amount: data.amount, expiresAt: data.expiresAt, upi: data.upi };
-    document.getElementById("payQrAmount").textContent = "₹" + data.amount.toLocaleString("en-IN");
-    document.getElementById("payOpenApp").setAttribute("href", data.upi);
-    drawQr(data.upi);
-    document.getElementById("payForm").classList.add("hidden");
-    document.getElementById("payQr").classList.remove("hidden");
-    document.getElementById("payWaiting").style.display = "flex";
-    tick();
-    tickTimer = setInterval(tick, 1000);
-    pollTimer = setInterval(pollPayment, 3000);
-    setTimeout(pollPayment, 1500);
+    // The QR has its own page: /wallet/pay/?id=… (this tab keeps the link so the QR shows at once)
+    try { sessionStorage.setItem("gx_qr_" + data.id, JSON.stringify({ amount: data.amount, upi: data.upi, expiresAt: data.expiresAt })); } catch (_) {}
+    location.href = "/wallet/pay/?id=" + encodeURIComponent(data.id);
+    return;
   } catch {
     showNotice("Could not connect to the server. Please try again.");
   } finally {
@@ -890,59 +938,12 @@ window.startPayment = async function() {
   }
 };
 
-function tick() {
-  if (!checkout) return;
-  const left = Math.max(0, Math.round((checkout.expiresAt - Date.now()) / 1000));
-  document.getElementById("payTimer").textContent = Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0");
-  // The server decides when it has expired; asking once more at zero shows the right message at once.
-  if (left === 0) pollPayment();
+// Opened from the payment page ("I already paid: verify with UTR"): show the UTR box.
+if (new URLSearchParams(location.search).has("utr")) {
+  const d = document.getElementById("manualVerify");
+  d.open = true;
+  setTimeout(() => d.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
 }
-
-async function pollPayment() {
-  if (!checkout || polling) return;
-  const mine = checkout;
-  polling = true;
-  try {
-    const { res, data } = await authFetch("/wallet/qr/" + mine.id);
-    if (checkout !== mine) return;
-    if (!res.ok && res.status === 404) { showForm(); showNotice("This payment was not found. Please start again."); return; }
-    if (data.status === "paid") {
-      stopTimers();
-      checkout = null;
-      notifyAdminPayment(mine.amount, data.utr || "");
-      const popupAmt = document.getElementById("popupAmount");
-      popupAmt.textContent = "₹0.00";
-      animateCountUp(popupAmt, 0, mine.amount, 300);
-      document.getElementById("popupUtr").textContent = data.utr ? "UTR: " + data.utr : "";
-      document.getElementById("popupNewBal").textContent = typeof data.balance === "number" ? "₹" + data.balance.toFixed(2) : "Updated";
-      showPopupState("success");
-      document.getElementById("verifyPopup").classList.add("active");
-      showForm();
-    } else if (data.status === "expired" || data.status === "cancelled") {
-      showForm();
-      showNotice("This QR has expired. If you already paid, open “Paid but balance not added?” below and enter your UTR.");
-      document.getElementById("manualVerify").open = true;
-    } else if (data.status === "failed") {
-      showForm();
-      showPopupState("failed", (data.message || "Payment could not be credited.") + (data.utr ? " UTR: " + data.utr : ""));
-      document.getElementById("verifyPopup").classList.add("active");
-    }
-  } catch (_) {
-    /* offline for a moment: the next poll tries again */
-  } finally {
-    polling = false;
-  }
-}
-
-window.cancelPayment = async function() {
-  const mine = checkout;
-  showForm();
-  if (!mine) return;
-  try { await authFetch("/wallet/qr/" + mine.id + "/cancel", { method: "POST" }); } catch (_) {}
-};
-
-// Back from the UPI app on the same phone: look right away instead of waiting for the next tick.
-document.addEventListener("visibilitychange", () => { if (!document.hidden) pollPayment(); });
 
 window.addEventListener('beforeunload', () => {
   if (_unsubBalance) _unsubBalance();

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Pay | GETXH</title>
+<link rel="icon" href="/GETXH WEB NEW LOGO.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap"/>
+<style>
+  /* Zinc + white CTA: the same palette as the dashboard order section, the orders page and the wallet page */
+  :root {
+    --bg: #060810; --card: #18181b; --inner: #111113; --border: #2a2a2f; --border-hi: #3a3a42;
+    --text: #f4f4f5; --muted: #a1a1aa; --accent: #1f6fff; --ok: #22c55e; --bad: #f87171;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); min-height: 100vh; min-height: 100dvh; }
+  body { font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-feature-settings: "tnum" 1; -webkit-font-smoothing: antialiased; opacity: 0; transition: opacity .18s ease; }
+  body.ready { opacity: 1; }
+  .hidden { display: none !important; }
+
+  header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #0b0b0e; border-bottom: 1px solid var(--border); }
+  header a.back { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--card); border: 1px solid var(--border); color: var(--text); text-decoration: none; }
+  header h1 { font-size: 17px; font-weight: 700; }
+  header .sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+  main { max-width: 520px; margin: 0 auto; padding: 16px 12px 40px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 26px 16px 24px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 2px rgba(0,0,0,0.4), 0 16px 40px rgba(0,0,0,0.45); display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .amount { font-size: 52px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 22px; }
+  .qr { background: #fff; border-radius: 18px; padding: 18px; line-height: 0; box-shadow: 0 0 0 1px var(--border-hi), 0 18px 44px rgba(0,0,0,0.5); margin-bottom: 20px; }
+  .qr svg { display: block; width: 240px; height: 240px; max-width: 100%; }
+  .pill { background: var(--inner); border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: 8px 18px; font-size: 14px; font-weight: 500; margin-bottom: 12px; }
+  .pill b { color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .waiting { display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 600; color: var(--muted); margin-bottom: 24px; }
+  .spin { width: 14px; height: 14px; border: 2px solid var(--border-hi); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .btn { display: flex; align-items: center; justify-content: center; width: 100%; height: 58px; border-radius: 10px; font: 700 17px 'Geist', sans-serif; text-decoration: none; cursor: pointer; border: 1px solid transparent; }
+  .btn.white { background: #fff; color: #0a0a0a; box-shadow: 0 6px 18px rgba(255,255,255,0.08); margin-bottom: 12px; }
+  .btn.white:hover { background: #e9e9ec; }
+  .btn.ghost { background: transparent; border-color: var(--border); color: var(--muted); height: 54px; font-size: 15px; font-weight: 600; }
+  .btn.ghost:hover { border-color: var(--border-hi); color: var(--text); }
+  .hint { font-size: 13px; line-height: 1.6; color: var(--muted); margin-top: 20px; }
+  .icon { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+  .icon.ok { background: rgba(34,197,94,.14); color: var(--ok); }
+  .icon.bad { background: rgba(248,113,113,.14); color: var(--bad); }
+  .icon svg { width: 32px; height: 32px; }
+  h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .row { display: flex; justify-content: space-between; width: 100%; padding: 12px 0; border-top: 1px solid var(--border); font-size: 14px; color: var(--muted); }
+  .row b { color: var(--text); font-weight: 600; word-break: break-all; text-align: right; }
+  .msg { font-size: 14px; line-height: 1.6; color: var(--muted); margin-bottom: 24px; }
+  .big-spin { width: 34px; height: 34px; border: 3px solid var(--border-hi); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; margin: 24px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="/wallet/" aria-label="Back to wallet">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  </a>
+  <div><h1>Pay with UPI</h1><div class="sub">Add funds to your wallet</div></div>
+</header>
+
+<main>
+  <!-- loading -->
+  <section id="vLoading" class="card"><div class="big-spin"></div><p class="msg" style="margin:0">Loading your payment…</p></section>
+
+  <!-- the QR -->
+  <section id="vQr" class="card hidden" aria-live="polite">
+    <p class="eyebrow">Scan to pay</p>
+    <p id="amount" class="amount">₹0</p>
+    <div class="qr"><div id="qrBox" role="img" aria-label="UPI QR code"></div></div>
+    <div class="pill">Valid for <b id="timer">3:00</b></div>
+    <p class="waiting"><span class="spin"></span> Waiting for your payment…</p>
+    <a id="openApp" class="btn white" href="#">Open UPI app</a>
+    <button type="button" id="cancelBtn" class="btn ghost">Cancel payment</button>
+    <p class="hint">PhonePe · GPay · Paytm · Any UPI app.<br>Pay exactly the amount shown, then wait here. This page updates by itself.</p>
+  </section>
+
+  <!-- paid -->
+  <section id="vPaid" class="card hidden">
+    <div class="icon ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <p class="eyebrow" style="color:var(--ok)">Payment successful</p>
+    <p id="paidAmount" class="amount" style="margin-bottom:18px">₹0.00</p>
+    <div class="row"><span>Status</span><b style="color:var(--ok)">Credited to wallet</b></div>
+    <div class="row"><span>New balance</span><b id="paidBalance">—</b></div>
+    <div class="row" style="margin-bottom:22px"><span>UTR</span><b id="paidUtr">—</b></div>
+    <a class="btn white" href="/wallet/" style="margin-bottom:0">Continue</a>
+  </section>
+
+  <!-- expired / not found / failed -->
+  <section id="vEnd" class="card hidden">
+    <div class="icon bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+    <h2 id="endTitle">This QR has expired</h2>
+    <p id="endMsg" class="msg"></p>
+    <a id="endPrimary" class="btn white" href="/wallet/">Start a new payment</a>
+    <a id="endSecondary" class="btn ghost" href="/wallet/?utr=1">I already paid: verify with UTR</a>
+  </section>
+</main>
+
+<script src="/assets/qrcode-generator.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+const API = "https://backend-for-api-connect-g8ta.onrender.com";
+const app = initializeApp({
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+});
+const auth = getAuth(app);
+const $ = (id) => document.getElementById(id);
+const id = (new URLSearchParams(location.search).get("id") || "").trim();
+
+let user = null, checkout = null, pollTimer = null, tickTimer = null, polling = false, done = false;
+
+function show(view) {
+  for (const v of ["vLoading", "vQr", "vPaid", "vEnd"]) $(v).classList.toggle("hidden", v !== view);
+  window.scrollTo(0, 0);
+}
+function stopTimers() {
+  if (pollTimer) clearInterval(pollTimer);
+  if (tickTimer) clearInterval(tickTimer);
+  pollTimer = tickTimer = null;
+}
+function ending(title, msg, { retry = true, utr = true } = {}) {
+  done = true; stopTimers();
+  $("endTitle").textContent = title;
+  $("endMsg").textContent = msg;
+  $("endSecondary").classList.toggle("hidden", !utr);
+  show("vEnd");
+}
+
+async function api(path, options = {}) {
+  const token = await user.getIdToken();
+  const res = await fetch(API + path, { ...options, cache: "no-store", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token } });
+  const data = await res.json().catch(() => ({}));
+  return { res, data };
+}
+
+function drawQr(text) {
+  const qr = qrcode(0, "M");
+  qr.addData(text); qr.make();
+  $("qrBox").innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+  const svg = $("qrBox").querySelector("svg");
+  if (svg) { svg.setAttribute("width", "240"); svg.setAttribute("height", "240"); }
+}
+
+function showCheckout(c) {
+  checkout = c;
+  $("amount").textContent = "₹" + Number(c.amount).toLocaleString("en-IN");
+  $("openApp").setAttribute("href", c.upi);
+  drawQr(c.upi);
+  show("vQr");
+  tick();
+  tickTimer = setInterval(tick, 1000);
+  pollTimer = setInterval(poll, 3000);
+  setTimeout(poll, 1200);
+}
+
+function tick() {
+  if (!checkout || done) return;
+  const left = Math.max(0, Math.round((checkout.expiresAt - Date.now()) / 1000));
+  $("timer").textContent = Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0");
+  if (left === 0) poll(); // the server decides; asking once at zero shows the right message at once
+}
+
+function alertAdmin(amount, utr) {
+  try {
+    fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "payment", data: { amount: Number(amount), utr, method: "BharatPe UPI / QR", username: user.displayName || (user.email || "").split("@")[0] || "User", email: user.email || "" } })
+    }).catch(() => {});
+  } catch (_) {}
+}
+
+async function poll() {
+  if (done || polling || !user) return;
+  polling = true;
+  try {
+    const { res, data } = await api("/wallet/qr/" + encodeURIComponent(id));
+    if (done) return;
+    if (res.status === 404) return ending("Payment not found", "This payment link is not valid. Please start a new payment.", { utr: false });
+    if (data.status === "paid") {
+      done = true; stopTimers();
+      alertAdmin(data.amount || checkout.amount, data.utr || "");
+      $("paidAmount").textContent = "₹" + Number(data.amount || checkout.amount).toFixed(2);
+      $("paidBalance").textContent = typeof data.balance === "number" ? "₹" + data.balance.toFixed(2) : "Updated";
+      $("paidUtr").textContent = data.utr || "—";
+      show("vPaid");
+    } else if (data.status === "expired" || data.status === "cancelled") {
+      ending("This QR has expired", "If you already paid, verify with your UTR and the amount will be added. Otherwise start a new payment.");
+    } else if (data.status === "failed") {
+      ending("Payment received, not credited", (data.message || "The payment could not be credited.") + (data.utr ? " UTR: " + data.utr + "." : "") + " Please contact support with this UTR.", { utr: false });
+    }
+  } catch (_) {
+    /* offline for a moment: the next poll tries again */
+  } finally {
+    polling = false;
+  }
+}
+
+$("cancelBtn").onclick = async () => {
+  if (!user || done) return;
+  done = true; stopTimers();
+  try { await api("/wallet/qr/" + encodeURIComponent(id) + "/cancel", { method: "POST" }); } catch (_) {}
+  location.href = "/wallet/";
+};
+
+// Back from the UPI app on the same phone: look right away instead of waiting for the next tick.
+document.addEventListener("visibilitychange", () => { if (!document.hidden) poll(); });
+
+async function start() {
+  if (!/^[a-f0-9]{32}$/.test(id)) return ending("Payment not found", "This payment link is not valid. Please start a new payment.", { utr: false });
+  // The wallet page leaves the link in this tab so the QR shows at once; otherwise the server tells us.
+  let c = null;
+  try { c = JSON.parse(sessionStorage.getItem("gx_qr_" + id) || "null"); } catch (_) {}
+  if (c && c.upi && c.expiresAt > Date.now()) return showCheckout(c);
+  try {
+    const { res, data } = await api("/wallet/qr/" + encodeURIComponent(id));
+    if (res.status === 404) return ending("Payment not found", "This payment link is not valid. Please start a new payment.", { utr: false });
+    if (data.status === "pending" && data.upi) return showCheckout({ amount: data.amount, upi: data.upi, expiresAt: data.expiresAt });
+    if (data.status === "paid") { done = true; $("paidAmount").textContent = "₹" + Number(data.amount).toFixed(2); $("paidBalance").textContent = typeof data.balance === "number" ? "₹" + data.balance.toFixed(2) : "Updated"; $("paidUtr").textContent = data.utr || "—"; return show("vPaid"); }
+    return ending("This QR has expired", "If you already paid, verify with your UTR and the amount will be added. Otherwise start a new payment.");
+  } catch (_) {
+    return ending("Could not load the payment", "Please check your internet and try again.", { utr: false });
+  }
+}
+
+onAuthStateChanged(auth, (u) => {
+  if (!u) { location.replace("/"); return; }
+  if (user) return;
+  user = u;
+  start();
+});
+requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add("ready")));
+</script>
+</body>
+</html>
