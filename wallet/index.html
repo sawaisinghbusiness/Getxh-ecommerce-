@@ -128,7 +128,33 @@
 
     #addFundsSection {
       animation: sheetUp 300ms var(--ease-spring) both;
+      padding: 18px 14px 20px;           /* roomier content on phones: 14px, not 24px, each side */
     }
+    @media (min-width: 480px) { #addFundsSection { padding: 24px; } }
+
+    /* Fields, amount buttons and the Pay button: bigger, higher contrast, easier to tap */
+    #addFundsSection label, #addFundsSection .text-gray-500 { color: #a3b3cb; }
+    #addFundsSection .dark-field {
+      background: #1a2132;
+      border: 1.5px solid #2e3a55;
+      border-radius: 16px;
+      height: 54px;
+      padding: 0 16px;
+      font-size: 16px;               /* 16px also stops iPhones zooming in on focus */
+      font-weight: 600;
+      color: #fff;
+    }
+    #addFundsSection .dark-field::placeholder { color: #70809a; font-weight: 500; }
+    #addFundsSection .dark-field:focus { border-color: #818cf8; background: #1d2638; box-shadow: 0 0 0 3px rgba(129,140,248,0.22); }
+    #quickAmounts button {
+      height: 54px; padding: 0; font-size: 16px; font-weight: 800; letter-spacing: 0.01em;
+      cursor: pointer; transition: background 150ms, border-color 150ms, transform 120ms;
+    }
+    #quickAmounts button:active { transform: scale(0.96); }
+    #quickAmounts button.qa-on { background: rgba(99,102,241,0.22); border-color: #818cf8; color: #fff; box-shadow: 0 0 0 1px rgba(129,140,248,0.5) inset; }
+    #addFundsSection .pay-btn { height: 56px; padding: 0; font-size: 16px; letter-spacing: 0.02em; }
+    #addFundsSection .pay-btn:disabled { opacity: 0.45; box-shadow: none; }
+    #payOpenApp { display: flex !important; align-items: center; justify-content: center; }
 
     .step-item {
       animation: stepFadeIn var(--dur-2) var(--ease-out) both;
@@ -310,7 +336,7 @@
   </a>
 
   <!-- Add Funds via UPI -->
-  <section id="addFundsSection" class="section-card rounded-3xl p-6 mb-5">
+  <section id="addFundsSection" class="section-card rounded-3xl mb-5">
     <h3 class="text-lg font-black mb-1">Add Funds via UPI</h3>
     <p class="text-xs text-gray-500 mb-5">Choose an amount, press Pay, and pay the QR with any UPI app. Your balance is added automatically.</p>
 
@@ -320,7 +346,7 @@
     <!-- 1. Amount + mobile -->
     <div id="payForm">
       <p class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Quick amount</p>
-      <div id="quickAmounts" class="grid grid-cols-3 gap-2 mb-5"></div>
+      <div id="quickAmounts" class="grid grid-cols-3 gap-2.5 mb-5"></div>
 
       <div class="mb-3">
         <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block" for="payAmount">Amount (₹)</label>
@@ -748,7 +774,7 @@ window.verifyPayment = async function() {
 };
 
 // ═════════ QR CHECKOUT ═════════
-const QUICK_AMOUNTS = [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
+const QUICK_AMOUNTS = [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
 const MIN_PAY = 5, MAX_PAY = 20000;
 let checkout = null, pollTimer = null, tickTimer = null, polling = false;
 
@@ -765,7 +791,7 @@ function showNotice(msg, kind) {
   QUICK_AMOUNTS.forEach((n) => {
     const b = document.createElement("button");
     b.type = "button"; b.dataset.amount = String(n);
-    b.className = "dark-field rounded-2xl py-3 text-sm font-black text-white";
+    b.className = "dark-field rounded-2xl text-white";
     b.textContent = "₹" + n.toLocaleString("en-IN");
     b.onclick = () => { document.getElementById("payAmount").value = String(n); onPayAmountInput(); };
     box.appendChild(b);
@@ -775,9 +801,7 @@ function showNotice(msg, kind) {
 window.onPayAmountInput = function() {
   const v = document.getElementById("payAmount").value.trim();
   document.querySelectorAll("#quickAmounts button").forEach((b) => {
-    const on = b.dataset.amount === v;
-    b.style.borderColor = on ? "rgba(99,102,241,0.8)" : "";
-    b.style.background = on ? "rgba(99,102,241,0.18)" : "";
+    b.classList.toggle("qa-on", b.dataset.amount === v);
   });
   checkPayBtn();
 };
