@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Private Access — GETXH</title>
+<meta name="robots" content="noindex, nofollow"/>
+<meta name="referrer" content="no-referrer"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#020617;--surface:#0f172a;--surface2:#1e293b;
+  --border:rgba(255,255,255,0.1);
+  --text:#f1f5f9;--muted:#94a3b8;
+  --purple:#8b5cf6;--blue:#3b82f6;--green:#22c55e;--red:#ef4444;
+  --grad:linear-gradient(135deg,#8b5cf6,#3b82f6);
+}
+html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body{display:flex;align-items:center;justify-content:center;padding:20px;}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:18px;
+  padding:36px 30px;width:100%;max-width:440px;text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.brand{font-size:1.1rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:22px;}
+.icon{width:56px;height:56px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:26px;background:var(--surface2);}
+.icon.ok{background:rgba(34,197,94,.15)}
+.icon.bad{background:rgba(239,68,68,.15)}
+h1{font-size:1.25rem;font-weight:800;margin-bottom:10px;line-height:1.3;word-break:break-word;}
+p{font-size:.92rem;color:var(--muted);line-height:1.6;margin-bottom:22px;white-space:pre-wrap;word-break:break-word;}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--purple);margin-bottom:10px;word-break:break-word;}
+.btn{display:block;width:100%;padding:13px;border:none;border-radius:11px;background:var(--grad);color:#fff;font:700 .95rem 'Inter',sans-serif;cursor:pointer;text-decoration:none;transition:opacity .2s,transform .2s;}
+.btn:hover{opacity:.9;transform:translateY(-1px)}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.link{display:inline-block;margin-top:14px;font-size:.85rem;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:inherit}
+.spin{width:30px;height:30px;border:3px solid rgba(255,255,255,.15);border-top-color:var(--purple);border-radius:50%;margin:0 auto 18px;animation:s .8s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<main class="card" id="card" aria-live="polite">
+  <div class="brand">GETXH</div>
+  <div id="view"></div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+const API = "https://backend-for-api-connect-g8ta.onrender.com";
+const KEY = "gx_claim_token";
+const NOT_VALID = "This link is not valid.";
+
+const app  = initializeApp({
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh-42588.firebaseapp.com",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+});
+const auth = getAuth(app);
+
+// The token travels in the #fragment, so it is never sent to any server by the page request
+// (and not in a Referer header). Move it into this tab's memory and wipe it from the address bar.
+function readToken() {
+  try {
+    const m = /(?:^|[#&])t=([A-Za-z0-9_-]{20,100})/.exec(location.hash);
+    if (m) sessionStorage.setItem(KEY, m[1]);
+    if (location.hash) history.replaceState(null, "", location.pathname);
+    return sessionStorage.getItem(KEY) || "";
+  } catch (_) { return ""; }
+}
+const dropToken = () => { try { sessionStorage.removeItem(KEY); } catch (_) {} };
+
+const view = document.getElementById("view");
+function el(tag, props = {}, ...kids) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === "class") node.className = v;
+    else if (k === "onclick") node.onclick = v;
+    else node.setAttribute(k, v);
+  }
+  for (const kid of kids) node.append(kid);   // strings become text nodes: never parsed as HTML
+  return node;
+}
+function show(...nodes) { view.replaceChildren(...nodes); }
+const icon = (cls, glyph) => el("div", { class: "icon " + cls }, glyph);
+const goDashboard = () => { dropToken(); location.replace("/dashboard"); };
+
+function showLoading(text) { show(el("div", { class: "spin" }), el("p", {}, text)); }
+function showMessage(kind, glyph, title, text, keepSkip = true) {
+  const nodes = [icon(kind, glyph), el("h1", {}, title), el("p", {}, text)];
+  if (keepSkip) nodes.push(el("button", { class: "btn", onclick: goDashboard }, "Go to my account"));
+  show(...nodes);
+}
+const showInvalid = () => { dropToken(); showMessage("bad", "✕", NOT_VALID, "Please check that you opened the full link you were given."); };
+
+function safeHttps(u) {
+  try { const x = new URL(u); return x.protocol === "https:" && !x.username && !x.password ? x.toString() : ""; }
+  catch (_) { return ""; }
+}
+
+function showService(s) {
+  const nodes = [icon("ok", "✓")];
+  if (s.name) nodes.push(el("span", { class: "tag" }, s.name));
+  nodes.push(el("h1", {}, s.title || ""), el("p", {}, s.text || ""));
+  const href = s.buttonUrl ? safeHttps(s.buttonUrl) : "";
+  if (href) {
+    nodes.push(el("a", { class: "btn", href, target: "_blank", rel: "noopener noreferrer nofollow" }, s.buttonLabel || "Open"));
+  }
+  nodes.push(el("button", { class: "link", onclick: goDashboard }, "Done — go to my account"));
+  show(...nodes);
+}
+
+async function claim(user, token) {
+  showLoading("Claiming your access… this can take a few seconds.");
+  let res, data = {};
+  try {
+    const idToken = await user.getIdToken();
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 70000);   // the server can be asleep on the free plan
+    res = await fetch(API + "/secret-links/claim", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: "Bearer " + idToken },
+      body: JSON.stringify({ token }),
+      cache: "no-store", referrerPolicy: "no-referrer", credentials: "omit", signal: ctrl.signal
+    });
+    clearTimeout(timer);
+    data = await res.json().catch(() => ({}));
+  } catch (_) {
+    // Network problem: nothing was claimed, so keep the token and let the user try again.
+    show(icon("bad", "!"), el("h1", {}, "Could not connect"), el("p", {}, "Please check your internet and try again."),
+         el("button", { class: "btn", onclick: () => ready(user, token) }, "Try again"));
+    return;
+  }
+  if (res.status === 200 && data.status === "success" && data.service) { dropToken(); return showService(data.service); }
+  if (res.status === 409) { dropToken(); return showMessage("bad", "✓", "Already used", "You have already used this link."); }
+  if (res.status === 429) {
+    return show(icon("bad", "!"), el("h1", {}, "Too many attempts"), el("p", {}, "Please wait a few minutes and try again."),
+                el("button", { class: "link", onclick: goDashboard }, "Go to my account"));
+  }
+  if (res.status === 401) { return show(icon("bad", "!"), el("h1", {}, "Please log in again"), el("p", {}, "Your session expired."),
+                el("button", { class: "btn", onclick: () => location.replace("/") }, "Log in")); }
+  if (res.status === 403) { dropToken(); return showMessage("bad", "✕", "Not available", data.message || "This account cannot use this link."); }
+  showInvalid();
+}
+
+function ready(user, token) {
+  show(
+    icon("", "🔒"),
+    el("h1", {}, "You have private access"),
+    el("p", {}, "Press Claim to unlock it. Claiming uses your one view, and you can only do it once."),
+    el("button", { class: "btn", id: "claimBtn", onclick: (e) => { e.currentTarget.disabled = true; claim(user, token); } }, "Claim"),
+    el("button", { class: "link", onclick: goDashboard }, "Not now")
+  );
+}
+
+const token = readToken();
+if (!token) {
+  showInvalid();
+} else {
+  showLoading("Checking your login…");
+  let handled = false;
+  onAuthStateChanged(auth, (user) => {
+    if (handled) return;
+    handled = true;
+    if (!user) {
+      // Log in on the normal page; the dashboard sends the user straight back here.
+      location.replace("/");
+      return;
+    }
+    ready(user, token);
+  });
+}
+</script>
+</body>
+</html>

@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>
+// A secret link was opened before login: after logging in, go back to the claim page.
+try { if (sessionStorage.getItem('gx_claim_token')) location.replace('/claim/'); } catch (_) {}
+</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
