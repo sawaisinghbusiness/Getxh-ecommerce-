@@ -777,7 +777,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 .welcome-card {
   position: relative;
   border-radius: 16px;
-  padding: 12px;
+  padding: 16px 20px;
   margin-bottom: 16px;
   background: #1A2436;
   border: none;
@@ -803,10 +803,10 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 
 <div class="welcome-card">
   <!-- Top row: avatar + username + Add Funds btn -->
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;position:relative;z-index:1;">
-    <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;position:relative;z-index:1;">
+    <div style="display:flex;align-items:center;gap:13px;">
       <div id="userAvatarContainer"
-           style="width:42px;height:42px;border-radius:50%;border:2px solid rgba(255,255,255,0.25);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#243447;">
+           style="width:50px;height:50px;border-radius:50%;border:2px solid rgba(255,255,255,0.25);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#243447;">
         <svg viewBox="0 0 100 100" width="100%" height="100%" style="display:block;">
           <circle cx="50" cy="50" r="50" fill="#243447"/>
           <!-- Green Shirt / Torso -->
@@ -823,12 +823,12 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         </svg>
       </div>
       <div>
-        <p style="margin:0;font-size:12px;color:#9AA9BD;">Welcome,</p>
-        <p id="userName" style="color:#FFFFFF;font-weight:700;text-transform:uppercase;font-size:13px;display:block;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0;">User</p>
+        <p style="margin:0;font-size:14px;color:#9AA9BD;">Welcome,</p>
+        <p id="userName" style="color:#FFFFFF;font-weight:700;text-transform:uppercase;font-size:16px;display:block;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0;">User</p>
       </div>
     </div>
     <button onclick="window.location.href='/wallet'"
-      style="display:inline-flex;align-items:center;justify-content:center;gap:4px;height:30px;padding:0 13px;border-radius:9999px;cursor:pointer;background:#38a820;border:none;color:#ffffff;font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0;align-self:flex-start;transition:all 0.2s ease;"
+      style="display:inline-flex;align-items:center;justify-content:center;gap:4px;height:44px;padding:0 16px;border-radius:9999px;cursor:pointer;background:#38a820;border:none;color:#ffffff;font-size:14px;font-weight:700;white-space:nowrap;flex-shrink:0;transition:all 0.2s ease;"
       onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'"
       ontouchstart="this.style.transform='scale(0.95)'" ontouchend="this.style.transform='scale(1)'">
       Add Funds
