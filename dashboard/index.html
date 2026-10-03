@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Lexend:wght@100..900&display=swap" rel="stylesheet">
 <script src="/assets/default-services.js"></script>
-<script src="/assets/gx-notify.js?v=1"></script>
+<script src="/assets/gx-notify.js?v=2"></script>
 
 <style>
 :root {
@@ -3514,11 +3514,9 @@ onAuthStateChanged(auth, async (user) => {
             window.gxNotify({
               kind: isCredit ? 'credit' : 'debit',
               tag: isWelcome ? 'Welcome bonus' : undefined,
-              title: isWelcome ? 'Welcome bonus added!' : (isCredit ? 'Money added to your wallet' : 'Money deducted from your wallet'),
+              title: isWelcome ? 'Referral bonus credited' : (note || (isCredit ? 'Added to your wallet' : 'Deducted from your wallet')),
               amount: amt,
-              message: isWelcome
-                ? 'Welcome to GETXH! Your referral bonus has been credited to your wallet.'
-                : (note || 'Your wallet has been updated.'),
+              message: 'Available balance ' + '\u20b9' + newBal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
               duration: 3000,
               onClose: () => window._closeBalNotifyAndAnimate()
             });
