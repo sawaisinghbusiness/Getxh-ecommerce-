@@ -260,6 +260,7 @@
   </style>
   <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
   <style>body{opacity:0;transition:opacity .18s ease}</style>
+  <link rel="preload" as="image" href="/payment-qr-bharatpe.jpg">
 </head>
 
 <body class="text-white min-h-screen">
@@ -311,11 +312,19 @@
 
   <!-- Add Funds via UPI -->
   <section id="addFundsSection" class="section-card rounded-3xl p-6 mb-5">
-    <h3 class="text-lg font-black mb-1">Add Funds via UPI</h3>
-    <p class="text-xs text-gray-500 mb-5">Choose an amount, press Pay, and pay the QR with any UPI app. Your balance is added automatically.</p>
+    <h3 class="text-lg font-black mb-4">Add Funds via UPI</h3>
+
+    <!-- How do you want to add funds? -->
+    <div class="mb-5 grid grid-cols-2 gap-1 rounded-2xl p-1" style="background:rgba(255,255,255,0.05)" role="tablist" aria-label="Payment method">
+      <button type="button" id="tabQr" role="tab" aria-selected="true" onclick="switchPayMode('qr')" class="rounded-xl py-2.5 text-xs font-black">Pay with QR</button>
+      <button type="button" id="tabUtr" role="tab" aria-selected="false" onclick="switchPayMode('utr')" class="rounded-xl py-2.5 text-xs font-black">Verify with UTR</button>
+    </div>
 
     <!-- Notice -->
     <div id="walletNotice" class="hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold"></div>
+
+    <div id="paneQr">
+      <p class="text-xs text-gray-500 mb-5">Choose an amount, press Pay, and pay the QR with any UPI app. Your balance is added automatically.</p>
 
     <!-- 1. Amount + mobile -->
     <div id="payForm">
@@ -334,14 +343,7 @@
           class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm" oninput="checkPayBtn()"/>
       </div>
 
-      <!-- T&C ACCEPTANCE CHECKBOX -->
-      <div id="policyAcceptWrap" style="margin-bottom:14px;">
-        <label id="policyAcceptLabel" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;user-select:none;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);transition:border-color 0.2s;">
-          <input type="checkbox" id="policyAcceptCb" style="margin-top:2px;width:16px;height:16px;accent-color:#6366f1;cursor:pointer;flex-shrink:0;" onchange="handlePolicyChange(this)" />
-          <span style="font-size:12px;color:#94a3b8;line-height:1.6;">I have read and agree to the <a href="/terms/" target="_blank" rel="noopener" style="color:#818cf8;text-decoration:underline;font-weight:600;">Terms & Conditions</a> and <a href="/privacy/" target="_blank" rel="noopener" style="color:#818cf8;text-decoration:underline;font-weight:600;">Privacy Policy</a>.</span>
-        </label>
-        <div id="policyAcceptError" class="hidden" style="margin-top:6px;padding:8px 12px;border-radius:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);font-size:12px;color:#f87171;font-weight:600;">You must accept the Terms & Conditions and Privacy Policy before paying.</div>
-      </div>
+      <div id="policySlotQr"></div>
 
       <button id="payBtn" onclick="startPayment()" disabled
         class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white">
@@ -363,26 +365,104 @@
       <button type="button" onclick="cancelPayment()" class="text-xs font-bold text-gray-400 underline">Cancel</button>
     </div>
 
-    <!-- 3. Fallback: the old way -->
-    <details id="manualVerify" class="mt-6 rounded-2xl" style="border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02)">
-      <summary class="cursor-pointer select-none px-4 py-3 text-xs font-bold text-gray-400">Paid but balance not added? Verify with UTR</summary>
-      <div class="px-4 pb-4 pt-1">
-        <div class="mb-3">
-          <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">UTR Number</label>
-          <input id="utrInput" type="text" placeholder="Enter your UTR number"
-            class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm" oninput="checkVerifyBtn()"/>
+    </div><!-- /paneQr -->
+
+    <div id="paneUtr" class="hidden">
+    <!-- Steps / Instructions -->
+    <div class="mb-6">
+      <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">How it works</p>
+      <div class="flex flex-col gap-0">
+
+        <div class="step-item flex gap-4 items-stretch" style="--i: 0;">
+          <div class="flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">1</div>
+            <div class="w-px flex-1 mt-1" style="background:rgba(99,102,241,0.25)"></div>
+          </div>
+          <div class="pb-4">
+            <p class="text-sm font-bold text-white">Scan QR & Pay</p>
+            <p class="text-xs text-gray-500 mt-0.5">Open PhonePe, GPay or any UPI app and scan the code below</p>
+          </div>
         </div>
-        <div class="mb-4">
-          <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">Amount Paid (₹)</label>
-          <input id="amountInput" type="number" min="1" placeholder="Enter amount you paid"
-            class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm" oninput="checkVerifyBtn()"/>
+
+        <div class="step-item flex gap-4 items-stretch" style="--i: 1;">
+          <div class="flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">2</div>
+            <div class="w-px flex-1 mt-1" style="background:rgba(99,102,241,0.25)"></div>
+          </div>
+          <div class="pb-4">
+            <p class="text-sm font-bold text-white">Copy your UTR</p>
+            <p class="text-xs text-gray-500 mt-0.5">Copy your UTR number from your payment app receipt</p>
+          </div>
         </div>
-        <button id="verifyBtn" onclick="verifyPayment()" disabled
-          class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white">
-          Verify Payment
-        </button>
+
+        <div class="step-item flex gap-4 items-start" style="--i: 2;">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">3</div>
+          <div>
+            <p class="text-sm font-bold text-white">Verify below</p>
+            <p class="text-xs text-gray-500 mt-0.5">Enter UTR & amount, hit Verify — balance reflects instantly</p>
+          </div>
+        </div>
+
       </div>
-    </details>
+    </div>
+
+    <div class="border-t border-white/6 mb-6"></div>
+
+    <!-- UTR Input -->
+    <div class="mb-3">
+      <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">UTR Number</label>
+      <input id="utrInput" type="text" placeholder="Enter your UTR number"
+        class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm"
+        oninput="checkVerifyBtn()"/>
+    </div>
+
+    <!-- Amount Input -->
+    <div class="mb-5">
+      <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">Amount Paid (₹)</label>
+      <input id="amountInput" type="number" min="1" placeholder="Enter amount you paid"
+        class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm"
+        oninput="checkVerifyBtn()"/>
+    </div>
+
+    <!-- shared Terms checkbox is moved here -->
+    <div id="policySlotUtr"></div>
+
+    <!-- Verify Button -->
+    <button id="verifyBtn" onclick="verifyPayment()" disabled
+      class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white mb-6">
+      Verify Payment
+    </button>
+
+    <div class="border-t border-white/6 mb-6"></div>
+
+    <!-- QR Code -->
+    <div class="flex flex-col items-center">
+      <div class="rounded-3xl p-4 mb-3" style="background:#ffffff;box-shadow:0 8px 32px rgba(0,0,0,0.35);border:3px solid rgba(99,102,241,0.3)">
+        <img src="/payment-qr-bharatpe.jpg" alt="UPI QR Code"
+          class="qr-code-img rounded-2xl object-contain"
+          fetchpriority="high" loading="eager"
+          style="width:200px;height:200px;image-rendering:crisp-edges;display:block"/>
+      </div>
+      <div class="flex items-center gap-2 mt-1">
+        <span class="material-symbols-outlined text-indigo-400 scanner-pulse-icon" style="font-size:16px">qr_code_scanner</span>
+        <p class="text-sm font-black text-indigo-300 tracking-wide">Scan &amp; Pay via UPI</p>
+      </div>
+      <p class="text-xs text-gray-500 mt-1">PhonePe · GPay · Paytm · Any UPI app</p>
+    </div>
+    </div><!-- /paneUtr -->
+
+    <!-- the one Terms checkbox lives in whichever pane is open -->
+    <div id="policyHome" class="hidden">
+      <!-- T&C ACCEPTANCE CHECKBOX -->
+      <div id="policyAcceptWrap" style="margin-bottom:14px;">
+        <label id="policyAcceptLabel" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;user-select:none;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);transition:border-color 0.2s;">
+          <input type="checkbox" id="policyAcceptCb" style="margin-top:2px;width:16px;height:16px;accent-color:#6366f1;cursor:pointer;flex-shrink:0;" onchange="handlePolicyChange(this)" />
+          <span style="font-size:12px;color:#94a3b8;line-height:1.6;">I have read and agree to the <a href="/terms/" target="_blank" rel="noopener" style="color:#818cf8;text-decoration:underline;font-weight:600;">Terms & Conditions</a> and <a href="/privacy/" target="_blank" rel="noopener" style="color:#818cf8;text-decoration:underline;font-weight:600;">Privacy Policy</a>.</span>
+        </label>
+        <div id="policyAcceptError" class="hidden" style="margin-top:6px;padding:8px 12px;border-radius:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);font-size:12px;color:#f87171;font-weight:600;">You must accept the Terms & Conditions and Privacy Policy before paying.</div>
+      </div>
+
+    </div>
   </section>
 
   <!-- Transaction History -->
@@ -747,6 +827,26 @@ window.verifyPayment = async function() {
   }
 };
 
+// ═════════ PAYMENT MODE: QR or UTR ═════════
+window.switchPayMode = function(mode) {
+  const qr = mode !== "utr";
+  document.getElementById("paneQr").classList.toggle("hidden", !qr);
+  document.getElementById("paneUtr").classList.toggle("hidden", qr);
+  for (const [id, on] of [["tabQr", qr], ["tabUtr", !qr]]) {
+    const b = document.getElementById(id);
+    b.setAttribute("aria-selected", String(on));
+    b.style.background = on ? "linear-gradient(135deg,#6366f1,#8b5cf6)" : "transparent";
+    b.style.color = on ? "#fff" : "#94a3b8";
+  }
+  // The single Terms checkbox moves into the open pane, just above its button.
+  const slot = document.getElementById(qr ? "policySlotQr" : "policySlotUtr");
+  const box = document.getElementById("policyAcceptWrap");
+  if (slot && box && box.parentNode !== slot) slot.appendChild(box);
+  showNotice("");
+  try { sessionStorage.setItem("gx_pay_mode", qr ? "qr" : "utr"); } catch (_) {}
+};
+switchPayMode((() => { try { return new URLSearchParams(location.search).get("mode") || sessionStorage.getItem("gx_pay_mode") || "qr"; } catch (_) { return "qr"; } })());
+
 // ═════════ QR CHECKOUT ═════════
 const QUICK_AMOUNTS = [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
 const MIN_PAY = 5, MAX_PAY = 20000;
@@ -896,8 +996,8 @@ async function pollPayment() {
       showForm();
     } else if (data.status === "expired" || data.status === "cancelled") {
       showForm();
-      showNotice("This QR has expired. If you already paid, open “Paid but balance not added?” below and enter your UTR.");
-      document.getElementById("manualVerify").open = true;
+      showNotice("This QR has expired. If you already paid, switch to “Verify with UTR” above and enter your UTR.");
+      switchPayMode("utr");
     } else if (data.status === "failed") {
       showForm();
       showPopupState("failed", (data.message || "Payment could not be credited.") + (data.utr ? " UTR: " + data.utr : ""));
