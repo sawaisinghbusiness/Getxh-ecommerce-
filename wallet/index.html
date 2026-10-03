@@ -359,7 +359,8 @@
     #addFundsSection #policyAcceptLabel { letter-spacing: normal; margin-bottom: 0 !important; }
     #addFundsSection .dark-field { height: 58px !important; font-size: 17px !important; padding: 0 18px !important; }
     #payForm > .mb-3, #payForm > .mb-4 { margin-bottom: 22px !important; }
-    #quickAmounts button { height: 58px !important; font-size: 17px; }
+    /* amount badges: compact, the number is the content (no empty space around it) */
+    #addFundsSection #quickAmounts button.dark-field { height: 42px !important; padding: 0 6px !important; font-size: 15px !important; font-weight: 700; border-radius: 10px !important; line-height: 1; }
     #addFundsSection #policyAcceptLabel { padding: 14px 16px !important; }
     #addFundsSection #policyAcceptLabel span { font-size: 13px !important; }
     #policyAcceptWrap { margin-bottom: 22px !important; }
@@ -438,7 +439,7 @@
     <!-- 1. Amount + mobile -->
     <div id="payForm">
       <p class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Quick amount</p>
-      <div id="quickAmounts" class="grid grid-cols-3 gap-3 mb-6"></div>
+      <div id="quickAmounts" class="grid grid-cols-3 gap-2 mb-6"></div>
 
       <div class="mb-3">
         <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block" for="payAmount">Amount (₹)</label>
@@ -908,8 +909,20 @@ async function authFetch(path, options = {}) {
   return { res, data };
 }
 
+// The servers sleep when nobody has used them for a while and take up to a minute to wake. Waking them
+// as soon as this page opens means the first Pay is quick.
+(function wakeServers() {
+  for (const url of [API_BACKEND + "/ping", "https://backend-for-payment-system-getxh-f7fw.onrender.com/ping.php"]) {
+    try { fetch(url, { mode: "no-cors", cache: "no-store" }).catch(() => {}); } catch (_) {}
+  }
+})();
+
+let paying = false;
+
+// One click creates one payment. A sleeping server is waited for (and said so), a dropped connection is
+// retried once on its own, and the button stays locked until the payment page has opened.
 window.startPayment = async function() {
-  if (!currentUser) return;
+  if (!currentUser || paying) return;
   const policyCb = document.getElementById("policyAcceptCb");
   if (!policyCb.checked) {
     document.getElementById("policyAcceptError").classList.remove("hidden");
@@ -921,20 +934,38 @@ window.startPayment = async function() {
   if (!mobile) { showNotice("Enter a valid 10-digit mobile number."); return; }
   showNotice("");
 
+  paying = true;
   const btn = document.getElementById("payBtn");
   btn.disabled = true; btn.textContent = "Creating QR…";
+  const slow = setTimeout(() => { btn.textContent = "Starting the server… please wait"; }, 6000);
+  let opened = false;
   try {
-    const { res, data } = await authFetch("/wallet/qr/create", { method: "POST", body: JSON.stringify({ amount, mobile }) });
+    let result = null;
+    for (let attempt = 1; attempt <= 2 && !result; attempt++) {
+      try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 75000);
+        try {
+          result = await authFetch("/wallet/qr/create", { method: "POST", body: JSON.stringify({ amount, mobile }), signal: ctrl.signal });
+        } finally { clearTimeout(timer); }
+      } catch (_) {
+        // network error / sleeping server answered without CORS: nothing was created, so trying again is safe
+        if (attempt === 2) throw _;
+        await new Promise((r) => setTimeout(r, 2500));
+      }
+    }
+    const { res, data } = result;
     if (!res.ok || data.status !== "success") { showNotice(data.message || "Could not create the payment. Please try again."); return; }
     // The QR has its own page: /wallet/pay/?id=… (this tab keeps the link so the QR shows at once)
     try { sessionStorage.setItem("gx_qr_" + data.id, JSON.stringify({ amount: data.amount, upi: data.upi, expiresAt: data.expiresAt })); } catch (_) {}
+    opened = true;
+    btn.textContent = "Opening…";
     location.href = "/wallet/pay/?id=" + encodeURIComponent(data.id);
-    return;
   } catch {
     showNotice("Could not connect to the server. Please try again.");
   } finally {
-    btn.textContent = "Pay";
-    checkPayBtn();
+    clearTimeout(slow);
+    if (!opened) { paying = false; btn.textContent = "Pay"; checkPayBtn(); }
   }
 };
 
