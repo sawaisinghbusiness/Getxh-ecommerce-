@@ -2,10 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<script>
-// A secret link was opened before login: after logging in, go back to the claim page.
-try { if (sessionStorage.getItem('gx_claim_token')) location.replace('/claim/'); } catch (_) {}
-</script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -3338,6 +3334,49 @@ function startUpdatesFeed(uid) {
   } catch (err) { console.warn('Could not start updates feed:', err); }
 }
 
+// ── FREE-VIEWS LINK (opened via /claim/#t=…, possibly before login or sign-up) ──
+// The visitor never sees a "verifying" page: the token waits in this browser and is claimed
+// silently here. Only the outcome is shown, as a card.
+function readClaimToken() {
+  try {
+    const s = sessionStorage.getItem('gx_claim_token');
+    if (s) return s;
+    const raw = JSON.parse(localStorage.getItem('gx_claim_token') || 'null');
+    if (raw && raw.t && Date.now() - Number(raw.at) < 24 * 60 * 60 * 1000) return String(raw.t);
+  } catch (_) {}
+  return '';
+}
+function dropClaimToken() {
+  try { sessionStorage.removeItem('gx_claim_token'); localStorage.removeItem('gx_claim_token'); } catch (_) {}
+}
+async function claimPendingFreeLink(user) {
+  const token = readClaimToken();
+  if (!/^[A-Za-z0-9_-]{20,100}$/.test(token)) { if (token) dropClaimToken(); return; }
+  let res, data = {};
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 70000); // the server can be asleep on the free plan
+    res = await fetch('https://backend-for-api-connect-g8ta.onrender.com/secret-links/claim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (await user.getIdToken()) },
+      body: JSON.stringify({ token }),
+      cache: 'no-store', referrerPolicy: 'no-referrer', credentials: 'omit', signal: ctrl.signal
+    });
+    clearTimeout(timer);
+    data = await res.json().catch(() => ({}));
+  } catch (_) { return; } // network problem: keep the token, try again on the next visit
+  if (res.status === 429 || res.status === 401 || res.status >= 500) return; // try again later
+  dropClaimToken();
+  const card = (o) => { if (typeof window.gxNotify === 'function') window.gxNotify(Object.assign({ duration: 4000 }, o)); };
+  if (res.status === 200 && data.status === 'success') {
+    card({ kind: 'offer', tag: 'Free views', title: Number(data.views).toLocaleString('en-IN') + ' free views added',
+           message: 'Selected for you in Welcome Offer. Place your order below.' });
+  } else if (res.status === 409 && data.status === 'ip_used') {
+    card({ kind: 'warning', title: 'Offer already claimed', message: 'This free offer has already been claimed from this internet connection.' });
+  }
+  // already claimed by this account / not valid: nothing to show
+}
+
 // ── LOGOUT ──
 window._logoutUser = async function() {
   if (_unsubStats)   _unsubStats();
@@ -3374,16 +3413,8 @@ onAuthStateChanged(auth, async (user) => {
   window.currentEmail = currentEmail;
   window._formUid = user.uid;
   startUpdatesFeed(user.uid);
-  // Free welcome views from an admin link (selected for the user while they last)
-  try {
-    const justClaimed = sessionStorage.getItem('gx_free_welcome');
-    window.refreshFreeOffers(true).then(() => {
-      if (justClaimed) {
-        sessionStorage.removeItem('gx_free_welcome');
-        window.gxNotify({ kind: 'offer', tag: 'Free views', title: Number(justClaimed).toLocaleString('en-IN') + ' free views added', message: 'Selected for you in Welcome Offer. Place your order below.', duration: 3000 });
-      }
-    });
-  } catch (_) {}
+  // Free views from an admin link: claimed here in the background, then selected for the user.
+  claimPendingFreeLink(user).finally(() => { try { window.refreshFreeOffers(true); } catch (_) {} });
   if (typeof window._restoreFormForUser === 'function') window._restoreFormForUser(user.uid);
 
   // Fail-safe: Ensure user document exists in Firestore for Admin Panel visibility
