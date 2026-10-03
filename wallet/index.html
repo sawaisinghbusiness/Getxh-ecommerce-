@@ -369,14 +369,21 @@
     #walletBalance { font-size: 3.4rem; }
     .watch-demo-card { padding: 16px 18px !important; }
 
+    /* three steps: a quiet timeline, type only (about the height of the two text lines it replaces) */
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); list-style: none; margin: 16px 0 26px; padding: 0; }
+    .steps li { position: relative; padding: 19px 6px 0 0; }
+    .steps li::before { content: ""; position: absolute; top: 4px; left: 14px; right: 6px; height: 1px; background: var(--z-border-hi); }
+    .steps li.last::before { display: none; }
+    .steps .dot { position: absolute; top: 0; left: 0; width: 9px; height: 9px; border-radius: 50%; background: #f4f4f5; box-shadow: 0 0 0 3px var(--z-card); }
+    .steps li.last .dot { background: #22c55e; }
+    .steps small { display: block; font-size: 10px; font-weight: 600; letter-spacing: .14em; color: #71717a; margin-bottom: 3px; }
+    .steps b { display: block; font-size: 13px; font-weight: 600; line-height: 1.25; color: var(--z-text); letter-spacing: -0.005em; }
+
     /* notices and the UTR fallback box */
     #manualVerify { background: var(--z-inner) !important; border: 1px solid var(--z-border) !important; border-radius: 10px !important; }
     #manualVerify summary { color: var(--z-muted); }
     #manualVerify .pay-btn { box-shadow: none !important; }
 
-    /* history rows */
-    #txList > * { border-color: var(--z-border) !important; }
-    #txList .rounded-2xl { background: var(--z-inner) !important; border: 1px solid var(--z-border) !important; border-radius: 10px !important; }
     .verify-popup-box .popup-close-btn.success { background: #ffffff !important; color: #0a0a0a !important; border-radius: 10px !important; }
   </style>
 </head>
@@ -384,12 +391,6 @@
 <body class="text-white min-h-screen">
 
 <!-- Header -->
-<div class="sticky top-0 z-40 flex items-center gap-3 px-4 py-4 border-b border-white/8 bg-[#0f172a]">
-  <button onclick="window.location.href='/dashboard'"
-    class="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 hover:bg-white/10 transition-colors">
-    <span class="material-symbols-outlined text-xl">arrow_back_ios_new</span>
-  </button>
-</div>
 
 <main class="mx-auto w-full max-w-lg px-3 py-5 pb-24">
 
@@ -431,7 +432,11 @@
   <!-- Add Funds via UPI -->
   <section id="addFundsSection" class="section-card rounded-3xl mb-4">
     <h3 class="text-xl font-black mb-1.5">Add Funds via UPI</h3>
-    <p class="text-[13px] leading-relaxed text-gray-500 mb-6">Choose an amount, press Pay, and pay the QR with any UPI app. Your balance is added automatically.</p>
+    <ol class="steps" aria-label="How it works: 1. Choose an amount. 2. Press Pay. 3. Pay the QR with any UPI app. Your balance is added automatically.">
+      <li><i class="dot"></i><small>STEP 1</small><b>Choose amount</b></li>
+      <li><i class="dot"></i><small>STEP 2</small><b>Press Pay</b></li>
+      <li class="last"><i class="dot"></i><small>STEP 3</small><b>Scan &amp; pay</b></li>
+    </ol>
 
     <!-- Notice -->
     <div id="walletNotice" class="hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold"></div>
@@ -488,15 +493,6 @@
         </button>
       </div>
     </details>
-  </section>
-
-  <!-- Transaction History -->
-  <section class="section-card rounded-3xl p-6">
-    <h3 class="text-base font-black mb-4">Recent Transactions</h3>
-    <div id="txList">
-      <div class="skeleton h-14 w-full mb-3 rounded-2xl"></div>
-      <div class="skeleton h-14 w-full rounded-2xl"></div>
-    </div>
   </section>
 
 </main>
@@ -569,7 +565,6 @@ const db   = getFirestore(app);
 
 let currentUser = null;
 let _unsubBalance = null;
-let _unsubTxns = null;
 
 function animateCountUp(element, startVal, endVal, duration = 300, prefix = "₹", decimals = 2) {
   if (!element) return;
@@ -609,55 +604,6 @@ window.handleVerifyPopupBackdrop = function(e) {
   }
 };
 
-function renderTxList(txs) {
-  const el = document.getElementById("txList");
-  if (!txs.length) {
-    el.innerHTML = '<p class="text-sm text-gray-500 text-center py-6">No transactions yet.</p>';
-    return;
-  }
-  el.innerHTML = txs.map((t, index) => {
-    let date = "—";
-    try {
-      if (t.createdAt?.toDate && typeof t.createdAt.toDate === "function") {
-        date = t.createdAt.toDate().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
-      } else if (t.createdAt?.seconds) {
-        date = new Date(t.createdAt.seconds * 1000).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
-      } else if (t.createdAt) {
-        const d = new Date(t.createdAt);
-        if (!isNaN(d.getTime())) {
-          date = d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
-        }
-      }
-    } catch (e) {
-      date = "—";
-    }
-
-    const isDebit = t.type === 'debit' ||
-      (typeof t.amount === 'number' && t.amount < 0) ||
-      (t.description && /debit|deduct/i.test(t.description)) ||
-      (t.reason && /debit|deduct/i.test(t.reason));
-
-    const title = isDebit
-      ? (t.method === 'admin' || (t.reason && /admin/i.test(t.reason)) ? "Admin Debit" : "Balance Adjustment")
-      : (t.title || (t.type === 'credit' && t.method === 'admin' ? "Admin Credit" : "Wallet Recharge"));
-
-    const rawAmt = Math.abs(Number(t.amount) || 0);
-    const amtStr = (isDebit ? "-₹" : "₹") + rawAmt.toFixed(2);
-    const amtColor = isDebit ? "text-red-400" : "text-white";
-
-    const color = t.status === "success" ? "text-green-400" : t.status === "failed" ? "text-red-400" : "text-yellow-400";
-    const badge = t.status === "success" ? "bg-green-500/10 border-green-500/20" : t.status === "failed" ? "bg-red-500/10 border-red-500/20" : "bg-yellow-500/10 border-yellow-500/20";
-    const animClass = index === 0 ? " new-tx-row" : "";
-    return `<div class="flex items-center justify-between bg-white/3 border border-white/6 rounded-2xl px-4 py-3 mb-3${animClass}">
-      <div><p class="text-sm font-bold">${title}</p><p class="text-xs text-gray-500">${date}</p></div>
-      <div class="text-right">
-        <p class="text-sm font-black ${amtColor}">${amtStr}</p>
-        <span class="text-xs font-bold px-2 py-0.5 rounded-lg border ${badge} ${color}">${t.status || 'success'}</span>
-      </div>
-    </div>`;
-  }).join("");
-}
-
 onAuthStateChanged(auth, user => {
   if (!user) { window.location.replace("/"); return; }
   currentUser = user;
@@ -692,23 +638,6 @@ onAuthStateChanged(auth, user => {
     localStorage.setItem(_balCacheKey, balStr);
   });
 
-  // Real-time transaction history
-  if (_unsubTxns) _unsubTxns();
-  try {
-    const q = query(
-      collection(db, "walletTxns"),
-      where("uid", "==", user.uid),
-      orderBy("createdAt", "desc"),
-      limit(20)
-    );
-    _unsubTxns = onSnapshot(q, (snap) => {
-      renderTxList(snap.docs.map(d => d.data()));
-    }, () => {
-      document.getElementById("txList").innerHTML = '<p class="text-sm text-gray-500 text-center py-6">No transactions yet.</p>';
-    });
-  } catch {
-    document.getElementById("txList").innerHTML = '<p class="text-sm text-gray-500 text-center py-6">No transactions yet.</p>';
-  }
 });
 
 // ── POLICY ACCEPTANCE LOGIC ──
@@ -839,7 +768,6 @@ window.verifyPayment = async function() {
       showPopupState("success");
       document.getElementById("utrInput").value  = "";
       document.getElementById("amountInput").value = "";
-      // txList auto-updates via onSnapshot — no manual reload needed
     } else {
       showPopupState("failed", data.message || "Check your UTR & amount, then try again.");
     }
@@ -978,7 +906,6 @@ if (new URLSearchParams(location.search).has("utr")) {
 
 window.addEventListener('beforeunload', () => {
   if (_unsubBalance) _unsubBalance();
-  if (_unsubTxns) _unsubTxns();
 });
 </script>
 <script>requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.style.opacity=1))</script>
