@@ -2738,25 +2738,11 @@ document.getElementById('insufficientModal').addEventListener('click', function(
 
 // ── TOAST ──
 function showToast(type, title, msg) {
-  const icons = { success: 'check_circle', error: 'cancel', warn: 'warning' };
-  const container = document.getElementById('toastContainer');
-  const t = document.createElement('div');
-  t.className = 'toast toast-' + type;
-  t.innerHTML = `
-    <div class="toast-icon">
-      <span class="material-symbols-outlined" style="font-size:17px">${icons[type]||'info'}</span>
-    </div>
-    <div class="toast-body">
-      <div class="toast-title">${title}</div>
-      ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
-      <div class="toast-bar"></div>
-    </div>`;
-  container.appendChild(t);
-  requestAnimationFrame(() => { requestAnimationFrame(() => { t.classList.add('show'); }); });
-  setTimeout(() => {
-    t.classList.add('hide');
-    setTimeout(() => t.remove(), 380);
-  }, 3000);
+  // One notification style everywhere: the top card (assets/gx-notify.js).
+  var kinds = { success: 'success', error: 'warning', warn: 'warning', info: 'info' };
+  if (typeof window.gxNotify === 'function') {
+    window.gxNotify({ kind: kinds[type] || 'info', title: String(title || ''), message: msg ? String(msg) : '', duration: type === 'error' ? 4000 : 3000 });
+  }
 }
 
 // ── INSTAGRAM COUNT AUTO-FETCHER (VIA BACKEND) ──

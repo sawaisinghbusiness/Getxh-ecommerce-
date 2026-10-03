@@ -8,6 +8,7 @@
 <meta name="robots" content="noindex, nofollow"/>
 <meta name="theme-color" content="#0b1220">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="/assets/gx-notify.js?v=2"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap"/>
@@ -999,8 +1000,10 @@ async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
     }
 
     // Show/hide Refill & Cancel buttons dynamically based on API live response
-    const canRefill = (data.can_refill == 1 || data.can_refill === true || data.can_refill === '1' || data.refill == 1 || data.refill === true);
-    const canCancel = (data.can_cancel == 1 || data.can_cancel === true || data.can_cancel === '1' || data.cancel == 1 || data.cancel === true);
+    // Only our backend decides: it sends can_cancel / can_refill = true when the service supports it
+    // and the order is in a state where it makes sense. Anything else (missing, false) hides the button.
+    const canRefill = data.can_refill === true;
+    const canCancel = data.can_cancel === true;
 
     // Remember the API's answer so a re-render (every Firestore update) doesn't hide the buttons again
     window._actionFlags[eid] = { refill: canRefill, cancel: canCancel };
@@ -1044,28 +1047,11 @@ document.addEventListener('click', () => {
 
 // ── TOAST NOTIFICATIONS (M2) ──
 function showToast(type, title, msg) {
-  let container = document.getElementById('toastContainer');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'toastContainer';
-    container.className = 'toast-container';
-    document.body.appendChild(container);
+  // One notification style everywhere: the top card (assets/gx-notify.js).
+  var kinds = { success: 'success', error: 'warning', warn: 'warning', info: 'info' };
+  if (typeof window.gxNotify === 'function') {
+    window.gxNotify({ kind: kinds[type] || 'info', title: String(title || ''), message: msg ? String(msg) : '', duration: type === 'error' ? 4000 : 3000 });
   }
-  const icons = { success: 'check_circle', error: 'cancel', warn: 'warning', info: 'info' };
-  const t = document.createElement('div');
-  t.className = 'toast toast-' + type;
-  t.innerHTML = `
-    <span class="material-symbols-outlined toast-icon" style="font-size:18px">${icons[type]||'info'}</span>
-    <div>
-      <div class="toast-title">${title}</div>
-      ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
-    </div>`;
-  container.appendChild(t);
-  setTimeout(() => {
-    t.style.opacity = '0';
-    t.style.transform = 'translateX(100%)';
-    setTimeout(() => t.remove(), 300);
-  }, 4000);
 }
 
 // ── REFILL & CANCEL ──
