@@ -7,7 +7,6 @@
   <title>Wallet | GETXH</title>
   <meta name="robots" content="noindex, nofollow"/>
   <meta name="theme-color" content="#060b14">
-  <link rel="preload" as="image" href="/payment-qr-bharatpe.jpg">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
   <style>
@@ -312,98 +311,78 @@
 
   <!-- Add Funds via UPI -->
   <section id="addFundsSection" class="section-card rounded-3xl p-6 mb-5">
-    <h3 class="text-lg font-black mb-4">Add Funds via UPI</h3>
-
-    <!-- Steps / Instructions -->
-    <div class="mb-6">
-      <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">How it works</p>
-      <div class="flex flex-col gap-0">
-
-        <div class="step-item flex gap-4 items-stretch" style="--i: 0;">
-          <div class="flex flex-col items-center">
-            <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">1</div>
-            <div class="w-px flex-1 mt-1" style="background:rgba(99,102,241,0.25)"></div>
-          </div>
-          <div class="pb-4">
-            <p class="text-sm font-bold text-white">Scan QR & Pay</p>
-            <p class="text-xs text-gray-500 mt-0.5">Open PhonePe, GPay or any UPI app and scan the code below</p>
-          </div>
-        </div>
-
-        <div class="step-item flex gap-4 items-stretch" style="--i: 1;">
-          <div class="flex flex-col items-center">
-            <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">2</div>
-            <div class="w-px flex-1 mt-1" style="background:rgba(99,102,241,0.25)"></div>
-          </div>
-          <div class="pb-4">
-            <p class="text-sm font-bold text-white">Copy your UTR</p>
-            <p class="text-xs text-gray-500 mt-0.5">Copy your UTR number from your payment app receipt</p>
-          </div>
-        </div>
-
-        <div class="step-item flex gap-4 items-start" style="--i: 2;">
-          <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">3</div>
-          <div>
-            <p class="text-sm font-bold text-white">Verify below</p>
-            <p class="text-xs text-gray-500 mt-0.5">Enter UTR & amount, hit Verify — balance reflects instantly</p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <div class="border-t border-white/6 mb-6"></div>
+    <h3 class="text-lg font-black mb-1">Add Funds via UPI</h3>
+    <p class="text-xs text-gray-500 mb-5">Choose an amount, press Pay, and pay the QR with any UPI app. Your balance is added automatically.</p>
 
     <!-- Notice -->
     <div id="walletNotice" class="hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold"></div>
 
-    <!-- UTR Input -->
-    <div class="mb-3">
-      <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">UTR Number</label>
-      <input id="utrInput" type="text" placeholder="Enter your UTR number"
-        class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm"
-        oninput="checkVerifyBtn()"/>
+    <!-- 1. Amount + mobile -->
+    <div id="payForm">
+      <p class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Quick amount</p>
+      <div id="quickAmounts" class="grid grid-cols-3 gap-2 mb-5"></div>
+
+      <div class="mb-3">
+        <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block" for="payAmount">Amount (₹)</label>
+        <input id="payAmount" type="number" inputmode="numeric" min="5" max="20000" step="1" placeholder="Enter amount (5 - 20,000)"
+          class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm" oninput="onPayAmountInput()"/>
+      </div>
+
+      <div class="mb-4">
+        <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block" for="payMobile">Mobile number</label>
+        <input id="payMobile" type="tel" inputmode="numeric" maxlength="14" autocomplete="tel" placeholder="10-digit mobile number"
+          class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm" oninput="checkPayBtn()"/>
+      </div>
+
+      <!-- T&C ACCEPTANCE CHECKBOX -->
+      <div id="policyAcceptWrap" style="margin-bottom:14px;">
+        <label id="policyAcceptLabel" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;user-select:none;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);transition:border-color 0.2s;">
+          <input type="checkbox" id="policyAcceptCb" style="margin-top:2px;width:16px;height:16px;accent-color:#6366f1;cursor:pointer;flex-shrink:0;" onchange="handlePolicyChange(this)" />
+          <span style="font-size:12px;color:#94a3b8;line-height:1.6;">I have read and agree to the <a href="/terms/" target="_blank" rel="noopener" style="color:#818cf8;text-decoration:underline;font-weight:600;">Terms & Conditions</a> and <a href="/privacy/" target="_blank" rel="noopener" style="color:#818cf8;text-decoration:underline;font-weight:600;">Privacy Policy</a>.</span>
+        </label>
+        <div id="policyAcceptError" class="hidden" style="margin-top:6px;padding:8px 12px;border-radius:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);font-size:12px;color:#f87171;font-weight:600;">You must accept the Terms & Conditions and Privacy Policy before paying.</div>
+      </div>
+
+      <button id="payBtn" onclick="startPayment()" disabled
+        class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white">
+        Pay
+      </button>
     </div>
 
-    <!-- Amount Input -->
-    <div class="mb-5">
-      <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">Amount Paid (₹)</label>
-      <input id="amountInput" type="number" min="1" placeholder="Enter amount you paid"
-        class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm"
-        oninput="checkVerifyBtn()"/>
-    </div>
-
-    <!-- T&C ACCEPTANCE CHECKBOX -->
-    <div id="policyAcceptWrap" style="margin-bottom:14px;">
-      <label id="policyAcceptLabel" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;user-select:none;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);transition:border-color 0.2s;">
-        <input type="checkbox" id="policyAcceptCb" style="margin-top:2px;width:16px;height:16px;accent-color:#6366f1;cursor:pointer;flex-shrink:0;" onchange="handlePolicyChange(this)" />
-        <span style="font-size:12px;color:#94a3b8;line-height:1.6;">I have read and agree to the <a href="/terms/" target="_blank" rel="noopener" style="color:#818cf8;text-decoration:underline;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='#818cf8'" onfocus="this.style.color='#a5b4fc'" onblur="this.style.color='#818cf8'">Terms & Conditions</a> and <a href="/privacy/" target="_blank" rel="noopener" style="color:#818cf8;text-decoration:underline;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='#818cf8'" onfocus="this.style.color='#a5b4fc'" onblur="this.style.color='#818cf8'">Privacy Policy</a>.</span>
-      </label>
-      <div id="policyAcceptError" class="hidden" style="margin-top:6px;padding:8px 12px;border-radius:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);font-size:12px;color:#f87171;font-weight:600;">You must accept the Terms & Conditions and Privacy Policy before submitting payment verification.</div>
-    </div>
-
-    <!-- Verify Button -->
-    <button id="verifyBtn" onclick="verifyPayment()" disabled
-      class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white mb-6">
-      Verify Payment
-    </button>
-
-    <div class="border-t border-white/6 mb-6"></div>
-
-    <!-- QR Code -->
-    <div class="flex flex-col items-center">
+    <!-- 2. The QR -->
+    <div id="payQr" class="hidden flex flex-col items-center">
+      <p class="text-xs font-black uppercase tracking-widest text-gray-500 mb-1">Scan to pay</p>
+      <p id="payQrAmount" class="text-3xl font-black mb-3">₹0</p>
       <div class="rounded-3xl p-4 mb-3" style="background:#ffffff;box-shadow:0 8px 32px rgba(0,0,0,0.35);border:3px solid rgba(99,102,241,0.3)">
-        <img src="/payment-qr-bharatpe.jpg" alt="UPI QR Code"
-          class="qr-code-img rounded-2xl object-contain"
-          fetchpriority="high" loading="eager"
-          style="width:200px;height:200px;image-rendering:crisp-edges;display:block"/>
+        <div id="payQrImg" style="width:220px;height:220px;display:block" role="img" aria-label="UPI QR code"></div>
       </div>
-      <div class="flex items-center gap-2 mt-1">
-        <span class="material-symbols-outlined text-indigo-400 scanner-pulse-icon" style="font-size:16px">qr_code_scanner</span>
-        <p class="text-sm font-black text-indigo-300 tracking-wide">Scan &amp; Pay via UPI</p>
-      </div>
-      <p class="text-xs text-gray-500 mt-1">PhonePe · GPay · Paytm · Any UPI app</p>
+      <p class="text-sm text-gray-400 mb-1">Valid for <span id="payTimer" class="font-black text-white">3:00</span></p>
+      <p id="payWaiting" class="text-xs text-indigo-300 font-semibold mb-4 flex items-center gap-2"><span class="verify-spinner" style="width:14px;height:14px;border-width:2px;margin:0"></span> Waiting for your payment…</p>
+      <a id="payOpenApp" href="#" class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white text-center mb-3" style="display:block;text-decoration:none">Open UPI app</a>
+      <p class="text-xs text-gray-500 text-center mb-3">PhonePe · GPay · Paytm · Any UPI app. Pay exactly the amount shown, then wait here.</p>
+      <button type="button" onclick="cancelPayment()" class="text-xs font-bold text-gray-400 underline">Cancel</button>
     </div>
+
+    <!-- 3. Fallback: the old way -->
+    <details id="manualVerify" class="mt-6 rounded-2xl" style="border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02)">
+      <summary class="cursor-pointer select-none px-4 py-3 text-xs font-bold text-gray-400">Paid but balance not added? Verify with UTR</summary>
+      <div class="px-4 pb-4 pt-1">
+        <div class="mb-3">
+          <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">UTR Number</label>
+          <input id="utrInput" type="text" placeholder="Enter your UTR number"
+            class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm" oninput="checkVerifyBtn()"/>
+        </div>
+        <div class="mb-4">
+          <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block">Amount Paid (₹)</label>
+          <input id="amountInput" type="number" min="1" placeholder="Enter amount you paid"
+            class="dark-field w-full rounded-2xl px-4 py-3.5 text-white text-sm" oninput="checkVerifyBtn()"/>
+        </div>
+        <button id="verifyBtn" onclick="verifyPayment()" disabled
+          class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white">
+          Verify Payment
+        </button>
+      </div>
+    </details>
   </section>
 
   <!-- Transaction History -->
@@ -462,6 +441,7 @@
   </div>
 </div>
 
+<script src="/assets/qrcode-generator.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
@@ -660,6 +640,7 @@ window.checkVerifyBtn = function() {
   const amount = document.getElementById("amountInput").value.trim();
   const policyOk = document.getElementById("policyAcceptCb").checked;
   document.getElementById("verifyBtn").disabled = !(utr && amount && policyOk);
+  if (typeof window.checkPayBtn === "function") window.checkPayBtn();
 };
 
 function showPopupState(state, msg) {
@@ -669,6 +650,26 @@ function showPopupState(state, msg) {
   if (state === "failed" && msg) {
     document.getElementById("popupFailedMsg").textContent = msg;
   }
+}
+
+// Instant Telegram alert to the admin
+function notifyAdminPayment(amount, utr) {
+  try {
+    fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "payment",
+        data: {
+          amount: Number(amount),
+          utr,
+          method: "BharatPe UPI / QR",
+          username: currentUser.displayName || currentUser.email?.split("@")[0] || "User",
+          email: currentUser.email || ""
+        }
+      })
+    }).catch(() => {});
+  } catch (_) {}
 }
 
 window.closeVerifyPopup = function() {
@@ -723,23 +724,7 @@ window.verifyPayment = async function() {
     if (data.status === "success") {
       const creditedUtr = data.utr || String(utr).trim();
 
-      // Instant Telegram Alert to Admin
-      try {
-        fetch("https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            type: "payment",
-            data: {
-              amount: Number(data.amount || amount),
-              utr: creditedUtr,
-              method: "BharatPe UPI / QR",
-              username: currentUser.displayName || currentUser.email?.split("@")[0] || "User",
-              email: currentUser.email || ""
-            }
-          })
-        }).catch(() => {});
-      } catch (_) {}
+      notifyAdminPayment(Number(data.amount || amount), creditedUtr);
 
       // Populate success popup
       const popupAmt = document.getElementById("popupAmount");
@@ -761,6 +746,179 @@ window.verifyPayment = async function() {
     checkVerifyBtn();
   }
 };
+
+// ═════════ QR CHECKOUT ═════════
+const QUICK_AMOUNTS = [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
+const MIN_PAY = 5, MAX_PAY = 20000;
+let checkout = null, pollTimer = null, tickTimer = null, polling = false;
+
+function showNotice(msg, kind) {
+  const n = document.getElementById("walletNotice");
+  if (!msg) { n.className = "hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold"; n.textContent = ""; return; }
+  n.className = "flex mb-4 rounded-2xl px-4 py-3 text-sm font-semibold " +
+    (kind === "ok" ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400" : "bg-red-500/10 border border-red-500/20 text-red-400");
+  n.textContent = msg;
+}
+
+(function buildQuickAmounts() {
+  const box = document.getElementById("quickAmounts");
+  QUICK_AMOUNTS.forEach((n) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.dataset.amount = String(n);
+    b.className = "dark-field rounded-2xl py-3 text-sm font-black text-white";
+    b.textContent = "₹" + n.toLocaleString("en-IN");
+    b.onclick = () => { document.getElementById("payAmount").value = String(n); onPayAmountInput(); };
+    box.appendChild(b);
+  });
+})();
+
+window.onPayAmountInput = function() {
+  const v = document.getElementById("payAmount").value.trim();
+  document.querySelectorAll("#quickAmounts button").forEach((b) => {
+    const on = b.dataset.amount === v;
+    b.style.borderColor = on ? "rgba(99,102,241,0.8)" : "";
+    b.style.background = on ? "rgba(99,102,241,0.18)" : "";
+  });
+  checkPayBtn();
+};
+
+function payInputs() {
+  const raw = document.getElementById("payAmount").value.trim();
+  const amount = /^\d+$/.test(raw) ? Number(raw) : NaN;
+  let digits = document.getElementById("payMobile").value.replace(/\D/g, "");
+  if (digits.length === 12 && digits.startsWith("91")) digits = digits.slice(2);
+  else if (digits.length === 11 && digits.startsWith("0")) digits = digits.slice(1);
+  return { amount, mobile: /^[6-9]\d{9}$/.test(digits) ? digits : "" };
+}
+
+window.checkPayBtn = function() {
+  const { amount, mobile } = payInputs();
+  const okAmount = Number.isInteger(amount) && amount >= MIN_PAY && amount <= MAX_PAY;
+  document.getElementById("payBtn").disabled = !(okAmount && mobile && document.getElementById("policyAcceptCb").checked);
+};
+
+function drawQr(text) {
+  const qr = qrcode(0, "M");
+  qr.addData(text); qr.make();
+  const holder = document.getElementById("payQrImg");
+  holder.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+  const svg = holder.querySelector("svg");
+  if (svg) { svg.setAttribute("width", "220"); svg.setAttribute("height", "220"); svg.style.display = "block"; }
+}
+
+function showForm() {
+  stopTimers(); checkout = null;
+  document.getElementById("payQr").classList.add("hidden");
+  document.getElementById("payForm").classList.remove("hidden");
+  checkPayBtn();
+}
+
+function stopTimers() {
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  if (tickTimer) { clearInterval(tickTimer); tickTimer = null; }
+}
+
+async function authFetch(path, options = {}) {
+  const idToken = await currentUser.getIdToken();
+  const res = await fetch(`${API_BACKEND}${path}`, {
+    ...options,
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + idToken, ...(options.headers || {}) },
+    cache: "no-store",
+  });
+  const data = await res.json().catch(() => ({}));
+  return { res, data };
+}
+
+window.startPayment = async function() {
+  if (!currentUser) return;
+  const policyCb = document.getElementById("policyAcceptCb");
+  if (!policyCb.checked) {
+    document.getElementById("policyAcceptError").classList.remove("hidden");
+    document.getElementById("policyAcceptLabel").style.borderColor = "rgba(239,68,68,0.4)";
+    return;
+  }
+  const { amount, mobile } = payInputs();
+  if (!Number.isInteger(amount) || amount < MIN_PAY || amount > MAX_PAY) { showNotice(`Enter a whole amount between ₹${MIN_PAY} and ₹${MAX_PAY.toLocaleString("en-IN")}.`); return; }
+  if (!mobile) { showNotice("Enter a valid 10-digit mobile number."); return; }
+  showNotice("");
+
+  const btn = document.getElementById("payBtn");
+  btn.disabled = true; btn.textContent = "Creating QR…";
+  try {
+    const { res, data } = await authFetch("/wallet/qr/create", { method: "POST", body: JSON.stringify({ amount, mobile }) });
+    if (!res.ok || data.status !== "success") { showNotice(data.message || "Could not create the payment. Please try again."); return; }
+    checkout = { id: data.id, amount: data.amount, expiresAt: data.expiresAt, upi: data.upi };
+    document.getElementById("payQrAmount").textContent = "₹" + data.amount.toLocaleString("en-IN");
+    document.getElementById("payOpenApp").setAttribute("href", data.upi);
+    drawQr(data.upi);
+    document.getElementById("payForm").classList.add("hidden");
+    document.getElementById("payQr").classList.remove("hidden");
+    document.getElementById("payWaiting").style.display = "flex";
+    tick();
+    tickTimer = setInterval(tick, 1000);
+    pollTimer = setInterval(pollPayment, 3000);
+    setTimeout(pollPayment, 1500);
+  } catch {
+    showNotice("Could not connect to the server. Please try again.");
+  } finally {
+    btn.textContent = "Pay";
+    checkPayBtn();
+  }
+};
+
+function tick() {
+  if (!checkout) return;
+  const left = Math.max(0, Math.round((checkout.expiresAt - Date.now()) / 1000));
+  document.getElementById("payTimer").textContent = Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0");
+  // The server decides when it has expired; asking once more at zero shows the right message at once.
+  if (left === 0) pollPayment();
+}
+
+async function pollPayment() {
+  if (!checkout || polling) return;
+  const mine = checkout;
+  polling = true;
+  try {
+    const { res, data } = await authFetch("/wallet/qr/" + mine.id);
+    if (checkout !== mine) return;
+    if (!res.ok && res.status === 404) { showForm(); showNotice("This payment was not found. Please start again."); return; }
+    if (data.status === "paid") {
+      stopTimers();
+      checkout = null;
+      notifyAdminPayment(mine.amount, data.utr || "");
+      const popupAmt = document.getElementById("popupAmount");
+      popupAmt.textContent = "₹0.00";
+      animateCountUp(popupAmt, 0, mine.amount, 300);
+      document.getElementById("popupUtr").textContent = data.utr ? "UTR: " + data.utr : "";
+      document.getElementById("popupNewBal").textContent = typeof data.balance === "number" ? "₹" + data.balance.toFixed(2) : "Updated";
+      showPopupState("success");
+      document.getElementById("verifyPopup").classList.add("active");
+      showForm();
+    } else if (data.status === "expired" || data.status === "cancelled") {
+      showForm();
+      showNotice("This QR has expired. If you already paid, open “Paid but balance not added?” below and enter your UTR.");
+      document.getElementById("manualVerify").open = true;
+    } else if (data.status === "failed") {
+      showForm();
+      showPopupState("failed", (data.message || "Payment could not be credited.") + (data.utr ? " UTR: " + data.utr : ""));
+      document.getElementById("verifyPopup").classList.add("active");
+    }
+  } catch (_) {
+    /* offline for a moment: the next poll tries again */
+  } finally {
+    polling = false;
+  }
+}
+
+window.cancelPayment = async function() {
+  const mine = checkout;
+  showForm();
+  if (!mine) return;
+  try { await authFetch("/wallet/qr/" + mine.id + "/cancel", { method: "POST" }); } catch (_) {}
+};
+
+// Back from the UPI app on the same phone: look right away instead of waiting for the next tick.
+document.addEventListener("visibilitychange", () => { if (!document.hidden) pollPayment(); });
 
 window.addEventListener('beforeunload', () => {
   if (_unsubBalance) _unsubBalance();
