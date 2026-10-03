@@ -359,6 +359,30 @@
     #payTimer { color: var(--z-text); }
     #payWaiting .verify-spinner { border-color: var(--z-border-hi) !important; border-top-color: #fff !important; }
 
+    /* ── roomier layout: more width, more air, bigger touch targets ── */
+    #addFundsSection { padding: 22px 16px 24px !important; }
+    @media (min-width: 480px) { #addFundsSection { padding: 28px !important; } }
+    #addFundsSection label:not(#policyAcceptLabel) { font-size: 12.5px; letter-spacing: 0.1em; margin-bottom: 10px !important; }
+    #addFundsSection #policyAcceptLabel { letter-spacing: normal; margin-bottom: 0 !important; }
+    #addFundsSection .dark-field { height: 58px !important; font-size: 17px !important; padding: 0 18px !important; }
+    #payForm > .mb-3, #payForm > .mb-4 { margin-bottom: 22px !important; }
+    #quickAmounts button { height: 58px !important; font-size: 17px; }
+    #addFundsSection #policyAcceptLabel { padding: 14px 16px !important; }
+    #addFundsSection #policyAcceptLabel span { font-size: 13px !important; }
+    #policyAcceptWrap { margin-bottom: 22px !important; }
+    #addFundsSection .pay-btn, #payOpenApp { height: 58px !important; font-size: 17px !important; }
+    .balance-card { padding: 26px 22px !important; }
+    #walletBalance { font-size: 3.4rem; }
+    .watch-demo-card { padding: 16px 18px !important; }
+
+    /* QR screen */
+    #payQrCard { background: #ffffff; border-radius: 18px; padding: 18px; box-shadow: 0 0 0 1px var(--z-border-hi), 0 18px 44px rgba(0,0,0,0.5); line-height: 0; }
+    #payQrImg { width: 240px; height: 240px; }
+    #payTimerPill { background: var(--z-inner); border: 1px solid var(--z-border); color: var(--z-muted); border-radius: 999px; padding: 8px 18px; font-size: 14px; font-weight: 500; }
+    #payTimer { color: var(--z-text); font-weight: 700; font-variant-numeric: tabular-nums; }
+    #payCancelBtn { height: 54px; border: 1px solid var(--z-border); border-radius: 10px; color: var(--z-muted); font-size: 15px; font-weight: 600; background: transparent; }
+    #payCancelBtn:hover { border-color: var(--z-border-hi); color: var(--z-text); }
+
     /* notices and the UTR fallback box */
     #manualVerify { background: var(--z-inner) !important; border: 1px solid var(--z-border) !important; border-radius: 10px !important; }
     #manualVerify summary { color: var(--z-muted); }
@@ -381,10 +405,10 @@
   </button>
 </div>
 
-<main class="mx-auto w-full max-w-lg px-4 py-5 pb-24">
+<main class="mx-auto w-full max-w-lg px-3 py-5 pb-24">
 
   <!-- Balance Card -->
-  <section class="balance-card rounded-3xl p-6 mb-5">
+  <section class="balance-card rounded-3xl p-6 mb-4">
     <p class="text-xs uppercase tracking-widest text-indigo-300/70 mb-2">Available Balance</p>
     <h2 id="walletBalance" class="text-5xl font-black tracking-tight">
       <span class="skeleton inline-block w-36 h-12 rounded-xl">&nbsp;</span>
@@ -395,7 +419,7 @@
 
   <!-- Watch Demo Card -->
   <a href="https://youtube.com/shorts/Gh_yxZoPkTU?si=v44GjhfFs-3zNKw-" target="_blank" rel="noopener"
-    class="watch-demo-card rounded-3xl mb-5 overflow-hidden flex items-center gap-4 no-underline"
+    class="watch-demo-card rounded-3xl mb-4 overflow-hidden flex items-center gap-4 no-underline"
     style="display:flex;background:linear-gradient(135deg,rgba(15,23,42,0.95),rgba(20,30,60,0.95));border:1px solid rgba(255,255,255,0.08);padding:14px 18px;text-decoration:none;transition:border-color 0.2s,transform 0.2s;cursor:pointer;">
     <!-- Thumbnail -->
     <div style="position:relative;flex-shrink:0;width:80px;height:56px;border-radius:12px;overflow:hidden;background:#000;">
@@ -419,9 +443,9 @@
   </a>
 
   <!-- Add Funds via UPI -->
-  <section id="addFundsSection" class="section-card rounded-3xl mb-5">
-    <h3 class="text-lg font-black mb-1">Add Funds via UPI</h3>
-    <p class="text-xs text-gray-500 mb-5">Choose an amount, press Pay, and pay the QR with any UPI app. Your balance is added automatically.</p>
+  <section id="addFundsSection" class="section-card rounded-3xl mb-4">
+    <h3 class="text-xl font-black mb-1.5">Add Funds via UPI</h3>
+    <p id="payIntro" class="text-[13px] leading-relaxed text-gray-500 mb-6">Choose an amount, press Pay, and pay the QR with any UPI app. Your balance is added automatically.</p>
 
     <!-- Notice -->
     <div id="walletNotice" class="hidden mb-4 rounded-2xl px-4 py-3 text-sm font-semibold"></div>
@@ -429,7 +453,7 @@
     <!-- 1. Amount + mobile -->
     <div id="payForm">
       <p class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Quick amount</p>
-      <div id="quickAmounts" class="grid grid-cols-3 gap-2.5 mb-5"></div>
+      <div id="quickAmounts" class="grid grid-cols-3 gap-3 mb-6"></div>
 
       <div class="mb-3">
         <label class="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block" for="payAmount">Amount (₹)</label>
@@ -460,16 +484,16 @@
 
     <!-- 2. The QR -->
     <div id="payQr" class="hidden flex flex-col items-center">
-      <p class="text-xs font-black uppercase tracking-widest text-gray-500 mb-1">Scan to pay</p>
-      <p id="payQrAmount" class="text-3xl font-black mb-3">₹0</p>
-      <div class="rounded-3xl p-4 mb-3" style="background:#ffffff;box-shadow:0 8px 32px rgba(0,0,0,0.35);border:3px solid rgba(99,102,241,0.3)">
-        <div id="payQrImg" style="width:220px;height:220px;display:block" role="img" aria-label="UPI QR code"></div>
+      <p class="text-[13px] font-bold uppercase tracking-widest text-gray-500 mb-1.5">Scan to pay</p>
+      <p id="payQrAmount" class="text-5xl font-black mb-5 tracking-tight">₹0</p>
+      <div id="payQrCard" class="mb-5">
+        <div id="payQrImg" role="img" aria-label="UPI QR code"></div>
       </div>
-      <p class="text-sm text-gray-400 mb-1">Valid for <span id="payTimer" class="font-black text-white">3:00</span></p>
-      <p id="payWaiting" class="text-xs text-indigo-300 font-semibold mb-4 flex items-center gap-2"><span class="verify-spinner" style="width:14px;height:14px;border-width:2px;margin:0"></span> Waiting for your payment…</p>
-      <a id="payOpenApp" href="#" class="pay-btn w-full rounded-2xl py-3.5 font-black text-sm text-white text-center mb-3" style="display:block;text-decoration:none">Open UPI app</a>
-      <p class="text-xs text-gray-500 text-center mb-3">PhonePe · GPay · Paytm · Any UPI app. Pay exactly the amount shown, then wait here.</p>
-      <button type="button" onclick="cancelPayment()" class="text-xs font-bold text-gray-400 underline">Cancel</button>
+      <div id="payTimerPill" class="mb-3">Valid for <span id="payTimer">3:00</span></div>
+      <p id="payWaiting" class="text-[13px] font-semibold mb-6 flex items-center gap-2"><span class="verify-spinner" style="width:14px;height:14px;border-width:2px;margin:0"></span> Waiting for your payment…</p>
+      <a id="payOpenApp" href="#" class="pay-btn w-full text-center mb-3" style="display:block;text-decoration:none">Open UPI app</a>
+      <button type="button" id="payCancelBtn" onclick="cancelPayment()" class="w-full">Cancel payment</button>
+      <p class="text-[13px] leading-relaxed text-gray-500 text-center mt-5">PhonePe · GPay · Paytm · Any UPI app.<br>Pay exactly the amount shown, then wait here.</p>
     </div>
 
     <!-- 3. Fallback: the old way -->
@@ -910,12 +934,13 @@ function drawQr(text) {
   const holder = document.getElementById("payQrImg");
   holder.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
   const svg = holder.querySelector("svg");
-  if (svg) { svg.setAttribute("width", "220"); svg.setAttribute("height", "220"); svg.style.display = "block"; }
+  if (svg) { svg.setAttribute("width", "240"); svg.setAttribute("height", "240"); svg.style.display = "block"; }
 }
 
 function showForm() {
   stopTimers(); checkout = null;
   document.getElementById("payQr").classList.add("hidden");
+  document.getElementById("payIntro").classList.remove("hidden");
   document.getElementById("payForm").classList.remove("hidden");
   checkPayBtn();
 }
@@ -959,6 +984,7 @@ window.startPayment = async function() {
     document.getElementById("payOpenApp").setAttribute("href", data.upi);
     drawQr(data.upi);
     document.getElementById("payForm").classList.add("hidden");
+    document.getElementById("payIntro").classList.add("hidden");
     document.getElementById("payQr").classList.remove("hidden");
     document.getElementById("payWaiting").style.display = "flex";
     tick();
