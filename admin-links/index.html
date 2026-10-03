@@ -104,7 +104,7 @@ td{padding:11px 10px;border-bottom:1px solid var(--border2);vertical-align:top;w
         <div><label for="fViews">Free views for EACH person</label><input id="fViews" type="number" min="100" max="1000000" value="30000"/></div>
         <div><label for="fName">Offer name (shown to the user)</label><input id="fName" maxlength="80" placeholder="e.g. Free Instagram Views"/></div>
       </div>
-      <p class="hint">Everyone who registers through this link gets their own amount. One person (and one mobile number) can get it once per link. Orders are at least 100, and the service disappears when less than 100 is left.</p>
+      <p class="hint">Everyone who registers through this link gets their own amount. One account and one internet connection (IP address) can get it once per link. Orders are at least 100, and the service disappears when less than 100 is left.</p>
       <div class="grid">
         <div><label for="fMaxUsers">Max people (optional)</label><input id="fMaxUsers" type="number" min="1" max="1000000" placeholder="no limit"/></div>
         <div><label for="fExpiry">Last day to claim (optional)</label><input id="fExpiry" type="datetime-local"/></div>
@@ -116,6 +116,7 @@ td{padding:11px 10px;border-bottom:1px solid var(--border2);vertical-align:top;w
     <div class="panel">
       <h2>Links</h2>
       <div class="err hidden" id="listErr"></div>
+      <div class="err hidden" id="ipWarn">The "one per IP address" check is not active right now (the server did not receive the visitor's IP). Links still work, one claim per account.</div>
       <div class="table-scroll">
         <table>
           <thead><tr><th>Offer</th><th>People</th><th>Status</th><th>Claim until</th><th></th></tr></thead>
@@ -241,7 +242,8 @@ async function loadServices() {
 async function loadLinks() {
   showErr("listErr", "");
   try {
-    const { links } = await api("GET", "/admin/links");
+    const { links, ipCheck } = await api("GET", "/admin/links");
+    $("ipWarn").classList.toggle("hidden", ipCheck !== false);
     const rows = $("rows"); rows.replaceChildren();
     $("emptyMsg").classList.toggle("hidden", links.length > 0);
     for (const l of links) rows.append(...buildRow(l));
@@ -275,7 +277,7 @@ function buildRow(l) {
         for (const c of claims) {
           const line = document.createElement("div");
           const who = document.createElement("span");
-          who.textContent = c.name + " · " + (c.mobile || "—") + (c.email ? " · " + c.email : "");
+          who.textContent = c.name + (c.mobile ? " · " + c.mobile : "") + (c.email ? " · " + c.email : "");
           const use = document.createElement("span");
           use.textContent = c.used.toLocaleString() + " used · " + c.remaining.toLocaleString() + " left · " + fmt(c.claimedAt);
           line.append(who, use); box.append(line);
