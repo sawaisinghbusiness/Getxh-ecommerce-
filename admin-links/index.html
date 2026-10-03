@@ -28,6 +28,8 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);
 label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 input,textarea{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 13px;border-radius:10px;font:inherit;font-size:.92rem;outline:none;margin-bottom:14px}
 input:focus,textarea:focus{border-color:var(--purple)}
+select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 13px;border-radius:10px;font:inherit;font-size:.92rem;outline:none;margin-bottom:14px}
+select:focus{border-color:var(--purple)}
 textarea{min-height:96px;resize:vertical}
 .btn{padding:11px 18px;border-radius:10px;border:none;background:var(--grad);color:#fff;font:700 .9rem 'Inter',sans-serif;cursor:pointer;transition:opacity .2s}
 .btn:hover{opacity:.88}.btn:disabled{opacity:.5;cursor:not-allowed}
@@ -57,7 +59,7 @@ td{padding:11px 10px;border-bottom:1px solid var(--border2);vertical-align:top;w
 .badge.active{background:rgba(34,197,94,.15);color:#86efac}
 .badge.revoked{background:rgba(239,68,68,.15);color:#fca5a5}
 .badge.expired{background:rgba(245,158,11,.15);color:#fcd34d}
-.badge.exhausted{background:rgba(148,163,184,.15);color:#cbd5e1}
+.badge.full{background:rgba(148,163,184,.15);color:#cbd5e1}
 .bar{height:6px;border-radius:99px;background:var(--surface2);margin-top:6px;overflow:hidden}
 .bar>i{display:block;height:100%;background:var(--grad)}
 .claims{background:var(--bg);border-radius:10px;padding:10px 14px;margin-top:8px;font-size:.82rem;color:var(--muted)}
@@ -89,28 +91,25 @@ td{padding:11px 10px;border-bottom:1px solid var(--border2);vertical-align:top;w
 
   <div class="wrap">
     <div class="panel">
-      <h2>Create a link</h2>
+      <h2>Create a free-views link</h2>
       <div class="err hidden" id="createErr"></div>
       <div id="newLink" class="linkbox hidden">
         <b>Link created. Copy it now: it is shown only once and cannot be recovered.</b>
         <code id="newLinkUrl"></code>
         <button class="btn small" id="copyBtn">Copy link</button>
       </div>
+      <label for="fService">Service to give for free</label>
+      <select id="fService"><option value="">Loading services…</option></select>
       <div class="grid">
-        <div><label for="fName">Service name</label><input id="fName" maxlength="80" placeholder="e.g. Free Reels Tool"/></div>
-        <div><label for="fViews">How many views?</label><input id="fViews" type="number" min="1" max="1000000" value="50000"/></div>
+        <div><label for="fViews">Free views for EACH person</label><input id="fViews" type="number" min="100" max="1000000" value="30000"/></div>
+        <div><label for="fName">Offer name (shown to the user)</label><input id="fName" maxlength="80" placeholder="e.g. Free Instagram Views"/></div>
       </div>
-      <p class="hint">One view = one user claiming the link once. When the views are used up, the link closes by itself.</p>
-      <label for="fTitle">Title (what the user sees)</label>
-      <input id="fTitle" maxlength="120" placeholder="e.g. Your free access is ready"/>
-      <label for="fText">Text</label>
-      <textarea id="fText" maxlength="2000" placeholder="Shown as plain text."></textarea>
+      <p class="hint">Everyone who registers through this link gets their own amount. One person (and one mobile number) can get it once per link. Orders are at least 100, and the service disappears when less than 100 is left.</p>
       <div class="grid">
-        <div><label for="fBtnLabel">Button label (optional)</label><input id="fBtnLabel" maxlength="40" placeholder="Open"/></div>
-        <div><label for="fBtnUrl">Button link (optional, https only)</label><input id="fBtnUrl" type="url" placeholder="https://…"/></div>
+        <div><label for="fMaxUsers">Max people (optional)</label><input id="fMaxUsers" type="number" min="1" max="1000000" placeholder="no limit"/></div>
+        <div><label for="fExpiry">Last day to claim (optional)</label><input id="fExpiry" type="datetime-local"/></div>
       </div>
-      <label for="fExpiry">Expiry (optional)</label>
-      <input id="fExpiry" type="datetime-local"/>
+      <p class="hint">Every free view is paid by you to your provider. A limit on max people caps the cost if the link spreads.</p>
       <button class="btn" id="createBtn">Create link</button>
     </div>
 
@@ -119,7 +118,7 @@ td{padding:11px 10px;border-bottom:1px solid var(--border2);vertical-align:top;w
       <div class="err hidden" id="listErr"></div>
       <div class="table-scroll">
         <table>
-          <thead><tr><th>Service</th><th>Views</th><th>Status</th><th>Expires</th><th></th></tr></thead>
+          <thead><tr><th>Offer</th><th>People</th><th>Status</th><th>Claim until</th><th></th></tr></thead>
           <tbody id="rows"></tbody>
         </table>
       </div>
@@ -170,6 +169,7 @@ onAuthStateChanged(auth, (user) => {
     $("authScreen").classList.add("hidden");
     $("appScreen").classList.remove("hidden");
     $("topEmail").textContent = user.email;
+    loadServices();
     loadLinks();
   } else if (user) {
     signOut(auth);
@@ -195,11 +195,13 @@ $("logoutBtn").onclick = () => signOut(auth);
 // ── create ──
 $("createBtn").onclick = async () => {
   showErr("createErr", ""); $("newLink").classList.add("hidden");
+  const sel = $("fService").value;
+  if (!sel) return showErr("createErr", "Choose the service to give for free.");
+  const [category, serviceId] = JSON.parse(sel);
   const expiryVal = $("fExpiry").value;
   const body = {
-    name: $("fName").value, title: $("fTitle").value, text: $("fText").value,
-    buttonLabel: $("fBtnLabel").value, buttonUrl: $("fBtnUrl").value.trim(),
-    views: $("fViews").value.trim(),
+    name: $("fName").value, category, serviceId,
+    views: $("fViews").value.trim(), maxUsers: $("fMaxUsers").value.trim(),
     expiresAt: expiryVal ? new Date(expiryVal).getTime() : ""
   };
   const btn = $("createBtn"); btn.disabled = true; btn.textContent = "Creating…";
@@ -207,7 +209,7 @@ $("createBtn").onclick = async () => {
     const r = await api("POST", "/admin/create", body);
     $("newLinkUrl").textContent = r.url;
     $("newLink").classList.remove("hidden");
-    ["fName", "fTitle", "fText", "fBtnLabel", "fBtnUrl", "fExpiry"].forEach((i) => ($(i).value = ""));
+    ["fName", "fMaxUsers", "fExpiry"].forEach((i) => ($(i).value = ""));
     loadLinks();
   } catch (e) { showErr("createErr", e.message); }
   btn.disabled = false; btn.textContent = "Create link";
@@ -222,6 +224,20 @@ $("copyBtn").onclick = async () => {
 function td(...kids) { const c = document.createElement("td"); for (const k of kids) c.append(k); return c; }
 function btn(text, cls, onclick) { const b = document.createElement("button"); b.className = "btn small " + cls; b.textContent = text; b.onclick = onclick; return b; }
 
+async function loadServices() {
+  const sel = $("fService");
+  try {
+    const { services } = await api("GET", "/admin/services");
+    sel.replaceChildren(new Option("— Choose a service —", ""));
+    if (!services.length) { sel.append(new Option("No service can be given away", "")); return; }
+    const groups = {};
+    for (const s of services) {
+      if (!groups[s.category]) { groups[s.category] = document.createElement("optgroup"); groups[s.category].label = s.categoryLabel; sel.append(groups[s.category]); }
+      groups[s.category].append(new Option("#" + s.id + " — " + s.name, JSON.stringify([s.category, s.id])));
+    }
+  } catch (e) { sel.replaceChildren(new Option("Could not load services", "")); showErr("createErr", e.message); }
+}
+
 async function loadLinks() {
   showErr("listErr", "");
   try {
@@ -235,17 +251,21 @@ async function loadLinks() {
 function buildRow(l) {
   const tr = document.createElement("tr");
   const title = document.createElement("div"); title.style.fontWeight = "700"; title.textContent = l.name;
-  const sub = document.createElement("div"); sub.style.cssText = "color:var(--sub);font-size:.78rem"; sub.textContent = l.title + " · created " + fmt(l.createdAt);
-  const views = document.createElement("div"); views.textContent = l.used.toLocaleString() + " / " + l.totalViews.toLocaleString();
-  const bar = document.createElement("div"); bar.className = "bar"; const fill = document.createElement("i");
-  fill.style.width = Math.min(100, (l.used / l.totalViews) * 100) + "%"; bar.append(fill); views.append(bar);
+  const sub = document.createElement("div"); sub.style.cssText = "color:var(--sub);font-size:.78rem";
+  sub.textContent = l.serviceName + " · " + l.viewsPerUser.toLocaleString() + " views each · created " + fmt(l.createdAt);
+  const views = document.createElement("div");
+  views.textContent = l.usersClaimed.toLocaleString() + (l.maxUsers ? " / " + l.maxUsers.toLocaleString() : "") + " people";
+  if (l.maxUsers) {
+    const bar = document.createElement("div"); bar.className = "bar"; const fill = document.createElement("i");
+    fill.style.width = Math.min(100, (l.usersClaimed / l.maxUsers) * 100) + "%"; bar.append(fill); views.append(bar);
+  }
   const badge = document.createElement("span"); badge.className = "badge " + l.status; badge.textContent = l.status;
   const actions = document.createElement("div"); actions.className = "row-actions";
 
   const detail = document.createElement("tr"); detail.className = "hidden";
   const dcell = document.createElement("td"); dcell.colSpan = 5; detail.append(dcell);
 
-  actions.append(btn("Claimed by", "ghost", async () => {
+  actions.append(btn("People", "ghost", async () => {
     if (!detail.classList.toggle("hidden")) {
       dcell.replaceChildren(Object.assign(document.createElement("div"), { className: "claims", textContent: "Loading…" }));
       try {
@@ -254,9 +274,11 @@ function buildRow(l) {
         if (!claims.length) box.textContent = "Nobody has claimed this link yet.";
         for (const c of claims) {
           const line = document.createElement("div");
-          const who = document.createElement("span"); who.textContent = c.name + (c.email ? " (" + c.email + ")" : "");
-          const when = document.createElement("span"); when.textContent = fmt(c.claimedAt);
-          line.append(who, when); box.append(line);
+          const who = document.createElement("span");
+          who.textContent = c.name + " · " + (c.mobile || "—") + (c.email ? " · " + c.email : "");
+          const use = document.createElement("span");
+          use.textContent = c.used.toLocaleString() + " used · " + c.remaining.toLocaleString() + " left · " + fmt(c.claimedAt);
+          line.append(who, use); box.append(line);
         }
         dcell.replaceChildren(box);
       } catch (e) { dcell.replaceChildren(Object.assign(document.createElement("div"), { className: "claims", textContent: e.message })); }
@@ -264,7 +286,7 @@ function buildRow(l) {
   }));
   if (l.status === "active") {
     actions.append(btn("Revoke", "danger", async (ev) => {
-      if (!confirm("Revoke this link? It stops working immediately.")) return;
+      if (!confirm("Revoke this link? New people can no longer claim it AND the unused free views of everyone who already claimed stop working immediately.")) return;
       ev.currentTarget.disabled = true;
       try { await api("POST", "/admin/links/" + l.id + "/revoke"); toast("Link revoked"); loadLinks(); }
       catch (e) { toast(e.message); ev.currentTarget.disabled = false; }

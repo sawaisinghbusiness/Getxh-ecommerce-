@@ -1854,12 +1854,17 @@ window.applyDynamicServicesCatalog = function(newCategories, newServices) {
     SERVICES = newServices;
   }
   try {
+    const plainServices = {};
+    for (const k of Object.keys(SERVICES)) plainServices[k] = Array.isArray(SERVICES[k]) ? SERVICES[k].filter(x => !x.freeOffer) : SERVICES[k];
     localStorage.setItem('getxh_services_catalog', JSON.stringify({
       categories: CATEGORIES,
-      services: SERVICES,
+      services: plainServices,
       cachedAt: Date.now()
     }));
   } catch (e) {}
+
+  // Re-add this user's free offer (the catalog above does not contain it)
+  if (typeof window._injectFreeOffers === 'function') window._injectFreeOffers();
 
   if (typeof buildCategoryDropdown === 'function') {
     buildCategoryDropdown();
@@ -2114,7 +2119,7 @@ function buildServiceDropdown() {
   dd.innerHTML='';
   (SERVICES[_selCat]||[]).filter(s=>s.status !== 'inactive' && (!q||s.name.toLowerCase().includes(q))).forEach(s=>{
     const d=document.createElement('div');d.className='svc-item'+(_selSvc&&_selSvc.id===s.id?' selected':'');
-    d.innerHTML=`<div class="svc-num-badge">${escapeHtml(String(s.id))}</div><span class="flex-1 leading-snug">${escapeHtml(s.name)}</span><span class="text-[#2196f3] font-black text-xs flex-shrink-0 ml-2">₹${fmtPrice(s.price)}/1K</span>`;
+    d.innerHTML=`<div class="svc-num-badge">${escapeHtml(String(s.id))}</div><span class="flex-1 leading-snug">${escapeHtml(s.name)}</span><span class="text-[#2196f3] font-black text-xs flex-shrink-0 ml-2">${s.freeOffer ? 'FREE · ' + Number(s.remaining).toLocaleString('en-IN') + ' left' : '₹' + fmtPrice(s.price) + '/1K'}</span>`;
     d.onclick=()=>selectService(s);dd.appendChild(d);
   });
 }
@@ -2541,6 +2546,13 @@ function updateTotalPrice() {
     return;
   }
 
+  if (_selSvc.freeOffer) {
+    const okQty = qty >= _selSvc.min && qty <= _selSvc.max;
+    if (priceEl) priceEl.textContent = okQty ? 'FREE  ' : '';
+    if (totalQtyEl) totalQtyEl.value = '';
+    return;
+  }
+
   if (!qty || qty < _selSvc.min || qty > _selSvc.max) {
     if (priceEl) priceEl.textContent = '';
     if (totalQtyEl) totalQtyEl.value = '';
@@ -2706,8 +2718,136 @@ async function fetchAndSaveInstagramStartCount(url, docId) {
   }
 }
 
+// ══════════ FREE WELCOME OFFER (secret link) ══════════
+// A person who came through an admin link has an allowance of free views. It is added to the top of
+// "Welcome Offer" (and selected for them) while at least 100 views are left, and it is paid from the
+// allowance instead of the wallet. The server decides everything; this is only the screen.
+const GX_API = 'https://backend-for-api-connect-g8ta.onrender.com';
+window._freeOffers = [];
+
+window._injectFreeOffers = function() {
+  try {
+    for (const k of Object.keys(SERVICES)) if (Array.isArray(SERVICES[k])) SERVICES[k] = SERVICES[k].filter(x => !x.freeOffer);
+    if (!window._freeOffers.length) return;
+    if (!CATEGORIES.some(c => c.id === 'welcome-offer')) CATEGORIES.unshift({ id: 'welcome-offer', label: 'Welcome Offer' });
+    if (!Array.isArray(SERVICES['welcome-offer'])) SERVICES['welcome-offer'] = [];
+    const items = window._freeOffers.map((o, i) => ({
+      id: 'FREE' + (i ? i + 1 : ''),
+      name: '🎁 ' + o.label,
+      price: 0,
+      min: o.min,
+      max: o.max,
+      remaining: o.remaining,
+      freeOffer: o.offerId,
+      startTime: o.display.startTime, speed: o.display.speed, refill: o.display.refill, cancel: o.display.cancel,
+      drop: o.display.drop, quality: o.display.quality, delivery: o.display.delivery
+    }));
+    SERVICES['welcome-offer'].unshift(...items);
+  } catch (e) { console.warn('free offer inject error:', e); }
+};
+
+// autoSelect: open Welcome Offer with the free service chosen (right after login)
+window.refreshFreeOffers = async function(autoSelect) {
+  try {
+    if (!window.auth || !window.auth.currentUser) return;
+    const idToken = await window.auth.currentUser.getIdToken();
+    const res = await fetch(GX_API + '/secret-links/mine', {
+      cache: 'no-store', referrerPolicy: 'no-referrer', credentials: 'omit',
+      headers: { Authorization: 'Bearer ' + idToken }
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    window._freeOffers = Array.isArray(data.offers) ? data.offers : [];
+    const hadFreeSelected = !!(_selSvc && _selSvc.freeOffer);
+    window._injectFreeOffers();
+    buildCategoryDropdown();
+    if (autoSelect && window._freeOffers.length) {
+      const cat = CATEGORIES.find(c => c.id === 'welcome-offer');
+      if (cat) selectCategory(cat);              // selects the first service = the free one
+    } else if (hadFreeSelected && !window._freeOffers.length) {
+      const cat = CATEGORIES.find(c => c.id === 'welcome-offer');
+      if (cat) selectCategory(cat);              // the free service is finished: fall back to the normal list
+    } else if (_selCat) {
+      buildServiceDropdown();
+    }
+  } catch (e) { console.warn('free offers error:', e && e.message); }
+};
+
+async function placeFreeOrder() {
+  const offer = _selSvc && _selSvc.freeOffer;
+  const link = document.getElementById('linkInput').value.trim();
+  const quantity = parseInt(document.getElementById('quantityInput').value, 10);
+  if (!offer || !link || !quantity) { showToast('warn', 'Missing Fields', 'Please enter a link and quantity.'); return; }
+
+  const btn = document.getElementById('placeOrderBtn');
+  const labelSpan = btn.querySelector('.order-label');
+  const chevron = btn.querySelector('.material-symbols-outlined');
+  btn.disabled = true;
+  if (labelSpan) labelSpan.textContent = 'Processing...';
+  if (chevron) chevron.style.display = 'none';
+
+  try {
+    if (!window.auth || !window.auth.currentUser) { showToast('error', 'Session Expired', 'Please refresh the page and try again.'); return; }
+    const idToken = await window.auth.currentUser.getIdToken(true);
+    const requestId = (crypto.randomUUID && crypto.randomUUID()) || String(Date.now()) + '-' + Math.random().toString(36).slice(2);
+    const res = await fetch(GX_API + '/secret-links/order', {
+      method: 'POST',
+      cache: 'no-store', referrerPolicy: 'no-referrer', credentials: 'omit',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + idToken },
+      body: JSON.stringify({ offerId: offer, link, quantity, requestId })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.status !== 'success') {
+      showToast('error', 'Order Failed', String(data.message || 'Something went wrong. Please try again.').slice(0, 140));
+      if (res.status === 400 || res.status === 403) window.refreshFreeOffers(false);   // the views left may have changed
+      return;
+    }
+
+    // Telegram alert to the admin (price 0)
+    try {
+      fetch('https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert', {
+        method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'order', data: {
+          id: data.order || data.orderDocId, userEmail: window.currentEmail || '',
+          service: (data.serviceName || 'Service') + ' (FREE offer)', price: 0, quantity: data.quantity, link
+        } })
+      }).catch(() => {});
+    } catch (_) {}
+
+    if (data.orderDocId && link.includes('instagram.com') && typeof fetchAndSaveInstagramStartCount === 'function') {
+      fetchAndSaveInstagramStartCount(link, data.orderDocId);
+    }
+
+    document.getElementById('smOrderId').textContent = data.order ? '#' + data.order : 'Confirmed';
+    document.getElementById('smService').textContent = (data.serviceName || 'Service') + ' (FREE)';
+    document.getElementById('smQty').textContent = Number(data.quantity).toLocaleString();
+    document.getElementById('smAmount').textContent = 'FREE';
+    const modal = document.getElementById('successModal');
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    const box = document.getElementById('successModalBox');
+    box.style.transform = ''; box.style.opacity = '';
+    box.classList.remove('sheet-spring-exit');
+    box.classList.add('sheet-spring-enter');
+
+    document.getElementById('quantityInput').value = '';
+    document.getElementById('linkInput').value = '';
+    await window.refreshFreeOffers(false);          // new "left" count, or the service disappears
+    if (data.offerEnded) showToast('success', 'Free views finished', 'You have used all your free views.');
+  } catch (err) {
+    console.error('Free order error:', err && (err.message || err));
+    showToast('error', 'Unable to Place Order', 'Server error. Please try again.');
+  } finally {
+    if (labelSpan) labelSpan.textContent = 'ORDER';
+    if (chevron) chevron.style.display = '';
+    btn.disabled = false;
+    updateTotalPrice();
+  }
+}
+
 // ── PLACE ORDER ──
 async function placeOrder(serviceId) {
+  if (_selSvc && _selSvc.freeOffer) return placeFreeOrder();
   const link     = document.getElementById('linkInput').value.trim();
   const quantity = document.getElementById('quantityInput').value;
 
@@ -3201,6 +3341,16 @@ onAuthStateChanged(auth, async (user) => {
   window.currentUid   = currentUid;
   window.currentEmail = currentEmail;
   window._formUid = user.uid;
+  // Free welcome views from an admin link (selected for the user while they last)
+  try {
+    const justClaimed = sessionStorage.getItem('gx_free_welcome');
+    window.refreshFreeOffers(true).then(() => {
+      if (justClaimed) {
+        sessionStorage.removeItem('gx_free_welcome');
+        showToast('success', 'Free views added', Number(justClaimed).toLocaleString('en-IN') + ' free views are ready to use.');
+      }
+    });
+  } catch (_) {}
   if (typeof window._restoreFormForUser === 'function') window._restoreFormForUser(user.uid);
 
   // Fail-safe: Ensure user document exists in Firestore for Admin Panel visibility

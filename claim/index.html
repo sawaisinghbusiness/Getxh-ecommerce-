@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Private Access — GETXH</title>
+<title>Free Offer — GETXH</title>
 <meta name="robots" content="noindex, nofollow"/>
 <meta name="referrer" content="no-referrer"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -39,6 +39,11 @@ p{font-size:.92rem;color:var(--muted);line-height:1.6;margin-bottom:22px;white-s
 .spin{width:30px;height:30px;border:3px solid rgba(255,255,255,.15);border-top-color:var(--purple);border-radius:50%;margin:0 auto 18px;animation:s .8s linear infinite}
 @keyframes s{to{transform:rotate(360deg)}}
 .hidden{display:none!important}
+input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:10px;font:inherit;font-size:1rem;outline:none;margin-bottom:10px;text-align:center}
+input:focus{border-color:var(--purple)}
+.note{min-height:1.2em;font-size:.82rem;color:#fca5a5;margin-bottom:12px}
+a.btn{margin-top:0}
+a.link{display:inline-block;margin-top:14px;color:var(--muted);font-size:.85rem}
 </style>
 </head>
 <body>
@@ -90,35 +95,40 @@ function el(tag, props = {}, ...kids) {
 }
 function show(...nodes) { view.replaceChildren(...nodes); }
 const icon = (cls, glyph) => el("div", { class: "icon " + cls }, glyph);
-const goDashboard = () => { dropToken(); location.replace("/dashboard"); };
+const toDashboard = () => { dropToken(); location.replace("/dashboard"); };
+const num = (n) => Number(n).toLocaleString("en-IN");
 
 function showLoading(text) { show(el("div", { class: "spin" }), el("p", {}, text)); }
-function showMessage(kind, glyph, title, text, keepSkip = true) {
-  const nodes = [icon(kind, glyph), el("h1", {}, title), el("p", {}, text)];
-  if (keepSkip) nodes.push(el("button", { class: "btn", onclick: goDashboard }, "Go to my account"));
-  show(...nodes);
+function showMessage(kind, glyph, title, text) {
+  show(icon(kind, glyph), el("h1", {}, title), el("p", {}, text), el("button", { class: "btn", onclick: toDashboard }, "Go to my account"));
 }
 const showInvalid = () => { dropToken(); showMessage("bad", "✕", NOT_VALID, "Please check that you opened the full link you were given."); };
 
-function safeHttps(u) {
-  try { const x = new URL(u); return x.protocol === "https:" && !x.username && !x.password ? x.toString() : ""; }
-  catch (_) { return ""; }
+function showSuccess(views) {
+  // Straight to the dashboard, where the free service is already selected.
+  try { sessionStorage.setItem("gx_free_welcome", String(views)); } catch (_) {}
+  dropToken();
+  show(icon("ok", "🎁"), el("h1", {}, num(views) + " free views added!"),
+       el("p", {}, "Your free service is ready. Taking you to your account…"));
+  setTimeout(() => location.replace("/dashboard"), 900);
 }
 
-function showService(s) {
-  const nodes = [icon("ok", "✓")];
-  if (s.name) nodes.push(el("span", { class: "tag" }, s.name));
-  nodes.push(el("h1", {}, s.title || ""), el("p", {}, s.text || ""));
-  const href = s.buttonUrl ? safeHttps(s.buttonUrl) : "";
-  if (href) {
-    nodes.push(el("a", { class: "btn", href, target: "_blank", rel: "noopener noreferrer nofollow" }, s.buttonLabel || "Open"));
-  }
-  nodes.push(el("button", { class: "link", onclick: goDashboard }, "Done — go to my account"));
-  show(...nodes);
+function askMobile(user, token, note) {
+  const input = el("input", { type: "tel", inputmode: "numeric", autocomplete: "tel", maxlength: "16", placeholder: "10-digit mobile number", id: "mobile" });
+  const msg = el("p", { class: "note" }, note || "");
+  const go = el("button", { class: "btn", onclick: () => {
+    const v = input.value.trim();
+    if (!/^[+0-9\s-]{10,16}$/.test(v)) { msg.textContent = "Enter a valid 10-digit mobile number."; return; }
+    go.disabled = true; claim(user, token, v);
+  } }, "Get my free views");
+  show(icon("", "📱"), el("h1", {}, "One last step"),
+       el("p", {}, "Enter your mobile number. Each mobile number can receive this offer only once."),
+       input, msg, go, el("button", { class: "link", onclick: toDashboard }, "Not now"));
+  input.focus();
 }
 
-async function claim(user, token) {
-  showLoading("Claiming your access… this can take a few seconds.");
+async function claim(user, token, mobile) {
+  showLoading("Getting your free views… this can take a few seconds.");
   let res, data = {};
   try {
     const idToken = await user.getIdToken();
@@ -127,7 +137,7 @@ async function claim(user, token) {
     res = await fetch(API + "/secret-links/claim", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: "Bearer " + idToken },
-      body: JSON.stringify({ token }),
+      body: JSON.stringify(mobile ? { token, mobile } : { token }),
       cache: "no-store", referrerPolicy: "no-referrer", credentials: "omit", signal: ctrl.signal
     });
     clearTimeout(timer);
@@ -135,28 +145,38 @@ async function claim(user, token) {
   } catch (_) {
     // Network problem: nothing was claimed, so keep the token and let the user try again.
     show(icon("bad", "!"), el("h1", {}, "Could not connect"), el("p", {}, "Please check your internet and try again."),
-         el("button", { class: "btn", onclick: () => ready(user, token) }, "Try again"));
+         el("button", { class: "btn", onclick: () => claim(user, token, mobile) }, "Try again"));
     return;
   }
-  if (res.status === 200 && data.status === "success" && data.service) { dropToken(); return showService(data.service); }
-  if (res.status === 409) { dropToken(); return showMessage("bad", "✓", "Already used", "You have already used this link."); }
+  if (res.status === 200 && data.status === "success") return showSuccess(data.views);
+  if (res.status === 422) return askMobile(user, token, "");
+  if (res.status === 400 && data.status === "bad_mobile") return askMobile(user, token, data.message);
+  if (res.status === 409 && data.status === "mobile_used") { dropToken(); return showMessage("bad", "✕", "Offer already used", data.message); }
+  if (res.status === 409) {
+    dropToken();
+    const left = Number(data.remaining) || 0;
+    return showMessage("ok", "✓", "You already have this offer",
+      left >= 100 ? "You still have " + num(left) + " free views. Open your account to use them." : "You have already used this offer.");
+  }
   if (res.status === 429) {
     return show(icon("bad", "!"), el("h1", {}, "Too many attempts"), el("p", {}, "Please wait a few minutes and try again."),
-                el("button", { class: "link", onclick: goDashboard }, "Go to my account"));
+                el("button", { class: "link", onclick: toDashboard }, "Go to my account"));
   }
-  if (res.status === 401) { return show(icon("bad", "!"), el("h1", {}, "Please log in again"), el("p", {}, "Your session expired."),
-                el("button", { class: "btn", onclick: () => location.replace("/") }, "Log in")); }
+  if (res.status === 401) {
+    return show(icon("bad", "!"), el("h1", {}, "Please log in again"), el("p", {}, "Your session expired."),
+                el("button", { class: "btn", onclick: () => location.replace("/") }, "Log in"));
+  }
   if (res.status === 403) { dropToken(); return showMessage("bad", "✕", "Not available", data.message || "This account cannot use this link."); }
   showInvalid();
 }
 
-function ready(user, token) {
+function needLogin() {
   show(
-    icon("", "🔒"),
-    el("h1", {}, "You have private access"),
-    el("p", {}, "Press Claim to unlock it. Claiming uses your one view, and you can only do it once."),
-    el("button", { class: "btn", id: "claimBtn", onclick: (e) => { e.currentTarget.disabled = true; claim(user, token); } }, "Claim"),
-    el("button", { class: "link", onclick: goDashboard }, "Not now")
+    icon("", "🎁"),
+    el("h1", {}, "You have a free offer"),
+    el("p", {}, "Create your account (or log in) and your free views are added automatically."),
+    el("a", { class: "btn", href: "/register/" }, "Create account"),
+    el("a", { class: "link", href: "/" }, "I already have an account — log in")
   );
 }
 
@@ -169,12 +189,10 @@ if (!token) {
   onAuthStateChanged(auth, (user) => {
     if (handled) return;
     handled = true;
-    if (!user) {
-      // Log in on the normal page; the dashboard sends the user straight back here.
-      location.replace("/");
-      return;
-    }
-    ready(user, token);
+    // Not logged in: the token stays in this tab, and after logging in or registering the
+    // dashboard sends the user straight back here.
+    if (!user) return needLogin();
+    claim(user, token);
   });
 }
 </script>
