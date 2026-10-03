@@ -28,6 +28,7 @@ try { if (sessionStorage.getItem('gx_claim_token')) location.replace('/claim/');
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Lexend:wght@100..900&display=swap" rel="stylesheet">
 <script src="/assets/default-services.js"></script>
+<script src="/assets/gx-notify.js?v=2"></script>
 
 <style>
 :root {
@@ -447,61 +448,6 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 }
 .shake {
   animation: shake 0.36s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-}
-
-/* ADMIN BALANCE ANNOUNCEMENT TOP BANNER */
-.bal-notify-overlay {
-  position: fixed;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-160%);
-  z-index: 100001;
-  width: calc(100% - 24px);
-  max-width: 520px;
-  pointer-events: none;
-  opacity: 0;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-}
-.bal-notify-overlay.active {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
-  pointer-events: auto;
-}
-.bal-notify-card {
-  position: relative;
-  background: rgba(15, 23, 42, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  padding: 10px 14px;
-  box-shadow: 0 16px 40px -6px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  overflow: hidden;
-}
-.bal-notify-accent-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #22c55e;
-  box-shadow: 0 0 12px #22c55e;
-  transition: background 0.3s, box-shadow 0.3s;
-}
-.bal-notify-icon-wrap {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(34, 197, 94, 0.14);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  transition: background 0.3s, border-color 0.3s;
 }
 
 /* NEW ORDER & TOTAL AMOUNT BADGE GRADIENTS & ANIMATIONS */
@@ -1846,7 +1792,53 @@ try {
 }
 
 // ── DYNAMIC CATALOG UPDATE FUNCTION ────────────────
+// ── CATALOG CHANGE CARDS ───────────────────────────
+// The first catalog the page receives is the baseline; every later change (a service or offer
+// added, switched off or removed by the admin) is announced with a card.
+window._gxCatalogBaseline = null;
+function _gxActiveMap(services) {
+  const m = {};
+  if (!services || typeof services !== 'object') return m;
+  Object.keys(services).forEach(cat => {
+    const list = services[cat];
+    if (!Array.isArray(list)) return;
+    list.forEach(sv => {
+      if (!sv || sv.id === undefined || sv.freeOffer) return;
+      m[cat + ':' + sv.id] = { cat: cat, name: String(sv.name || 'Service'), active: sv.status !== 'inactive' };
+    });
+  });
+  return m;
+}
+function _gxAnnounceCatalog(newServices) {
+  const now = _gxActiveMap(newServices);
+  const before = window._gxCatalogBaseline;
+  window._gxCatalogBaseline = now;
+  if (!before || typeof window.gxNotify !== 'function') return;
+  const added = [], removed = [];
+  Object.keys(now).forEach(k => { if (now[k].active && !(before[k] && before[k].active)) added.push(now[k]); });
+  Object.keys(before).forEach(k => { if (before[k].active && !(now[k] && now[k].active)) removed.push(before[k]); });
+  const isOffer = e => e.cat === 'welcome-offer';
+  const card = (e, gone) => ({
+    kind: isOffer(e) ? (gone ? 'service_removed' : 'offer') : (gone ? 'service_removed' : 'service_new'),
+    tag: isOffer(e) ? (gone ? 'Offer ended' : 'New offer') : undefined,
+    title: e.name,
+    message: gone ? (isOffer(e) ? 'This offer is no longer available.' : 'This service is no longer available.')
+                  : (isOffer(e) ? 'A new offer just went live. Grab it before it ends!' : 'A new service is now live on your dashboard.'),
+    duration: 3000
+  });
+  const all = added.map(e => card(e, false)).concat(removed.map(e => card(e, true)));
+  if (!all.length) return;
+  if (all.length <= 3) { all.forEach(c => window.gxNotify(c)); return; }
+  window.gxNotify({
+    kind: 'info',
+    title: 'Services updated',
+    message: added.length + ' added, ' + removed.length + ' removed. Check the service list for what is new.',
+    duration: 3000
+  });
+}
+
 window.applyDynamicServicesCatalog = function(newCategories, newServices) {
+  try { _gxAnnounceCatalog(newServices); } catch (e) { console.warn('catalog card:', e); }
   if (Array.isArray(newCategories) && newCategories.length) {
     CATEGORIES = newCategories;
   }
@@ -3307,11 +3299,51 @@ try {
   console.warn('Could not initialize services catalog listener:', err);
 }
 
+// ── UPDATE CARDS FROM THE ADMIN (broadcast + per-user inbox) ──
+// app_config/live_updates.items  → everyone;  Users/{uid}.inbox → only this user.
+// A card is shown once per browser: the newest timestamp seen is remembered per feed.
+let _unsubFeeds = [];
+function startUpdatesFeed(uid) {
+  _unsubFeeds.forEach(f => { try { f(); } catch (_) {} });
+  _unsubFeeds = [];
+  const FRESH_FIRST_MS = 10 * 60 * 1000, MAX_AGE_MS = 24 * 60 * 60 * 1000, MAX_CARDS = 3;
+  const lsGet = k => { try { return localStorage.getItem(k); } catch (_) { return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (_) {} };
+  const handle = (items, key) => {
+    if (!Array.isArray(items)) return;
+    const raw = lsGet(key), first = raw === null, now = Date.now();
+    const seen = first ? 0 : (Number(raw) || 0);
+    let maxTs = seen;
+    items.forEach(i => { const t = Number(i && i.ts); if (t > maxTs) maxTs = t; });
+    lsSet(key, String(first ? Math.max(maxTs, now) : maxTs));
+    const fresh = items
+      .filter(i => i && typeof i === 'object' && Number(i.ts) > seen &&
+                   now - Number(i.ts) <= (first ? FRESH_FIRST_MS : MAX_AGE_MS))
+      .sort((a, b) => Number(a.ts) - Number(b.ts))
+      .slice(-MAX_CARDS);
+    if (typeof window.gxNotify !== 'function') return;
+    fresh.forEach(i => window.gxNotify({
+      kind: i.kind, title: i.title, message: i.message, amount: i.amount,
+      cta: i.ctaUrl ? { label: i.ctaLabel, url: i.ctaUrl } : null,
+      duration: i.duration === undefined ? 3000 : i.duration
+    }));
+  };
+  try {
+    _unsubFeeds.push(onSnapshot(doc(db, 'app_config', 'live_updates'),
+      snap => handle(snap.exists() ? snap.data().items : [], 'gx_upd_bc_' + uid),
+      err => console.warn('Updates feed warning:', err)));
+    _unsubFeeds.push(onSnapshot(doc(db, 'Users', uid),
+      snap => handle(snap.exists() ? snap.data().inbox : [], 'gx_upd_ib_' + uid),
+      err => console.warn('Inbox feed warning:', err)));
+  } catch (err) { console.warn('Could not start updates feed:', err); }
+}
+
 // ── LOGOUT ──
 window._logoutUser = async function() {
   if (_unsubStats)   _unsubStats();
   if (_unsubOrders)  _unsubOrders();
   if (_unsubCatalog) _unsubCatalog();
+  _unsubFeeds.forEach(f => { try { f(); } catch (_) {} });
   try { await signOut(auth); } catch(_) {}
   sessionStorage.setItem("getxh_logged_out", "yes");
   localStorage.clear();
@@ -3341,13 +3373,14 @@ onAuthStateChanged(auth, async (user) => {
   window.currentUid   = currentUid;
   window.currentEmail = currentEmail;
   window._formUid = user.uid;
+  startUpdatesFeed(user.uid);
   // Free welcome views from an admin link (selected for the user while they last)
   try {
     const justClaimed = sessionStorage.getItem('gx_free_welcome');
     window.refreshFreeOffers(true).then(() => {
       if (justClaimed) {
         sessionStorage.removeItem('gx_free_welcome');
-        showToast('success', 'Free views added', Number(justClaimed).toLocaleString('en-IN') + ' free views are ready to use.');
+        window.gxNotify({ kind: 'offer', tag: 'Free views', title: Number(justClaimed).toLocaleString('en-IN') + ' free views added', message: 'Selected for you in Welcome Offer. Place your order below.', duration: 3000 });
       }
     });
   } catch (_) {}
@@ -3504,9 +3537,6 @@ onAuthStateChanged(auth, async (user) => {
       window._balAutoCloseTimer = null;
     }
     window._hasPendingNotify = false;
-    const el = document.getElementById('balNotifyOverlay');
-    if (el) el.classList.remove('active');
-
     if (window._pendingAnimData) {
       const data = window._pendingAnimData;
       window._pendingAnimData = null;
@@ -3514,47 +3544,6 @@ onAuthStateChanged(auth, async (user) => {
         window.animateDashboardBalance(data.oldBal, data.newBal, data.isCredit);
       }, 250);
     }
-  };
-
-  window.testBalanceAnnouncement = function(amt = 50, isCredit = true, note = "Cashback bonus added by admin") {
-    const el = document.getElementById('balNotifyOverlay');
-    if (!el) return;
-    const accentBar = document.getElementById('balNotifyAccentBar');
-    if (accentBar) {
-      accentBar.style.background = isCredit ? '#22c55e' : '#ef4444';
-      accentBar.style.boxShadow = isCredit ? '0 0 12px #22c55e' : '0 0 12px #ef4444';
-    }
-    const iconWrap = document.getElementById('balNotifyIconWrap');
-    if (iconWrap) {
-      iconWrap.style.background = isCredit ? 'rgba(34,197,94,0.14)' : 'rgba(239,68,68,0.14)';
-      iconWrap.style.borderColor = isCredit ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
-    }
-    const iconEl = document.getElementById('balNotifyIcon');
-    if (iconEl) {
-      iconEl.textContent = 'campaign';
-      iconEl.style.color = isCredit ? '#22c55e' : '#ef4444';
-    }
-    document.getElementById('balNotifyTitle').textContent = isCredit ? 'Balance Added' : 'Balance Deducted';
-    document.getElementById('balNotifySub').textContent = 'Your wallet has been updated successfully.';
-    const amtEl = document.getElementById('balNotifyAmount');
-    if (amtEl) {
-      amtEl.textContent = (isCredit ? '+ ' : '- ') + '\u20b9' + amt.toFixed(2);
-      amtEl.style.color = isCredit ? '#4ade80' : '#f87171';
-      amtEl.style.background = isCredit ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)';
-      amtEl.style.borderColor = isCredit ? 'rgba(34,197,94,0.28)' : 'rgba(239,68,68,0.28)';
-    }
-    const noteEl = document.getElementById('balNotifyNote');
-    if (note) {
-      noteEl.style.display = 'block';
-      document.getElementById('balNotifyNoteText').textContent = note;
-    } else {
-      noteEl.style.display = 'none';
-    }
-    el.classList.add('active');
-    if (window._balAutoCloseTimer) clearTimeout(window._balAutoCloseTimer);
-    window._balAutoCloseTimer = setTimeout(() => {
-      window._closeBalNotifyAndAnimate();
-    }, 6000);
   };
 
   // ── REAL-TIME: user stats (balance, orders) ──
@@ -3583,10 +3572,7 @@ onAuthStateChanged(auth, async (user) => {
       const oldBal = _lastNumBalance;
       _lastNumBalance = balance;
 
-      const el = document.getElementById('balNotifyOverlay');
-      const isPopupActive = el && el.classList.contains('active');
-
-      if (isPopupActive || window._hasPendingNotify) {
+      if (window._hasPendingNotify) {
         // Notification popup is active! Store values to animate upon popup close
         window._pendingAnimData = { oldBal, newBal: balance, isCredit };
       } else {
@@ -3634,9 +3620,7 @@ onAuthStateChanged(auth, async (user) => {
         const amt = Number(txnDoc.amount || 0);
         const note = txnDoc.reason || '';
         const isWelcome = txnDoc.title === 'Welcome Bonus' || (note && /welcome bonus/i.test(note));
-        const el = document.getElementById('balNotifyOverlay');
-
-        if (el) {
+        {
           window._hasPendingNotify = true;
 
           // Compute exact old and new balance mathematically
@@ -3676,66 +3660,23 @@ onAuthStateChanged(auth, async (user) => {
 
           window._pendingAnimData = { oldBal, newBal, isCredit };
 
-          document.getElementById('balNotifyTitle').textContent = isWelcome
-            ? '🎉 Welcome Bonus Added!'
-            : (isCredit ? 'Balance Added' : 'Balance Deducted');
-
-          document.getElementById('balNotifySub').textContent = isWelcome
-            ? 'Welcome to GETXH! Your referral bonus has been credited to your wallet.'
-            : 'Your wallet has been updated successfully.';
-
-          const accentBar = document.getElementById('balNotifyAccentBar');
-          if (accentBar) {
-            accentBar.style.background = isCredit ? '#22c55e' : '#ef4444';
-            accentBar.style.boxShadow = isCredit ? '0 0 12px #22c55e' : '0 0 12px #ef4444';
-          }
-
-          const iconWrap = document.getElementById('balNotifyIconWrap');
-          if (iconWrap) {
-            iconWrap.style.background = isCredit ? 'rgba(34,197,94,0.14)' : 'rgba(239,68,68,0.14)';
-            iconWrap.style.borderColor = isCredit ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
-          }
-
-          const iconEl = document.getElementById('balNotifyIcon');
-          if (iconEl) {
-            iconEl.textContent = isWelcome ? 'featured_seasonal_and_gifts' : 'campaign';
-            iconEl.style.color = isCredit ? '#22c55e' : '#ef4444';
-          }
-
-          const amtLbl = document.getElementById('balNotifyAmountLabel');
-          if (amtLbl) {
-            amtLbl.textContent = isWelcome ? 'WELCOME BONUS CREDITED' : (isCredit ? 'AMOUNT ADDED' : 'AMOUNT DEDUCTED');
-          }
-
-          const amtEl = document.getElementById('balNotifyAmount');
-          if (amtEl) {
-            amtEl.textContent = (isCredit ? '+ ' : '- ') + '\u20b9' + amt.toFixed(2);
-            amtEl.style.color = isCredit ? '#4ade80' : '#f87171';
-            amtEl.style.background = isCredit ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)';
-            amtEl.style.borderColor = isCredit ? 'rgba(34,197,94,0.28)' : 'rgba(239,68,68,0.28)';
-          }
-
-          const noteEl = document.getElementById('balNotifyNote');
-          if (note) {
-            noteEl.style.display = 'block';
-            document.getElementById('balNotifyNoteText').textContent = note;
-          } else {
-            noteEl.style.display = 'none';
-          }
-
-          // Hide page loader immediately so banner is visible instantly
+          // Hide page loader immediately so the card is visible instantly
           const loader = document.getElementById('gx-loader');
           if (loader) { loader.classList.add('hide'); setTimeout(() => { try { loader.remove(); } catch(e){} }, 200); }
 
-          el.classList.add('active');
-
-          // Clear any existing auto-close timer
-          if (window._balAutoCloseTimer) clearTimeout(window._balAutoCloseTimer);
-
-          // AUTO-CLOSE TOP BANNER IN 6.5 SECONDS IF USER DOESN'T CLICK CLOSE "X"
-          window._balAutoCloseTimer = setTimeout(() => {
+          if (typeof window.gxNotify === 'function') {
+            window.gxNotify({
+              kind: isCredit ? 'credit' : 'debit',
+              tag: isWelcome ? 'Welcome bonus' : undefined,
+              title: isWelcome ? 'Referral bonus credited' : (note || (isCredit ? 'Added to your wallet' : 'Deducted from your wallet')),
+              amount: amt,
+              message: 'Available balance ' + '\u20b9' + newBal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+              duration: 3000,
+              onClose: () => window._closeBalNotifyAndAnimate()
+            });
+          } else {
             window._closeBalNotifyAndAnimate();
-          }, 6500);
+          }
         }
       }
     }, (err) => {
@@ -3881,42 +3822,6 @@ const _OTP  = "https://backend-for-email-verification-code-vwip.onrender.com";
   </div>
 </div>
 
-<!-- Admin Balance Announcement Top Banner -->
-<div id="balNotifyOverlay" class="bal-notify-overlay">
-  <div class="bal-notify-card">
-    <!-- Top accent glow bar -->
-    <div id="balNotifyAccentBar" class="bal-notify-accent-bar"></div>
-
-    <!-- Icon Wrap (Megaphone / Notification) -->
-    <div id="balNotifyIconWrap" class="bal-notify-icon-wrap">
-      <span id="balNotifyIcon" class="material-symbols-outlined" style="font-size:20px;color:#22c55e;">campaign</span>
-    </div>
-
-    <!-- Center Content -->
-    <div style="flex:1;min-width:0;">
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <h4 id="balNotifyTitle" style="font-size:13px;font-weight:700;color:#ffffff;margin:0;letter-spacing:-0.01em;">Balance Added</h4>
-        <span id="balNotifyAmount" style="font-size:12px;font-weight:800;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;color:#4ade80;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.28);padding:1px 6px;border-radius:6px;letter-spacing:0.01em;">+ &#8377;0.00</span>
-        <span id="balNotifyAmountLabel" style="display:none;">AMOUNT ADDED</span>
-      </div>
-      <p id="balNotifySub" style="font-size:12px;color:#94a3b8;margin:2px 0 0;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Your wallet has been updated successfully.</p>
-      
-      <!-- Admin Note (if any) -->
-      <div id="balNotifyNote" style="display:none;margin-top:5px;padding:4px 8px;background:rgba(255,255,255,0.04);border-radius:6px;border-left:2px solid #818cf8;font-size:11px;color:#cbd5e1;line-height:1.4;">
-        <span style="color:#818cf8;font-weight:600;">Note: </span><span id="balNotifyNoteText"></span>
-      </div>
-    </div>
-
-    <!-- Right Close Button -->
-    <button type="button" onclick="window._closeBalNotifyAndAnimate()"
-      style="flex-shrink:0;width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#94a3b8;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;"
-      onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#ffffff'"
-      onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.color='#94a3b8'"
-      aria-label="Close notification">
-      <span class="material-symbols-outlined" style="font-size:16px;">close</span>
-    </button>
-  </div>
-</div>
 
 </body>
 </html>
