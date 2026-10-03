@@ -503,6 +503,94 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   0% { background-position: 0% center; }
   100% { background-position: 220% center; }
 }
+
+/* ── ORDER SECTION THEME: Zinc + White CTA ── */
+#newOrderSection {
+  --o-card: #18181b;
+  --o-inner: #111113;
+  --o-border: #2a2a2f;
+  --o-accent: #1f6fff;
+  --o-text: #f4f4f5;
+  --o-muted: #a1a1aa;
+  --o-ph: #5c5c63;
+  background: var(--o-card) !important;
+  border: 1px solid var(--o-border) !important;
+  border-radius: 16px !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 2px rgba(0,0,0,0.4), 0 16px 40px rgba(0,0,0,0.45) !important;
+}
+/* remove extra box-inside-box */
+#newOrderSection > div[style*="background:#0e1629"] { background: transparent !important; border: none !important; margin-bottom: 0 !important; }
+#newOrderSection > div[style*="background:#0e1629"] > div { padding: 0 !important; }
+
+/* inputs & selects */
+#newOrderSection [style*="background:#152234"],
+#newOrderSection #searchService,
+#newOrderSection #customCommentsInput {
+  background: var(--o-inner) !important;
+  border: 1px solid var(--o-border) !important;
+  border-radius: 10px !important;
+  color: var(--o-text) !important;
+}
+#newOrderSection input:focus, #newOrderSection textarea:focus {
+  border-color: var(--o-accent) !important;
+  box-shadow: 0 0 0 3px rgba(31,111,255,0.25) !important;
+}
+#newOrderSection #catBtn:hover, #newOrderSection #svcBtn:hover { border-color: #3a3a42 !important; }
+#newOrderSection input::placeholder, #newOrderSection textarea::placeholder { color: var(--o-ph) !important; }
+
+/* labels */
+#newOrderSection p[style*="color:#94a3b8"] { color: var(--o-muted) !important; }
+
+/* tab = calm heading with blue underline */
+#newOrderSection .tab-new-order-badge {
+  background: var(--o-inner) !important;
+  color: var(--o-text) !important;
+  animation: none !important;
+  box-shadow: inset 0 -2px 0 var(--o-accent) !important;
+}
+#newOrderSection .border-white\/10 { border-color: var(--o-border) !important; }
+
+/* description: outlined box, inner tiles */
+#newOrderSection #serviceDetails .p-3 { background: transparent !important; border: 1px solid var(--o-border) !important; border-radius: 12px !important; }
+#newOrderSection #serviceDetails .p-3 .grid > div { background: var(--o-inner) !important; border: none !important; border-radius: 10px !important; }
+#newOrderSection #serviceDetails .p-3 p[style*="rgba(255,255,255,0.6)"] { color: var(--o-muted) !important; }
+#newOrderSection #serviceDetails .p-3 p[style*="color:#ffffff"] { color: var(--o-text) !important; }
+
+/* checkbox rows */
+#newOrderSection [style*="rgba(255,255,255,0.025)"],
+#newOrderSection [style*="rgba(255,255,255,0.03)"] { background: var(--o-inner) !important; border: 1px solid var(--o-border) !important; border-radius: 10px !important; }
+#newOrderSection input[type="checkbox"] { accent-color: var(--o-accent) !important; }
+#newOrderSection #policyAcceptLabel span { color: var(--o-muted) !important; }
+#newOrderSection #policyAcceptLabel a { color: var(--o-accent) !important; }
+
+/* dropdowns */
+#newOrderSection #categoryDropdown,
+#newOrderSection #serviceDropdown,
+#newOrderSection #globalSearchDrop {
+  background: var(--o-card) !important;
+  border: 1px solid var(--o-border) !important;
+  border-radius: 12px !important;
+  padding: 6px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.55) !important;
+}
+#newOrderSection .cat-item, #newOrderSection .svc-item, #newOrderSection .search-result-item { border-bottom: none; border-radius: 8px; color: var(--o-text); }
+#newOrderSection .cat-item:hover, #newOrderSection .svc-item:hover, #newOrderSection .search-result-item:hover { background: var(--o-inner); }
+#newOrderSection .cat-item.selected, #newOrderSection .svc-item.selected { background: var(--o-inner); box-shadow: inset 3px 0 0 var(--o-accent); color: #fff; }
+#newOrderSection .svc-num-badge { background: #ffffff; color: #000000; border-radius: 4px; font-weight: 700; }
+#newOrderSection .search-cat-badge { color: var(--o-muted); background: var(--o-inner); border-color: var(--o-border); }
+#newOrderSection .text-\[\#2196f3\] { color: var(--o-accent) !important; }
+
+/* order button: white CTA */
+#newOrderSection .order-btn-badge {
+  background: #ffffff !important;
+  color: #0a0a0a !important;
+  animation: none !important;
+  border-radius: 10px !important;
+  box-shadow: 0 6px 18px rgba(255,255,255,0.08) !important;
+}
+#newOrderSection .order-btn-badge:hover { background: #e9e9ec !important; box-shadow: 0 8px 24px rgba(255,255,255,0.12) !important; }
+#newOrderSection #rippleEl { background: rgba(0,0,0,0.08) !important; }
+
 </style>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
   <style>body{opacity:0;transition:opacity .18s ease}</style>
@@ -578,6 +666,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 }
 
 </style>
+<link rel="stylesheet" href="/assets/sidebar-theme.css">
 </head>
 
 <body class="bg-[#0b1220] text-white">
@@ -1180,7 +1269,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   min-width:48px;
 }
 .bnav-item:hover,.bnav-item.active { color:#fff; }
-.bnav-item.active { background:rgba(33,150,243,0.12); color:#60a5fa; }
+.bnav-item.active { color:#fff; }
 .bnav-item .bnav-icon {
   width:22px;height:22px;
   font-size:20px;line-height:1;
@@ -1192,7 +1281,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 .bnav-fab {
   width:62px;height:62px;border-radius:50%;border:none;cursor:pointer;
   background:#3F51B5;
-  box-shadow:0 8px 20px rgba(63,81,181,0.35), 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow:none;
   display:flex;align-items:center;justify-content:center;
   margin-top:-24px;
   flex-shrink:0;

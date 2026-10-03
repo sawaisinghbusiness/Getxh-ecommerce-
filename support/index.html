@@ -22,6 +22,14 @@
   from { transform: translateY(100%); opacity: 0; }
   to   { transform: translateY(0); opacity: 1; }
 }
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes panelOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(6px); }
+}
 @keyframes sheetDown {
   from { transform: translateY(0); opacity: 1; }
   to   { transform: translateY(100%); opacity: 0; }
@@ -81,8 +89,9 @@
   animation: slidePushIn 250ms var(--ease-spring) forwards !important;
 }
 .ticket-push-out {
-  animation: slidePushOut 250ms var(--ease-spring) forwards !important;
+  animation: slidePushOut 200ms cubic-bezier(0.4, 0, 1, 1) forwards !important;
 }
+.ticket-push-in, .ticket-push-out { will-change: transform; }
 
 #submitTicketBtn, #newTicketBtn {
   transition: transform var(--dur-1) var(--ease-out) !important;
@@ -424,77 +433,191 @@ textarea::placeholder {
 </style>
 <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
   <style>body{opacity:0;transition:opacity .18s ease}</style>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap"/>
+<style>
+/* ── SUPPORT PAGE THEME: Zinc + White CTA ── */
+:root {
+  --o-card: #18181b;
+  --o-inner: #111113;
+  --o-border: #2a2a2f;
+  --o-accent: #1f6fff;
+  --o-text: #f4f4f5;
+  --o-muted: #a1a1aa;
+}
+html, body { font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important; }
+/* body must not become its own scroll box (overflow-x:hidden + overscroll-behavior:none trapped touch/wheel scroll) */
+body { overflow-x: clip !important; }
+body { font-feature-settings: "tnum" 1; -webkit-font-smoothing: antialiased; }
+main .font-black { font-weight: 700 !important; }
+
+/* header card */
+main section[style*="background:#152234"] {
+  background: var(--o-card) !important;
+  border: 1px solid var(--o-border) !important;
+  border-radius: 16px !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 2px rgba(0,0,0,0.4), 0 12px 30px rgba(0,0,0,0.35) !important;
+}
+main section[style*="background:#152234"] p[style*="rgba(255,255,255,0.4)"] { color: var(--o-muted) !important; }
+main section[style*="background:#152234"] p[style*="rgba(148,163,184,0.55)"] { color: #71717a !important; }
+#newTicketBtn {
+  background: #ffffff !important;
+  border: 1px solid #ffffff !important;
+  color: #0a0a0a !important;
+  border-radius: 8px !important;
+  padding: 6px 12px !important;
+  font-weight: 600 !important;
+}
+#newTicketBtn:hover { background: #e9e9ec !important; }
+
+/* create ticket panel */
+#createPanel { background: var(--o-card) !important; border: 1px solid var(--o-border) !important; border-radius: 16px !important; }
+#createPanel .text-slate-500 { color: var(--o-muted) !important; }
+.field, .select-btn, textarea {
+  background: var(--o-inner) !important;
+  border: 1px solid var(--o-border) !important;
+  border-radius: 10px !important;
+}
+.field:focus, .select-btn.open, textarea:focus {
+  border-color: var(--o-accent) !important;
+  box-shadow: 0 0 0 3px rgba(31,111,255,0.25) !important;
+}
+.field::placeholder, textarea::placeholder { color: #5c5c63 !important; }
+.dropdown-list { background: var(--o-card) !important; border: 1px solid var(--o-border) !important; border-radius: 12px !important; padding: 6px; }
+.dropdown-item { border-bottom: none !important; border-radius: 8px; }
+.dropdown-item:hover { background: var(--o-inner) !important; }
+.dropdown-item.selected { color: #fff !important; background: var(--o-inner); box-shadow: inset 3px 0 0 var(--o-accent); }
+.dropdown-item.selected .radio-circle { border-color: var(--o-accent) !important; }
+.radio-dot { background: var(--o-accent) !important; }
+#subCategoryHint { color: var(--o-accent) !important; }
+#submitTicketBtn {
+  background: #ffffff !important;
+  color: #0a0a0a !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+}
+#submitTicketBtn:hover { background: #e9e9ec !important; }
+
+/* ticket rows */
+.ticket-row {
+  background: var(--o-card) !important;
+  border: 1px solid var(--o-border) !important;
+  border-radius: 16px !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 2px rgba(0,0,0,0.4), 0 12px 30px rgba(0,0,0,0.35) !important;
+}
+.ticket-row:hover { border-color: #3a3a42 !important; }
+.ticket-row p[style*="rgba(148,163,184,0.5)"] { color: #71717a !important; }
+/* status: neutral pill, color only in the dot */
+.ticket-row span.inline-flex[style*="background"] {
+  background: var(--o-inner) !important;
+  border: 1px solid var(--o-border) !important;
+  color: #e4e4e7 !important;
+  border-radius: 999px !important;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 9px !important;
+  font-weight: 500 !important;
+  text-transform: capitalize !important;
+  letter-spacing: 0 !important;
+  font-size: 12px !important;
+}
+.ticket-row span.inline-flex[style*="background"]::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--o-accent); }
+.ticket-row span.inline-flex[style*="#6ee7b7"]::before { background: #4ade80; }
+
+/* ticket chat modal */
+.ticket-modal-shell { background: #0c0c0e !important; }
+/* overlay stays see-through so the ticket list shows behind the chat as it slides away */
+.modal-overlay { background: transparent !important; }
+.ticket-modal-shell > div:first-child { border-color: var(--o-border) !important; }
+.ticket-modal-shell > div:last-child { background: var(--o-inner) !important; border-color: var(--o-border) !important; }
+#messageInput { background: var(--o-card) !important; border-color: var(--o-border) !important; border-radius: 10px !important; }
+#messageInput:focus { border-color: var(--o-accent) !important; }
+#messageComposeArea button { background: #ffffff !important; color: #0a0a0a !important; border-radius: 10px !important; box-shadow: none !important; }
+.bubble-user { background: var(--o-card) !important; border: 1px solid var(--o-border) !important; }
+.bubble-admin { background: var(--o-accent) !important; }
+#modalStatusBadge {
+  background: var(--o-card) !important;
+  border: 1px solid var(--o-border);
+  color: #e4e4e7 !important;
+  font-weight: 500 !important;
+  text-transform: capitalize !important;
+  letter-spacing: 0 !important;
+  font-size: 12px !important;
+}
+#closeTicketAction { background: transparent !important; border-color: var(--o-border) !important; color: #d4d4d8 !important; border-radius: 8px !important; font-weight: 500 !important; }
+#closeTicketAction:hover { border-color: rgba(239,68,68,0.35) !important; color: #f87171 !important; }
+#ticketMessages .text-sky-400 { color: var(--o-accent) !important; }
+</style>
+<link rel="stylesheet" href="/assets/sidebar-theme.css">
 </head>
 <body class="text-white pb-24 lg:pb-0">
 
-<aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-72 lg:flex-col lg:overflow-hidden lg:border-r lg:border-white/10"
+<aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-[250px] lg:flex-col lg:overflow-hidden lg:border-r lg:border-white/10 desktop-sidebar"
   style="background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);">
   <div class="px-5 pt-8 pb-5 border-b border-white/10" style="background:linear-gradient(135deg,#0e1f3d,#162844);">
     <div class="flex items-center gap-3 mb-4">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#2196f3,#00bcd4);width:40px;height:40px;min-width:40px;display:flex;align-items:center;justify-content:center;border-radius:12px;flex-shrink:0;">
         <span class="material-symbols-outlined text-white" style="font-size:20px">verified_user</span>
       </div>
       <div>
         <p class="font-black text-white text-base tracking-wide">GETXH<span style="color:#2196f3">.IN</span></p>
-        <div class="flex items-center gap-1 mt-0.5">
-          <div class="h-1.5 w-1.5 rounded-full bg-green-400" style="animation:glowPulse 2s infinite"></div>
+        <div class="flex items-center gap-1 mt-0.5" style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+          <div class="h-1.5 w-1.5 rounded-full bg-green-400" style="width:6px;height:6px;border-radius:50%;background:#4ade80;flex-shrink:0;"></div>
           <p class="text-xs font-semibold" style="color:#2196f3">Online</p>
         </div>
       </div>
     </div>
-    <div class="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
-      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
-        <span class="material-symbols-outlined text-white" style="font-size:16px">person</span>
-      </div>
-      <div class="min-w-0">
-        <p id="menuUsername" class="text-xs font-bold text-white truncate">User</p>
-        <p id="menuEmail" class="text-xs text-gray-500 truncate">—</p>
-      </div>
-    </div>
   </div>
-  <div class="flex-1 overflow-y-auto py-3 px-3">
-    <a href="/dashboard" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-500/15">
-        <span class="material-symbols-outlined text-blue-400" style="font-size:16px">add_shopping_cart</span>
+  <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:3px;padding:10px;">
+    <a href="/dashboard" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;text-decoration:none;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#8b5cf6,#6d28d9);">
+        <span class="material-symbols-outlined" style="font-size:15px;color:#fff;">dashboard</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm">New Order</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">Dashboard</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="/support" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 transition-all active:scale-[0.98]" style="background:linear-gradient(135deg,rgba(33,150,243,0.15),rgba(0,188,212,0.1));border:1px solid rgba(33,150,243,0.25);">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#2196f3,#00bcd4);">
-        <span class="material-symbols-outlined text-white" style="font-size:16px">support_agent</span>
+    <a href="/dashboard" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10 text-left" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;width:100%;text-align:left;text-decoration:none;background:transparent;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#9ca3af,#6b7280);">
+        <span class="material-symbols-outlined" style="font-size:15px;color:#fff;">add_shopping_cart</span>
       </div>
-      <span class="font-bold text-white text-sm">Support</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">New Order</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="/orders" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-yellow-500/15">
-        <span class="material-symbols-outlined text-yellow-400" style="font-size:16px">list_alt</span>
+    <a href="/orders" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;text-decoration:none;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#3b82f6,#ec4899);">
+        <span class="material-symbols-outlined" style="font-size:15px;color:#fff;">list_alt</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm">Orders</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">Orders</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <a href="/wallet" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-500/15">
-        <span class="material-symbols-outlined text-green-400" style="font-size:16px">account_balance_wallet</span>
+    <a href="/support" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 transition-all active:scale-[0.98]" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;text-decoration:none;background:#1e2c43;border:1px solid rgba(255,255,255,0.06);color:#fff;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#22c55e,#16a34a);">
+        <span class="material-symbols-outlined" style="font-size:15px;color:#fff;">support_agent</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm">Add Funds</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+      <span class="font-bold text-white text-sm" style="font-size:16px;">Support</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
+    </a>
+    <a href="/wallet" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;text-decoration:none;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#e5e7eb,#9ca3af);">
+        <span class="material-symbols-outlined" style="font-size:15px;color:#333;">account_balance_wallet</span>
+      </div>
+      <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">Add Funds</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
     <a href="https://whatsapp.com/channel/0029Vb74BY7It5rxzatFxS2D" target="_blank" rel="noopener noreferrer"
-      class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 hover:bg-white/5 transition-all border border-transparent hover:border-white/10">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-green-400/15">
-        <span class="text-green-400 font-black text-sm">W</span>
+      class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;text-decoration:none;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#25D366,#128C7E);">
+        <span style="color:#fff;font-weight:700;font-size:12px;line-height:1;">W</span>
       </div>
-      <span class="font-bold text-gray-300 text-sm">WhatsApp</span>
-      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px">chevron_right</span>
+      <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">WhatsApp</span>
+      <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
-    <div class="h-px bg-white/10 my-3 mx-2"></div>
-    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-1 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-500/15">
-        <span class="material-symbols-outlined text-red-400" style="font-size:16px">logout</span>
+    <div class="h-px bg-white/10 my-3 mx-2" style="height:1px;background:rgba(255,255,255,0.1);margin:12px 8px;"></div>
+    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;width:100%;text-align:left;background:transparent;border:1px solid transparent;color:#f87171;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
+      <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,68,68,0.15);">
+        <span class="material-symbols-outlined" style="font-size:12px;color:#f87171;">logout</span>
       </div>
-      <span class="font-bold text-red-400 text-sm">Logout</span>
+      <span class="font-bold text-red-400 text-sm" style="font-size:16px;">Logout</span>
     </button>
   </div>
   <div class="px-5 py-3 border-t border-white/10">
@@ -509,8 +632,8 @@ textarea::placeholder {
   </div>
 </aside>
 
-<div class="lg:pl-72">
-<main class="px-4 pt-4 pb-4 lg:px-8 lg:pt-8 lg:pb-8">
+<div class="lg:pl-[250px]">
+<main class="px-4 pt-4 pb-[120px] lg:px-8 lg:pt-8 lg:pb-8">
   <div class="lg:mx-auto lg:max-w-6xl">
   <div id="pageNotice" class="mb-4 hidden rounded-2xl px-4 py-3 text-sm font-semibold"></div>
 
@@ -527,24 +650,16 @@ textarea::placeholder {
           <span class="material-symbols-outlined" style="font-size:22px;color:#fff;">support_agent</span>
         </div>
         <div>
-          <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);
-                    letter-spacing:1.4px;text-transform:uppercase;margin-bottom:4px;">Support Center</p>
-          <p style="font-size:17px;font-weight:800;color:#f1f5f9;line-height:1.1;margin-bottom:3px;">My Tickets</p>
+          <p style="font-size:17px;font-weight:800;color:#f1f5f9;line-height:1.1;margin-bottom:3px;">Support Center</p>
           <p style="font-size:12px;color:rgba(148,163,184,0.55);font-weight:400;">Raise a ticket, we'll get back to you shortly.</p>
         </div>
       </div>
-      <!-- Right: open count + new ticket -->
+      <!-- Right: new ticket -->
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;">
         <button id="newTicketBtn" onclick="openCreatePanel()"
           style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:30px;cursor:pointer;background:#38a820;border:1px solid #2588d7;color:#fff;font-size:12px;font-weight:600;transition:all 0.2s ease;">
-          <span class="material-symbols-outlined" style="font-size:15px">add</span>
           New Ticket
         </button>
-        <div style="border-radius:10px;padding:7px 12px;text-align:center;
-                    background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.25);min-width:52px;">
-          <p id="openCount" style="font-size:18px;font-weight:700;color:#22c55e;line-height:1;margin-bottom:2px;">0</p>
-          <p style="font-size:10px;font-weight:600;color:rgba(34,197,94,0.6);text-transform:uppercase;letter-spacing:0.8px;">Open</p>
-        </div>
       </div>
     </div>
   </section>
@@ -657,16 +772,45 @@ textarea::placeholder {
 </div>
 
 <style>
-.bnav{position:fixed;bottom:0;left:0;right:0;z-index:130 !important;background:rgba(9,14,26,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.08);padding:8px 16px 12px;display:flex;align-items:center;justify-content:space-around;height:58px;box-sizing:border-box;}
+.bnav {
+  position:fixed;bottom:0;left:0;right:0;z-index:130 !important;
+  background:rgba(9,14,26,0.96);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(255,255,255,0.08);
+  padding:8px 16px 12px;
+  display:flex;align-items:center;justify-content:space-around;
+  height:58px;box-sizing:border-box;
+}
 @media(min-width:1024px){.bnav{display:none}}
-.bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:#4b5563;text-decoration:none;padding:6px 10px;border-radius:12px;transition:color .2s,background .2s;min-width:48px;}
-.bnav-item:hover,.bnav-item.active{color:#fff;}
-.bnav-item.active{background:rgba(33,150,243,0.12);color:#60a5fa;}
-.bnav-icon{width:22px;height:22px;font-size:20px;line-height:1;}
-.bnav-label{font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1;}
-.bnav-fab{width:52px;height:52px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#2196f3,#00bcd4);box-shadow:none !important;display:flex;align-items:center;justify-content:center;margin-top:-18px;flex-shrink:0;text-decoration:none;}
-.bnav-fab:hover{transform:none !important;box-shadow:none !important;}
-.bnav-fab:active{transform:none !important;}
+.bnav-item {
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:none;border:none;cursor:pointer;
+  color:#4b5563;text-decoration:none;
+  padding:6px 10px;border-radius:12px;
+  transition:color .2s,background .2s;
+  min-width:48px;
+}
+.bnav-item:hover,.bnav-item.active { color:#fff; }
+.bnav-item.active { color:#fff; }
+.bnav-item .bnav-icon {
+  width:22px;height:22px;
+  font-size:20px;line-height:1;
+}
+.bnav-item .bnav-label {
+  font-size:0.62rem;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;line-height:1;
+}
+.bnav-fab {
+  width:62px;height:62px;border-radius:50%;border:none;cursor:pointer;
+  background:#3F51B5;
+  box-shadow:none;
+  display:flex;align-items:center;justify-content:center;
+  margin-top:-24px;
+  flex-shrink:0;
+  transition:transform 0.15s ease, box-shadow 0.15s ease;
+}
+.bnav-fab:hover { transform:scale(1.03); }
+.bnav-fab:active { transform:scale(0.96); }
 </style>
 <div class="bnav">
   <button onclick="openMenu()" class="bnav-item">
@@ -678,7 +822,7 @@ textarea::placeholder {
     <span class="bnav-label">Orders</span>
   </a>
   <a href="/dashboard" class="bnav-fab" aria-label="New Order">
-    <span class="material-symbols-outlined" style="font-size:24px;color:#fff">add</span>
+    <span class="material-symbols-outlined" style="font-size:28px;color:#fff;display:block;line-height:1;">add</span>
   </a>
   <a href="/support" class="bnav-item active">
     <span class="material-symbols-outlined bnav-icon">headset_mic</span>
@@ -1108,7 +1252,7 @@ function openCreatePanel() {
   hideNotice('pageNotice');
   const panel = document.getElementById('createPanel');
   panel.classList.remove('hidden');
-  panel.style.animation = 'sheetUp var(--dur-3) var(--ease-spring) forwards';
+  panel.style.animation = 'panelIn 200ms cubic-bezier(0.2, 0, 0, 1) forwards';
   if (!currentCategory) {
     selectCategory('Orders');
     selectSubCategory('Refill');
@@ -1117,11 +1261,11 @@ function openCreatePanel() {
 
 function closeCreatePanel() {
   const panel = document.getElementById('createPanel');
-  panel.style.animation = 'sheetDown var(--dur-2) var(--ease-spring) forwards';
+  panel.style.animation = 'panelOut 150ms cubic-bezier(0.4, 0, 1, 1) forwards';
   setTimeout(() => {
     panel.classList.add('hidden');
     panel.style.animation = '';
-  }, 240);
+  }, 150);
 }
 
 function resetCreateForm() {
@@ -1147,9 +1291,9 @@ function renderTicketList(tickets) {
   const list = document.getElementById('ticketList');
   const openTickets = tickets.filter(ticket => String(ticket.status || '').toLowerCase() === 'open').length;
   const countEl = document.getElementById('openCount');
-  const prevCount = countEl.textContent;
-  countEl.textContent = String(openTickets);
-  if (prevCount !== String(openTickets)) {
+  const prevCount = countEl ? countEl.textContent : '';
+  if (countEl) countEl.textContent = String(openTickets);
+  if (countEl && prevCount !== String(openTickets)) {
     countEl.classList.remove('pop-num-active');
     void countEl.offsetWidth;
     countEl.classList.add('pop-num-active');
@@ -1227,6 +1371,8 @@ function closeTicketModal() {
   }
   const modal = document.getElementById('ticketModal');
   const shell = modal.querySelector('.ticket-modal-shell');
+  // Page scroll unlocks right away so the list is ready behind the sliding chat
+  document.body.style.overflow = '';
   if (shell) {
     shell.classList.remove('ticket-push-in');
     shell.classList.add('ticket-push-out');
@@ -1234,8 +1380,7 @@ function closeTicketModal() {
   setTimeout(() => {
     modal.classList.add('hidden');
     modal.style.display = 'none';
-    document.body.style.overflow = '';
-  }, 250);
+  }, 200);
 }
 
 function renderTicketModal(ticket) {

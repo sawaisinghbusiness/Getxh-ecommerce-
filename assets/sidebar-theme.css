@@ -1,0 +1,53 @@
+/* ── SIDEBAR THEME: Zinc + White CTA (desktop + mobile) ──
+   Shared by dashboard, orders, support. Icon badges keep their own colors. */
+
+aside.desktop-sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: 250px; z-index: 30; overflow: hidden;
+  flex-direction: column;
+}
+@media (max-width: 1023px) { aside.desktop-sidebar { display: none !important; } }
+@media (min-width: 1024px) { aside.desktop-sidebar { display: flex !important; } }
+
+aside.desktop-sidebar, #sideMenu {
+  background: #111113 !important;
+  border-right: 1px solid #2a2a2f !important;
+  box-shadow: none !important;
+}
+aside.desktop-sidebar > div:first-child { background: transparent !important; border-bottom: 1px solid #2a2a2f !important; }
+#sideMenu > div:first-child { border-bottom: 1px solid #2a2a2f !important; }
+aside.desktop-sidebar > div:first-child span[style*="#2196f3"] { color: #1f6fff !important; }
+aside.desktop-sidebar > div:first-child p[style*="#2196f3"] { color: #a1a1aa !important; }
+
+/* nav items */
+:is(aside.desktop-sidebar, #sideMenu) > div:nth-child(2) > :is(a, button) {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+:is(aside.desktop-sidebar, #sideMenu) > div:nth-child(2) > :is(a, button):hover {
+  background: #18181b !important;
+  border-color: #2a2a2f !important;
+}
+:is(aside.desktop-sidebar, #sideMenu) > div:nth-child(2) > :is(a, button) > span:not(.material-symbols-outlined) { color: #a1a1aa !important; transition: color .2s; }
+:is(aside.desktop-sidebar, #sideMenu) > div:nth-child(2) > :is(a, button):hover > span:not(.material-symbols-outlined) { color: #f4f4f5 !important; }
+:is(aside.desktop-sidebar, #sideMenu) > div:nth-child(2) > :is(a, button) > span.ml-auto { color: #52525b !important; }
+
+/* active item (marked in markup by its highlighted inline background) */
+:is(aside.desktop-sidebar, #sideMenu) > div:nth-child(2) > :is(a, button):is([style*="background:#1e2c43"], [style*="rgba(33,150,243,0.15)"]) {
+  background: #18181b !important;
+  border-color: #2a2a2f !important;
+  box-shadow: inset 3px 0 0 #1f6fff !important;
+}
+:is(aside.desktop-sidebar, #sideMenu) > div:nth-child(2) > :is(a, button):is([style*="background:#1e2c43"], [style*="rgba(33,150,243,0.15)"]) > span:not(.material-symbols-outlined) { color: #ffffff !important; }
+
+/* logout stays red */
+:is(aside.desktop-sidebar, #sideMenu) > div:nth-child(2) > button[onclick="logout()"] > span:not(.material-symbols-outlined) { color: #f87171 !important; }
+:is(aside.desktop-sidebar, #sideMenu) > div:nth-child(2) > button[onclick="logout()"]:hover { background: rgba(239,68,68,0.08) !important; border-color: rgba(239,68,68,0.2) !important; }
+
+/* divider + footer */
+:is(aside.desktop-sidebar, #sideMenu) .h-px { background: #2a2a2f !important; }
+:is(aside.desktop-sidebar, #sideMenu) > div:last-child { border-top-color: #2a2a2f !important; }
+:is(aside.desktop-sidebar, #sideMenu) > div:last-child a { color: #71717a !important; }
+:is(aside.desktop-sidebar, #sideMenu) > div:last-child a:hover { color: #f4f4f5 !important; }
