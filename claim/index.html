@@ -113,21 +113,7 @@ function showSuccess(views) {
   setTimeout(() => location.replace("/dashboard"), 900);
 }
 
-function askMobile(user, token, note) {
-  const input = el("input", { type: "tel", inputmode: "numeric", autocomplete: "tel", maxlength: "16", placeholder: "10-digit mobile number", id: "mobile" });
-  const msg = el("p", { class: "note" }, note || "");
-  const go = el("button", { class: "btn", onclick: () => {
-    const v = input.value.trim();
-    if (!/^[+0-9\s-]{10,16}$/.test(v)) { msg.textContent = "Enter a valid 10-digit mobile number."; return; }
-    go.disabled = true; claim(user, token, v);
-  } }, "Get my free views");
-  show(icon("", "📱"), el("h1", {}, "One last step"),
-       el("p", {}, "Enter your mobile number. Each mobile number can receive this offer only once."),
-       input, msg, go, el("button", { class: "link", onclick: toDashboard }, "Not now"));
-  input.focus();
-}
-
-async function claim(user, token, mobile) {
+async function claim(user, token) {
   showLoading("Getting your free views… this can take a few seconds.");
   let res, data = {};
   try {
@@ -137,7 +123,7 @@ async function claim(user, token, mobile) {
     res = await fetch(API + "/secret-links/claim", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: "Bearer " + idToken },
-      body: JSON.stringify(mobile ? { token, mobile } : { token }),
+      body: JSON.stringify({ token }),
       cache: "no-store", referrerPolicy: "no-referrer", credentials: "omit", signal: ctrl.signal
     });
     clearTimeout(timer);
@@ -145,13 +131,14 @@ async function claim(user, token, mobile) {
   } catch (_) {
     // Network problem: nothing was claimed, so keep the token and let the user try again.
     show(icon("bad", "!"), el("h1", {}, "Could not connect"), el("p", {}, "Please check your internet and try again."),
-         el("button", { class: "btn", onclick: () => claim(user, token, mobile) }, "Try again"));
+         el("button", { class: "btn", onclick: () => claim(user, token) }, "Try again"));
     return;
   }
   if (res.status === 200 && data.status === "success") return showSuccess(data.views);
-  if (res.status === 422) return askMobile(user, token, "");
-  if (res.status === 400 && data.status === "bad_mobile") return askMobile(user, token, data.message);
-  if (res.status === 409 && data.status === "mobile_used") { dropToken(); return showMessage("bad", "✕", "Offer already used", data.message); }
+  if (res.status === 409 && data.status === "ip_used") {
+    dropToken();
+    return showMessage("bad", "✕", "Offer already claimed", "This offer has already been claimed from this internet connection.");
+  }
   if (res.status === 409) {
     dropToken();
     const left = Number(data.remaining) || 0;
