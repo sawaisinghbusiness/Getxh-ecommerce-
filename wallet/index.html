@@ -905,11 +905,13 @@ window.startPayment = async function() {
   }
 };
 
-// Opened from the payment page ("I already paid: verify with UTR"): show the UTR box.
+// Coming from the payment page ("I already paid: verify with UTR"): bring the UTR section into view,
+// but leave it CLOSED. It opens only when the person taps it. The ?utr is dropped from the address so a
+// reload or a revisit never behaves differently.
 if (new URLSearchParams(location.search).has("utr")) {
   const d = document.getElementById("manualVerify");
-  d.open = true;
   setTimeout(() => d.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
+  try { history.replaceState(null, "", location.pathname); } catch (_) {}
 }
 
 window.addEventListener('beforeunload', () => {
