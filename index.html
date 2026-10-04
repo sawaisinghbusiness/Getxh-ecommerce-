@@ -218,23 +218,11 @@ body::before{
   inset:0;
   z-index:0;
   pointer-events:none;
-  background:
-    radial-gradient(ellipse 90% 40% at 50% 0%, rgba(37,99,235,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 80% 60% at 85% 90%, rgba(56,189,248,0.04) 0%, transparent 60%),
-    linear-gradient(180deg, #04070D 0%, #0B1220 100%);
+  background: url('/new%20background%20image.png') center center / cover no-repeat;
 }
 
-/* Full High-Def Tactile Grain Noise Overlay */
 body::after{
-  content:'';
-  position:fixed;
-  inset:0;
-  z-index:1;
-  pointer-events:none;
-  opacity:0.095;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-repeat:repeat;
-  background-size:160px 160px;
+  display:none;
 }
 
 a,button,input,.card,.feat-icon,.link-acc,.link-dim{
@@ -346,39 +334,9 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   overflow:hidden;
 }
 
-/* Plexus / constellation full page fixed background across all sections */
-.plexus-bg{
-  position:fixed;
-  inset:0;
-  width:100vw;
-  height:100vh;
-  pointer-events:none;
-  z-index:0;
-  overflow:hidden;
-  opacity:0.28;
-}
-.plexus-bg svg{
-  width:100%;
-  height:100%;
-  display:block;
-}
-
-/* Card internal Plexus spiderweb background */
-.card-plexus{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  pointer-events:none;
-  z-index:0;
-  overflow:hidden;
-  border-radius:inherit;
-  opacity:0.38;
-}
-.card-plexus svg{
-  width:100%;
-  height:100%;
-  display:block;
+/* Plexus / spiderweb backgrounds removed */
+.plexus-bg, .card-plexus, .hiw-plexus-bg, .testi-plexus{
+  display:none !important;
 }
 .card > *:not(.card-plexus){
   position:relative;
@@ -960,10 +918,11 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 .cta-section{padding:30px 24px 60px;position:relative;z-index:2;}
 .cta-inner{
   max-width:940px;margin:0 auto;
-  background:linear-gradient(135deg,#1e3a8a 0%,#3b82f6 50%,#8b5cf6 100%);
+  background:linear-gradient(135deg,#131f38 0%,#1e3a6e 50%,#241b42 100%);
+  border:1px solid rgba(255,255,255,0.12);
   border-radius:20px;padding:26px 36px;
   display:flex;align-items:center;justify-content:space-between;gap:24px;
-  box-shadow:0 20px 50px rgba(59,130,246,0.25);
+  box-shadow:0 10px 30px rgba(0,0,0,0.35);
 }
 .cta-text-wrap{flex:1;text-align:left;}
 .cta-title{font-size:clamp(20px,2.2vw,28px);font-weight:900;color:#fff;margin-bottom:4px;line-height:1.2;}
@@ -1667,10 +1626,6 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
         with <span class="grad-text">GETXH™</span>
       </h1>
 
-      <p class="left-sub">
-        India's most trusted automated SMM panel. Buy real Instagram followers, YouTube views, likes, comments &amp; Telegram members at wholesale rates starting at ₹0.10.
-      </p>
-
       <div class="feat-cards">
         <div class="feat-item">
           <div class="feat-icon">
@@ -2222,7 +2177,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           <polyline points="9 12 11 14 15 10"/>
         </svg>
-        Sign In GETXH Safely
+        Sign In
       </a>
     </div>
   </div>
@@ -2232,8 +2187,8 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 <!-- ════ SITE FOOTER ════ -->
 <footer class="site-footer">
   <div class="footer-bottom">
-    <div>&copy; 2026 GETXH™ (getxh.in). All rights reserved. India's #1 Cheapest SMM Panel.</div>
-    <div>100% Secure Payments • UPI • Cards • Instant Delivery</div>
+    <div>&copy; 2026 GETXH™ (getxh.in). All rights reserved.</div>
+    <div>100% Secure Payments • Instant Delivery</div>
   </div>
 </footer>
 
