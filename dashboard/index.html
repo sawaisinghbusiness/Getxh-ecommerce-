@@ -519,11 +519,16 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 2px rgba(0,0,0,0.4), 0 16px 40px rgba(0,0,0,0.45) !important;
 }
 /* remove extra box-inside-box */
-#newOrderSection > div[style*="background:#0e1629"] { background: transparent !important; border: none !important; margin-bottom: 0 !important; }
-#newOrderSection > div[style*="background:#0e1629"] > div { padding: 0 !important; }
+#singleOrderWrap > div[style*="background:#0e1629"] { background: transparent !important; border: none !important; margin-bottom: 0 !important; }
+#singleOrderWrap > div[style*="background:#0e1629"] > div { padding: 0 !important; }
+#newOrderSection #tabNewOrder:not(.tab-new-order-badge),
+#newOrderSection #tabMassOrder:not(.tab-new-order-badge) { background: transparent !important; color: var(--o-muted) !important; }
 
 /* inputs & selects */
 #newOrderSection [style*="background:#152234"],
+#newOrderSection [style*="background: rgb(21, 34, 52)"],
+#newOrderSection #linkInput,
+#newOrderSection #quantityInput,
 #newOrderSection #searchService,
 #newOrderSection #customCommentsInput {
   background: var(--o-inner) !important;
@@ -549,7 +554,6 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   box-shadow: inset 0 -2px 0 var(--o-accent) !important;
 }
 #newOrderSection .border-white\/10 { border-color: var(--o-border) !important; }
-
 /* description: outlined box, inner tiles */
 #newOrderSection #serviceDetails .p-3 { background: transparent !important; border: 1px solid var(--o-border) !important; border-radius: 12px !important; }
 #newOrderSection #serviceDetails .p-3 .grid > div { background: var(--o-inner) !important; border: none !important; border-radius: 10px !important; }
@@ -667,6 +671,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 
 </style>
 <link rel="stylesheet" href="/assets/sidebar-theme.css">
+<link rel="stylesheet" href="/assets/ai-assistant.css?v=3">
 </head>
 
 <body class="bg-[#0b1220] text-white">
@@ -872,9 +877,14 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       class="flex-1 text-sm font-bold tab-new-order-badge transition-all flex items-center justify-center">
       New Order
     </button>
+    <button id="tabMassOrder" onclick="switchOrderTab('mass')"
+      style="height:42px;font-size:14px;"
+      class="flex-1 text-sm font-bold transition-all flex items-center justify-center bg-[#0e1629] text-gray-400">
+      Mass Order
+    </button>
   </div>
 
-
+<div id="singleOrderWrap">
   <!-- Search -->
   <div class="relative mb-3">
     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#2196f3]" style="z-index:1">🔍</span>
@@ -1095,6 +1105,30 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 
 
       </div><!-- /serviceDetails -->
+    </div>
+  </div>
+</div><!-- /singleOrderWrap -->
+
+  <!-- ================= MASS ORDER ================= -->
+  <div id="massOrderWrap" style="display:none;">
+    <div style="padding:0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+        <p style="font-size:13px;font-weight:700;color:#f4f4f5;margin:0;">One order per line in format</p>
+        <label for="moFile" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:6px;border:1px solid #2a2a2f;background:#111113;color:#f4f4f5;font-size:12px;font-weight:700;">
+          <span class="material-symbols-outlined" style="font-size:16px;">upload_file</span> Import from sheet
+        </label>
+        <input type="file" id="moFile" accept=".csv,.tsv,.txt,text/csv,text/plain" style="display:none;">
+      </div>
+      <textarea id="moText" rows="9" spellcheck="false" placeholder="package_id|quantity|link"
+        style="width:100%;min-height:200px;padding:12px 14px;background:#111113;border:1px solid #2a2a2f;border-radius:6px;color:#f4f4f5;font-size:13px;line-height:1.6;outline:none;resize:vertical;box-sizing:border-box;font-family:ui-monospace,Consolas,monospace;"></textarea>
+      <div id="moSummary" style="display:none;margin-top:12px;padding:10px 12px;border-radius:6px;background:#111113;border:1px solid #2a2a2f;font-size:12px;color:#f4f4f5;"></div>
+      <div id="moErrors" style="display:none;margin-top:8px;font-size:12px;color:#f87171;line-height:1.7;"></div>
+      <label id="moPolicyLabel" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-top:12px;font-size:12px;color:#94a3b8;line-height:1.6;">
+        <input type="checkbox" id="moPolicy" style="margin-top:2px;width:16px;height:16px;accent-color:#2196f3;flex-shrink:0;">
+        <span>I have read and agree to the <a href="/terms/" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline;">Terms &amp; Conditions</a> and <a href="/privacy/" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:underline;">Privacy Policy</a>.</span>
+      </label>
+      <button id="moPlaceBtn" type="button" style="margin-top:14px;height:42px;padding:0 22px;border:0;border-radius:6px;background:#1f6fff;color:#fff;font-size:13px;font-weight:800;letter-spacing:.04em;cursor:pointer;">PLACE ORDER</button>
+      <div id="moResults" style="display:none;margin-top:14px;"></div>
     </div>
   </div>
   </div><!-- /newOrderSection -->
@@ -2084,7 +2118,14 @@ if(_email){
 function switchOrderTab(t) {
   const isNew=t==='new';
   const tabNew = document.getElementById('tabNewOrder');
-  if (tabNew) tabNew.className='flex-1 py-2.5 text-sm font-bold transition-all '+(isNew?'tab-new-order-badge':'bg-[#0e1629] text-gray-400');
+  const tabMass = document.getElementById('tabMassOrder');
+  const on = 'flex-1 text-sm font-bold transition-all flex items-center justify-center tab-new-order-badge';
+  const off = 'flex-1 text-sm font-bold transition-all flex items-center justify-center bg-[#0e1629] text-gray-400';
+  if (tabNew) tabNew.className = isNew ? on : off;
+  if (tabMass) tabMass.className = isNew ? off : on;
+  const sw = document.getElementById('singleOrderWrap'), mw = document.getElementById('massOrderWrap');
+  if (sw) sw.style.display = isNew ? '' : 'none';
+  if (mw) mw.style.display = isNew ? 'none' : 'block';
 }
 function filterPlatform(el) {
   
@@ -3086,6 +3127,168 @@ document.getElementById('placeOrderBtn').addEventListener('click', function(e) {
   placeOrder(_selSvc ? _selSvc.id : null);
 });
 
+// ══════════ MASS ORDER ══════════
+// One order per line: service id | quantity | link. Orders go one after another through the same
+// /order endpoint as a normal order, so the server checks balance, price and link for every line.
+(function () {
+  const MAX_LINES = 100;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  let busy = false;
+
+  function findService(id) {
+    for (const cat of Object.keys(SERVICES)) {
+      if (!Array.isArray(SERVICES[cat])) continue;
+      const s = SERVICES[cat].find((x) => String(x.id) === String(id) && !x.freeOffer);
+      if (s) return { cat, svc: s };
+    }
+    return null;
+  }
+
+  function splitLine(line) {
+    const sep = line.includes('|') ? '|' : line.includes('\t') ? '\t' : ',';
+    const parts = line.split(sep).map((x) => x.trim());
+    return [parts[0], parts[1], parts.slice(2).join(sep).trim()];
+  }
+
+  function parse() {
+    const rows = [], errors = [];
+    let seen = 0;
+    $('moText').value.split(/\r?\n/).forEach((raw, i) => {
+      const line = raw.trim();
+      if (!line) return;
+      const [id, q, link] = splitLine(line);
+      const first = seen++ === 0;
+      if (first && !/^\d+$/.test(id || '')) return; // header row such as package_id|quantity|link
+      const at = 'Line ' + (i + 1) + ': ';
+      const found = /^\d+$/.test(id || '') ? findService(id) : null;
+      const qty = parseInt(q, 10);
+      if (!found) return errors.push(at + 'service ID "' + (id || '') + '" not found');
+      const s = found.svc;
+      if (s.status === 'inactive') return errors.push(at + 'service ' + id + ' is not available right now');
+      if (/custom/i.test(s.name) || s.dripfeed) return errors.push(at + 'service ' + id + ' needs extra details, use New Order');
+      if (!/^\d+$/.test(q || '') || !qty) return errors.push(at + 'quantity is missing');
+      if (qty < s.min || qty > s.max) return errors.push(at + 'quantity must be ' + s.min + ' to ' + (s.max >= 2147483647 ? 'any' : s.max));
+      if (!/^https?:\/\/\S+$/i.test(link || '')) return errors.push(at + 'link must start with https://');
+      rows.push({ line: i + 1, cat: found.cat, svc: s, qty, link, price: Math.max(0.01, parseFloat(((qty / 1000) * s.price).toFixed(2))) });
+    });
+    if (rows.length + errors.length > MAX_LINES) errors.push('Maximum ' + MAX_LINES + ' orders at a time.');
+    return { rows, errors };
+  }
+
+  function refresh() {
+    const { rows, errors } = parse();
+    const total = rows.reduce((a, r) => a + r.price, 0);
+    const sum = $('moSummary'), er = $('moErrors');
+    if (rows.length || errors.length) {
+      sum.style.display = 'block';
+      sum.innerHTML = '<b>' + rows.length + '</b> valid order' + (rows.length === 1 ? '' : 's') + ' · Total <b>₹' + total.toFixed(2) + '</b>' +
+        (errors.length ? ' · <span style="color:#f87171;">' + errors.length + ' with errors</span>' : '');
+    } else sum.style.display = 'none';
+    er.style.display = errors.length ? 'block' : 'none';
+    er.innerHTML = errors.slice(0, 20).map(esc).join('<br>') + (errors.length > 20 ? '<br>…' : '');
+    return { rows, errors, total };
+  }
+
+  function showResults(list) {
+    const box = $('moResults');
+    box.style.display = 'block';
+    box.innerHTML = list.map((r) =>
+      '<div style="display:flex;justify-content:space-between;gap:10px;padding:8px 10px;margin-bottom:6px;border-radius:6px;background:#111113;border:1px solid #2a2a2f;font-size:12px;">' +
+      '<span style="color:#f4f4f5;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Line ' + r.line + ' · ' + esc(r.name) + ' × ' + r.qty + '</span>' +
+      '<b style="flex-shrink:0;color:' + (r.ok ? '#4ade80' : r.ok === null ? '#94a3b8' : '#f87171') + ';">' + esc(r.msg) + '</b></div>').join('');
+  }
+
+  async function place() {
+    if (busy) return;
+    const { rows, errors, total } = refresh();
+    if (!rows.length) return showToast('warn', 'Nothing to order', 'Add at least one valid line.');
+    if (errors.length) return showToast('warn', 'Fix the errors first', 'Some lines are not valid. Fix or remove them.');
+    if (!$('moPolicy').checked) { $('moPolicyLabel').style.color = '#f87171'; return showToast('warn', 'Accept the terms', 'Please tick the Terms & Conditions box.'); }
+    localStorage.setItem(GX_POLICY_KEY, GX_POLICY_VERSION);
+    if (window._currentBalance === null) return showToast('warn', 'Loading Balance', 'Please wait, your balance is still loading...');
+    if (window._currentBalance < total) return showInsufficientModal(total);
+    if (!window.auth || !window.auth.currentUser) return showToast('error', 'Session Expired', 'Please refresh the page and try again.');
+
+    busy = true;
+    const btn = $('moPlaceBtn');
+    btn.disabled = true; btn.style.opacity = '.6';
+    const out = rows.map((r) => ({ line: r.line, name: r.svc.name.replace(/\|.*/, '').trim(), qty: r.qty, ok: null, msg: 'Waiting' }));
+    showResults(out);
+    let done = 0;
+    try {
+      for (let i = 0; i < rows.length; i++) {
+        const r = rows[i];
+        out[i].msg = 'Placing…'; showResults(out);
+        try {
+          const idToken = await window.auth.currentUser.getIdToken();
+          const requestId = (crypto.randomUUID && crypto.randomUUID()) || String(Date.now()) + '-' + Math.random().toString(36).slice(2);
+          const res = await fetch('https://backend-for-api-connect-g8ta.onrender.com/order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
+            body: JSON.stringify({ category: r.cat, service: r.svc.id, link: r.link, quantity: String(r.qty), requestId, uid: window.currentUid, email: window.currentEmail })
+          });
+          let data = {};
+          try { data = await res.json(); } catch (_) {}
+          if (res.status === 402) {
+            if (typeof data.balance === 'number') window._currentBalance = data.balance;
+            out[i].ok = false; out[i].msg = 'Not enough balance';
+            for (let j = i + 1; j < rows.length; j++) { out[j].ok = false; out[j].msg = 'Skipped'; }
+            showResults(out);
+            showInsufficientModal(typeof data.price === 'number' ? data.price : r.price);
+            break;
+          }
+          const orderId = data.order || data.orderId || null;
+          if (res.ok && (orderId || data.status)) {
+            done++;
+            out[i].ok = true; out[i].msg = orderId ? '#' + orderId : 'Placed';
+            if (typeof data.balance === 'number') {
+              const old = window._currentBalance;
+              window._currentBalance = data.balance;
+              if (typeof window.animateDashboardBalance === 'function') window.animateDashboardBalance(old, data.balance, false);
+            }
+            fetch('https://backend-for-email-verification-code-vwip.onrender.com/api/telegram-alert', {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ type: 'order', data: { id: orderId || data.orderDocId, userEmail: window.auth.currentUser.email || window.currentEmail || '', service: data.serviceName || out[i].name, price: typeof data.price === 'number' ? data.price : r.price, quantity: data.quantity || r.qty, link: r.link } })
+            }).catch(() => {});
+          } else {
+            out[i].ok = false; out[i].msg = String(data.error || data.message || 'Failed (' + res.status + ')').slice(0, 60);
+          }
+        } catch (e) {
+          out[i].ok = false; out[i].msg = 'Server error';
+        }
+        showResults(out);
+      }
+    } finally {
+      busy = false;
+      btn.disabled = false; btn.style.opacity = '';
+    }
+    if (done) {
+      showToast('success', done + ' order' + (done === 1 ? '' : 's') + ' placed', 'See them in My Orders.');
+      if (!out.some((x) => x.ok === false)) { $('moText').value = ''; refresh(); }
+    }
+  }
+
+  $('moText').addEventListener('input', refresh);
+  $('moPolicy').checked = isPolicyAccepted();
+  $('moPlaceBtn').addEventListener('click', place);
+  $('moFile').addEventListener('change', function () {
+    const f = this.files && this.files[0];
+    if (!f) return;
+    if (f.size > 1024 * 1024) { showToast('warn', 'File too large', 'Use a file under 1 MB.'); this.value = ''; return; }
+    const rd = new FileReader();
+    rd.onload = () => {
+      const lines = String(rd.result).replace(/^﻿/, '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
+        .map((l) => l.replace(/"/g, '').replace(/^(\d+)\s*[,;\t]\s*(\d+)\s*[,;\t]\s*/, '$1|$2|'));
+      $('moText').value = lines.join('\n');
+      refresh();
+      showToast('success', 'File imported', lines.length + ' lines loaded.');
+    };
+    rd.readAsText(f);
+    this.value = '';
+  });
+})();
+
 document.getElementById('closeModalBtn').addEventListener('click',closeSuccessModal);
 document.getElementById('viewOrdersBtn').addEventListener('click',()=>{
   closeSuccessModal();
@@ -3302,6 +3505,8 @@ window.db = db;
 window._updateDoc = updateDoc;
 window._increment = increment;
 window._doc = doc;
+window._getDoc = getDoc;
+window._onSnapshot = onSnapshot;
 window._addDoc = addDoc;
 window._collection = collection;
 window._serverTimestamp = serverTimestamp;
@@ -3447,7 +3652,7 @@ async function claimSignupOffer(user) {
     data = await res.json().catch(() => ({}));
   } catch (_) { return; } // network problem: try again on the next visit
   if (res.status === 429 || res.status === 401 || res.status >= 500) return; // try again later
-  try { localStorage.setItem(doneKey, '1'); } catch (_) {}
+  if (data.status !== 'none') { try { localStorage.setItem(doneKey, '1'); } catch (_) {} }   // 'none' = no offer is switched on right now: ask again next visit
   const card = (o) => { if (typeof window.gxNotify === 'function') window.gxNotify(Object.assign({ duration: 5000 }, o)); };
   if (res.status === 200 && data.status === 'success') {
     card({ kind: 'offer', tag: 'Welcome gift', title: Number(data.views).toLocaleString('en-IN') + ' free views added',
@@ -3936,5 +4141,6 @@ const _OTP  = "https://backend-for-email-verification-code-vwip.onrender.com";
 </div>
 
 
+<script src="/assets/ai-assistant.js?v=3" defer></script>
 </body>
 </html>

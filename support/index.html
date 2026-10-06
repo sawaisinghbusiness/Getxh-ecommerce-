@@ -1400,17 +1400,11 @@ function renderTicketModal(ticket) {
 }
 
 function renderMessages(messages) {
-  window._renderedMsgs = messages;
   const root = document.getElementById('ticketMessages');
   const availabilityNote = `
     <div class="mb-4 rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-xs text-slate-300">
-      Most questions get an answer here in a few seconds. Anything that needs our team is checked between 10:00 AM and 10:00 PM IST.
+      <span class="font-bold text-sky-400">Support hours:</span> 10:00 AM – 10:00 PM IST. Replies typically within 2–6 hours.
     </div>`;
-  const typing = window._aiTypingFor && window._aiTypingFor === activeTicketDoc ? `
-        <div class="mb-4 flex flex-col items-start" id="aiTypingBubble">
-          <p class="mb-1 px-1 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">GETXH Support</p>
-          <div class="rounded-[22px] px-4 py-3 bubble-user text-slate-300"><p class="text-sm leading-6">Typing&hellip;</p></div>
-        </div>` : '';
   if (!messages.length) {
     root.innerHTML = availabilityNote + '<div class="rounded-3xl border border-white/8 bg-white/5 px-4 py-6 text-center text-sm text-slate-400">No messages found.</div>';
   } else {
@@ -1424,11 +1418,11 @@ function renderMessages(messages) {
         <div class="mb-4 flex flex-col ${wrapperClass}">
           <p class="mb-1 px-1 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">${label}</p>
           <div class="max-w-[75%] rounded-[22px] px-4 py-3 ${bubbleClass}">
-            <p class="text-sm leading-6" style="white-space:pre-line">${escapeHtml(message.text || message.message || '')}</p>
+            <p class="text-sm leading-6">${escapeHtml(message.text || message.message || '')}</p>
           </div>
           <p class="mt-1 px-1 text-[11px] text-slate-500">${formatDateTime(message.createdAt)}</p>
         </div>`;
-    }).join('') + typing;
+    }).join('');
   }
   requestAnimationFrame(() => {
     root.scrollTop = root.scrollHeight;
@@ -1475,30 +1469,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 let currentUser = null;
-
-// Asks the server's support assistant to answer the newest message of a ticket.
-// The server checks the ticket belongs to this user and writes the reply into the chat.
-async function askSupportAi(ticketId) {
-  if (!currentUser || !ticketId) return;
-  window._aiTypingFor = ticketId;
-  if (activeTicketDoc === ticketId && window._renderedMsgs) renderMessages(window._renderedMsgs);
-  try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 90000); // the server can be asleep on the free plan
-    await fetch('https://backend-for-api-connect-g8ta.onrender.com/support/ai-reply', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (await currentUser.getIdToken()) },
-      body: JSON.stringify({ ticketId }),
-      cache: 'no-store', referrerPolicy: 'no-referrer', credentials: 'omit', signal: ctrl.signal,
-    });
-    clearTimeout(timer);
-  } catch (_) {
-    // No answer from the assistant: the team still sees the ticket as usual
-  } finally {
-    if (window._aiTypingFor === ticketId) window._aiTypingFor = null;
-    if (activeTicketDoc === ticketId && window._renderedMsgs) renderMessages(window._renderedMsgs);
-  }
-}
 
 window.createTicket = async function () {
   hideNotice('formNotice');
@@ -1588,7 +1558,6 @@ window.createTicket = async function () {
     });
 
     await batch.commit();
-    askSupportAi(ticketRef.id);
 
     // Instant Telegram Alert to Admin
     try {
@@ -1662,7 +1631,6 @@ window.sendMessage = async function () {
       message: text,
       createdAt: Date.now(),
     });
-    askSupportAi(activeTicketDoc);
   } catch (_) {
     input.value = text;
   }

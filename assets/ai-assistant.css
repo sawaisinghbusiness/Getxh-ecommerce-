@@ -1,0 +1,86 @@
+/* AI order assistant (dashboard): entry card + chat sheet. Same zinc theme as the rest of the dashboard. */
+.aia-card {
+  display: none; align-items: center; gap: 12px;
+  margin: 0 0 14px; padding: 14px 16px;
+  background: #18181b; border: 1px solid #2a2a2f; border-radius: 14px;
+}
+.aia-card.on { display: flex; animation: aiaCardIn .3s ease both; }
+@keyframes aiaCardIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.aia-card-ic {
+  width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: #111113; border: 1px solid #2a2a2f; color: #60a5fa;
+}
+.aia-card-ic .material-symbols-outlined { font-size: 22px; }
+.aia-card-tx { flex: 1; min-width: 0; }
+.aia-card-tx b { display: block; font-size: 14.5px; font-weight: 600; color: #f4f4f5; }
+.aia-card-tx span { display: block; font-size: 12.5px; color: #a1a1aa; margin-top: 1px; }
+.aia-btn {
+  flex-shrink: 0; height: 38px; padding: 0 16px; border: none; border-radius: 10px; cursor: pointer;
+  background: #fff; color: #0a0a0a; font-size: 13.5px; font-weight: 600;
+  transition: background .15s, transform .15s;
+}
+.aia-btn:hover { background: #e9e9ec; }
+.aia-btn:active { transform: scale(.97); }
+
+.aia-ov {
+  position: fixed; inset: 0; z-index: 200; display: flex;
+  background: rgba(0, 0, 0, .62); align-items: flex-end; justify-content: center;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .22s ease, visibility 0s linear .22s;
+}
+.aia-ov.on { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .22s ease, visibility 0s; }
+.aia-sheet {
+  width: 100%; max-width: 480px; height: min(680px, 100dvh); display: flex; flex-direction: column;
+  background: #111113; border: 1px solid #2a2a2f; border-bottom: none; border-radius: 18px 18px 0 0;
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, .6); overflow: hidden;
+  transform: translateY(36px); transition: transform .28s cubic-bezier(.2, .8, .2, 1);
+}
+.aia-ov.on .aia-sheet { transform: none; }
+@media (min-width: 600px) {
+  .aia-ov { align-items: center; }
+  .aia-sheet { border-radius: 18px; border-bottom: 1px solid #2a2a2f; transform: translateY(14px) scale(.97); }
+  .aia-ov.on .aia-sheet { transform: none; }
+}
+@media (max-width: 599px) { .aia-sheet { height: 100dvh; max-width: none; border-radius: 0; border: none; transform: translateY(48px); } .aia-ov.on .aia-sheet { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .aia-ov, .aia-sheet { transition: none !important; } }
+.aia-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid #2a2a2f; }
+.aia-head b { flex: 1; font-size: 15.5px; font-weight: 600; color: #f4f4f5; }
+.aia-x {
+  width: 34px; height: 34px; border-radius: 9px; border: 1px solid #2a2a2f; background: #18181b; color: #d4d4d8;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.aia-x .material-symbols-outlined { font-size: 19px; }
+.aia-msgs { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; overscroll-behavior: contain; }
+.aia-m { max-width: 88%; padding: 10px 13px; border-radius: 14px; font-size: 14px; line-height: 1.5; white-space: pre-line; word-wrap: break-word; }
+.aia-m.bot { align-self: flex-start; background: #18181b; border: 1px solid #2a2a2f; color: #e4e4e7; border-bottom-left-radius: 4px; }
+.aia-m.me { align-self: flex-end; background: #1f6fff; color: #fff; border-bottom-right-radius: 4px; }
+.aia-m.err { align-self: flex-start; background: rgba(239, 68, 68, .08); border: 1px solid rgba(239, 68, 68, .25); color: #fca5a5; }
+.aia-dots { display: inline-flex; gap: 4px; padding: 3px 0; }
+.aia-dots i { width: 6px; height: 6px; border-radius: 50%; background: #71717a; animation: aiaBlink 1.2s infinite; }
+.aia-dots i:nth-child(2) { animation-delay: .2s; }
+.aia-dots i:nth-child(3) { animation-delay: .4s; }
+@keyframes aiaBlink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+.aia-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.aia-chip {
+  font-size: 12.5px; color: #d4d4d8; background: transparent; border: 1px solid #2a2a2f; border-radius: 999px;
+  padding: 6px 11px; cursor: pointer; text-align: left;
+}
+.aia-chip:hover { background: #18181b; border-color: #3a3a42; }
+.aia-order { align-self: flex-start; width: 88%; background: #18181b; border: 1px solid #2a2a2f; border-radius: 14px; padding: 12px 14px; }
+.aia-order h4 { font-size: 13.5px; font-weight: 600; color: #f4f4f5; margin: 0 0 8px; }
+.aia-row { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; padding: 5px 0; border-top: 1px solid #222226; color: #a1a1aa; }
+.aia-row:first-of-type { border-top: none; }
+.aia-row b { color: #f4f4f5; font-weight: 500; text-align: right; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.aia-row.total b { font-weight: 700; font-size: 14px; }
+.aia-fill { width: 100%; margin-top: 10px; height: 42px; }
+.aia-form { display: flex; gap: 8px; padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid #2a2a2f; }
+.aia-in {
+  flex: 1; min-width: 0; height: 42px; padding: 0 13px; background: #18181b; border: 1px solid #2a2a2f; border-radius: 10px;
+  color: #f4f4f5; font-size: 14px; outline: none; font-family: inherit;
+}
+.aia-in:focus { border-color: #1f6fff; box-shadow: 0 0 0 3px rgba(31, 111, 255, .22); }
+.aia-in::placeholder { color: #5c5c63; }
+.aia-send { width: 42px; height: 42px; padding: 0; display: flex; align-items: center; justify-content: center; }
+.aia-send .material-symbols-outlined { font-size: 20px; }
+.aia-send:disabled { opacity: .5; cursor: default; }

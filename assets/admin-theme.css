@@ -127,8 +127,8 @@ body [class*="border-red-"]:not(aside *):not(#mobileMenu *):not(.stat-card *),
 body [class*="border-rose-"]:not(aside *):not(#mobileMenu *):not(.stat-card *) { border-color: rgba(239, 68, 68, .28) !important; }
 
 /* Gradient icon tiles / headers become one flat neutral tile */
-body [style*="linear-gradient"]:not(aside *):not(#mobileMenu *):not(.stat-card *) { background: var(--a-raised) !important; border-color: var(--a-border) !important; }
-body [style*="linear-gradient"] .material-symbols-outlined:not(aside *):not(#mobileMenu *):not(.stat-card *) { color: var(--a-text) !important; }
+body [style*="linear-gradient"]:not(button):not(aside *):not(#mobileMenu *):not(.stat-card *) { background: var(--a-raised) !important; border-color: var(--a-border) !important; }
+body [style*="linear-gradient"]:not(button) .material-symbols-outlined:not(aside *):not(#mobileMenu *):not(.stat-card *) { color: var(--a-text) !important; }
 
 /* Primary actions: white button (green / blue / gradient buttons) */
 .bal-btn, .user-manage-btn,
@@ -336,3 +336,63 @@ body button[style*="linear-gradient(135deg,#ef4444"], body button[style*="linear
 .om b.pos { color: var(--a-good) !important; }
 .om b.neg { color: var(--a-bad) !important; }
 .om b.na { color: var(--a-faint) !important; font-weight: 500; }
+
+/* ══════════════ PRIMARY BUTTONS: one solid sky blue, no glow ══════════════ */
+body #gateUnlockBtn, body #otpVerifyBtn,
+body .bal-btn, body .user-manage-btn, body .rp-btn,
+body button[style*="linear-gradient"],
+body button.adm-primary {
+  background: #38BDF8 !important;
+  color: #04121f !important;
+  border: none !important;
+  box-shadow: none !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+  transition: background .15s, transform .15s !important;
+}
+body #gateUnlockBtn:hover, body #otpVerifyBtn:hover,
+body .bal-btn:hover, body .user-manage-btn:hover, body .rp-btn:hover,
+body button[style*="linear-gradient"]:hover { background: #0EA5E9 !important; }
+body #gateUnlockBtn:disabled, body #otpVerifyBtn:disabled { opacity: .6 !important; }
+body button[style*="linear-gradient"] .material-symbols-outlined,
+body .bal-btn .material-symbols-outlined, body .user-manage-btn .material-symbols-outlined { color: #04121f !important; }
+/* the password / OTP boxes: neutral focus instead of red */
+#gatePasswordInput:focus, #otpInput:focus { border-color: #38BDF8 !important; box-shadow: 0 0 0 3px rgba(56, 189, 248, .2) !important; }
+
+/* ══════════════ NO GLOW / GRADIENT CARDS ══════════════ */
+#trackingTab .bg-gradient-to-br, #trackingTab [class*="bg-gradient-to"] {
+  background: var(--a-card) !important;
+  border-color: var(--a-border) !important;
+  box-shadow: none !important;
+}
+#trackingTab .blur-3xl { display: none !important; }
+#trackingTab [class*="shadow-"] { box-shadow: none !important; }
+body [class*="shadow-\[0_4px_18px"], body [class*="shadow-\[0_4px_14px"] { box-shadow: none !important; }
+
+/* ══════════════ STAT CARDS: each one has its own colour ══════════════ */
+.stat-card { transition: border-color .15s; }
+.stat-card:has(p[class*="text-yellow-"]), .stat-card:has(p[class*="text-amber-"]), .stat-card:has(p[class*="text-orange-"]) {
+  background: rgba(250, 204, 21, .07) !important; border-color: rgba(250, 204, 21, .30) !important;
+}
+.stat-card:has(p[class*="text-blue-"]), .stat-card:has(p[class*="text-sky-"]), .stat-card:has(p[class*="text-cyan-"]) {
+  background: rgba(56, 189, 248, .08) !important; border-color: rgba(56, 189, 248, .32) !important;
+}
+.stat-card:has(p[class*="text-emerald-"]), .stat-card:has(p[class*="text-green-"]) {
+  background: rgba(74, 222, 128, .07) !important; border-color: rgba(74, 222, 128, .30) !important;
+}
+.stat-card:has(p[class*="text-red-"]), .stat-card:has(p[class*="text-rose-"]) {
+  background: rgba(248, 113, 113, .08) !important; border-color: rgba(248, 113, 113, .32) !important;
+}
+.stat-card:has(p[class*="text-indigo-"]), .stat-card:has(p[class*="text-violet-"]), .stat-card:has(p[class*="text-purple-"]) {
+  background: rgba(167, 139, 250, .09) !important; border-color: rgba(167, 139, 250, .32) !important;
+}
+
+/* ══════════════ REPORTS: live line ══════════════ */
+.rp-live { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--a-faint); margin: -4px 2px 12px; }
+.rp-live i { width: 7px; height: 7px; border-radius: 50%; background: var(--a-good); box-shadow: 0 0 0 0 rgba(74, 222, 128, .5); animation: rpPulse 2s infinite; }
+@keyframes rpPulse { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, .45); } 70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
+@media (prefers-reduced-motion: reduce) { .rp-live i { animation: none; } }
+
+/* password / OTP boxes: a plain border (the page's own focus:border-red class matched the red-border reset) */
+body #gatePasswordInput, body #otpInput { border-color: var(--a-border) !important; }
+body #gatePasswordInput:focus, body #otpInput:focus { border-color: #38BDF8 !important; }
