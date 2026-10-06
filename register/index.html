@@ -133,8 +133,8 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 .nav-links{display:flex;align-items:center;gap:6px;}
 .nav-link{font-size:13.5px;font-weight:500;color:#94a3b8;text-decoration:none;padding:6px 14px;border-radius:8px;}
 .nav-link:hover{color:#e2e8f0;background:rgba(255,255,255,0.06);}
-.nav-btn{font-size:13px;font-weight:700;color:#fff;text-decoration:none;padding:8px 18px;border-radius:9px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);box-shadow:0 4px 14px rgba(139,92,246,0.35);margin-left:6px;}
-.nav-btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(139,92,246,0.5);}
+.nav-btn{font-size:13px;font-weight:700;color:#fff;text-decoration:none;padding:8px 18px;border-radius:9px;background:#2563EB;box-shadow:none;margin-left:6px;}
+.nav-btn:hover{background:#1D4ED8;}
 .nav-btn-demo{background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);box-shadow:none;}
 .nav-btn-demo:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.35);transform:none;}
 .nav-ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:none;border:none;}
@@ -187,7 +187,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 
 /* Feedback boxes */
 #errorBox{display:none;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#fca5a5;font-size:12.5px;font-weight:500;margin-bottom:14px;}
-#infoBox{display:none;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);color:#86efac;font-size:12.5px;font-weight:500;margin-bottom:14px;}
+#infoBox{display:none;align-items:center;gap:6px;padding:0;background:none;border:none;color:#94a3b8;font-size:12.5px;font-weight:400;margin-bottom:12px;}
 
 /* Referral Welcome Bonus Banner */
 .ref-bonus-banner{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(6,182,212,0.1));border:1px solid rgba(16,185,129,0.35);margin-bottom:14px;box-shadow:0 4px 16px rgba(16,185,129,0.12);}
@@ -251,6 +251,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 }
 .btn:hover{background:#1d4ed8;transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,0.45);}
 .btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.finput-locked{opacity:0.6;cursor:not-allowed;pointer-events:none;}
 
 .divider-or{display:flex;align-items:center;text-align:center;margin:14px 0 10px;color:#475569;font-size:11px;font-weight:700;letter-spacing:0.08em;}
 .divider-or::before,.divider-or::after{content:'';flex:1;border-bottom:1px solid rgba(255,255,255,0.08);}
@@ -280,27 +281,27 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 @keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-4px);}40%{transform:translateX(4px);}60%{transform:translateX(-2px);}80%{transform:translateX(2px);}}
 .shake{animation:shake 0.35s ease both;}
 
-.pwd-rules{display:flex;flex-direction:column;gap:5px;padding:0 10px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;max-height:0;opacity:0;transition:all 0.3s ease;margin-top:0;}
-.pwd-rules.visible{max-height:90px;opacity:1;padding:8px 10px;margin-top:6px;}
-.rule{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:#f87171;}
-.rule.valid{color:#4ade80;}
-.rule-dot{width:5px;height:5px;border-radius:50%;background:#f87171;flex-shrink:0;}
-.rule.valid .rule-dot{background:#4ade80;}
-.confirm-hint{font-size:11px;font-weight:500;display:flex;align-items:center;gap:4px;margin-top:4px;min-height:14px;opacity:0;transition:all 0.2s ease;}
+.pwd-rules{display:flex;flex-direction:column;gap:4px;padding:0 2px;background:none;border:none;overflow:hidden;max-height:0;opacity:0;transition:all 0.25s ease;margin-top:0;}
+.pwd-rules.visible{max-height:70px;opacity:1;margin-top:6px;}
+.rule{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:400;color:#64748b;transition:color .2s;}
+.rule.valid{color:#cbd5e1;}
+.rule-dot{width:4px;height:4px;border-radius:50%;background:#475569;flex-shrink:0;transition:background .2s;}
+.rule.valid .rule-dot{background:#2563EB;}
+.confirm-hint{font-size:12px;font-weight:400;display:flex;align-items:center;gap:4px;margin-top:5px;min-height:14px;opacity:0;transition:all 0.2s ease;}
 .confirm-hint.show{opacity:1;}
-.confirm-hint.match{color:#4ade80;}
+.confirm-hint.match{color:#94a3b8;}
 .confirm-hint.no-match{color:#f87171;}
 
 /* ── SUCCESS POPUP ── */
 #successPopup{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;pointer-events:none;transition:opacity 0.4s ease;background:rgba(2,6,23,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
 #successPopup.popup-visible{opacity:1;pointer-events:all;}
-.popup-card{background:rgba(15,23,42,0.95);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:44px 36px 36px;max-width:360px;width:90%;text-align:center;box-shadow:0 36px 80px rgba(0,0,0,0.65);}
-.popup-icon-ring{width:70px;height:70px;border-radius:50%;background:rgba(139,92,246,0.14);border:1px solid rgba(139,92,246,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;}
+.popup-card{background:#0f172a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:32px 28px 28px;max-width:340px;width:90%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.5);}
+.popup-icon-ring{width:52px;height:52px;border-radius:50%;background:rgba(37,99,235,0.12);border:none;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
 .check-svg{width:34px;height:34px;}
-.popup-title{font-size:20px;font-weight:800;color:#ffffff;margin-bottom:8px;}
-.popup-sub{font-size:13px;color:#94a3b8;line-height:1.6;margin-bottom:28px;}
+.popup-title{font-size:17px;font-weight:600;color:#ffffff;margin-bottom:6px;}
+.popup-sub{font-size:13px;color:#94a3b8;line-height:1.6;margin-bottom:22px;}
 .popup-track{height:2px;background:rgba(255,255,255,0.08);border-radius:100px;overflow:hidden;}
-.popup-bar{height:100%;width:0%;background:linear-gradient(90deg,#8b5cf6,#3b82f6);border-radius:100px;animation:barFill 1.5s cubic-bezier(0.4,0,0.2,1) forwards 0.3s;}
+.popup-bar{height:100%;width:0%;background:#2563EB;border-radius:100px;animation:barFill 1.5s cubic-bezier(0.4,0,0.2,1) forwards 0.3s;}
 @keyframes barFill{to{width:100%;}}
 @keyframes spin{to{transform:rotate(360deg);}}
 
@@ -576,9 +577,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
     const err  = document.getElementById("errorBox");
     const info = document.getElementById("infoBox");
     err.style.display = "none";
-    info.innerHTML =
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">' +
-      '<polyline points="20 6 9 17 4 12"/></svg> ' + msg;
+    info.textContent = msg;
     info.style.display = "flex";
   }
 
@@ -623,6 +622,17 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
       `${label}</span>`;
   }
 
+  /* Lock the signup details once Send OTP is pressed, so the code is tied to exactly what was entered */
+  const LOCK_FIELDS = ["username", "email", "mobile", "password", "confirmPassword"];
+  function lockDetails(locked) {
+    LOCK_FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.readOnly = locked;
+      el.classList.toggle("finput-locked", locked);
+    });
+  }
+
   function showSuccessPopup() {
     document.getElementById("successPopup").classList.add("popup-visible");
   }
@@ -639,6 +649,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
     if (!email) { showError("Enter your email address first"); return; }
 
     clearMessages();
+    lockDetails(true);
     setBtn(spinner("Sending OTP…"), true);
 
     try {
@@ -654,7 +665,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
       const data = await res.json();
 
       if (data.success) {
-        showInfo("OTP sent — check your inbox");
+        showInfo("We sent a code to your email.");
         document.getElementById("otpBox").classList.add("otp-visible");
         document.getElementById("otp").focus();
         setBtn("Verify OTP", false);
@@ -662,6 +673,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
         document.getElementById("registerBtn").onclick = window.verifyOTP;
       } else {
         showError("Couldn't send OTP. Please try again.");
+        lockDetails(false);
         setBtn("Send OTP", false);
       }
     } catch(err) {
@@ -669,6 +681,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
         ? "Request timed out. Server may be starting up — wait 30 seconds and try again."
         : "Something went wrong: " + (err && err.message ? err.message : "Network error");
       showError(msg);
+      lockDetails(false);
       setBtn("Send OTP", false);
     }
   };
@@ -889,11 +902,11 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
       <svg class="check-svg" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="checkArcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%"   stop-color="#8b5cf6"/>
-            <stop offset="100%" stop-color="#3b82f6"/>
+            <stop offset="0%"   stop-color="#2563EB"/>
+            <stop offset="100%" stop-color="#2563EB"/>
           </linearGradient>
           <linearGradient id="checkMarkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%"   stop-color="#a78bfa"/>
+            <stop offset="0%"   stop-color="#60a5fa"/>
             <stop offset="100%" stop-color="#60a5fa"/>
           </linearGradient>
         </defs>
@@ -908,8 +921,8 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
       </svg>
     </div>
 
-    <div class="popup-title">OTP Verified</div>
-    <div class="popup-sub">Identity confirmed.<br/>Creating your account&hellip;</div>
+    <div class="popup-title">Email verified</div>
+    <div class="popup-sub">Creating your account&hellip;</div>
 
     <div class="popup-track">
       <div class="popup-bar"></div>
@@ -1227,8 +1240,8 @@ function onConfirmInput(val) {
 
   /* SVG tick / cross prefix */
   hint.innerHTML = matched
-    ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Passwords match'
-    : '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Passwords do not match';
+    ? 'Passwords match'
+    : 'Passwords do not match';
 }
 
 /* ─── main validate-then-send ─── */

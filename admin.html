@@ -631,6 +631,9 @@
     }
   </style>
   <script src="/assets/gx-notify.js?v=2"></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/assets/admin-theme.css?v=1">
 </head>
 
 <body class="bg-[#0b1220] text-white min-h-screen" style="visibility:hidden">
@@ -782,6 +785,13 @@
 
       <!-- Sidebar Nav -->
       <div class="flex-1 overflow-y-auto px-3 py-3">
+        <button id="navReports" onclick="switchTab('reports')"
+          class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left transition-all hover:bg-white/5 hover:border-white/10">
+          <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg">
+            <span class="material-symbols-outlined" style="font-size:16px">monitoring</span>
+          </div>
+          <span id="navReportsText" class="text-sm font-bold text-slate-300">Reports</span>
+        </button>
         <button id="navOrders" onclick="switchTab('orders')"
           class="mb-1 flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-left transition-all"
           style="background:linear-gradient(135deg,rgba(239,68,68,.13),rgba(220,38,38,.08));border:1px solid rgba(239,68,68,.22);">
@@ -790,13 +800,6 @@
           </div>
           <span id="navOrdersText" class="text-sm font-bold text-white">All Orders</span>
         </button>
-        <a href="/admin-orders"
-          class="mb-1 flex items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 transition-all hover:bg-white/5 hover:border-white/10">
-          <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-orange-500/15">
-            <span class="material-symbols-outlined text-orange-400" style="font-size:16px">table_view</span>
-          </div>
-          <span class="text-sm font-bold text-slate-300">Orders Table</span>
-        </a>
         <button id="navLinks" onclick="switchTab('links')"
           class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3.5 text-left transition-all hover:bg-white/5 hover:border-white/10">
           <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-violet-500/15">
@@ -893,13 +896,9 @@
           class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-white/5 lg:hidden">
           <span class="material-symbols-outlined" style="font-size:20px">menu</span>
         </button>
-        <div class="flex flex-shrink-0 items-center gap-2">
-          <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg"
-            style="background:linear-gradient(135deg,#ef4444,#dc2626);">
-            <span class="material-symbols-outlined text-white" style="font-size:14px">admin_panel_settings</span>
-          </div>
-          <span class="text-base font-bold text-white whitespace-nowrap"
-            style="font-size:16px;white-space:nowrap;">Admin Panel</span>
+        <div id="adminTitleWrap" class="flex min-w-0 flex-1 items-center gap-2">
+          <span id="adminTitle" class="truncate text-base font-semibold text-white"
+            style="font-size:17px;">Reports</span>
         </div>
         <!-- GetXH Live Sound & Real Phone Vibration Alert Toggle Buttons -->
         <div class="flex items-center gap-1.5 flex-shrink-0">
@@ -961,6 +960,18 @@
           </div>
         </div>
       </header>
+
+      <!-- ── REPORTS TAB ───────────────────────── -->
+      <div id="reportsTab" class="hidden flex-1 p-4 lg:p-6">
+        <div class="rp">
+          <div class="rp-month">
+            <button id="rpPrev" type="button" aria-label="Previous month"><span class="material-symbols-outlined">chevron_left</span></button>
+            <span id="rpMonthLabel">—</span>
+            <button id="rpNext" type="button" aria-label="Next month"><span class="material-symbols-outlined">chevron_right</span></button>
+          </div>
+          <div id="rpBody"><div class="rp-skel"></div><div class="rp-skel"></div></div>
+        </div>
+      </div><!-- /reportsTab -->
 
       <!-- ── ORDERS TAB ────────────────────────── -->
       <div id="ordersTab" class="flex-1 p-4 lg:p-6">
@@ -2379,12 +2390,6 @@
           <input type="text" id="editStartCountInput" placeholder="e.g. 1540" class="adm-field w-full text-xs" />
         </div>
 
-        <div>
-          <label class="mb-1 block text-xs font-semibold text-slate-400">End Count (Views / Followers at completion)</label>
-          <input type="text" id="editEndCountInput" placeholder="Leave blank to auto-calculate (Start + Qty)"
-            class="adm-field w-full text-xs" />
-          <p class="mt-1 text-[10px] text-slate-500">If left blank, End Count will be auto-calculated using Start Count + Quantity.</p>
-        </div>
 
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-white/5">
           <button type="button" onclick="closeEditCountsModal()"
@@ -2435,6 +2440,14 @@
   </div>
 
   <!-- ── MOBILE MENU ──────────────────────────────────── -->
+  <nav class="adm-bnav" id="admBnav" aria-label="Admin sections">
+    <button type="button" data-tab="reports" onclick="switchTab('reports')"><span class="material-symbols-outlined">monitoring</span>Reports</button>
+    <button type="button" data-tab="orders" onclick="switchTab('orders')"><span class="material-symbols-outlined">receipt_long</span>Orders</button>
+    <button type="button" data-tab="users" onclick="switchTab('users')"><span class="material-symbols-outlined">group</span>Users</button>
+    <button type="button" data-tab="tickets" onclick="switchTab('tickets')"><span class="material-symbols-outlined">support_agent</span>Tickets<span class="adm-badge" id="admBnavTickets"></span></button>
+    <button type="button" data-tab="more" onclick="openMobileMenu()"><span class="material-symbols-outlined">more_horiz</span>More</button>
+  </nav>
+
   <div id="mobileMenuOverlay" class="fixed inset-0 z-[105] hidden bg-black/60 backdrop-blur-sm"
     onclick="closeMobileMenu()"></div>
   <div id="mobileMenu"
@@ -2516,13 +2529,6 @@
         </div>
         <span class="text-sm font-bold text-slate-300">Tracking Links</span>
       </button>
-      <a href="/admin-orders"
-        class="mb-1 flex items-center gap-3 rounded-xl border border-transparent px-4 py-3 hover:bg-white/5">
-        <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-orange-500/15">
-          <span class="material-symbols-outlined text-orange-400" style="font-size:16px">table_view</span>
-        </div>
-        <span class="text-sm font-bold text-slate-300">Orders Table</span>
-      </a>
       <button onclick="switchTab('links');closeMobileMenu()"
         class="mb-1 flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left hover:bg-white/5">
         <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-violet-500/15">
@@ -3154,18 +3160,20 @@
     }
 
     async function confirmDeleteUser(uid, email) {
-      var promptText = 'PERMANENT DELETE: Are you sure you want to delete user ' + (email || uid) + '?\nThis will remove their balance, registration data, and profile from Firestore.';
+      var promptText = 'PERMANENT DELETE: Are you sure you want to delete user ' + (email || uid) + '?\nTheir login account, wallet balance and profile will be removed. Their past orders stay in your reports.';
       if (!confirm(promptText)) return;
 
       try {
-        showAdminToast('Deleting user from database…', false);
-        var deletes = [];
-        if (window._deleteDoc && window._doc && window._db) {
-          deletes.push(window._deleteDoc(window._doc(window._db, 'users', uid)).catch(function(){}));
-          deletes.push(window._deleteDoc(window._doc(window._db, 'userData', uid)).catch(function(){}));
-          deletes.push(window._deleteDoc(window._doc(window._db, 'Users', uid)).catch(function(){}));
-        }
-        await Promise.allSettled(deletes);
+        showAdminToast('Deleting user…', false);
+        // The server deletes the login account and the profile documents (the browser is not allowed to)
+        var res = await fetch('https://backend-for-api-connect-g8ta.onrender.com/admin/users/' + encodeURIComponent(uid) + '/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (await window._adminIdToken()) },
+          cache: 'no-store', referrerPolicy: 'no-referrer', credentials: 'omit'
+        });
+        var data = await res.json().catch(function () { return {}; });
+        if (res.status === 404 && !data.message) throw new Error('User delete is not live on the server yet.');
+        if (!res.ok) throw new Error(data.message || ('Request failed (' + res.status + ')'));
 
         if (window._masterUserMap && window._masterUserMap[uid]) {
           delete window._masterUserMap[uid];
@@ -3231,7 +3239,16 @@
                 var cls = {pending:'s-pending', processing:'s-processing', completed:'s-completed', cancelled:'s-cancelled' }[st] || 's-pending';
                 var svc = escHtml(o.serviceName || o.service || '—');
     if (svc.length > 56) svc = svc.slice(0, 56) + '…';
-                var price  = o.price ? '&#8377;' + Number(o.price).toFixed(2) : '—';
+                var price  = o.free ? 'Free' : (o.price ? '&#8377;' + Number(o.price).toFixed(2) : '—');
+                var inr    = function (n) { return '&#8377;' + Number(n).toFixed(2); };
+                var hasCost = typeof o.cost === 'number' && isFinite(o.cost);
+                var sale   = o.free ? 0 : (Number(o.price) || 0) - (Number(o.refundAmount) || 0);
+                var profit = hasCost ? sale - o.cost : null;
+                var moneyRow = '<div class="om">' +
+                  '<div><small>' + (o.free ? 'Sale (free)' : (o.refundAmount ? 'Sale (after refund)' : 'Sale')) + '</small><b>' + inr(sale) + '</b></div>' +
+                  '<div><small>API cost</small><b class="' + (hasCost ? '' : 'na') + '">' + (hasCost ? inr(o.cost) : 'Not yet') + '</b></div>' +
+                  '<div><small>Profit</small><b class="' + (profit === null ? 'na' : (profit >= 0 ? 'pos' : 'neg')) + '">' + (profit === null ? '—' : (profit < 0 ? '−' : '') + inr(Math.abs(profit))) + '</b></div>' +
+                  '</div>';
                 var uid    = o.userId || '—';
     var uidShort = uid.length > 14 ? uid.slice(0, 14) + '…' : uid;
                 var oid    = escHtml(o.orderId || o.id.slice(-7));
@@ -3247,14 +3264,14 @@
                         '<p class="text-xs font-medium text-slate-300">' + svc + '</p>' +
                         '</div>' +
                       '<div class="flex-shrink-0 text-right">' +
-                        '<p class="text-base font-black text-emerald-400">' + price + '</p>' +
+                        '<p class="text-base font-semibold text-white">' + price + '</p>' +
                         '<p class="mt-0.5 text-[10px] text-slate-500">' + formatDate(o.createdAt) + '</p>' +
                         '</div>' +
                       '</div>' +
+                    moneyRow +
                     '<div class="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-400">' +
                       '<span>Qty: <b class="font-bold text-slate-200">' + escHtml(String(o.quantity || o.qty || '—')) + '</b></span>' +
                       '<span>Start: <b class="font-bold text-amber-400">' + escHtml(String((o.start_count !== undefined && o.start_count !== null && o.start_count !== '') ? o.start_count : '—')) + '</b></span>' +
-                      '<span>End: <b class="font-bold text-emerald-400">' + escHtml(String((o.end_count !== undefined && o.end_count !== null && o.end_count !== '') ? o.end_count : '—')) + '</b></span>' +
                       '<button type="button" onclick="window.editOrderCounts(\'' + escHtml(o.id) + '\',\'' + escHtml(oid) + '\',\'' + escHtml(String(o.start_count || '')) + '\',\'' + escHtml(String(o.end_count || '')) + '\',' + Number(o.quantity || o.qty || 0) + ')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-all cursor-pointer" title="Edit Start / End Count"><span class="material-symbols-outlined" style="font-size:12px">tune</span> Counts</button>' +
                       '<span>User: <b class="font-bold text-slate-200">' + escHtml(uidShort) + '</b></span>' +
                       (o.apiOrderId ? '<span>API: <b class="font-bold text-slate-200">' + escHtml(String(o.apiOrderId)) + '</b></span>' : '') +
@@ -3309,9 +3326,13 @@
                 '<p class="truncate text-sm font-black text-white">' + escHtml(t.userName || t.userEmail || 'Unknown') + '</p>' +
                 '<p class="truncate text-[11px] text-slate-500">' + escHtml(t.userEmail || '—') + '</p>' +
                 '</div>' +
-              '<span class="flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black uppercase ' + cls + '">' + st + '</span>' +
+              '<span class="flex flex-shrink-0 items-center gap-1.5">' +
+                (t.needsHuman && st === 'open' ? '<span class="rounded-full px-2 py-0.5 text-[10px] font-semibold s-pending" title="' + escHtml(t.needsHumanReason || '') + '">Needs you</span>' : '') +
+                '<span class="rounded-full px-2 py-0.5 text-[10px] font-black uppercase ' + cls + '">' + st + '</span>' +
+              '</span>' +
               '</div>' +
             '<p class="text-[11px] font-semibold text-slate-400">' + escHtml(t.category || '') + (t.subcategory ? ' › ' + escHtml(t.subcategory) : '') + '</p>' +
+            (t.needsHuman && st === 'open' && t.needsHumanReason ? '<p class="mt-1 text-[11px] text-slate-300">AI: ' + escHtml(t.needsHumanReason) + '</p>' : '') +
             '<div class="mt-1.5 flex items-center gap-3">' +
               '<span class="text-[10px] text-slate-600">' + (t.orderId ? 'Order: ' + escHtml(t.orderId) : 'General') + '</span>' +
               '<span class="ml-auto text-[10px] text-slate-600">' + formatDate(t.createdAt) + '</span>' +
@@ -3391,11 +3412,11 @@
     var isAdmin = String(msg.sender || 'user').toLowerCase() === 'admin';
           return '<div class="mb-4 flex flex-col ' + (isAdmin ? 'items-end' : 'items-start') + '">' +
             '<p class="mb-1 px-1 text-[10px] font-bold uppercase tracking-wide text-slate-500">' +
-              (isAdmin ? 'Admin (You)' : 'User') +
+              (msg.ai ? 'AI assistant' : (isAdmin ? 'Admin (You)' : 'User')) +
               '</p>' +
             '<div class="max-w-[78%] rounded-[20px] px-4 py-3 ' +
         (isAdmin ? 'bubble-admin text-white' : 'bubble-user text-slate-100') + '">' +
-              '<p class="text-sm leading-relaxed">' + escHtml(msg.text || msg.message || '') + '</p>' +
+              '<p class="text-sm leading-relaxed" style="white-space:pre-line">' + escHtml(msg.text || msg.message || '') + '</p>' +
               '</div>' +
             '<p class="mt-1 px-1 text-[10px] text-slate-600">' + formatDate(msg.createdAt) + '</p>' +
             '</div>';
@@ -3574,6 +3595,9 @@
                 '<button onclick="openAddServiceModal(\'' + escAttr(cat.id) + '\')" class="flex items-center gap-1 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1 text-[11px] font-bold text-indigo-400 hover:bg-indigo-500/20">' +
                   '<span class="material-symbols-outlined" style="font-size:14px">add</span><span>Add Service</span>' +
                   '</button>' +
+                '<button onclick="window.deleteCategoryFromFirestore(\'' + escAttr(cat.id) + '\')" title="Delete category" aria-label="Delete category" class="flex h-[26px] w-[26px] items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20">' +
+                  '<span class="material-symbols-outlined" style="font-size:15px">delete</span>' +
+                  '</button>' +
                 '</div>' +
               '</div>' +
 
@@ -3724,7 +3748,6 @@
       document.getElementById('editCountsOrderDisplay').textContent = '#' + (orderNum || orderId.slice(-7));
       document.getElementById('editCountsQty').value = qty || 0;
       document.getElementById('editStartCountInput').value = (startCount && startCount !== '—') ? startCount : '';
-      document.getElementById('editEndCountInput').value = (endCount && endCount !== '—') ? endCount : '';
       var modal = document.getElementById('editCountsModal');
       if (modal) {
         modal.classList.remove('hidden');
@@ -3745,17 +3768,12 @@
       var docId = document.getElementById('editCountsDocId').value;
       var qty = Number(document.getElementById('editCountsQty').value) || 0;
       var start = document.getElementById('editStartCountInput').value.trim();
-      var end = document.getElementById('editEndCountInput').value.trim();
-
-      if (start && !end && !isNaN(Number(start)) && qty > 0) {
-        end = String(Number(start) + qty);
-      }
 
       var btn = document.getElementById('btnSaveCountsModal');
       if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
       try {
         if (typeof window.saveOrderCounts === 'function') {
-          await window.saveOrderCounts(docId, start, end);
+          await window.saveOrderCounts(docId, start);
         }
         window.closeEditCountsModal();
       } finally {
@@ -4989,7 +5007,8 @@
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
     import {
       addDoc, collection, doc, getDoc, getFirestore,
-      increment, onSnapshot, orderBy, query, setDoc, updateDoc, where, getDocs, limit, deleteDoc, serverTimestamp
+      increment, onSnapshot, orderBy, query, setDoc, updateDoc, where, getDocs, limit, deleteDoc, serverTimestamp,
+      deleteField, FieldPath
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     // ── Admin identity (defined above in Security Config) ─
@@ -5018,6 +5037,11 @@
     window._setDoc = setDoc;
     window._updateDoc = updateDoc;
     window._deleteDoc = deleteDoc;
+    // Login token for admin-only backend calls (e.g. deleting a user's login account)
+    window._adminIdToken = async function () {
+      if (!auth.currentUser) throw new Error('Please sign in again.');
+      return auth.currentUser.getIdToken();
+    };
     window._getDoc = getDoc;
 
     window.getAdminHeaders = async function () {
@@ -5462,11 +5486,8 @@
           if (startCount !== undefined && startCount !== null) {
             updateData.start_count = startCount;
           }
-          if (endCount !== undefined && endCount !== null) {
-            updateData.end_count = endCount;
-          }
           await updateDoc(doc(db, 'orders', orderId), updateData);
-          showAdminToast('Order counts updated! (Start: ' + (startCount || '—') + ', End: ' + (endCount || '—') + ')', false);
+          showAdminToast('Start count updated: ' + (startCount || '—'), false);
           return true;
         } catch (err) {
           console.error('saveOrderCounts error:', err);
@@ -5682,6 +5703,32 @@
         } catch (err) {
           console.error('Error saving category:', err);
           showAdminToast('Failed to save category: ' + (err.message || 'Unknown error'), true);
+        }
+      };
+
+      // Delete a category and the services inside it
+      window.deleteCategoryFromFirestore = async function (catId) {
+        const cats = (window._adminCatalog && window._adminCatalog.categories) || [];
+        const cat = cats.find(c => c.id === catId);
+        const count = ((window._adminCatalog && window._adminCatalog.services && window._adminCatalog.services[catId]) || []).length;
+        const name = cat ? cat.label : catId;
+        const msg = count
+          ? 'Delete the category "' + name + '" and its ' + count + ' service' + (count === 1 ? '' : 's') + '?\nUsers will no longer see them. Past orders are not affected.'
+          : 'Delete the empty category "' + name + '"?';
+        if (!confirm(msg)) return;
+        try {
+          showAdminToast('Deleting category…', false);
+          const remaining = cats.filter(c => c.id !== catId);
+          // deleteField removes the category's service list (a merge-save would keep it)
+          await updateDoc(doc(db, 'app_config', 'services_catalog'),
+            'categories', remaining,
+            new FieldPath('services', catId), deleteField(),
+            'updatedAt', Date.now(),
+            'updatedBy', user.email || 'admin');
+          showAdminToast('✓ Category deleted', false);
+        } catch (err) {
+          console.error('Error deleting category:', err);
+          showAdminToast('Failed to delete category: ' + (err.message || 'Unknown error'), true);
         }
       };
 
@@ -7222,6 +7269,22 @@ function slCard(l) {
       }));
     } catch (e) { detail.textContent = e.message; }
   }));
+  if (l.isSignupOffer) {
+    left.append(mk("p", "mt-1 text-xs font-bold text-sky-300", "Given automatically to every new account (once per account, device and IP)"));
+    actions.append(slBtn("Stop for new signups", "bg-sky-500/15 text-sky-300 hover:bg-sky-500/25", async (ev) => {
+      if (!confirm("Stop giving this offer to new accounts? People who already got it keep their views.")) return;
+      ev.currentTarget.disabled = true;
+      try { await api("POST", "/admin/links/" + l.id + "/signup-offer", { enabled: false }); toast("New-signup offer stopped"); slLoadLinks(); }
+      catch (e) { toast(e.message); ev.currentTarget.disabled = false; }
+    }));
+  } else if (l.status === "active") {
+    actions.append(slBtn("Give to new signups", "bg-sky-500/15 text-sky-300 hover:bg-sky-500/25", async (ev) => {
+      if (!confirm("Give this offer automatically to every NEW account from now on (once per account, device and IP)? It replaces any other new-signup offer. Existing accounts don't get it.")) return;
+      ev.currentTarget.disabled = true;
+      try { await api("POST", "/admin/links/" + l.id + "/signup-offer"); toast("New signups now get this offer"); slLoadLinks(); }
+      catch (e) { toast(e.message); ev.currentTarget.disabled = false; }
+    }));
+  }
   if (l.status === "active") {
     actions.append(slBtn("Revoke", "bg-red-500/15 text-red-300 hover:bg-red-500/25", async (ev) => {
       if (!confirm("Revoke this link? New people can no longer claim it AND the unused free views of everyone who already claimed stop working immediately.")) return;
@@ -7449,6 +7512,227 @@ try {
     if (auth.currentUser) go(); else { const off = auth.onAuthStateChanged((u) => { if (u) { off(); go(); } }); }
   }
 } catch (_) {}
+</script>
+
+<!-- ══════════════ REPORTS + NAVIGATION ══════════════ -->
+<script>
+// Wraps the original switchTab: adds the Reports tab, the page title,
+// the mobile bottom bar state and Reports as the landing tab.
+(function () {
+  var TITLES = { reports: 'Reports', orders: 'Orders', tickets: 'Tickets', users: 'Users', services: 'Services',
+    funds: 'Fund History', tracking: 'Tracking Links', links: 'Secret Links', updates: 'Updates', blogs: 'Blogs' };
+  var orig = window.switchTab;
+  if (typeof orig !== 'function') return;
+
+  window.switchTab = function (tab) {
+    if (!TITLES[tab]) tab = 'orders';
+    var rep = document.getElementById('reportsTab');
+    if (tab === 'reports') {
+      orig('__reports__'); // hides every other tab
+      rep.classList.remove('hidden');
+      try {
+        var u = new URL(location.href); u.searchParams.set('tab', 'reports');
+        history.replaceState({ tab: 'reports' }, '', u.toString());
+      } catch (_) {}
+      if (typeof window.loadReportsTab === 'function') window.loadReportsTab();
+    } else {
+      rep.classList.add('hidden');
+      orig(tab);
+    }
+    var nr = document.getElementById('navReports'), nrt = document.getElementById('navReportsText');
+    if (nr) nr.style.cssText = tab === 'reports' ? 'background:linear-gradient(0deg,transparent,transparent);' : '';
+    if (nrt) nrt.className = 'text-sm font-bold ' + (tab === 'reports' ? 'text-white' : 'text-slate-300');
+
+    var title = document.getElementById('adminTitle');
+    if (title) title.textContent = TITLES[tab];
+    var main = ['reports', 'orders', 'users', 'tickets'];
+    document.querySelectorAll('#admBnav button').forEach(function (b) {
+      var t = b.getAttribute('data-tab');
+      b.classList.toggle('on', t === tab || (t === 'more' && main.indexOf(tab) === -1));
+    });
+    window.scrollTo(0, 0);
+  };
+
+  // Open-ticket count on the bottom bar mirrors the sidebar badge
+  var src = document.getElementById('openTicketsBadge'), dst = document.getElementById('admBnavTickets');
+  if (src && dst) {
+    var sync = function () {
+      var n = parseInt(src.textContent, 10) || 0;
+      dst.textContent = n > 99 ? '99+' : String(n);
+      dst.style.display = n > 0 ? 'flex' : 'none';
+    };
+    new MutationObserver(sync).observe(src, { childList: true, characterData: true, subtree: true });
+    sync();
+  }
+
+  var start = '';
+  try { start = new URL(location.href).searchParams.get('tab') || ''; } catch (_) {}
+  window.switchTab(TITLES[start] ? start : 'reports');
+})();
+</script>
+
+<script type="module">
+import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+const app = getApps()[0] || initializeApp({
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh.in",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+});
+const auth = getAuth(app);
+const BACKEND = "https://backend-for-api-connect-g8ta.onrender.com";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const inr = (n) => (n < 0 ? "−" : "") + "₹" + Math.abs(Number(n) || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+const pct = (m) => m === null || m === undefined ? "—" : Math.round(m * 100) + "%";
+
+// Months are counted in Indian time, like the backend
+const istKey = (ms) => { const d = new Date(ms + 5.5 * 3600e3); return d.getUTCFullYear() + "-" + String(d.getUTCMonth() + 1).padStart(2, "0"); };
+const shift = (key, n) => { const [y, m] = key.split("-").map(Number); const d = new Date(Date.UTC(y, m - 1 + n, 1)); return d.getUTCFullYear() + "-" + String(d.getUTCMonth() + 1).padStart(2, "0"); };
+const monthName = (key, short) => { const [y, m] = key.split("-").map(Number); return new Date(Date.UTC(y, m - 1, 1)).toLocaleString("en-IN", { month: short ? "short" : "long", year: short ? undefined : "numeric", timeZone: "UTC" }); };
+
+const NOW = istKey(Date.now());
+const st = { month: NOW, cache: {}, busy: false };
+
+async function call(method, path, body) {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Please sign in again.");
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 70000); // the server can be asleep on the free plan
+  try {
+    const res = await fetch(BACKEND + path, {
+      method, cache: "no-store", referrerPolicy: "no-referrer", credentials: "omit", signal: ctrl.signal,
+      headers: { "Content-Type": "application/json", Authorization: "Bearer " + (await user.getIdToken()) },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 404) throw new Error("Reports are not live on the server yet. They will work once the new backend is deployed.");
+    if (!res.ok) throw new Error(data.message || "Request failed (" + res.status + ")");
+    return data;
+  } catch (e) {
+    throw new Error(e.name === "AbortError" ? "The server is waking up. Try again in a moment." : e.message);
+  } finally { clearTimeout(timer); }
+}
+
+async function load(force) {
+  const key = st.month;
+  $("rpMonthLabel").textContent = monthName(key);
+  $("rpNext").disabled = key >= NOW;
+  if (!st.cache[key] || force) {
+    $("rpBody").innerHTML = '<div class="rp-skel"></div><div class="rp-skel"></div>';
+    try {
+      const data = await call("GET", "/admin/reports?months=6&to=" + key);
+      if (!Array.isArray(data.months) || !data.months.length) throw new Error("Report data is not available yet. Please try again.");
+      st.cache[key] = data.months;
+    } catch (e) {
+      if (st.month !== key) return;
+      $("rpBody").innerHTML = '<div class="rp-card rp-note"><span class="material-symbols-outlined">error</span><span class="t">' + esc(e.message) + '</span><button class="rp-btn" id="rpRetry">Retry</button></div>';
+      $("rpRetry").onclick = () => load(true);
+      return;
+    }
+  }
+  if (st.month === key) render(st.cache[key]);
+}
+
+function render(months) {
+  const cur = months[months.length - 1];
+  const prev = months[months.length - 2];
+  let delta = "";
+  if (prev && prev.profit !== 0) {
+    const d = (cur.profit - prev.profit) / Math.abs(prev.profit);
+    delta = '<span class="rp-delta ' + (d >= 0 ? "up" : "down") + '"><span class="material-symbols-outlined">' + (d >= 0 ? "arrow_upward" : "arrow_downward") + "</span>" + Math.abs(Math.round(d * 100)) + "% vs " + monthName(prev.month, true) + "</span>";
+  }
+  const missing = months.reduce((n, m) => n + (m.missingCost || 0), 0);
+  const max = Math.max(1, ...months.map((m) => Math.abs(m.profit)));
+
+  let html = "";
+  html += '<div class="rp-card rp-hero"><div class="rp-label">Profit · ' + esc(monthName(cur.month)) + '</div>' +
+    '<div class="rp-big ' + (cur.profit < 0 ? "neg" : "") + '">' + inr(cur.profit) + "</div>" +
+    '<div class="rp-row"><span>Margin <b>' + pct(cur.margin) + "</b></span>" + delta + "</div></div>";
+
+  html += '<div class="rp-tiles">' +
+    tile("Order sales", inr(cur.netSales), cur.refunds > 0 ? inr(cur.refunds) + " refunded" : "What users paid") +
+    tile("API cost", inr(cur.totalCost), cur.freeCost > 0 ? "incl. " + inr(cur.freeCost) + " free views" : "Paid to provider") +
+    tile("Wallet top-ups", inr(cur.topups), cur.topupCount + (cur.topupCount === 1 ? " payment" : " payments")) +
+    tile("Orders", cur.orders.toLocaleString("en-IN"), [cur.refundedOrders + " refunded", cur.freeOrders ? cur.freeOrders + " free" : ""].filter(Boolean).join(" · ")) +
+    "</div>";
+
+  if (missing > 0) {
+    html += '<div class="rp-card rp-note"><span class="material-symbols-outlined">info</span><span class="t">' +
+      missing.toLocaleString("en-IN") + " older order" + (missing === 1 ? " has" : "s have") + " no API cost yet, so profit is shown too high.</span>" +
+      '<button class="rp-btn" id="rpFill">Fetch costs</button></div>';
+  }
+
+  html += '<div class="rp-card rp-chart"><div class="rp-chart-head"><h3>Profit by month</h3><span>Last 6 months</span></div><div class="rp-bars">' +
+    '<div class="grid" style="bottom:50%"></div><div class="grid" style="bottom:100%"></div>' +
+    months.map((m) => '<div class="rp-bar' + (m.month === cur.month ? " cur" : "") + (m.profit < 0 ? " neg" : "") + '" tabindex="0" data-m="' + m.month + '">' +
+      '<i style="height:' + (Math.abs(m.profit) / max * 100).toFixed(1) + '%"></i>' +
+      '<div class="tip">' + esc(monthName(m.month)) + "<b>" + inr(m.profit) + " profit</b>" + pct(m.margin) + " margin</div></div>").join("") +
+    '</div><div class="rp-x">' + months.map((m) => '<span class="' + (m.month === cur.month ? "cur" : "") + '">' + esc(monthName(m.month, true)) + "</span>").join("") + "</div></div>";
+
+  html += '<div class="rp-card rp-tbl"><h3>' + esc(monthName(cur.month)) + ' in detail</h3><div class="rp-detail">' +
+    line("Order sales (before refunds)", inr(cur.sales)) +
+    (cur.refunds > 0 ? line("Refunds", inr(-cur.refunds)) : "") +
+    line("API cost (paid orders)", inr(-cur.apiCost)) +
+    (cur.freeCost > 0 ? line("Free views cost", inr(-cur.freeCost)) : "") +
+    line("Profit", inr(cur.profit), true) +
+    line("Wallet top-ups received", inr(cur.topups)) +
+    "</div></div>";
+
+  html += '<div class="rp-card rp-tbl"><h3>Monthly breakdown</h3>' +
+    '<div class="rp-tr th"><span>Month</span><span>Sales</span><span>API cost</span><span>Profit</span></div>' +
+    [...months].reverse().map((m) => '<div class="rp-tr' + (m.month === cur.month ? " cur" : "") + '" data-m="' + m.month + '">' +
+      "<span>" + esc(monthName(m.month, true)) + " " + m.month.slice(0, 4) + "</span><span>" + inr(m.netSales) + "</span><span>" + inr(m.totalCost) + "</span>" +
+      '<span class="p ' + (m.profit < 0 ? "neg" : "") + '">' + inr(m.profit) + '<span class="m">' + pct(m.margin) + "</span></span></div>").join("") +
+    "</div>";
+
+  $("rpBody").innerHTML = html;
+  $("rpBody").querySelectorAll("[data-m]").forEach((el) => {
+    el.addEventListener("click", () => { const m = el.getAttribute("data-m"); if (m !== st.month) go(m); });
+  });
+  const fill = $("rpFill");
+  if (fill) fill.onclick = () => fillCosts(fill);
+}
+
+const tile = (label, value, hint) => '<div class="rp-card rp-tile"><div class="rp-label">' + label + '</div><div class="v">' + value + '</div><div class="h">' + esc(hint || " ") + "</div></div>";
+const line = (label, value, total) => '<div class="rp-line' + (total ? " total" : "") + '"><span>' + label + "</span><b>" + value + "</b></div>";
+
+async function fillCosts(btn) {
+  btn.disabled = true;
+  let filled = 0;
+  try {
+    for (let i = 0; i < 50; i++) {
+      btn.textContent = "Fetching… " + filled;
+      const r = await call("POST", "/admin/reports/fill-costs", { to: NOW, months: 24 });
+      filled += r.filled || 0;
+      if (!r.remaining) break;
+    }
+  } catch (e) {
+    alert(e.message);
+  }
+  st.cache = {};
+  load(true);
+}
+
+function go(month) {
+  st.month = month > NOW ? NOW : month;
+  load();
+}
+
+$("rpPrev").onclick = () => go(shift(st.month, -1));
+$("rpNext").onclick = () => go(shift(st.month, 1));
+
+let started = false;
+window.loadReportsTab = function () {
+  const run = () => { if (!started) { started = true; } load(); };
+  if (auth.currentUser) run();
+  else { const off = auth.onAuthStateChanged((u) => { if (u) { off(); run(); } }); }
+};
+if (!$("reportsTab").classList.contains("hidden")) window.loadReportsTab();
 </script>
 </body>
 

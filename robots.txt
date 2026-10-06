@@ -20,7 +20,6 @@ Disallow: /orders/
 Disallow: /wallet/
 Disallow: /support/
 Disallow: /admin/
-Disallow: /admin-orders/
 Disallow: /account/
 Disallow: /payment-success/
 Disallow: /verify-otp/

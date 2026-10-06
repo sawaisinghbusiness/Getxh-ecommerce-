@@ -183,7 +183,7 @@
 
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
 <style>
@@ -205,7 +205,7 @@
 
 html,body{
   min-height:100%;
-  font-family:'Inter',sans-serif;
+  font-family:'Geist',sans-serif;
   background:#04070D;
   color:var(--text);
   overflow-x:hidden;
@@ -268,8 +268,8 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 .nav-btn{
   font-size:13px;font-weight:700;color:#fff;
   text-decoration:none;padding:8px 18px;border-radius:9px;
-  background:linear-gradient(90deg,#2563EB,#38BDF8);
-  box-shadow:0 4px 14px rgba(37,99,235,0.35);
+  background:#2563EB;
+  box-shadow:none;
   transition:all 0.25s ease;margin-left:6px;
 }
 .nav-btn-demo{
@@ -283,8 +283,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   border-color:rgba(255,255,255,0.35);
 }
 .nav-btn:hover{
-  transform:translateY(-1px) scale(1.03);
-  box-shadow:0 8px 22px rgba(37,99,235,0.5);
+  background:#1D4ED8;
 }
 
 /* hamburger (mobile) */
@@ -441,13 +440,24 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   background:linear-gradient(135deg, #E1306C 0%, #F77737 50%, #FCAF45 100%);
   background-size:180% 180%;
   animation:bannerFlow 7s ease-in-out infinite alternate;
-  padding:20px 22px 16px;
-  display:flex;flex-direction:column;gap:12px;
+  padding:22px;
+  display:flex;flex-direction:column;gap:16px;
+  container-type:inline-size;
 }
 .lbn-tag{
-  font-size:18px;
-  font-weight:800;color:#fff;
-  line-height:1.25;letter-spacing:-0.02em;
+  /* scales with the banner so the line always spans its full width */
+  font-size:clamp(15px, 6.85cqi, 34px);
+  font-weight:700;color:#fff;
+  line-height:1.15;letter-spacing:-0.025em;
+  white-space:nowrap;
+  padding-bottom:0.3em;
+}
+/* hand-drawn brush underline under the number */
+.lbn-hl{position:relative;display:inline-block;}
+.lbn-hl::after{
+  content:"";position:absolute;left:-2%;right:-4%;bottom:-0.42em;height:0.42em;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 26' preserveAspectRatio='none'%3E%3Cpath d='M4 9 C55 6 125 5 196 3 L46 17 C78 17 104 19 128 22' fill='none' stroke='black' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+  pointer-events:none;
 }
 .lbn-tag s{text-decoration-color:rgba(255,220,230,0.6);color:rgba(255,220,230,0.6);}
 .lbn-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;}
@@ -522,7 +532,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   border-radius:12px;
   padding:0 14px 0 40px;
   color:#f1f5f9;
-  font-size:14px;font-family:'Inter',sans-serif;
+  font-size:14px;font-family:'Geist',sans-serif;
   outline:none;
   transition:all 0.25s ease;
 }
@@ -554,7 +564,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   animation:btnShimmer 5s linear infinite;
   color:#FFFFFF;
   font-size:14.5px;font-weight:700;
-  font-family:'Inter',sans-serif;
+  font-family:'Geist',sans-serif;
   cursor:pointer;
   transition:all 0.3s ease;
   box-shadow:0 0 30px rgba(236,72,153,0.45);
@@ -573,7 +583,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   background:rgba(255,255,255,0.05);
   color:#f1f5f9;
   font-size:13.5px;font-weight:600;
-  font-family:'Inter',sans-serif;
+  font-family:'Geist',sans-serif;
   cursor:pointer;
   display:flex;align-items:center;justify-content:center;gap:10px;
   transition:all 0.25s ease;
@@ -791,24 +801,22 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 .reviews-track{display:flex;gap:18px;transition:transform 0.5s cubic-bezier(0.22,1,0.36,1);}
 .review-card{
   flex:0 0 calc(33.333% - 12px);
-  background:linear-gradient(160deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 40%, rgba(10,14,22,0.40) 100%);
-  border:1px solid rgba(255,255,255,0.10);
+  background:#38BDF8;
+  border:none;
   border-radius:20px;
   padding:26px 22px;
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  box-shadow:0 20px 40px rgba(0,0,0,0.3);
+  box-shadow:none;
 }
 .review-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
 .review-avatar{
   width:46px;height:46px;border-radius:50%;
   object-fit:cover;
-  border:1px solid rgba(255,255,255,0.15);
+  border:2px solid rgba(11,18,32,0.15);
   display:block;
   flex-shrink:0;
 }
-.review-name{font-size:14.5px;font-weight:700;color:#f1f5f9;}
-.review-role{font-size:11.5px;color:#64748b;margin-top:2px;}
+.review-name{font-size:14.5px;font-weight:700;color:#0B1220;}
+.review-role{font-size:11.5px;color:#0C4A6E;margin-top:2px;}
 .verif-badge{
   margin-left:auto;
   display:inline-flex;
@@ -820,30 +828,30 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 .verif-icon{
   width:15px;
   height:15px;
-  color:#94A3B8;
+  color:#0C4A6E;
   flex-shrink:0;
 }
 .verif-text{
   font-size:11.5px;
   font-weight:500;
-  color:#94A3B8;
+  color:#0C4A6E;
   line-height:1.25;
   white-space:normal;
 }
 .review-stars{display:flex;gap:3px;margin-bottom:14px;}
-.review-stars svg{width:14px;height:14px;fill:#B45309;opacity:0.75;}
+.review-stars svg{width:14px;height:14px;fill:#0B1220;opacity:1;}
 .review-text{
   font-size:13px;
-  color:#C3CBD8;
+  color:#0B1220;
   line-height:1.7;
   font-style:italic;
 }
 .reviews-nav{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:24px;position:relative;z-index:2;}
 .rev-dot{
   width:8px;height:8px;border-radius:50%;
-  background:rgba(167,139,250,0.25);cursor:pointer;border:none;
+  background:rgba(56,189,248,0.3);cursor:pointer;border:none;
 }
-.rev-dot.active{background:#8b5cf6;transform:scale(1.3);}
+.rev-dot.active{background:#38BDF8;transform:scale(1.3);}
 
 /* Testimonials background plexus */
 .testi-plexus{
@@ -984,7 +992,10 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   .timeline-icon{width:40px;height:40px;}
   .timeline-icon svg{width:16px;height:16px;}
   .timeline-line{top:44px;height:20px;}
-  .review-card{flex:0 0 100%;}
+  .review-card{flex:0 0 auto;}
+  /* small screens: all reviews stacked, no slider (nothing hidden off-screen) */
+  .reviews-track{flex-direction:column;gap:14px;transform:none !important;}
+  .reviews-nav{display:none;}
   .footer-grid{grid-template-columns:1fr 1fr;gap:30px;}
   .lp-section{padding:45px 20px;}
 }
@@ -1672,7 +1683,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   <div class="right">
     <div class="card-stack">
       <div class="login-banner">
-        <div class="lbn-tag">The <s>harder</s> smarter way to grow on Social Media</div>
+        <div class="lbn-tag">Sign up &amp; get <span class="lbn-hl">10,000</span> free views</div>
         <div class="lbn-bottom">
           <div class="lbn-social">
             <div class="lbn-avatars">
@@ -1685,7 +1696,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
               <span class="lbn-loved-l2">10,000+ Creators</span>
             </div>
           </div>
-          <a href="/register" class="lbn-cta">Register Free</a>
+          <a href="/register" class="lbn-cta">Get Free Views</a>
         </div>
       </div>
 
@@ -1880,7 +1891,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   <div class="lp-inner" style="position:relative;z-index:2;">
     <span class="section-label">SIMPLE PROCESS</span>
     <h2 class="section-title">How It Works</h2>
-    <p class="section-sub">Get started in minutes — no complicated setup, no waiting.</p>
+    <p class="section-sub">Get your 10,000 free views in a couple of minutes. No card, no payment.</p>
 
     <div class="timeline-flow">
       <div class="timeline-item">
@@ -1895,8 +1906,8 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
         </div>
         <div class="timeline-content">
           <div class="timeline-step">STEP 01</div>
-          <div class="timeline-title">Create a Free Account</div>
-          <div class="timeline-desc">Sign up in seconds with just your email — no credit card needed.</div>
+          <div class="timeline-title">Create a free account</div>
+          <div class="timeline-desc">Sign up with your email or Google. It takes under a minute.</div>
         </div>
       </div>
 
@@ -1904,16 +1915,16 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
         <div class="timeline-left">
           <div class="timeline-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="5" width="20" height="14" rx="2"/>
-              <line x1="2" y1="10" x2="22" y2="10"/>
+              <rect x="3" y="8" width="18" height="13" rx="1"/>
+              <path d="M12 8v13M3 12h18M12 8c-1.5-3-5-3.5-5-1s3 1 5 1zm0 0c1.5-3 5-3.5 5-1s-3 1-5 1z"/>
             </svg>
           </div>
           <div class="timeline-line"></div>
         </div>
         <div class="timeline-content">
           <div class="timeline-step">STEP 02</div>
-          <div class="timeline-title">Add Balance</div>
-          <div class="timeline-desc">Top up via UPI, debit/credit card instantly.</div>
+          <div class="timeline-title">Get 10,000 free views</div>
+          <div class="timeline-desc">They're added to your dashboard automatically, under Welcome Offer.</div>
         </div>
       </div>
 
@@ -1921,16 +1932,16 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
         <div class="timeline-left">
           <div class="timeline-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="m21 21-4.35-4.35"/>
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
             </svg>
           </div>
           <div class="timeline-line"></div>
         </div>
         <div class="timeline-content">
           <div class="timeline-step">STEP 03</div>
-          <div class="timeline-title">Choose a Service</div>
-          <div class="timeline-desc">Pick followers, likes, or views from any platform.</div>
+          <div class="timeline-title">Paste your link</div>
+          <div class="timeline-desc">Paste your link and place your order.</div>
         </div>
       </div>
 
@@ -1944,8 +1955,8 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
         </div>
         <div class="timeline-content">
           <div class="timeline-step">STEP 04</div>
-          <div class="timeline-title">Enjoy Your Order!</div>
-          <div class="timeline-desc">Delivery starts instantly. Track every order live in your dashboard.</div>
+          <div class="timeline-title">Watch the views come in</div>
+          <div class="timeline-desc">Delivery starts right away. Track it live on your Orders page.</div>
         </div>
       </div>
     </div>

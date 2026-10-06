@@ -817,26 +817,6 @@ function cancelLogout() {
 // ── REAL-TIME ORDER STATUS POLLING ──
 let _ordersInterval = null;
 window._adminOverriddenOrders = new Set(); // docIds where admin manually set status
-window._fetchingEndCounts = new Set(); // Avoid duplicate concurrent Apify calls for same order
-window._fetchingStartCounts = new Set(); // one start-count attempt per order per page visit
-
-// ── INSTAGRAM COUNT AUTO-FETCHER (VIA BACKEND) ──
-async function fetchInstagramCount(url) {
-  try {
-    if (!url || typeof url !== 'string' || !url.includes('instagram.com')) return null;
-    const res = await fetch('https://backend-for-api-connect-g8ta.onrender.com/instagram-count', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url })
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return (data && data.count !== undefined && data.count !== null) ? String(data.count) : null;
-  } catch (err) {
-    console.warn('Instagram count fetch error:', err);
-    return null;
-  }
-}
 
 async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
   // Skip API polling if admin has manually overridden this order's status
@@ -904,118 +884,34 @@ async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
     const currentStatus = cardEl ? (cardEl.getAttribute('data-status') || '') : '';
     if (cardEl) cardEl.setAttribute('data-status', firestoreStatus);
 
-    // Start Count & End Count handling
+    // Start count: the server reads it from Instagram right after the order is placed. The provider's
+    // number is only used when we have none, and never a 0 (providers report 0 before delivery starts).
     const existingStart = cardEl ? (cardEl.getAttribute('data-start-count') || '') : '';
-    const existingEnd   = cardEl ? (cardEl.getAttribute('data-end-count') || '') : '';
-
-    let apiStart = (data.start_count !== undefined && data.start_count !== null && String(data.start_count).trim() !== '')
-                   ? String(data.start_count).trim()
-                   : '';
-
+    const apiStart = (data.start_count !== undefined && data.start_count !== null) ? String(data.start_count).trim() : '';
     let finalStartCount = existingStart;
-    if (!existingStart && apiStart) {
-      finalStartCount = apiStart;
-    } else if (apiStart && Number(apiStart) > 0 && apiStart !== existingStart) {
-      // Only a real (non-zero) count may replace a stored one — APIs often report 0 before/after delivery
-      finalStartCount = apiStart;
-    }
-
-    // No start count yet (the one taken right after ordering did not finish, e.g. the user left the
-    // dashboard quickly): take it now, while the order has not started delivering.
-    {
-      const _lnk = cardEl ? (cardEl.getAttribute('data-link') || '') : '';
-      if (!finalStartCount && status === 'pending' && _lnk.includes('instagram.com') && docId && !window._fetchingStartCounts.has(docId)) {
-        window._fetchingStartCounts.add(docId);
-        fetchInstagramCount(_lnk).then(cnt => {
-          if (!cnt || !cardEl || cardEl.getAttribute('data-start-count')) return;
-          cardEl.setAttribute('data-start-count', cnt);
-          const el = document.getElementById('startCount-' + eid);
-          if (el) el.textContent = cnt;
-          if (Array.isArray(_allOrders)) { const m = _allOrders.find(x => x.docId === docId); if (m) m.start_count = cnt; }
-          if (typeof window._updateOrderInFirestore === 'function') {
-            window._updateOrderInFirestore(docId, firestoreStatus, data.remains, cnt, undefined);
-          }
-        }).catch(() => {});
-      }
-    }
-
-    // ONLY calculate / update End Count when status is explicitly Completed!
-    let finalEndCount = existingEnd;
-    const qty = Number(cardEl ? cardEl.getAttribute('data-quantity') : 0) || 0;
-    const orderLink = cardEl ? (cardEl.getAttribute('data-link') || '') : '';
-
-    if (isCompleted) {
-      if (!existingEnd) {
-        if (orderLink && orderLink.includes('instagram.com') && !window._fetchingEndCounts.has(docId)) {
-          window._fetchingEndCounts.add(docId);
-          fetchInstagramCount(orderLink).then(apifyEnd => {
-            const startNum = Number(finalStartCount);
-            const resolvedEnd = apifyEnd || (!isNaN(startNum) && startNum > 0 ? String(startNum + qty) : null);
-            if (resolvedEnd) {
-              const endEl = document.getElementById('endCount-' + eid);
-              if (endEl) endEl.textContent = resolvedEnd;
-              if (cardEl) cardEl.setAttribute('data-end-count', resolvedEnd);
-              if (Array.isArray(_allOrders)) {
-                const mem = _allOrders.find(x => x.docId === docId);
-                if (mem) mem.end_count = resolvedEnd;
-              }
-              if (typeof window._updateOrderInFirestore === 'function') {
-                window._updateOrderInFirestore(docId, 'Completed', data.remains, finalStartCount, resolvedEnd);
-              }
-            }
-          }).catch(() => {
-            const startNum = Number(finalStartCount);
-            if (!isNaN(startNum) && startNum > 0) {
-              const fallbackEnd = String(startNum + qty);
-              const endEl = document.getElementById('endCount-' + eid);
-              if (endEl) endEl.textContent = fallbackEnd;
-              if (cardEl) cardEl.setAttribute('data-end-count', fallbackEnd);
-              if (Array.isArray(_allOrders)) {
-                const mem = _allOrders.find(x => x.docId === docId);
-                if (mem) mem.end_count = fallbackEnd;
-              }
-              if (typeof window._updateOrderInFirestore === 'function') {
-                window._updateOrderInFirestore(docId, 'Completed', data.remains, finalStartCount, fallbackEnd);
-              }
-            }
-          });
-        } else if (finalStartCount && !isNaN(Number(finalStartCount))) {
-          finalEndCount = String(Number(finalStartCount) + qty);
-        }
-      }
-    } else {
-      // Order not completed yet — keep End Count as blank/unset
-      finalEndCount = existingEnd || '';
-    }
+    if (!(Number(existingStart) > 0) && Number(apiStart) > 0) finalStartCount = apiStart;
 
     const startEl = document.getElementById('startCount-' + eid);
-    const endEl   = document.getElementById('endCount-'   + eid);
     if (startEl && finalStartCount) {
       startEl.textContent = finalStartCount;
       if (cardEl) cardEl.setAttribute('data-start-count', finalStartCount);
     }
-    if (endEl && finalEndCount) {
-      endEl.textContent = finalEndCount;
-      if (cardEl) cardEl.setAttribute('data-end-count', finalEndCount);
-    }
 
     // Update in-memory array so filter/re-renders retain the new status immediately
     if (Array.isArray(_allOrders)) {
-      const memoryItem = _allOrders.find(x => x.docId === docId || (docId && x.docId === docId));
+      const memoryItem = _allOrders.find(x => x.docId === docId);
       if (memoryItem) {
         memoryItem.status = firestoreStatus;
         if (finalStartCount) memoryItem.start_count = finalStartCount;
-        if (finalEndCount) memoryItem.end_count = finalEndCount;
       }
     }
 
     const statusChanged = currentStatus.toLowerCase() !== firestoreStatus.toLowerCase();
     const startChanged  = Boolean(finalStartCount && finalStartCount !== existingStart);
-    const endChanged    = Boolean(finalEndCount && finalEndCount !== existingEnd);
 
-    if (statusChanged || startChanged || endChanged) {
+    if (statusChanged || startChanged) {
       if (typeof window._updateOrderInFirestore === 'function') {
-        window._updateOrderInFirestore(docId, firestoreStatus, data.remains, finalStartCount, finalEndCount);
+        window._updateOrderInFirestore(docId, firestoreStatus, data.remains, startChanged ? finalStartCount : undefined, undefined);
       }
     }
 
@@ -1171,7 +1067,7 @@ function updateAllOrders() {
     if (deadStatuses.includes(status)) return;
 
     // Completed / partial: ask the API once per page load, so the Refill button
-    // and a missing End Count can still show up. Newest orders first, a few per tick.
+    // can still show up. Newest orders first, a few per tick.
     if (finishedStatuses.includes(status)) {
       if (window._finishedChecked.has(eid) || finishedBudget <= 0) return;
       window._finishedChecked.add(eid);
@@ -1278,7 +1174,6 @@ function renderOrders(orders) {
          data-eid="${eid}"
          data-doc-id="${o.docId || ''}"
          data-start-count="${o.start_count || ''}"
-         data-end-count="${o.end_count || ''}"
          data-quantity="${o.quantity || o.totalQuantity || 0}"
          data-link="${o.link || ''}"
          data-status="${o.status || 'Pending'}">
@@ -1348,15 +1243,6 @@ function renderOrders(orders) {
             Start Count:
           </span>
           <span id="startCount-${eid}" class="text-xs font-bold text-amber-400">${(o.start_count !== undefined && o.start_count !== null && o.start_count !== '') ? o.start_count : '—'}</span>
-        </div>
-
-        <div class="flex items-center justify-between"
-             style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:8px;">
-          <span class="text-gray-400 text-xs flex items-center gap-1.5">
-            <span style="width:6px;height:6px;border-radius:50%;background:#34d399;display:inline-block"></span>
-            End Count:
-          </span>
-          <span id="endCount-${eid}" class="text-xs font-bold text-emerald-400">${(o.end_count !== undefined && o.end_count !== null && o.end_count !== '') ? o.end_count : '—'}</span>
         </div>
 
         <!-- Bottom row: date + actions -->
