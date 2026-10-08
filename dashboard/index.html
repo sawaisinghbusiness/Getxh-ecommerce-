@@ -1117,7 +1117,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         <label for="moFile" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:6px;border:1px solid #2a2a2f;background:#111113;color:#f4f4f5;font-size:12px;font-weight:700;">
           <span class="material-symbols-outlined" style="font-size:16px;">upload_file</span> Import from sheet
         </label>
-        <input type="file" id="moFile" accept=".csv,.tsv,.txt,.xlsx,text/csv,text/plain,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.google-apps.spreadsheet" style="display:none;">
+        <input type="file" id="moFile" style="display:none;">
       </div>
       <textarea id="moText" rows="9" spellcheck="false" placeholder="package_id|quantity|link"
         style="width:100%;min-height:200px;padding:12px 14px;background:#111113;border:1px solid #2a2a2f;border-radius:6px;color:#f4f4f5;font-size:13px;line-height:1.6;outline:none;resize:vertical;box-sizing:border-box;font-family:ui-monospace,Consolas,monospace;"></textarea>
@@ -3337,6 +3337,7 @@ document.getElementById('placeOrderBtn').addEventListener('click', function(e) {
     if (!f) return;
     if (f.size > 1024 * 1024) { showToast('warn', 'File too large', 'Use a file under 1 MB.'); this.value = ''; return; }
     if (/\.xls$/i.test(f.name)) { showToast('warn', 'Old Excel file', 'Save it as .xlsx or .csv and try again.'); this.value = ''; return; }
+    if (/\.(pdf|docx?|jpe?g|png|zip)$/i.test(f.name)) { showToast('warn', 'Wrong file type', 'Pick a .xlsx or .csv sheet.'); this.value = ''; return; }
     const isX = /\.xlsx$/i.test(f.name) || /spreadsheetml|google-apps\.spreadsheet/.test(f.type);
     const rd = new FileReader();
     rd.onload = async () => {
