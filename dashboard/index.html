@@ -1117,7 +1117,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
         <label for="moFile" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:6px;border:1px solid #2a2a2f;background:#111113;color:#f4f4f5;font-size:12px;font-weight:700;">
           <span class="material-symbols-outlined" style="font-size:16px;">upload_file</span> Import from sheet
         </label>
-        <input type="file" id="moFile" accept=".csv,.tsv,.txt,text/csv,text/plain" style="display:none;">
+        <input type="file" id="moFile" style="display:none;">
       </div>
       <textarea id="moText" rows="9" spellcheck="false" placeholder="package_id|quantity|link"
         style="width:100%;min-height:200px;padding:12px 14px;background:#111113;border:1px solid #2a2a2f;border-radius:6px;color:#f4f4f5;font-size:13px;line-height:1.6;outline:none;resize:vertical;box-sizing:border-box;font-family:ui-monospace,Consolas,monospace;"></textarea>
@@ -3273,19 +3273,81 @@ document.getElementById('placeOrderBtn').addEventListener('click', function(e) {
   $('moText').addEventListener('input', refresh);
   $('moPolicy').checked = isPolicyAccepted();
   $('moPlaceBtn').addEventListener('click', place);
+  // Minimal .xlsx reader (a zip of XML files) so a Google Sheet / Excel file can be picked as it is.
+  async function inflateRaw(bytes) {
+    const ds = new DecompressionStream('deflate-raw');
+    return new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer());
+  }
+  async function unzipText(buf) {
+    const v = new DataView(buf), u8 = new Uint8Array(buf), dec = new TextDecoder();
+    let e = -1;
+    for (let i = u8.length - 22; i >= Math.max(0, u8.length - 65600); i--) if (v.getUint32(i, true) === 0x06054b50) { e = i; break; }
+    if (e < 0) throw new Error('not a zip');
+    let p = v.getUint32(e + 16, true);
+    const n = v.getUint16(e + 10, true), files = {};
+    for (let k = 0; k < n; k++) {
+      if (v.getUint32(p, true) !== 0x02014b50) break;
+      const method = v.getUint16(p + 10, true), csize = v.getUint32(p + 20, true);
+      const nl = v.getUint16(p + 28, true), el = v.getUint16(p + 30, true), cl = v.getUint16(p + 32, true);
+      const lo = v.getUint32(p + 42, true);
+      const name = dec.decode(u8.subarray(p + 46, p + 46 + nl));
+      if (/^xl\/(sharedStrings\.xml|worksheets\/sheet\d+\.xml)$/.test(name)) {
+        const ds = lo + 30 + v.getUint16(lo + 26, true) + v.getUint16(lo + 28, true);
+        const raw = u8.subarray(ds, ds + csize);
+        files[name] = dec.decode(method === 8 ? await inflateRaw(raw) : raw);
+      }
+      p += 46 + nl + el + cl;
+    }
+    return files;
+  }
+  async function xlsxLines(buf) {
+    const files = await unzipText(buf), dom = new DOMParser();
+    const shared = [];
+    if (files['xl/sharedStrings.xml']) {
+      dom.parseFromString(files['xl/sharedStrings.xml'], 'text/xml').querySelectorAll('si')
+        .forEach((si) => shared.push(Array.from(si.querySelectorAll('t')).map((t) => t.textContent).join('')));
+    }
+    const sheet = files['xl/worksheets/sheet1.xml'] || files[Object.keys(files).filter((k) => /worksheets/.test(k)).sort()[0]];
+    if (!sheet) throw new Error('no sheet');
+    const lines = [];
+    dom.parseFromString(sheet, 'text/xml').querySelectorAll('row').forEach((row) => {
+      const cells = [];
+      row.querySelectorAll('c').forEach((c) => {
+        const col = (c.getAttribute('r') || '').replace(/\d+/g, '').split('').reduce((a, ch) => a * 26 + ch.charCodeAt(0) - 64, 0) - 1;
+        const vEl = c.querySelector('v'), t = c.getAttribute('t');
+        let val = '';
+        if (t === 'inlineStr') val = Array.from(c.querySelectorAll('t')).map((x) => x.textContent).join('');
+        else if (vEl) val = t === 's' ? (shared[Number(vEl.textContent)] || '') : vEl.textContent;
+        cells[col < 0 ? cells.length : col] = String(val).trim();
+      });
+      const row2 = Array.from(cells, (x) => x || '');
+      if (row2.some(Boolean)) lines.push(row2.slice(0, 3).join('\t'));
+    });
+    if (lines.length && !/^\d+\t/.test(lines[0])) lines.shift(); // header row
+    return lines;
+  }
+  function loadLines(lines) {
+    lines = lines.map((l) => l.trim()).filter(Boolean)
+      .map((l) => l.replace(/"/g, '').replace(/^(\d+)\s*[,;\t]\s*(\d+)\s*[,;\t]\s*/, '$1|$2|'));
+    $('moText').value = lines.join('\n');
+    refresh();
+    showToast('success', 'File imported', lines.length + ' lines loaded.');
+  }
   $('moFile').addEventListener('change', function () {
     const f = this.files && this.files[0];
     if (!f) return;
     if (f.size > 1024 * 1024) { showToast('warn', 'File too large', 'Use a file under 1 MB.'); this.value = ''; return; }
+    if (/\.xls$/i.test(f.name)) { showToast('warn', 'Old Excel file', 'Save it as .xlsx or .csv and try again.'); this.value = ''; return; }
+    if (/\.(pdf|docx?|jpe?g|png|zip)$/i.test(f.name)) { showToast('warn', 'Wrong file type', 'Pick a .xlsx or .csv sheet.'); this.value = ''; return; }
+    const isX = /\.xlsx$/i.test(f.name) || /spreadsheetml|google-apps\.spreadsheet/.test(f.type);
     const rd = new FileReader();
-    rd.onload = () => {
-      const lines = String(rd.result).replace(/^﻿/, '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
-        .map((l) => l.replace(/"/g, '').replace(/^(\d+)\s*[,;\t]\s*(\d+)\s*[,;\t]\s*/, '$1|$2|'));
-      $('moText').value = lines.join('\n');
-      refresh();
-      showToast('success', 'File imported', lines.length + ' lines loaded.');
+    rd.onload = async () => {
+      try {
+        if (isX) loadLines(await xlsxLines(rd.result));
+        else loadLines(String(rd.result).replace(/^\ufeff/, '').split(/\r?\n/));
+      } catch (e) { showToast('warn', 'Could not read the sheet', 'Download it as CSV or .xlsx and try again.'); }
     };
-    rd.readAsText(f);
+    if (isX) rd.readAsArrayBuffer(f); else rd.readAsText(f);
     this.value = '';
   });
 })();
