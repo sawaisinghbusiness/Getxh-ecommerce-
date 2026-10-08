@@ -1592,8 +1592,9 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   display:none !important;
 }
 /* Admin buttons — hidden by default, only shown when body.is-admin */
-#adminBtn, #desktopAdminBtn { display:none !important; }
-body.is-admin #adminBtn, body.is-admin #desktopAdminBtn { display:flex !important; }
+/* Must out-rank "#sideMenu .flex-1 > button { display:flex !important }", which showed it to everyone */
+html body:not(.is-admin) #adminBtn, html body:not(.is-admin) #desktopAdminBtn { display:none !important; }
+html body.is-admin #adminBtn, html body.is-admin #desktopAdminBtn { display:flex !important; }
 .menu-item > div:first-child {
   width:32px;
   height:32px;
