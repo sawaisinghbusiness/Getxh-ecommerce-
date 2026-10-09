@@ -2939,6 +2939,8 @@
       if (info.password && info.password !== '—') m.password = info.password;
       if (info.createdAt) m.createdAt = info.createdAt;
       if (info.disabled !== undefined) m.disabled = Boolean(info.disabled);
+      if (info.TotalOrders !== undefined) m.totalOrders = Number(info.TotalOrders) || 0;
+      if (info.TotalSpent !== undefined) m.totalSpent = Number(info.TotalSpent) || 0;
     }
 
     function switchUserSubTab(tab) {
@@ -3101,8 +3103,16 @@
         if (!window._userDataMap) window._userDataMap = {};
         window._userDataMap[u.uid] = { uid: u.uid, email: email, username: name, mobile: mobile, password: pass, disabled: isDisabled };
 
-        var totalOrders = u.totalOrders !== undefined ? u.totalOrders : (info.totalOrders || 0);
-        var totalSpent = u.totalSpent !== undefined ? u.totalSpent : (info.totalSpent || 0);
+        // Counters on the user's wallet doc, backed up by the real orders (orders store "price")
+        var totalOrders = Number(u.totalOrders !== undefined ? u.totalOrders : (info.totalOrders || 0)) || 0;
+        var totalSpent = Number(u.totalSpent !== undefined ? u.totalSpent : (info.totalSpent || 0)) || 0;
+        var _mine = (window._allOrders || []).filter(function(o) { return o.userId === u.uid; });
+        if (_mine.length > totalOrders) totalOrders = _mine.length;
+        if (!(totalSpent > 0)) {
+          totalSpent = _mine.reduce(function(sum, o) {
+            return /cancel|refund/i.test(String(o.status || '')) ? sum : sum + (Number(o.price || o.amount || o.charge || o.cost || 0) || 0);
+          }, 0);
+        }
 
         var statusBadge = isDisabled
           ? '<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);"><span style="width:6px;height:6px;border-radius:999px;background:#ef4444;"></span> Disabled</span>'
@@ -5324,6 +5334,7 @@
         });
         window._allOrders = orders;
         renderOrders(orders);
+        try { if (typeof searchUsers === 'function' && document.getElementById('userSearch')) searchUsers(); } catch (_) {}
 
         snap.docChanges().forEach(change => {
           if (change.type === 'added') {
@@ -6946,7 +6957,7 @@
         // Orders & Spent
         const userOrders = (window._allOrders || []).filter(o => o.userId === uid);
         const orderCount = userOrders.length || Number(m.totalOrders || 0);
-        let userSpent = userOrders.reduce((sum, o) => sum + (Number(o.amount || o.charge || o.cost || 0)), 0);
+        let userSpent = userOrders.reduce((sum, o) => sum + (Number(o.price || o.amount || o.charge || o.cost || 0)), 0);
         if (!userSpent && m.totalSpent) userSpent = Number(m.totalSpent);
 
         totalReferredSpent += userSpent;
