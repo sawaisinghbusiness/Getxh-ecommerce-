@@ -1128,8 +1128,13 @@ document.addEventListener('click', e => {
   }
 });
 
+function showMoreOrders() { window._ordersShown = (window._ordersShown || 50) + 50; filterOrders(); }
+
 function filterOrders() {
   const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  // A new filter or search starts again from the newest 50; a live update keeps what is already shown
+  const _key = _currentFilter + '|' + q;
+  if (window._ordersKey !== _key) { window._ordersKey = _key; window._ordersShown = 50; }
   let filtered = _allOrders;
   if(_currentFilter !== 'all') {
     filtered = filtered.filter(o => (o.status||'').toLowerCase() === _currentFilter.toLowerCase());
@@ -1173,7 +1178,9 @@ function renderOrders(orders) {
       </div>`;
     return;
   }
-  list.innerHTML = orders.map((o, idx) => {
+  const shownCount = window._ordersShown || 50;
+  const hiddenCount = Math.max(0, orders.length - shownCount);
+  list.innerHTML = orders.slice(0, shownCount).map((o, idx) => {
     const eid = o.docId || o.orderId || Math.random().toString(36).slice(2);
     return `
     <div class="order-card motion-card-stagger rounded-2xl mb-3 overflow-hidden"
@@ -1300,7 +1307,9 @@ function renderOrders(orders) {
         (o.status||'').toLowerCase()==='processing' ? 'rgba(59,130,246,0.4)' : 'transparent'
       };"></div>
     </div>
-  `}).join('');
+`}).join('') + (hiddenCount > 0
+    ? `<button type="button" onclick="showMoreOrders()" class="w-full py-3 rounded-xl text-sm font-bold text-white mb-3" style="background:#1a1a1d;border:1px solid #2a2a2f;">Show more orders (${hiddenCount} more)</button>`
+    : '');
 
   // Re-show Refill / Cancel buttons the API already allowed (re-render starts them hidden)
   orders.forEach(o => { if (o.docId) applyActionFlags(o.docId); });
@@ -1420,8 +1429,7 @@ onAuthStateChanged(auth, (user) => {
   if (_unsubOrders) _unsubOrders();
   const ordersQuery = query(
     collection(db, 'orders'),
-    where('userId', '==', user.uid),
-    limit(100)
+    where('userId', '==', user.uid)   // every order of this user (a cap here dropped the newest ones)
   );
   _unsubOrders = onSnapshot(
     ordersQuery,
