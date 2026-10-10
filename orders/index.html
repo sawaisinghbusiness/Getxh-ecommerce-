@@ -897,10 +897,16 @@ async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
       if (cardEl) cardEl.setAttribute('data-start-count', finalStartCount);
     }
 
+    // Remaining: shown live from the provider's answer, every poll
+    const remainsNum = (data.remains !== undefined && data.remains !== null && data.remains !== '') ? Number(data.remains) : NaN;
+    const remainsEl = document.getElementById('remains-' + eid);
+    if (remainsEl && !isNaN(remainsNum)) remainsEl.textContent = remainsNum.toLocaleString();
+
     // Update in-memory array so filter/re-renders retain the new status immediately
     if (Array.isArray(_allOrders)) {
       const memoryItem = _allOrders.find(x => x.docId === docId);
       if (memoryItem) {
+        if (!isNaN(remainsNum)) memoryItem.remains = remainsNum;
         memoryItem.status = firestoreStatus;
         if (finalStartCount) memoryItem.start_count = finalStartCount;
       }
@@ -1085,6 +1091,8 @@ function startOrderPolling() {
 }
 
 window.addEventListener('beforeunload', () => { if (_ordersInterval) clearInterval(_ordersInterval); });
+// Coming back to the tab: refresh at once instead of waiting for the next tick
+document.addEventListener('visibilitychange', () => { if (!document.hidden && _ordersInterval) updateAllOrders(); });
 
 // ── FILTER ──
 let _currentFilter = 'all';
@@ -1243,6 +1251,15 @@ function renderOrders(orders) {
             Start Count:
           </span>
           <span id="startCount-${eid}" class="text-xs font-bold text-amber-400">${(o.start_count !== undefined && o.start_count !== null && o.start_count !== '') ? o.start_count : '—'}</span>
+        </div>
+
+        <div class="flex items-center justify-between"
+             style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:8px;">
+          <span class="text-gray-400 text-xs flex items-center gap-1.5">
+            <span style="width:6px;height:6px;border-radius:50%;background:#34d399;display:inline-block"></span>
+            Remaining:
+          </span>
+          <span id="remains-${eid}" class="text-xs font-bold text-emerald-400">${(o.remains !== undefined && o.remains !== null && o.remains !== '' && !isNaN(o.remains)) ? Number(o.remains).toLocaleString() : '—'}</span>
         </div>
 
         <!-- Bottom row: date + actions -->
