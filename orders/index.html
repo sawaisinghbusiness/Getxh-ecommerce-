@@ -818,11 +818,11 @@ function cancelLogout() {
 let _ordersInterval = null;
 window._adminOverriddenOrders = new Set(); // docIds where admin manually set status
 
-async function fetchAndUpdateOrder(apiOrderId, eid, docId) {
+async function fetchAndUpdateOrder(apiOrderId, eid, docId, provider) {
   // Skip API polling if admin has manually overridden this order's status
   if (docId && window._adminOverriddenOrders.has(docId)) return;
   try {
-    const res  = await fetch('https://backend-for-api-connect-g8ta.onrender.com/status/' + apiOrderId);
+    const res  = await fetch('https://backend-for-api-connect-g8ta.onrender.com/status/' + apiOrderId + (provider ? '?p=' + encodeURIComponent(provider) : ''));
     if (!res.ok) return;
     const data = await res.json();
 
@@ -977,6 +977,12 @@ function showToast(type, title, msg) {
 }
 
 // ── REFILL & CANCEL ──
+// Which panel took this order (older orders have none = the first panel)
+function cardProvider(eid) {
+  const el = document.querySelector('[data-eid="' + eid + '"]');
+  return (el && el.getAttribute('data-provider')) || '';
+}
+
 async function refillOrder(apiOrderId, eid) {
   const btn = document.getElementById('refillBtn-' + eid);
   if (btn) {
@@ -990,7 +996,7 @@ async function refillOrder(apiOrderId, eid) {
     const res  = await fetch('https://backend-for-api-connect-g8ta.onrender.com/refill', {
       method: 'POST',
       headers: {'Content-Type':'application/json', 'Authorization': 'Bearer ' + token},
-      body: JSON.stringify({order: apiOrderId})
+      body: JSON.stringify({order: apiOrderId, provider: cardProvider(eid)})
     });
     const data = await res.json();
     if (data.refill || data.status) {
@@ -1022,7 +1028,7 @@ async function cancelOrder(apiOrderId, docId, eid) {
     const res  = await fetch('https://backend-for-api-connect-g8ta.onrender.com/cancel', {
       method: 'POST',
       headers: {'Content-Type':'application/json', 'Authorization': 'Bearer ' + token},
-      body: JSON.stringify({order: apiOrderId})
+      body: JSON.stringify({order: apiOrderId, provider: cardProvider(eid)})
     });
     const data = await res.json();
 
@@ -1080,7 +1086,7 @@ function updateAllOrders() {
       finishedBudget--;
     }
 
-    fetchAndUpdateOrder(apiOrderId, eid, docId);
+    fetchAndUpdateOrder(apiOrderId, eid, docId, card.getAttribute('data-provider') || '');
   });
 }
 
@@ -1188,6 +1194,7 @@ function renderOrders(orders) {
          data-order-id="${o.apiOrderId || ''}"
          data-eid="${eid}"
          data-doc-id="${o.docId || ''}"
+         data-provider="${o.provider || ''}"
          data-start-count="${o.start_count || ''}"
          data-quantity="${o.quantity || o.totalQuantity || 0}"
          data-link="${o.link || ''}"
