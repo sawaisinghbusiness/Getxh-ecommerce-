@@ -2162,6 +2162,20 @@
           </div>
         </div>
 
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-xs font-semibold text-slate-400">Provider (panel that gets the order) *</label>
+            <select id="modalSvcProvider" class="adm-field w-full py-2.5 text-xs">
+              <option value="main">Provider 1</option>
+              <option value="p2">Provider 2</option>
+            </select>
+          </div>
+          <div class="flex items-end gap-2">
+            <button type="button" onclick="checkProvider()" class="status-sel" style="height:40px;cursor:pointer;">Check provider</button>
+            <span id="modalProviderCheck" class="pb-2 text-[11px] font-semibold text-slate-400"></span>
+          </div>
+        </div>
+
         <div>
           <label class="mb-1 block text-xs font-semibold text-slate-400">Service Title / Name *</label>
           <input type="text" id="modalSvcName" required placeholder="e.g. Instagram Followers - High Quality"
@@ -3802,6 +3816,9 @@
     document.getElementById('modalSvcDetails').value = '🔗 Link Type Example: Profile or Post link\n🔓 Make sure account is PUBLIC';
     document.getElementById('modalSvcStatus').checked = true;
     document.getElementById('modalSvcDripfeed').checked = false;
+    document.getElementById('modalSvcProvider').value = 'main';
+    document.getElementById('modalProviderCheck').textContent = '';
+    loadProviderOptions();
 
     var modal = document.getElementById('serviceModal');
     modal.classList.remove('hidden');
@@ -3837,6 +3854,9 @@
       document.getElementById('modalSvcQuality').value = svc.quality || '';
       document.getElementById('modalSvcDetails').value = (svc.details || []).join('\n');
       document.getElementById('modalSvcStatus').checked = svc.status !== 'inactive';
+      document.getElementById('modalSvcProvider').value = svc.provider === 'p2' ? 'p2' : 'main';
+      document.getElementById('modalProviderCheck').textContent = '';
+      loadProviderOptions();
       document.getElementById('modalSvcDripfeed').checked = Boolean(svc.dripfeed === true || svc.dripfeed === 1 || svc.dripfeed === '1' || svc.drip_feed === 1 || svc.drip_feed === true || String(svc.id) === '5210' || String(svc.id) === '5832');
 
       var modal = document.getElementById('serviceModal');
@@ -3890,6 +3910,44 @@
       }
     };
 
+    // ── Providers (SMM panels): names for the dropdown, and a safe "is it working" check ──
+    function gxProviderCall(path, method, body) {
+      var u = window._adminUser;
+      if (!u) return Promise.reject(new Error('Please sign in again.'));
+      return u.getIdToken().then(function (t) {
+        return fetch('https://backend-for-api-connect-g8ta.onrender.com' + path, {
+          method: method || 'GET', cache: 'no-store', referrerPolicy: 'no-referrer', credentials: 'omit',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t },
+          body: body ? JSON.stringify(body) : undefined
+        }).then(function (r) { return r.json().catch(function () { return {}; }); });
+      });
+    }
+    function loadProviderOptions() {
+      gxProviderCall('/admin/providers').then(function (d) {
+        if (!d || !Array.isArray(d.providers)) return;
+        var sel = document.getElementById('modalSvcProvider');
+        var cur = sel.value || 'main';
+        sel.innerHTML = d.providers.map(function (p) {
+          return '<option value="' + escHtml(p.id) + '">' + escHtml(p.name) + (p.configured ? '' : ' (not set up)') + '</option>';
+        }).join('');
+        sel.value = cur;
+      }).catch(function () {});
+    }
+    window.checkProvider = function () {
+      var out = document.getElementById('modalProviderCheck');
+      out.style.color = '';
+      out.textContent = 'Checking…';
+      gxProviderCall('/admin/providers/check', 'POST', { provider: document.getElementById('modalSvcProvider').value }).then(function (d) {
+        if (d && d.status === 'success') {
+          out.style.color = '#34d399';
+          out.textContent = 'Working · balance ' + (d.balance !== undefined ? d.balance + (d.currency ? ' ' + d.currency : '') : '—') + ' · ' + (d.services !== undefined ? d.services + ' services' : '');
+        } else {
+          out.style.color = '#f87171';
+          out.textContent = (d && d.message) || 'Not working';
+        }
+      }).catch(function (e) { out.style.color = '#f87171'; out.textContent = e.message || 'Check failed'; });
+    };
+
     function saveServiceFromModal() {
       var originalCatId = document.getElementById('modalOriginalCatId').value;
       var originalSvcId = document.getElementById('modalOriginalSvcId').value;
@@ -3909,6 +3967,7 @@
         quality: document.getElementById('modalSvcQuality').value.trim() || 'HQ Real Users',
         delivery: document.getElementById('modalSvcStartTime').value.trim() || 'Instant',
         status: document.getElementById('modalSvcStatus').checked ? 'active' : 'inactive',
+        provider: document.getElementById('modalSvcProvider').value === 'p2' ? 'p2' : 'main',
         dripfeed: document.getElementById('modalSvcDripfeed').checked,
         drip_feed: document.getElementById('modalSvcDripfeed').checked,
         details: document.getElementById('modalSvcDetails').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean)
