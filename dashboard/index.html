@@ -2815,6 +2815,35 @@ window._injectFreeOffers = function() {
   } catch (e) { console.warn('free offer inject error:', e); }
 };
 
+let freeOfferExpiryTimer;
+
+function renderFreeOffers(autoSelect = false) {
+  clearTimeout(freeOfferExpiryTimer);
+  const now = Date.now();
+  window._freeOffers = window._freeOffers.filter(offer => !offer.expiresAt || offer.expiresAt > now);
+  const nextExpiry = Math.min(...window._freeOffers.filter(offer => offer.expiresAt).map(offer => offer.expiresAt));
+  if (Number.isFinite(nextExpiry)) {
+    freeOfferExpiryTimer = setTimeout(renderFreeOffers, Math.min(nextExpiry - now, 2147483647));
+  }
+
+  const selectedOffer = _selSvc && _selSvc.freeOffer;
+  window._injectFreeOffers();
+  buildCategoryDropdown();
+  const category = CATEGORIES.find(c => c.id === 'welcome-offer');
+  if ((autoSelect && window._freeOffers.length) ||
+      (selectedOffer && !window._freeOffers.some(offer => offer.offerId === selectedOffer))) {
+    if (category) selectCategory(category);
+  } else if (_selCat) {
+    buildServiceDropdown();
+  }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && window._freeOffers.some(offer => offer.expiresAt && offer.expiresAt <= Date.now())) {
+    renderFreeOffers();
+  }
+});
+
 // autoSelect: open Welcome Offer with the free service chosen (right after login)
 window.refreshFreeOffers = async function(autoSelect) {
   try {
@@ -2827,18 +2856,7 @@ window.refreshFreeOffers = async function(autoSelect) {
     if (!res.ok) return;
     const data = await res.json();
     window._freeOffers = Array.isArray(data.offers) ? data.offers : [];
-    const hadFreeSelected = !!(_selSvc && _selSvc.freeOffer);
-    window._injectFreeOffers();
-    buildCategoryDropdown();
-    if (autoSelect && window._freeOffers.length) {
-      const cat = CATEGORIES.find(c => c.id === 'welcome-offer');
-      if (cat) selectCategory(cat);              // selects the first service = the free one
-    } else if (hadFreeSelected && !window._freeOffers.length) {
-      const cat = CATEGORIES.find(c => c.id === 'welcome-offer');
-      if (cat) selectCategory(cat);              // the free service is finished: fall back to the normal list
-    } else if (_selCat) {
-      buildServiceDropdown();
-    }
+    renderFreeOffers(autoSelect);
   } catch (e) { console.warn('free offers error:', e && e.message); }
 };
 
