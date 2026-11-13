@@ -513,6 +513,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
           );
         }
         await Promise.allSettled(writes);
+        await window.gxAttachPersonalInvite(auth.currentUser);
 
         // Instant Telegram alert to admin for a brand-new Google signup
         if (isNewUser) {
@@ -839,6 +840,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
         ];
 
         await Promise.allSettled(writes);
+        await window.gxAttachPersonalInvite(auth.currentUser);
 
         // Welcome bonus is granted server-side after the referral is verified
         try {
@@ -887,6 +889,7 @@ a,button,input,.card,.link-acc{transition:all 0.3s ease;}
 
 </script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>{r.forEach(reg=>reg.unregister())})}</script>
+<script src="/assets/referral-invite.js"></script>
 </head>
 
 <body>

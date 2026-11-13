@@ -672,6 +672,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 </style>
 <link rel="stylesheet" href="/assets/sidebar-theme.css">
 <link rel="stylesheet" href="/assets/ai-assistant.css?v=3">
+<script src="/assets/referral-invite.js"></script>
 </head>
 
 <body class="bg-[#0b1220] text-white">
@@ -728,6 +729,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       <span class="font-bold text-gray-300 text-sm" style="font-size:16px;">Support</span>
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </a>
+    <a href="/refer-earn/" class="menu-item flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5" style="display:flex;align-items:center;gap:12px;padding:16px;min-height:58px;text-decoration:none;color:#d1d5db;font-weight:500;"><span class="material-symbols-outlined" aria-hidden="true" style="color:#80b1ff">group</span><span>Refer &amp; Earn</span></a>
     <a href="/wallet" class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5 transition-all border border-transparent hover:border-white/10" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;height:58px;text-decoration:none;border:1px solid transparent;color:#ffffff99;font-weight:500;font-size:16px;line-height:24px;transition:all 250ms ease-in-out;">
       <div style="width:25px;height:25px;min-width:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#e5e7eb,#9ca3af);">
         <span class="material-symbols-outlined" style="font-size:15px;color:#333;">account_balance_wallet</span>
@@ -1405,6 +1407,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       <span class="material-symbols-outlined text-gray-500 ml-auto" style="font-size:16px;color:#6b7280;margin-left:auto;">chevron_right</span>
     </button>
 
+    <a href="/refer-earn/" class="menu-item flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 hover:bg-white/5" style="display:flex;align-items:center;gap:12px;padding:16px;min-height:58px;text-decoration:none;color:#d1d5db;font-weight:500;"><span class="material-symbols-outlined" aria-hidden="true" style="color:#80b1ff">group</span><span>Refer &amp; Earn</span></a>
     <!-- Add Funds -->
     <button onclick="closeMenu();window.location.href='/wallet'"
       class="menu-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl mb-2 text-left hover:bg-white/5 transition-all active:scale-[0.98] border border-transparent hover:border-white/10"
@@ -3764,6 +3767,7 @@ window._logoutUser = async function() {
 // ── AUTH GUARD — single onAuthStateChanged, no race condition ──
 onAuthStateChanged(auth, async (user) => {
   if (!user) { window.location.href = "/"; return; }
+  void window.gxAttachPersonalInvite(user);
 
   // Check if account is disabled by admin
   try {
