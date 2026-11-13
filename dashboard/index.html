@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://identitytoolkit.googleapis.com">
 <link rel="dns-prefetch" href="https://firebase.googleapis.com">
 <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
-<link rel="preload" href="/GETXH WEB NEW LOGO.png" as="image">
+<link rel="preload" href="/assets/loader/logo-base.webp" as="image">
 
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -608,11 +608,11 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   z-index: 99999;
   background: #0b1220;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  transition: opacity 0.4s ease;
+  /* stays invisible for the first 350ms: fast loads never see a loader */
+  opacity: 0;
+  animation: gxShow .25s ease-out .35s forwards;
 }
 #gx-loader.hide {
   opacity: 0;
@@ -620,41 +620,27 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   visibility: hidden;
   display: none !important;
 }
-#gx-loader img {
-  width: 72px;
-  height: 72px;
-  border-radius: 16px;
-  animation: gxPulse 1.4s ease-in-out infinite;
+@keyframes gxShow { to { opacity: 1; } }
+#gx-loader .gx-logo { position: relative; width: 140px; }
+#gx-loader .gx-logo img { display: block; width: 100%; height: auto; }
+#gx-loader .gx-logo .gx-rocket {
+  position: absolute;
+  left: 70.32%;
+  top: -3.07%;
+  width: 11.89%;
+  height: auto;
+  animation: gxLaunch 1.6s cubic-bezier(.5,0,.75,0) infinite;
 }
-@keyframes gxPulse {
-  0%, 100% { transform: scale(1);   opacity: 1;    }
-  50%       { transform: scale(1.08); opacity: 0.75; }
+/* rocket lifts off along its own heading, then docks back on the X */
+@keyframes gxLaunch {
+  0%, 15%  { transform: translate(0,0); opacity: 1; }
+  60%      { transform: translate(34px,-38px); opacity: 0; }
+  61%      { transform: translate(-6px,7px); opacity: 0; }
+  100%     { transform: translate(0,0); opacity: 1; }
 }
-#gx-loader .gx-bar {
-  width: 120px;
-  height: 3px;
-  border-radius: 99px;
-  background: rgba(255,255,255,0.08);
-  overflow: hidden;
-}
-#gx-loader .gx-bar-fill {
-  height: 100%;
-  border-radius: 99px;
-  background: linear-gradient(90deg, #2196f3, #00bcd4);
-  animation: gxBar 1.4s ease-in-out infinite;
-}
-@keyframes gxBar {
-  0%   { width: 0%;   margin-left: 0%;   }
-  50%  { width: 70%;  margin-left: 15%;  }
-  100% { width: 0%;   margin-left: 100%; }
-}
-#gx-loader p {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
-  font-family: 'Inter', sans-serif;
+@media (prefers-reduced-motion: reduce) {
+  #gx-loader { animation-duration: .01s; }
+  #gx-loader .gx-logo .gx-rocket { animation: none; }
 }
 
 /* Skeleton Loading */
@@ -717,11 +703,17 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 <body class="bg-[#0b1220] text-white">
 
 <!-- Brand Loader -->
-<div id="gx-loader">
-  <img src="/GETXH WEB NEW LOGO.png" alt="GETXH">
-  <div class="gx-bar"><div class="gx-bar-fill"></div></div>
-  <p>Loading...</p>
+<div id="gx-loader" role="status" aria-label="Loading dashboard">
+  <div class="gx-logo">
+    <img src="/assets/loader/logo-base.webp" alt="GETXH" width="140" height="56">
+    <img class="gx-rocket" src="/assets/loader/rocket.webp" alt="" width="17" height="19">
+  </div>
 </div>
+<script>
+/* Returning user: balance/orders are cached, so the dashboard can paint at once. No loader. */
+(function(){try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);
+if(k&&(k.indexOf('gx_wallet_bal_')===0||k.indexOf('gx_orders_count_')===0)){var l=document.getElementById('gx-loader');if(l)l.remove();return;}}}catch(e){}})();
+</script>
 
 <aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-[250px] lg:flex-col lg:overflow-hidden lg:border-r lg:border-white/10 desktop-sidebar"
   style="background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);">
