@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" href="/GETXH WEB NEW LOGO.png" type="image/png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, interactive-widget=resizes-content"/>
 <title>Support | GETXH</title>
 <meta name="robots" content="noindex, nofollow"/>
 <meta name="theme-color" content="#060810">
@@ -1757,8 +1757,20 @@ onAuthStateChanged(auth, user => {
 .support-ticket-status { color: #adc5ea; font-size: 12px; text-transform: capitalize; }
 .support-ticket-meta { display: block; margin-top: 4px; color: #aebbd0; font-size: 12px; overflow-wrap: anywhere; }
 .support-ticket-row:focus-visible { outline: 2px solid #8ab8ff; outline-offset: 2px; }
-:is(#sideMenu, .desktop-sidebar) div[style*="linear-gradient"] {
-  background: #1b283a !important;
+:is(#sideMenu, .desktop-sidebar) :is(a, button) > div[style*="width:25px"] {
+  color: #fff;
+}
+:is(#sideMenu, .desktop-sidebar) :is(a, button) > div[style*="width:25px"]:not([style*="#25D366" i]) {
+  background: linear-gradient(135deg,#e5e7eb,#9ca3af);
+}
+:is(#sideMenu, .desktop-sidebar) :is(a, button) > div[style*="width:25px"] > .material-symbols-outlined {
+  color: #fff !important;
+}
+@media (max-width: 1023px) {
+  #ticketModal .ticket-modal-shell { height: 100%; }
+  #ticketModal .ticket-modal-shell > :not(#ticketMessages) { flex-shrink: 0; }
+  #ticketMessages { min-height: 0; }
+  #messageInput { min-width: 0; font-size: 16px; }
 }
 :is(#sideMenu, .desktop-sidebar) :is(a, button)[style*="rgba(33,150,243"] {
   background: #182c46 !important;
