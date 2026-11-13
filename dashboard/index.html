@@ -699,6 +699,12 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   }
 }
 </style>
+<style>
+@media (max-width: 1023px) {
+  html { overscroll-behavior-x: none; }
+  .dashboard-header, main, #sideMenu, #menuOverlay { touch-action: pan-y pinch-zoom; }
+}
+</style>
 </head>
 
 <body class="bg-[#0b1220] text-white">
@@ -4425,9 +4431,17 @@ main { padding:20px 12px 110px !important; }
 (() => {
   const menu = document.getElementById('sideMenu');
   const overlay = document.getElementById('menuOverlay');
-  const mobile = matchMedia('(max-width: 1023px) and (pointer: coarse)');
+  const mobile = matchMedia('(max-width: 1023px)');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   let gesture;
+
+  function dxBlocked(target) {
+    for (let node = target; node && node !== document.body; node = node.parentElement) {
+      if (node.scrollWidth > node.clientWidth + 2 &&
+          /^(auto|scroll)$/.test(getComputedStyle(node).overflowX)) return true;
+    }
+    return false;
+  }
 
   document.addEventListener('touchstart', event => {
     if (!mobile.matches || event.touches.length !== 1) return;
@@ -4435,7 +4449,8 @@ main { padding:20px 12px 110px !important; }
     if (target.closest('input, textarea, select, [contenteditable], [role="dialog"]')) return;
     const touch = event.touches[0];
     const open = !menu.classList.contains('-translate-x-full');
-    if (open ? !menu.contains(target) && target !== overlay : touch.clientX > 32) return;
+    if (open ? !menu.contains(target) && target !== overlay : !target.closest('main, .dashboard-header')) return;
+    if (!open && dxBlocked(target)) return;
     gesture = { x: touch.clientX, y: touch.clientY, open, width: menu.offsetWidth, dragging: false };
   }, { passive: true });
 
