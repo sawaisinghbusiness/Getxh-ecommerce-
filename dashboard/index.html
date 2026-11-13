@@ -4547,11 +4547,33 @@ main { padding:20px 12px 110px !important; }
   color: #aebbd0;
 }
 .aia-card-ic .material-symbols-outlined { font-size: 24px; }
-.welcome-card > div:first-child button,
-#newOrderSection .tab-new-order-badge {
+.welcome-card > div:first-child button {
   background: #2563d9 !important;
   color: #fff !important;
 }
+/* New Order / Mass Order tabs: white card sitting inside the dark track */
+#newOrderSection > div:first-child {
+  height: 48px !important;
+  padding: 4px;
+  gap: 4px;
+  box-sizing: border-box;
+  border-radius: 14px;
+}
+#tabNewOrder, #tabMassOrder {
+  height: 38px !important;
+  border-radius: 10px;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  transition: background-color .15s ease, color .15s ease;
+}
+#newOrderSection .tab-new-order-badge {
+  background: #fff !important;
+  color: #0b1220 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,.25) !important;
+}
+#newOrderSection #tabNewOrder:not(.tab-new-order-badge):hover,
+#newOrderSection #tabMassOrder:not(.tab-new-order-badge):hover { color: #fff !important; }
 #catIconWelcome, #catBtn [style*="linear-gradient"] {
   background: #293649 !important;
 }
