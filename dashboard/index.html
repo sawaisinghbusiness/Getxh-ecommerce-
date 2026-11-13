@@ -706,6 +706,12 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 }
 </style>
 <link rel="stylesheet" href="/assets/bottom-tabs.css">
+<style>
+#serviceDetails .service-details-title { color: #becbdd; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+#serviceDetails .service-metrics { gap: 12px; margin-bottom: 12px; }
+#serviceDetails .service-metric { min-width: 0; overflow-wrap: anywhere; }
+#serviceDetails .service-metric-label { color: #aebbd0; font-size: 11px; margin-bottom: 4px; }
+</style>
 </head>
 
 <body class="bg-[#0b1220] text-white">
@@ -1002,47 +1008,45 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
       <!-- SERVICE DETAILS -->
       <div id="serviceDetails" class="hidden">
 
-        <!-- 6 STAT CARDS -->
+        <!-- Service delivery information -->
         <div style="margin-bottom:15px;">
-          <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;white-space:nowrap;display:block;">Description</p>
+          <p class="service-details-title">Delivery details</p>
           <div class="p-3" style="background:#152234;border:1px solid rgba(255,255,255,0.08);border-radius:8px;">
-            <div class="grid grid-cols-3 mb-2.5" style="gap:8px;">
+            <div class="grid grid-cols-3 service-metrics">
 
-              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:8px 10px;text-align:center;">
-                <p style="color:rgba(255,255,255,0.6);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Start Time</p>
+              <div class="service-metric">
+                <p class="service-metric-label">Start Time</p>
                 <p id="dStartTime" style="color:#ffffff;font-size:12px;font-weight:800;line-height:1.2;">INSTANT</p>
               </div>
 
-              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:8px 10px;text-align:center;">
-                <p style="color:rgba(255,255,255,0.6);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Speed</p>
+              <div class="service-metric">
+                <p class="service-metric-label">Speed</p>
                 <p id="dSpeed" style="color:#ffffff;font-size:12px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
-              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:8px 10px;text-align:center;">
-                <p style="color:rgba(255,255,255,0.6);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Refill</p>
+              <div class="service-metric">
+                <p class="service-metric-label">Refill</p>
                 <p id="dRefill" style="color:#ffffff;font-size:12px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
-              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:8px 10px;text-align:center;">
-                <p style="color:rgba(255,255,255,0.6);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Cancel</p>
+              <div class="service-metric">
+                <p class="service-metric-label">Cancel</p>
                 <p id="dCancel" style="color:#ffffff;font-size:12px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
-              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:8px 10px;text-align:center;">
-                <p style="color:rgba(255,255,255,0.6);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Drop</p>
+              <div class="service-metric">
+                <p class="service-metric-label">Drop</p>
                 <p id="dDrop" style="color:#ffffff;font-size:12px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
-              <div style="background:#152234;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:8px 10px;text-align:center;">
-                <p style="color:rgba(255,255,255,0.6);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Quality</p>
+              <div class="service-metric">
+                <p class="service-metric-label">Quality</p>
                 <p id="dQuality" style="color:#ffffff;font-size:12px;font-weight:800;line-height:1.2;">—</p>
               </div>
 
             </div>
             <div class="border-t border-white/10 pt-2">
-              <p class="text-xs text-gray-400 font-bold mb-2 flex items-center gap-1">
-                <span class="material-symbols-outlined" style="font-size:13px">info</span> DETAILS:
-              </p>
+              <p class="service-details-title">Link requirements</p>
               <ul id="dDetailsList" class="space-y-1.5 text-xs text-white font-semibold"></ul>
             </div>
           </div>
