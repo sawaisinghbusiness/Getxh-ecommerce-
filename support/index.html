@@ -550,6 +550,27 @@ main section[style*="background:#152234"] p[style*="rgba(148,163,184,0.55)"] { c
 </style>
 <link rel="stylesheet" href="/assets/sidebar-theme.css">
 <link rel="stylesheet" href="/assets/bottom-tabs.css">
+<style>
+.support-field-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #becbdd;
+  font-size: 13px;
+  font-weight: 600;
+}
+#submitTicketBtn, #ticketModal button[onclick="sendMessage()"] {
+  background: #2563eb !important;
+  box-shadow: none !important;
+  border-radius: 10px;
+  font-weight: 600;
+}
+#submitTicketBtn:focus-visible,
+#ticketModal :is(button, input):focus-visible,
+:is(#orderIdInput, #ticketMessageInput):focus-visible {
+  outline: 2px solid #8ab8ff;
+  outline-offset: 2px;
+}
+</style>
 </head>
 <body class="text-white pb-24 lg:pb-0">
 
@@ -704,13 +725,13 @@ main section[style*="background:#152234"] p[style*="rgba(148,163,184,0.55)"] { c
     </div>
 
     <div id="orderWrap" class="mb-4 hidden">
-      <p class="mb-2 text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Order ID</p>
+      <label for="orderIdInput" class="support-field-label">Order ID</label>
       <input id="orderIdInput" class="field" type="text" placeholder="Enter your Order ID"/>
     </div>
 
     <div class="mb-4">
       <p class="mb-2 text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Message</p>
-      <textarea id="ticketMessageInput" maxlength="300" placeholder="Describe your issue clearly"></textarea>
+      <textarea id="ticketMessageInput" aria-label="Describe your issue" maxlength="300" placeholder="Describe your issue clearly"></textarea>
     </div>
 
     <button id="submitTicketBtn" onclick="createTicket()" class="w-full rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-4 text-sm font-black text-white shadow-none transition" style="box-shadow:none !important;">
@@ -744,7 +765,7 @@ main section[style*="background:#152234"] p[style*="rgba(148,163,184,0.55)"] { c
 <div id="ticketModal" class="modal-overlay fixed inset-0 z-50 hidden">
   <div class="ticket-modal-shell flex h-screen w-full flex-col">
     <div class="flex items-center gap-3 border-b border-white/8 px-4 py-4">
-      <button onclick="closeTicketModal()" class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-slate-300">
+      <button onclick="closeTicketModal()" aria-label="Close conversation" class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-slate-300">
         <span class="material-symbols-outlined text-[20px]">arrow_back_ios_new</span>
       </button>
       <div class="min-w-0 flex-1">
@@ -755,10 +776,10 @@ main section[style*="background:#152234"] p[style*="rgba(148,163,184,0.55)"] { c
     <div id="ticketMessages" class="ticket-modal-messages flex-1 overflow-y-auto px-4 py-5"></div>
     <div class="border-t border-white/8 bg-[#0d1628]/95 px-4 py-3 backdrop-blur-sm">
       <div id="messageComposeArea" class="mb-3 flex items-center gap-2">
-        <input id="messageInput" type="text" maxlength="300" placeholder="Type a message..."
+        <input id="messageInput" aria-label="Reply" type="text" maxlength="300" placeholder="Type a message..."
           class="flex-1 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition focus:border-sky-400/60"
           onkeydown="if(event.key==='Enter')sendMessage()"/>
-        <button onclick="sendMessage()" class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-400 text-white shadow-[0_8px_20px_rgba(14,165,233,0.28)] transition active:scale-[0.95]">
+        <button onclick="sendMessage()" aria-label="Send message" class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-400 text-white shadow-[0_8px_20px_rgba(14,165,233,0.28)] transition active:scale-[0.95]">
           <span class="material-symbols-outlined text-[20px]">send</span>
         </button>
       </div>
