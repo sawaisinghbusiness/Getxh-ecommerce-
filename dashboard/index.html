@@ -4451,7 +4451,7 @@ main { padding:20px 12px 110px !important; }
     const open = !menu.classList.contains('-translate-x-full');
     if (open ? !menu.contains(target) && target !== overlay : !target.closest('main, .dashboard-header')) return;
     if (!open && dxBlocked(target)) return;
-    gesture = { x: touch.clientX, y: touch.clientY, open, width: menu.offsetWidth, dragging: false };
+    gesture = { x: touch.clientX, y: touch.clientY, open, width: menu.offsetWidth, dragging: false, lastX: touch.clientX, lastTime: event.timeStamp, velocity: 0 };
   }, { passive: true });
 
   document.addEventListener('touchmove', event => {
@@ -4460,15 +4460,21 @@ main { padding:20px 12px 110px !important; }
     const dx = touch.clientX - gesture.x;
     const dy = touch.clientY - gesture.y;
     if (!gesture.dragging) {
-      if (Math.max(Math.abs(dx), Math.abs(dy)) < 10) return;
-      if (Math.abs(dx) < Math.abs(dy) * 1.3 || (gesture.open ? dx >= 0 : dx <= 0)) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 5) return;
+      if (Math.abs(dx) < Math.abs(dy) * 1.1 || (gesture.open ? dx >= 0 : dx <= 0)) {
         gesture = undefined;
         return;
       }
-      if (!event.cancelable) return finish(true);
       gesture.dragging = true;
     }
     if (event.cancelable) event.preventDefault();
+    const elapsed = event.timeStamp - gesture.lastTime;
+    if (elapsed > 0) {
+      const delta = touch.clientX - gesture.lastX;
+      gesture.velocity = (gesture.open ? -delta : delta) / elapsed;
+      gesture.lastTime = event.timeStamp;
+      gesture.lastX = touch.clientX;
+    }
     gesture.distance = gesture.open ? -dx : dx;
     if (reduced.matches) return;
     const offset = Math.max(-gesture.width, Math.min(0, dx - (gesture.open ? 0 : gesture.width)));
@@ -4478,11 +4484,15 @@ main { padding:20px 12px 110px !important; }
     overlay.style.opacity = String(1 + offset / gesture.width);
   }, { passive: false });
 
-  function finish(cancelled) {
+  function finish(cancelled, time) {
     const current = gesture;
     gesture = undefined;
     if (!current?.dragging) return;
-    const commit = !cancelled && current.distance >= Math.min(80, current.width * 0.33);
+    const fast = time - current.lastTime < 90 && current.velocity > 0.22;
+    const threshold = fast ? 14 : Math.min(38, current.width * 0.16);
+    const commit = !cancelled && current.distance >= threshold;
+    // Commit the dragged position before restoring the drawer transition.
+    if (!reduced.matches) menu.getBoundingClientRect();
     if (commit ? !current.open : current.open) openMenu();
     else closeMenu();
     menu.style.removeProperty('transition-duration');
@@ -4490,7 +4500,7 @@ main { padding:20px 12px 110px !important; }
     overlay.style.removeProperty('opacity');
   }
 
-  document.addEventListener('touchend', () => finish(false), { passive: true });
+  document.addEventListener('touchend', event => finish(false, event.timeStamp), { passive: true });
   document.addEventListener('touchcancel', () => finish(true), { passive: true });
 })();
 </script>
