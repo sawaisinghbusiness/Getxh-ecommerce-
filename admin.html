@@ -1775,8 +1775,8 @@
               <span class="material-symbols-outlined text-violet-400" style="font-size:22px">key</span>
             </div>
             <div>
-              <h3 class="text-base font-black text-white">Create a free-views link</h3>
-              <p class="text-xs text-slate-400">Everyone who opens the link (logged in or after sign-up) gets their own free views in Welcome Offer.</p>
+              <h3 class="text-base font-black text-white">Create a free offer link</h3>
+              <p class="text-xs text-slate-400">Everyone who opens the link (logged in or after sign-up) gets the selected free service in Welcome Offer.</p>
             </div>
           </div>
           <div id="slCreateErr" class="mb-4 hidden rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-300"></div>
@@ -1791,13 +1791,13 @@
               <select id="slService" class="status-sel w-full text-sm" style="height:44px"><option value="">Open this tab to load services…</option></select>
             </div>
             <div class="md:col-span-2">
-              <label for="slViews" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Free views for each person</label>
+              <label for="slViews" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Free quantity per person</label>
               <input id="slViews" type="number" inputmode="numeric" min="100" max="1000000" value="1000" class="adm-field w-full text-lg font-bold" style="height:48px">
-              <p id="slSummary" class="mt-2 rounded-lg bg-violet-500/10 px-3 py-2 text-xs font-semibold text-violet-200">Each person gets 1,000 free views.</p>
+              <p id="slSummary" class="mt-2 rounded-lg bg-violet-500/10 px-3 py-2 text-xs font-semibold text-violet-200">Choose a service to preview the offer.</p>
             </div>
             <div class="md:col-span-2">
-              <label for="slName" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Name shown to the user <span class="normal-case tracking-normal text-slate-500">(optional, leave empty for &quot;Free Views&quot;)</span></label>
-              <input id="slName" maxlength="80" placeholder="Free Views" class="adm-field w-full" style="height:44px">
+              <label for="slName" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Name shown to the user <span class="normal-case tracking-normal text-slate-500">(optional)</span></label>
+              <input id="slName" maxlength="80" placeholder="Free Offer" class="adm-field w-full" style="height:44px">
             </div>
             <div>
               <label for="slMaxUsers" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-300">Max people <span class="normal-case tracking-normal text-slate-500">(optional)</span></label>
@@ -7397,7 +7397,7 @@ function slSignupStatus(offer, links) {
   box.style.display = "block";
   if (!offer) {
     box.innerHTML = '<div style="display:flex;gap:10px;align-items:flex-start"><span class="material-symbols-outlined" style="color:var(--a-bad);font-size:20px">error</span><div>' +
-      '<b style="font-size:14px;font-weight:600">New accounts get no free views right now</b>' +
+      '<b style="font-size:14px;font-weight:600">New accounts have no active offer</b>' +
       '<p style="font-size:12.5px;color:var(--a-muted);margin-top:3px;line-height:1.5">The homepage promises free views to new users, but no link is set as the new-signup offer. Create a link below (or use one you already have) and press <b>Give to new signups</b>.</p></div></div>';
     return;
   }
@@ -7405,14 +7405,14 @@ function slSignupStatus(offer, links) {
   const s = offer.stats || {};
   const n = (v) => Number(v || 0).toLocaleString("en-IN");
   box.innerHTML = '<div style="display:flex;gap:10px;align-items:flex-start"><span class="material-symbols-outlined" style="color:var(--a-good);font-size:20px">check_circle</span><div style="min-width:0;flex:1">' +
-    '<b style="font-size:14px;font-weight:600">New accounts get ' + (link ? Number(link.viewsPerUser).toLocaleString("en-IN") + " free views" : "a free offer") + "</b>" +
+    '<b style="font-size:14px;font-weight:600">New accounts get ' + (link ? esc(link.name) + " (" + Number(link.viewsPerUser).toLocaleString("en-IN") + " per person)" : "a free offer") + "</b>" +
     '<p style="font-size:12.5px;color:var(--a-muted);margin-top:3px">Since ' + fmt(offer.since) + (link ? " · " + esc(link.name) : "") + "</p>" +
     '<div style="display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font-size:12.5px;color:var(--a-muted)">' +
     "<span>Given <b style='color:var(--a-text)'>" + n(s.claimed) + "</b></span>" +
     "<span>Same phone <b style='color:var(--a-text)'>" + n(s.blockedDevice) + "</b></span>" +
     "<span>Same internet <b style='color:var(--a-text)'>" + n(s.blockedIp) + "</b></span>" +
     "<span>Older accounts <b style='color:var(--a-text)'>" + n(s.notEligible) + "</b></span></div>" +
-    ((s.blockedDevice || s.blockedIp) ? '<p style="font-size:12px;color:var(--a-faint);margin-top:8px;line-height:1.5">If you are testing, a second account on the same phone or internet is not given free views on purpose.</p>' : "") +
+    ((s.blockedDevice || s.blockedIp) ? '<p style="font-size:12px;color:var(--a-faint);margin-top:8px;line-height:1.5">If you are testing, a second account on the same phone or internet is not given the offer again.</p>' : "") +
     "</div></div>";
 }
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -7483,7 +7483,7 @@ function slCard(l) {
   }
   if (l.status === "active") {
     actions.append(slBtn("Revoke", "bg-red-500/15 text-red-300 hover:bg-red-500/25", async (ev) => {
-      if (!confirm("Revoke this link? New people can no longer claim it AND the unused free views of everyone who already claimed stop working immediately.")) return;
+      if (!confirm("Revoke this link? New people can no longer claim it AND the unused free allowance of everyone who already claimed stop working immediately.")) return;
       ev.currentTarget.disabled = true;
       try { await api("POST", "/admin/links/" + l.id + "/revoke"); toast("Link revoked"); slLoadLinks(); }
       catch (e) { toast(e.message); ev.currentTarget.disabled = false; }
@@ -7494,13 +7494,28 @@ function slCard(l) {
 }
 
 $("slRefresh").onclick = () => window.loadSecretLinksTab();
+function slOfferUnit() {
+  const option = $("slService").selectedOptions[0];
+  if (!option?.value) return "";
+  for (const text of [option.parentElement.label, option.textContent]) {
+    const match = String(text || "").match(/\b(views?|likes?|followers?)\b/i);
+    if (match) return match[1].toLowerCase().replace(/s?$/, "s");
+  }
+  return "";
+}
+
 function slSummary() {
-  const v = Math.round(Number($("slViews").value));
-  const opt = $("slService").selectedOptions[0];
-  const svc = opt && opt.value ? opt.textContent.replace(/^#\d+ — /, "") : "the chosen service";
-  $("slSummary").textContent = v >= 100 && v <= 1000000
-    ? "Each person gets " + v.toLocaleString("en-IN") + " free views of " + svc + "."
-    : "Views must be between 100 and 10,00,000.";
+  const quantity = Number($("slViews").value);
+  const unit = slOfferUnit();
+  const name = unit ? "Free " + unit[0].toUpperCase() + unit.slice(1) : "Free Offer";
+  $("slName").placeholder = name;
+  document.querySelector('label[for="slViews"]').textContent =
+    unit ? "Free " + unit + " per person" : "Free quantity per person";
+  $("slSummary").textContent = !$("slService").value
+    ? "Choose a service to preview the offer."
+    : Number.isInteger(quantity) && quantity >= 100 && quantity <= 1000000
+      ? "Each person gets " + quantity.toLocaleString("en-IN") + " " + (unit || "units of the selected service") + "."
+      : "Enter a quantity between 100 and 10,00,000.";
 }
 $("slViews").addEventListener("input", slSummary);
 $("slService").addEventListener("change", slSummary);
@@ -7509,15 +7524,14 @@ $("slCreateBtn").onclick = async () => {
   const sel = $("slService").value;
   if (!sel) return showErr("slCreateErr", "Choose the service to give for free.");
   const [category, serviceId] = JSON.parse(sel);
-  const views = Math.round(Number($("slViews").value));
-  if (!(views >= 100 && views <= 1000000)) return showErr("slCreateErr", "Free views for each person must be between 100 and 10,00,000.");
-  if (/^\s*[\d,.\s]+\s*$/.test($("slName").value)) return showErr("slCreateErr", "The name is only a number. Put the number of views in \"Free views for each person\" and leave the name empty (or write a real name).");
+  const views = Number($("slViews").value);
+  if (!Number.isInteger(views) || views < 100 || views > 1000000) return showErr("slCreateErr", "Enter a whole quantity between 100 and 10,00,000.");
   const expiryVal = $("slExpiry").value;
-  const body = { name: $("slName").value, category, serviceId, views, maxUsers: $("slMaxUsers").value.trim(),
+  const body = { name: $("slName").value.trim() || $("slName").placeholder, category, serviceId, views, maxUsers: $("slMaxUsers").value.trim(),
                  expiresAt: expiryVal ? new Date(expiryVal).getTime() : "" };
   const btn = $("slCreateBtn"); btn.disabled = true; btn.textContent = "Creating…";
   try {
-    if (!confirm("Create a link where EACH person gets " + views.toLocaleString("en-IN") + " free views?")) { btn.disabled = false; btn.textContent = "Create link"; return; }
+    if (!confirm("Create " + body.name + " with " + views.toLocaleString("en-IN") + " " + (slOfferUnit() || "units") + " per person?")) { btn.disabled = false; btn.textContent = "Create link"; return; }
     const r = await api("POST", "/admin/create", body);
     $("slNewLinkUrl").textContent = r.url;
     $("slNewLink").classList.remove("hidden");
