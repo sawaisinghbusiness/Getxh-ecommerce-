@@ -268,9 +268,30 @@
     arm();
   }
 
+  function readHistory(uid) {
+    if (!uid) return [];
+    try {
+      var items = JSON.parse(localStorage.getItem('gx_notifications_' + uid) || '[]');
+      return Array.isArray(items) ? items : [];
+    } catch (_) { return []; }
+  }
+
+  function saveNotification(o) {
+    var user = window.auth && window.auth.currentUser;
+    if (!user) return;
+    var entry = { kind: o.kind, tag: o.tag, title: o.title, message: o.message,
+      amount: o.amount, cta: o.cta, ts: Date.now() };
+    try {
+      var items = readHistory(user.uid);
+      items.unshift(entry);
+      localStorage.setItem('gx_notifications_' + user.uid, JSON.stringify(items.slice(0, 50)));
+    } catch (_) {}
+  }
+
   function gxNotify(opts) {
     var o = normalize(opts);
     if (!o.title && !o.message && o.amount === null) return 0;
+    if (!opts || opts.saveToHistory !== false) saveNotification(o);
     o.id = ++counter;
     queue.push(o);
     if (queue.length > 10) queue.splice(0, queue.length - 10);
@@ -279,6 +300,7 @@
   }
   // A non-animated card for previews (the admin "Updates" page).
   gxNotify.createCard = function (opts) { injectCss(); return build(normalize(opts), true).card; };
+  gxNotify.readHistory = readHistory;
   gxNotify.closeAll = function () { queue.length = 0; if (current) current.close('closeAll'); };
   gxNotify.kinds = Object.keys(KINDS);
   window.gxNotify = gxNotify;

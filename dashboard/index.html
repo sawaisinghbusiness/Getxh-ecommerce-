@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Lexend:wght@100..900&display=swap" rel="stylesheet">
 <script src="/assets/default-services.js"></script>
-<script src="/assets/gx-notify.js?v=2"></script>
+<script src="/assets/gx-notify.js?v=3"></script>
 
 <style>
 :root {
@@ -778,7 +778,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 <header class="dashboard-header">
   <a href="/dashboard" class="dashboard-logo" aria-label="GETXH dashboard">GET<span>X</span>H</a>
   <div class="dashboard-header-actions">
-    <a href="/orders" aria-label="Order updates"><span class="material-symbols-outlined">notifications</span></a>
+    <a href="/notifications/" aria-label="Notifications"><span class="material-symbols-outlined">notifications</span></a>
     <button type="button" onclick="openAccountPopup()" aria-label="Account"><span class="material-symbols-outlined">account_circle</span></button>
   </div>
 </header>
@@ -3645,6 +3645,7 @@ function startUpdatesFeed(uid) {
     if (typeof window.gxNotify !== 'function') return;
     fresh.forEach(i => window.gxNotify({
       kind: i.kind, title: i.title, message: i.message, amount: i.amount,
+      saveToHistory: false,
       cta: i.ctaUrl ? { label: i.ctaLabel, url: i.ctaUrl } : null,
       duration: i.duration === undefined ? 3000 : i.duration
     }));
