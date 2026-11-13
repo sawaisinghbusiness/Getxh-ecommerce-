@@ -4342,7 +4342,9 @@ main { padding:20px 12px 110px !important; }
   .dashboard-scroll-stack .welcome-card,
   .dashboard-scroll-stack .aia-card {
     position: relative;
-    top: var(--dashboard-card-pin, 0px);
+    translate: 0 var(--dashboard-card-pin, 0px);
+    transition-property: none;
+    overflow-anchor: none;
     opacity: var(--dashboard-card-opacity, 1);
   }
 
@@ -4370,7 +4372,8 @@ main { padding:20px 12px 110px !important; }
 
   function updateCard(card, next) {
     const height = card.offsetHeight;
-    const nextTop = next.getBoundingClientRect().top;
+    // Use flow positions so one card's animation cannot feed into the other.
+    const nextTop = next.getBoundingClientRect().top - (offsets.get(next) || 0);
     const naturalTop = card.getBoundingClientRect().top - (offsets.get(card) || 0);
     const offset = Math.max(0, -naturalTop);
     const covered = Math.max(0, naturalTop + offset + height - nextTop);
