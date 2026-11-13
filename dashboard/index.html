@@ -2922,7 +2922,7 @@ async function placeFreeOrder() {
     document.getElementById('quantityInput').value = '';
     document.getElementById('linkInput').value = '';
     await window.refreshFreeOffers(false);          // new "left" count, or the service disappears
-    if (data.offerEnded) showToast('success', 'Free views finished', 'You have used all your free views.');
+    if (data.offerEnded) showToast('success', 'Free offer used', 'You have used your full allowance.');
   } catch (err) {
     console.error('Free order error:', err && (err.message || err));
     showToast('error', 'Unable to Place Order', 'Server error. Please try again.');
@@ -3695,7 +3695,7 @@ async function claimPendingFreeLink(user) {
   dropClaimToken();
   const card = (o) => { if (typeof window.gxNotify === 'function') window.gxNotify(Object.assign({ duration: 4000 }, o)); };
   if (res.status === 200 && data.status === 'success') {
-    card({ kind: 'offer', tag: 'Free views', title: Number(data.views).toLocaleString('en-IN') + ' free views added',
+    card({ kind: 'offer', tag: 'Free offer', title: (data.label || 'Free offer') + ' claimed',
            message: 'Selected for you in Welcome Offer. Place your order below.' });
   } else if (res.status === 409 && data.status === 'ip_used') {
     card({ kind: 'warning', title: 'Offer already claimed', message: 'This free offer has already been claimed from this internet connection.' });
@@ -3742,10 +3742,10 @@ async function claimSignupOffer(user) {
   if (data.status !== 'none') { try { localStorage.setItem(doneKey, '1'); } catch (_) {} }   // 'none' = no offer is switched on right now: ask again next visit
   const card = (o) => { if (typeof window.gxNotify === 'function') window.gxNotify(Object.assign({ duration: 5000 }, o)); };
   if (res.status === 200 && data.status === 'success') {
-    card({ kind: 'offer', tag: 'Welcome gift', title: Number(data.views).toLocaleString('en-IN') + ' free views added',
+    card({ kind: 'offer', tag: 'Welcome gift', title: (data.label || 'Free offer') + ' claimed',
            message: 'Selected for you in Welcome Offer. Paste your link and order.' });
   } else if (res.status === 409 && (data.status === 'device_used' || data.status === 'ip_used')) {
-    card({ kind: 'warning', title: 'Free views already claimed', message: data.message || 'This offer was already claimed on this device.' });
+    card({ kind: 'warning', title: 'Free offer already claimed', message: data.message || 'This offer was already claimed on this device.' });
   }
 }
 
