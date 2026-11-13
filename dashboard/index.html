@@ -6,7 +6,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <link rel="icon" href="/GETXH WEB NEW LOGO.png" type="image/png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>GETXH Dashboard</title>
 <meta name="robots" content="noindex, nofollow"/>
 <meta name="theme-color" content="#060810">
@@ -702,7 +702,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 <style>
 @media (max-width: 1023px) {
   html { overscroll-behavior-x: none; }
-  .dashboard-header, main, #sideMenu, #menuOverlay { touch-action: pan-y pinch-zoom; }
+  .dashboard-header, main, #sideMenu, #menuOverlay { touch-action: pan-y; }
 }
 </style>
 </head>
@@ -4350,7 +4350,7 @@ main { padding:20px 12px 110px !important; }
     height: 52px;
     justify-content: center;
     padding: 0;
-    touch-action: pan-y pinch-zoom;
+    touch-action: pan-y;
   }
 
   .bnav-item:active { transform: none !important; }
@@ -4539,6 +4539,23 @@ main { padding:20px 12px 110px !important; }
   }
 
   .dashboard-scroll-area > main { padding-bottom: 24px !important; }
+
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .dashboard-scroll-area { scroll-timeline: --dashboard-content block; }
+
+      .dashboard-scroll-area .dashboard-header {
+        position: sticky;
+        top: 0;
+        z-index: 0;
+        animation: dashboard-header-tuck linear both;
+        animation-timeline: --dashboard-content;
+        animation-range: 0px 120px;
+      }
+
+      .dashboard-scroll-area > main { position: relative; }
+    }
+  }
 }
 </style>
 </body>
