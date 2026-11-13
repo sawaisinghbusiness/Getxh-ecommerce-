@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0a1221">
+<title>Notifications · GETXH</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #0a1221; color: #f4f7ff; font: 16px system-ui, sans-serif; }
+main { max-width: 640px; margin: auto; padding: 24px 16px 40px; }
+header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+header a { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: #162436; color: inherit; text-decoration: none; font-size: 24px; }
+h1 { margin: 0; font-size: 24px; }
+#status, time { color: #aebbd0; }
+ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+li { padding: 12px; background: #121e2d; border: 1px solid #2c3849; border-radius: 16px; min-width: 0; }
+time { display: block; font-size: 12px; margin: 0 4px 8px; }
+li .gxn-card { width: 100%; max-width: none; }
+li .gxn-close { display: none; }
+</style>
+<script src="/assets/gx-notify.js?v=3"></script>
+</head>
+<body>
+<main>
+  <header><a href="/dashboard/" aria-label="Back to dashboard">←</a><h1>Notifications</h1></header>
+  <p id="status" role="status">Loading notifications…</p>
+  <ul id="notifications" aria-label="Recent notifications"></ul>
+</main>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
+  authDomain: "getxh.in",
+  projectId: "getxh-42588",
+  storageBucket: "getxh-42588.firebasestorage.app",
+  messagingSenderId: "170770122888",
+  appId: "1:170770122888:web:7adcf91077d5695b06b73d"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const list = document.getElementById('notifications');
+const status = document.getElementById('status');
+const formatDate = new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+onAuthStateChanged(auth, async user => {
+  list.replaceChildren();
+  if (!user) {
+    location.replace('/login.html');
+    return;
+  }
+  const feeds = await Promise.allSettled([
+    getDoc(doc(db, 'app_config', 'live_updates')),
+    getDoc(doc(db, 'Users', user.uid))
+  ]);
+  if (auth.currentUser?.uid !== user.uid) return;
+  const [broadcasts, inbox] = feeds;
+  const items = [
+    ...window.gxNotify.readHistory(user.uid),
+    ...(broadcasts.status === 'fulfilled' && Array.isArray(broadcasts.value.data()?.items) ? broadcasts.value.data().items : []),
+    ...(inbox.status === 'fulfilled' && Array.isArray(inbox.value.data()?.inbox) ? inbox.value.data().inbox : [])
+  ].filter(item => item && Number(item.ts) > 0 && Number(item.ts) <= Date.now())
+    .sort((a, b) => Number(b.ts) - Number(a.ts))
+    .slice(0, 50);
+
+  for (const item of items) {
+    const row = document.createElement('li');
+    const time = document.createElement('time');
+    const date = new Date(Number(item.ts));
+    time.dateTime = date.toISOString();
+    time.textContent = formatDate.format(date);
+    const card = window.gxNotify.createCard({
+      ...item,
+      cta: item.cta || (item.ctaUrl ? { label: item.ctaLabel, url: item.ctaUrl } : null)
+    });
+    card.removeAttribute('role');
+    row.append(time, card);
+    list.append(row);
+  }
+  status.textContent = feeds.some(feed => feed.status === 'rejected')
+    ? 'Some notifications could not be loaded. Refresh to try again.'
+    : items.length ? '' : 'No recent notifications.';
+  status.hidden = !status.textContent;
+}, () => {
+  status.textContent = 'Could not load notifications. Refresh to try again.';
+});
+</script>
+</body>
+</html>
