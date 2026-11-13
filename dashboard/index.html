@@ -709,11 +709,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     <img class="gx-rocket" src="/assets/loader/rocket.webp" alt="" width="17" height="19">
   </div>
 </div>
-<script>
-/* Returning user: balance/orders are cached, so the dashboard can paint at once. No loader. */
-(function(){try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);
-if(k&&(k.indexOf('gx_wallet_bal_')===0||k.indexOf('gx_orders_count_')===0)){var l=document.getElementById('gx-loader');if(l)l.remove();return;}}}catch(e){}})();
-</script>
+
 
 <aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-[250px] lg:flex-col lg:overflow-hidden lg:border-r lg:border-white/10 desktop-sidebar"
   style="background:linear-gradient(180deg,#0a1628 0%,#0e1f3d 50%,#0a1628 100%);">
@@ -3795,6 +3791,7 @@ onAuthStateChanged(auth, async (user) => {
   } catch(e) {}
 
   currentUid   = user.uid;
+  try { localStorage.setItem('gx_last_uid', currentUid); } catch (_) {}   // lets the next visit paint cached numbers before Firebase loads
   currentEmail = (user.email || '').trim().toLowerCase();
   window.currentUid   = currentUid;
   window.currentEmail = currentEmail;
@@ -4224,6 +4221,19 @@ function changePasswordInline() {
 const _API  = "https://backend-for-api-connect-g8ta.onrender.com";
 const _OTP  = "https://backend-for-email-verification-code-vwip.onrender.com";
 
+</script>
+<script>
+/* Data already on this device (last signed-in user's balance/orders): paint it now and drop the
+   loader, instead of waiting 2-3s for Firebase to download and restore the session.
+   First visit / no cache: the loader stays until the first live data arrives. */
+(function(){try{
+  var u=localStorage.getItem('gx_last_uid'); if(!u) return;
+  var b=localStorage.getItem('gx_wallet_bal_'+u), o=localStorage.getItem('gx_orders_count_'+u);
+  if(!b && !o) return;
+  if(b && b!=='₹0.00'){ var e1=document.getElementById('userBalance'), e2=document.getElementById('walletBalanceTop'); if(e1) e1.textContent=b; if(e2) e2.textContent=b; }
+  if(o){ var e3=document.getElementById('userOrders'); if(e3) e3.textContent=o; }
+  var l=document.getElementById('gx-loader'); if(l) l.remove();
+}catch(e){}})();
 </script>
 <script>requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.style.opacity=1))</script>
 
