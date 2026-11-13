@@ -4373,10 +4373,13 @@ main { padding:20px 12px 110px !important; }
     const nextTop = next.getBoundingClientRect().top;
     const naturalTop = card.getBoundingClientRect().top - (offsets.get(card) || 0);
     const offset = Math.max(0, -naturalTop);
-    offsets.set(card, offset);
-    card.style.setProperty('--dashboard-card-pin', offset + 'px');
     const covered = Math.max(0, naturalTop + offset + height - nextTop);
-    const opacity = height ? Math.max(0, 1 - covered / height) : 1;
+    const progress = height ? Math.min(1, covered / height) : 0;
+    const slide = progress * Math.min(40, height * 0.28);
+    const displacement = offset + slide;
+    offsets.set(card, displacement);
+    card.style.setProperty('--dashboard-card-pin', displacement + 'px');
+    const opacity = 1 - progress;
     card.style.setProperty('--dashboard-card-opacity', opacity);
     card.toggleAttribute('data-scroll-covered', opacity === 0);
   }
