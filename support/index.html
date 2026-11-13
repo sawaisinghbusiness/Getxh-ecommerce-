@@ -1289,35 +1289,31 @@ function renderTicketList(tickets) {
     return;
   }
 
-  list.innerHTML = tickets.map(ticket => {
-    const status = String(ticket.status || 'open').toLowerCase();
-    const isResolved = status === 'closed' || status === 'resolved';
-    const badgeStyle = isResolved
-      ? 'background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);color:#6ee7b7'
-      : 'background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);color:#7dd3fc';
-    const accentColor = isResolved ? 'rgba(52,211,153,0.45)' : 'rgba(56,189,248,0.45)';
-    return `
-      <button onclick="openTicketModal('${ticket.id}')" class="ticket-row w-full rounded-[20px] px-4 py-4 text-left" style="border-left:3px solid ${accentColor}">
-        <div class="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
-          <div class="min-w-0">
-            <p class="text-[10px] font-bold uppercase tracking-[0.1em]" style="color:rgba(148,163,184,0.5);margin-bottom:5px">Order ID</p>
-            <p class="text-base font-bold text-white">${ticket.orderId || 'GENERAL'}</p>
-          </div>
-          <div class="min-w-0">
-            <p class="text-[10px] font-bold uppercase tracking-[0.1em]" style="color:rgba(148,163,184,0.5);margin-bottom:5px">Category</p>
-            <p class="text-sm font-semibold" style="color:#cbd5e1">${ticket.category || 'Order'}${ticket.subcategory ? ` / ${ticket.subcategory}` : ''}</p>
-          </div>
-          <div class="min-w-0">
-            <p class="text-[10px] font-bold uppercase tracking-[0.1em]" style="color:rgba(148,163,184,0.5);margin-bottom:5px">Status</p>
-            <span class="inline-flex rounded-md px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.05em]" style="${badgeStyle}">${status}</span>
-          </div>
-          <div class="min-w-0 text-left sm:text-right">
-            <p class="text-[10px] font-bold uppercase tracking-[0.1em]" style="color:rgba(148,163,184,0.5);margin-bottom:5px">Submitted</p>
-            <p class="text-xs font-medium" style="color:#94a3b8">${formatDateTime(ticket.createdAt)}</p>
-          </div>
-        </div>
-      </button>`;
-  }).join('');
+  list.replaceChildren();
+  tickets.forEach(ticket => {
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className = 'ticket-row support-ticket-row';
+    row.addEventListener('click', () => openTicketModal(ticket.id));
+
+    const heading = document.createElement('span');
+    heading.className = 'support-ticket-heading';
+    const subject = document.createElement('strong');
+    subject.textContent = [ticket.category || 'Order', ticket.subcategory].filter(Boolean).join(' / ');
+    const status = document.createElement('span');
+    status.className = 'support-ticket-status';
+    status.textContent = String(ticket.status || 'open').replace(/[_-]/g, ' ');
+    heading.append(subject, status);
+
+    const meta = document.createElement('span');
+    meta.className = 'support-ticket-meta';
+    meta.textContent = [
+      ticket.orderId ? 'Order ' + ticket.orderId : 'General inquiry',
+      formatDateTime(ticket.createdAt)
+    ].filter(Boolean).join(' · ');
+    row.append(heading, meta);
+    list.append(row);
+  });
 }
 
 function getTicketById(ticketId) {
@@ -1746,5 +1742,30 @@ onAuthStateChanged(auth, user => {
     </div>
   </div>
 </div>
+<style>
+.support-ticket-row {
+  width: 100%;
+  padding: 12px 16px;
+  text-align: left;
+  border-radius: 12px;
+}
+.support-ticket-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  flex-wrap: wrap;
+}
+.support-ticket-heading strong { font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+.support-ticket-status { color: #adc5ea; font-size: 12px; text-transform: capitalize; }
+.support-ticket-meta { display: block; margin-top: 4px; color: #aebbd0; font-size: 12px; overflow-wrap: anywhere; }
+.support-ticket-row:focus-visible { outline: 2px solid #8ab8ff; outline-offset: 2px; }
+:is(#sideMenu, .desktop-sidebar) div[style*="linear-gradient"] {
+  background: #1b283a !important;
+}
+:is(#sideMenu, .desktop-sidebar) :is(a, button)[style*="rgba(33,150,243"] {
+  background: #182c46 !important;
+}
+</style>
 </body>
 </html>
