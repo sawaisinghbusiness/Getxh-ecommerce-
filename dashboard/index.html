@@ -705,7 +705,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   .dashboard-header, main, #sideMenu, #menuOverlay { touch-action: pan-y; }
 }
 </style>
-<link rel="stylesheet" href="/assets/bottom-tabs.css">
+<link rel="stylesheet" href="/assets/bottom-tabs.css?v=3">
 <style>
 #serviceDetails .service-details-title { color: #becbdd; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
 #serviceDetails .service-metrics { gap: 12px; margin-bottom: 12px; }
@@ -4520,6 +4520,12 @@ main { padding:20px 12px 110px !important; }
 }
 :is(#sideMenu, .desktop-sidebar) :is(a,button)[style*="rgba(33,150,243"] {
   background: #182c46 !important;
+}
+:is(#sideMenu, .desktop-sidebar) :is(a, button) > div[style*="linear-gradient"]:not([style*="#25D366" i]) {
+  background: #2563d9 !important; /* same blue as the Add Funds button */
+}
+:is(#sideMenu, .desktop-sidebar) :is(a, button) > div[style*="linear-gradient"]:not([style*="#25D366" i]) > .material-symbols-outlined {
+  color: #fff !important;
 }
 .aia-card { background: #111c2c; border-radius: 12px; }
 .aia-card::after { content: none; }

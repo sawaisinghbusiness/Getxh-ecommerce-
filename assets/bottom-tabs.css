@@ -28,7 +28,7 @@
 }
 .bnav-fab {
   width:62px;height:62px;border-radius:50%;border:none;cursor:pointer;
-  background:linear-gradient(135deg,#e5e7eb,#9ca3af);
+  background:#2563d9; /* same blue as the Add Funds button */
   box-shadow:none;
   display:flex;align-items:center;justify-content:center;
   margin-top:-24px;

@@ -549,7 +549,7 @@ main section[style*="background:#152234"] p[style*="rgba(148,163,184,0.55)"] { c
 #ticketMessages .text-sky-400 { color: var(--o-accent) !important; }
 </style>
 <link rel="stylesheet" href="/assets/sidebar-theme.css">
-<link rel="stylesheet" href="/assets/bottom-tabs.css">
+<link rel="stylesheet" href="/assets/bottom-tabs.css?v=3">
 <style>
 .support-field-label {
   display: block;
@@ -1760,8 +1760,8 @@ onAuthStateChanged(auth, user => {
 :is(#sideMenu, .desktop-sidebar) :is(a, button) > div[style*="width:25px"] {
   color: #fff;
 }
-:is(#sideMenu, .desktop-sidebar) :is(a, button) > div[style*="width:25px"]:not([style*="#25D366" i]) {
-  background: linear-gradient(135deg,#e5e7eb,#9ca3af);
+:is(#sideMenu, .desktop-sidebar) :is(a, button) > div[style*="width:25px"][style*="linear-gradient"]:not([style*="#25D366" i]) {
+  background: #2563d9 !important; /* same blue as the Add Funds button */
 }
 :is(#sideMenu, .desktop-sidebar) :is(a, button) > div[style*="width:25px"] > .material-symbols-outlined {
   color: #fff !important;
