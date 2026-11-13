@@ -627,11 +627,9 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   max-width:1080px;margin:0 auto;
   border:1px solid rgba(255,255,255,0.08);
   border-radius:16px;
-  background:rgba(10,14,22,0.6);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
+  background:#0c1322;
   display:grid;grid-template-columns:repeat(4,1fr);
-  padding:22px 0;
+  padding:24px 0;
 }
 .sbar-card{
   background:transparent;
@@ -649,13 +647,13 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   border-right:1px solid rgba(255,255,255,0.08);
 }
 .sbar-val{
-  font-size:26px;font-weight:700;letter-spacing:-0.02em;
+  font-size:26px;font-weight:600;letter-spacing:-0.02em;
   color:#ffffff;display:flex;align-items:center;justify-content:center;
   margin-bottom:6px;line-height:1.2;
 }
 .sbar-lbl{
-  font-size:11px;color:#94a3b8;text-transform:uppercase;
-  letter-spacing:0.08em;font-weight:700;line-height:1.3;
+  font-size:13px;color:#94a3b8;
+  font-weight:400;line-height:1.3;
 }
 
 /* ══════════════════════════════════════════
@@ -667,60 +665,15 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 }
 .lp-inner{max-width:1140px;margin:0 auto;}
 .section-label{
-  font-size:12px;font-weight:800;letter-spacing:0.15em;
-  text-transform:uppercase;color:#a78bfa;margin-bottom:10px;display:block;
+  font-size:14px;font-weight:500;
+  color:#60a5fa;margin-bottom:8px;display:block;
 }
 .section-title{
-  font-size:clamp(26px,3vw,38px);font-weight:900;
-  color:#f1f5f9;letter-spacing:-0.025em;line-height:1.2;margin-bottom:14px;
+  font-size:clamp(26px,3vw,38px);font-weight:600;
+  color:#f1f5f9;letter-spacing:-0.02em;line-height:1.2;margin-bottom:12px;
 }
 .section-sub{
   font-size:15px;color:#94a3b8;line-height:1.7;max-width:620px;
-}
-
-/* ══════════════════════════════════════════
-   4. WHY GETXH FEATURE CARDS
-══════════════════════════════════════════ */
-.why-cards-stack{
-  display:flex;flex-direction:column;gap:16px;
-  margin-top:32px;max-width:760px;
-}
-.why-card{
-  background:rgba(12,18,34,0.78);
-  border:1px solid rgba(255,255,255,0.07);
-  border-radius:18px;padding:24px 26px;
-  position:relative;overflow:hidden;
-  transition:all 0.25s ease;
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-}
-.why-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-}
-.why-card.amber::before{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
-.why-card.green::before{background:linear-gradient(90deg,#10b981,#34d399);}
-.why-card.purple::before{background:linear-gradient(90deg,#8b5cf6,#a78bfa);}
-
-.why-card:hover{
-  transform:translateY(-2px);
-  box-shadow:0 14px 36px rgba(0,0,0,0.4);
-  border-color:rgba(255,255,255,0.12);
-}
-.why-card-tag{
-  font-size:11px;font-weight:800;letter-spacing:0.1em;
-  text-transform:uppercase;display:inline-flex;align-items:center;
-  gap:6px;margin-bottom:10px;
-}
-.why-card.amber .why-card-tag{color:#fbbf24;}
-.why-card.green .why-card-tag{color:#34d399;}
-.why-card.purple .why-card-tag{color:#a78bfa;}
-
-.why-card-title{
-  font-size:18px;font-weight:800;color:#f1f5f9;
-  margin-bottom:8px;letter-spacing:-0.01em;
-}
-.why-card-desc{
-  font-size:13.5px;color:#94a3b8;line-height:1.65;
 }
 
 /* ══════════════════════════════════════════
@@ -730,11 +683,6 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   position:relative;
   overflow:hidden;
 }
-.hiw-plexus-bg{
-  position:absolute;top:50%;right:-20px;
-  transform:translateY(-45%);width:650px;max-width:58%;
-  height:auto;opacity:0.08;pointer-events:none;z-index:1;
-}
 .timeline-flow{
   position:relative;margin-top:36px;
   max-width:680px;padding-left:0;z-index:2;
@@ -743,15 +691,14 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   display:flex;gap:20px;position:relative;
   padding:14px 18px;border-radius:14px;
   border:1px solid transparent;
-  transition:all 200ms ease;
-  margin-bottom:18px;
+  transition:background-color .15s ease,border-color .15s ease;
+  margin-bottom:16px;
 }
 .timeline-item:last-child{margin-bottom:0;}
 .timeline-item:hover,
 .timeline-item.active{
   background:rgba(255,255,255,0.04);
-  border-color:rgba(255,255,255,0.06);
-  box-shadow:0 0 24px rgba(148,163,184,0.12);
+  border-color:rgba(255,255,255,0.08);
 }
 .timeline-left{
   display:flex;flex-direction:column;
@@ -764,12 +711,11 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   border:1px solid rgba(255,255,255,0.16);
   display:flex;align-items:center;justify-content:center;
   color:#CBD5E1;flex-shrink:0;z-index:2;
-  box-shadow:none;transition:all 200ms ease;
+  transition:border-color .15s ease;
 }
 .timeline-item.active .timeline-icon,
 .timeline-item:hover .timeline-icon{
-  border-color:rgba(255,255,255,0.35);
-  box-shadow:0 0 16px rgba(255,255,255,0.15);
+  border-color:rgba(96,165,250,0.6);
 }
 .timeline-icon svg{width:18px;height:18px;stroke:#CBD5E1;}
 .timeline-line{
@@ -781,42 +727,40 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 .timeline-item:last-child .timeline-line{display:none;}
 .timeline-content{padding-top:2px;}
 .timeline-step{
-  font-size:11px;font-weight:800;letter-spacing:0.12em;
-  text-transform:uppercase;color:#94A3B8;margin-bottom:6px;
+  font-size:13px;font-weight:500;
+  color:#64748b;margin-bottom:4px;
 }
 .timeline-title{
-  font-size:17.5px;font-weight:800;color:#f1f5f9;
-  margin-bottom:6px;letter-spacing:-0.01em;
+  font-size:18px;font-weight:600;color:#f1f5f9;
+  margin-bottom:4px;
 }
 .timeline-desc{
-  font-size:13.5px;color:#94a3b8;line-height:1.6;
+  font-size:14px;color:#94a3b8;line-height:1.6;
 }
 
 /* ══════════════════════════════════════════
    7. REVIEWS SLIDER / TESTIMONIALS
 ══════════════════════════════════════════ */
 .testimonials-section{position:relative;overflow:hidden;}
-.testimonials-section .section-label{color:#94A3B8;}
 .reviews-outer{margin-top:36px;overflow:hidden;position:relative;z-index:2;}
-.reviews-track{display:flex;gap:18px;transition:transform 0.5s cubic-bezier(0.22,1,0.36,1);}
+.reviews-track{display:flex;gap:16px;transition:transform 0.5s cubic-bezier(0.22,1,0.36,1);}
 .review-card{
   flex:0 0 calc(33.333% - 12px);
-  background:#38BDF8;
-  border:none;
-  border-radius:20px;
-  padding:26px 22px;
-  box-shadow:none;
+  background:#0c1322;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+  padding:24px;
 }
 .review-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
 .review-avatar{
   width:46px;height:46px;border-radius:50%;
   object-fit:cover;
-  border:2px solid rgba(11,18,32,0.15);
+  border:1px solid rgba(255,255,255,0.12);
   display:block;
   flex-shrink:0;
 }
-.review-name{font-size:14.5px;font-weight:700;color:#0B1220;}
-.review-role{font-size:11.5px;color:#0C4A6E;margin-top:2px;}
+.review-name{font-size:15px;font-weight:600;color:#f1f5f9;}
+.review-role{font-size:12px;color:#94a3b8;margin-top:2px;}
 .verif-badge{
   margin-left:auto;
   display:inline-flex;
@@ -828,71 +772,59 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 .verif-icon{
   width:15px;
   height:15px;
-  color:#0C4A6E;
+  color:#94a3b8;
   flex-shrink:0;
 }
 .verif-text{
-  font-size:11.5px;
-  font-weight:500;
-  color:#0C4A6E;
+  font-size:12px;
+  font-weight:400;
+  color:#94a3b8;
   line-height:1.25;
   white-space:normal;
 }
-.review-stars{display:flex;gap:3px;margin-bottom:14px;}
-.review-stars svg{width:14px;height:14px;fill:#0B1220;opacity:1;}
+.review-stars{display:flex;gap:4px;margin-bottom:12px;}
+.review-stars svg{width:14px;height:14px;fill:#fbbf24;}
 .review-text{
-  font-size:13px;
-  color:#0B1220;
-  line-height:1.7;
-  font-style:italic;
+  font-size:14px;
+  color:#cbd5e1;
+  line-height:1.65;
 }
 .reviews-nav{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:24px;position:relative;z-index:2;}
 .rev-dot{
   width:8px;height:8px;border-radius:50%;
-  background:rgba(56,189,248,0.3);cursor:pointer;border:none;
+  background:rgba(255,255,255,0.2);cursor:pointer;border:none;
 }
-.rev-dot.active{background:#38BDF8;transform:scale(1.3);}
+.rev-dot.active{background:#2563eb;}
 
-/* Testimonials background plexus */
-.testi-plexus{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  pointer-events:none;
-  z-index:0;
-  overflow:hidden;
-  opacity:0.08;
-}
-.testi-plexus svg{width:100%;height:100%;display:block;}
 @media(max-width:480px){
   .review-top{flex-wrap:wrap;row-gap:8px;}
   .verif-badge{margin-left:58px;width:calc(100% - 58px);}
-  .testi-plexus{display:none;}
 }
 
 /* ══════════════════════════════════════════
    8. FAQ ACCORDION SECTION
 ══════════════════════════════════════════ */
-.faq-list{display:flex;flex-direction:column;gap:14px;margin-top:36px;}
+.faq-list{display:flex;flex-direction:column;gap:12px;margin-top:32px;}
 .faq-item{
-  background:rgba(15,23,42,0.75);
+  background:#0c1322;
   border:1px solid rgba(255,255,255,0.08);
   border-radius:16px;overflow:hidden;
-  transition:all 0.25s ease;
+  transition:border-color .15s ease;
 }
-.faq-item:hover{border-color:rgba(139,92,246,0.3);}
+.faq-item:hover{border-color:rgba(255,255,255,0.16);}
 .faq-q{
+  width:100%;background:none;border:none;text-align:left;font-family:inherit;
   padding:20px 24px;cursor:pointer;
   display:flex;align-items:center;justify-content:space-between;gap:16px;
-  font-size:16px;font-weight:700;color:#f1f5f9;user-select:none;
+  font-size:16px;font-weight:500;color:#f1f5f9;user-select:none;
 }
 .faq-icon{
   width:26px;height:26px;border-radius:50%;
   background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;
-  font-size:16px;color:#a78bfa;transition:transform 0.3s;flex-shrink:0;
+  font-size:16px;color:#94a3b8;transition:transform .2s ease;flex-shrink:0;
 }
-.faq-item.open .faq-icon{transform:rotate(180deg);background:rgba(139,92,246,0.2);}
+.faq-item.open .faq-icon{transform:rotate(180deg);color:#f1f5f9;}
+.faq-q:focus-visible{outline:2px solid #60a5fa;outline-offset:-2px;border-radius:16px;}
 .faq-a{
   max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.35s ease;
   padding:0 24px;font-size:14px;color:#94a3b8;line-height:1.8;
@@ -900,54 +832,34 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 .faq-item.open .faq-a{max-height:400px;padding:0 24px 22px;}
 
 /* ══════════════════════════════════════════
-   9. TOPICAL SEO ARTICLE SECTION
-══════════════════════════════════════════ */
-.seo-article{
-  background:rgba(10,18,36,0.85);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:24px;padding:48px 40px;
-  margin-top:40px;
-}
-.seo-article h2{font-size:24px;font-weight:800;color:#f1f5f9;margin-bottom:14px;}
-.seo-article h3{font-size:18px;font-weight:700;color:#cbd5e1;margin:24px 0 10px;}
-.seo-article p{font-size:14px;color:#94a3b8;line-height:1.85;margin-bottom:14px;}
-.seo-article ul{padding-left:20px;margin-bottom:16px;}
-.seo-article li{font-size:14px;color:#94a3b8;line-height:1.75;margin-bottom:6px;}
-.seo-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px;}
-.seo-tag{
-  font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;
-  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
-  color:#64748b;
-}
-
-/* ══════════════════════════════════════════
    10. CTA SECTION (Compact Landscape)
 ══════════════════════════════════════════ */
 .cta-section{padding:30px 24px 60px;position:relative;z-index:2;}
 .cta-inner{
   max-width:940px;margin:0 auto;
-  background:linear-gradient(135deg,#131f38 0%,#1e3a6e 50%,#241b42 100%);
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:20px;padding:26px 36px;
+  background:#0f1d3a;
+  border:1px solid rgba(96,165,250,0.25);
+  border-radius:20px;padding:28px 36px;
   display:flex;align-items:center;justify-content:space-between;gap:24px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.35);
 }
 .cta-text-wrap{flex:1;text-align:left;}
-.cta-title{font-size:clamp(20px,2.2vw,28px);font-weight:900;color:#fff;margin-bottom:4px;line-height:1.2;}
-.cta-sub{font-size:14px;color:rgba(255,255,255,0.85);font-weight:500;margin:0;}
+.cta-title{font-size:clamp(20px,2.2vw,28px);font-weight:600;color:#fff;margin-bottom:4px;line-height:1.2;}
+.cta-sub{font-size:14px;color:#94a3b8;font-weight:400;margin:0;}
 .cta-btns{display:flex;gap:12px;align-items:center;flex-shrink:0;}
 .cta-btn-primary{
-  display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:10px;
-  background:#fff;color:#1e3a8a;font-size:13.5px;font-weight:800;text-decoration:none;
-  box-shadow:0 8px 20px rgba(0,0,0,0.18);transition:all 0.25s ease;
+  display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:10px;
+  background:#2563eb;color:#fff;font-size:14px;font-weight:600;text-decoration:none;
+  transition:background-color .15s ease,transform .1s ease;
 }
-.cta-btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(0,0,0,0.25);}
+.cta-btn-primary:hover{background:#1d4ed8;}
+.cta-btn-primary:active,.cta-btn-secondary:active{transform:scale(.98);}
 .cta-btn-secondary{
-  display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:10px;
-  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);
-  color:#fff;font-size:13.5px;font-weight:700;text-decoration:none;transition:all 0.25s ease;
+  display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:10px;
+  background:transparent;border:1px solid rgba(255,255,255,0.2);
+  color:#f1f5f9;font-size:14px;font-weight:500;text-decoration:none;
+  transition:background-color .15s ease,border-color .15s ease,transform .1s ease;
 }
-.cta-btn-secondary:hover{background:rgba(255,255,255,0.2);transform:translateY(-1px);}
+.cta-btn-secondary:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.32);}
 
 @media(max-width:768px){
   .cta-inner{flex-direction:column;text-align:center;padding:24px 20px;gap:18px;}
@@ -985,8 +897,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   .stats-bar{padding:10px 20px 35px;}
   .stats-bar-inner{padding:18px 0;}
   .sbar-val{font-size:22px;}
-  .sbar-lbl{font-size:10px;}
-  .why-cards-stack{max-width:100%;}
+  .sbar-lbl{font-size:12px;}
   .timeline-flow{max-width:100%;padding-left:0;}
   .timeline-item{gap:16px;padding:12px 14px;margin-bottom:14px;}
   .timeline-icon{width:40px;height:40px;}
@@ -1014,13 +925,9 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   .sbar-card:nth-child(3),
   .sbar-card:nth-child(4){border-bottom:none;}
   .sbar-val{font-size:20px;}
-  .sbar-lbl{font-size:9.5px;}
-  .why-card{padding:20px 18px;}
-  .why-card-title{font-size:16px;}
-  .why-card-desc{font-size:13px;}
+  .sbar-lbl{font-size:12px;}
   .timeline-title{font-size:16px;}
-  .timeline-desc{font-size:12.5px;}
-  .hiw-plexus-bg{display:none;}
+  .timeline-desc{font-size:13px;}
   .footer-grid{grid-template-columns:1fr;}
   .cta-inner{padding:36px 20px;}
 }
@@ -1783,114 +1690,28 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
   <div class="stats-bar-inner">
     <div class="sbar-card">
       <span class="sbar-val">50,000+</span>
-      <span class="sbar-lbl">Orders Delivered</span>
+      <span class="sbar-lbl">Orders delivered</span>
     </div>
     <div class="sbar-card">
       <span class="sbar-val">10,000+</span>
-      <span class="sbar-lbl">Active Creators</span>
+      <span class="sbar-lbl">Active creators</span>
     </div>
     <div class="sbar-card">
       <span class="sbar-val">₹0.10 / 1K</span>
-      <span class="sbar-lbl">Prices From</span>
+      <span class="sbar-lbl">Prices from</span>
     </div>
     <div class="sbar-card">
       <span class="sbar-val">99.9%</span>
-      <span class="sbar-lbl">Automated Uptime</span>
+      <span class="sbar-lbl">Automated uptime</span>
     </div>
   </div>
 </div>
 
 <!-- ════ HOW IT WORKS (TIMELINE) ════ -->
 <section class="lp-section how-it-works-section">
-  <!-- Plexus / Constellation Background -->
-  <div class="hiw-plexus-bg" aria-hidden="true">
-    <svg viewBox="0 0 700 500" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g stroke="#93C5FD" stroke-width="1" stroke-opacity="0.85">
-        <line x1="260" y1="140" x2="390" y2="70" />
-        <line x1="390" y1="70" x2="520" y2="120" />
-        <line x1="520" y1="120" x2="620" y2="220" />
-        <line x1="620" y1="220" x2="640" y2="340" />
-        <line x1="640" y1="340" x2="560" y2="440" />
-        <line x1="560" y1="440" x2="430" y2="470" />
-        <line x1="430" y1="470" x2="310" y2="420" />
-        <line x1="310" y1="420" x2="220" y2="320" />
-        <line x1="220" y1="320" x2="260" y2="140" />
-        <line x1="260" y1="140" x2="370" y2="190" />
-        <line x1="390" y1="70" x2="370" y2="190" />
-        <line x1="390" y1="70" x2="470" y2="180" />
-        <line x1="520" y1="120" x2="470" y2="180" />
-        <line x1="520" y1="120" x2="550" y2="250" />
-        <line x1="620" y1="220" x2="550" y2="250" />
-        <line x1="620" y1="220" x2="540" y2="330" />
-        <line x1="640" y1="340" x2="540" y2="330" />
-        <line x1="640" y1="340" x2="480" y2="390" />
-        <line x1="560" y1="440" x2="480" y2="390" />
-        <line x1="560" y1="440" x2="410" y2="380" />
-        <line x1="430" y1="470" x2="410" y2="380" />
-        <line x1="430" y1="470" x2="330" y2="350" />
-        <line x1="310" y1="420" x2="330" y2="350" />
-        <line x1="220" y1="320" x2="330" y2="350" />
-        <line x1="220" y1="320" x2="300" y2="230" />
-        <line x1="260" y1="140" x2="300" y2="230" />
-        <line x1="370" y1="190" x2="470" y2="180" />
-        <line x1="470" y1="180" x2="550" y2="250" />
-        <line x1="550" y1="250" x2="540" y2="330" />
-        <line x1="540" y1="330" x2="480" y2="390" />
-        <line x1="480" y1="390" x2="410" y2="380" />
-        <line x1="410" y1="380" x2="330" y2="350" />
-        <line x1="330" y1="350" x2="300" y2="230" />
-        <line x1="300" y1="230" x2="370" y2="190" />
-        <line x1="420" y1="270" x2="370" y2="190" />
-        <line x1="420" y1="270" x2="470" y2="180" />
-        <line x1="420" y1="270" x2="550" y2="250" />
-        <line x1="420" y1="270" x2="540" y2="330" />
-        <line x1="420" y1="270" x2="480" y2="390" />
-        <line x1="420" y1="270" x2="410" y2="380" />
-        <line x1="420" y1="270" x2="330" y2="350" />
-        <line x1="420" y1="270" x2="300" y2="230" />
-        <line x1="390" y1="70" x2="460" y2="20" stroke-dasharray="3 3" />
-        <line x1="520" y1="120" x2="610" y2="60" stroke-dasharray="3 3" />
-        <line x1="620" y1="220" x2="680" y2="170" stroke-dasharray="3 3" />
-        <line x1="640" y1="340" x2="690" y2="390" stroke-dasharray="3 3" />
-        <line x1="560" y1="440" x2="620" y2="480" stroke-dasharray="3 3" />
-        <line x1="310" y1="420" x2="250" y2="460" stroke-dasharray="3 3" />
-        <line x1="220" y1="320" x2="160" y2="300" stroke-dasharray="3 3" />
-        <line x1="260" y1="140" x2="200" y2="110" stroke-dasharray="3 3" />
-      </g>
-      <g fill="#38BDF8">
-        <circle cx="260" cy="140" r="3" />
-        <circle cx="390" cy="70" r="3.5" />
-        <circle cx="520" cy="120" r="3" />
-        <circle cx="620" cy="220" r="3" />
-        <circle cx="640" cy="340" r="3" />
-        <circle cx="560" cy="440" r="3" />
-        <circle cx="430" cy="470" r="3.5" />
-        <circle cx="310" cy="420" r="3" />
-        <circle cx="220" cy="320" r="3" />
-        <circle cx="370" cy="190" r="2.5" />
-        <circle cx="470" cy="180" r="2.5" />
-        <circle cx="550" cy="250" r="2.5" />
-        <circle cx="540" cy="330" r="2.5" />
-        <circle cx="480" cy="390" r="2.5" />
-        <circle cx="410" cy="380" r="2.5" />
-        <circle cx="330" cy="350" r="2.5" />
-        <circle cx="300" cy="230" r="2.5" />
-        <circle cx="420" cy="270" r="4" />
-        <circle cx="460" cy="20" r="2" />
-        <circle cx="610" cy="60" r="2" />
-        <circle cx="680" cy="170" r="2" />
-        <circle cx="690" cy="390" r="2" />
-        <circle cx="620" cy="480" r="2" />
-        <circle cx="250" cy="460" r="2" />
-        <circle cx="160" cy="300" r="2" />
-        <circle cx="200" cy="110" r="2" />
-      </g>
-    </svg>
-  </div>
-
   <div class="lp-inner" style="position:relative;z-index:2;">
-    <span class="section-label">SIMPLE PROCESS</span>
-    <h2 class="section-title">How It Works</h2>
+    <span class="section-label">Simple process</span>
+    <h2 class="section-title">How it works</h2>
     <p class="section-sub">Get your 10,000 free views in a couple of minutes. No card, no payment.</p>
 
     <div class="timeline-flow">
@@ -1905,7 +1726,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
           <div class="timeline-line"></div>
         </div>
         <div class="timeline-content">
-          <div class="timeline-step">STEP 01</div>
+          <div class="timeline-step">Step 1</div>
           <div class="timeline-title">Create a free account</div>
           <div class="timeline-desc">Sign up with your email or Google. It takes under a minute.</div>
         </div>
@@ -1922,7 +1743,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
           <div class="timeline-line"></div>
         </div>
         <div class="timeline-content">
-          <div class="timeline-step">STEP 02</div>
+          <div class="timeline-step">Step 2</div>
           <div class="timeline-title">Get 10,000 free views</div>
           <div class="timeline-desc">They're added to your dashboard automatically, under Welcome Offer.</div>
         </div>
@@ -1939,7 +1760,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
           <div class="timeline-line"></div>
         </div>
         <div class="timeline-content">
-          <div class="timeline-step">STEP 03</div>
+          <div class="timeline-step">Step 3</div>
           <div class="timeline-title">Paste your link</div>
           <div class="timeline-desc">Paste your link and place your order.</div>
         </div>
@@ -1948,13 +1769,13 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
       <div class="timeline-item">
         <div class="timeline-left">
           <div class="timeline-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
           </div>
         </div>
         <div class="timeline-content">
-          <div class="timeline-step">STEP 04</div>
+          <div class="timeline-step">Step 4</div>
           <div class="timeline-title">Watch the views come in</div>
           <div class="timeline-desc">Delivery starts right away. Track it live on your Orders page.</div>
         </div>
@@ -1965,63 +1786,9 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 
 <!-- ════ REVIEWS / TESTIMONIALS ════ -->
 <section class="lp-section testimonials-section">
-  <!-- Plexus / Constellation Background Overlay -->
-  <div class="testi-plexus" aria-hidden="true">
-    <svg viewBox="0 0 1000 500" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-      <g stroke="#93C5FD" stroke-width="1" stroke-opacity="0.8">
-        <line x1="200" y1="120" x2="350" y2="80" />
-        <line x1="350" y1="80" x2="520" y2="130" />
-        <line x1="520" y1="130" x2="680" y2="90" />
-        <line x1="680" y1="90" x2="850" y2="140" />
-        <line x1="850" y1="140" x2="980" y2="100" />
-        <line x1="200" y1="120" x2="280" y2="260" />
-        <line x1="350" y1="80" x2="420" y2="220" />
-        <line x1="520" y1="130" x2="420" y2="220" />
-        <line x1="520" y1="130" x2="600" y2="270" />
-        <line x1="680" y1="90" x2="760" y2="230" />
-        <line x1="850" y1="140" x2="760" y2="230" />
-        <line x1="850" y1="140" x2="920" y2="280" />
-        <line x1="980" y1="100" x2="920" y2="280" />
-        <line x1="280" y1="260" x2="420" y2="220" />
-        <line x1="420" y1="220" x2="600" y2="270" />
-        <line x1="600" y1="270" x2="760" y2="230" />
-        <line x1="760" y1="230" x2="920" y2="280" />
-        <line x1="280" y1="260" x2="360" y2="400" />
-        <line x1="420" y1="220" x2="500" y2="380" />
-        <line x1="600" y1="270" x2="500" y2="380" />
-        <line x1="600" y1="270" x2="690" y2="410" />
-        <line x1="760" y1="230" x2="840" y2="370" />
-        <line x1="920" y1="280" x2="840" y2="370" />
-        <line x1="920" y1="280" x2="970" y2="420" />
-        <line x1="360" y1="400" x2="500" y2="380" />
-        <line x1="500" y1="380" x2="690" y2="410" />
-        <line x1="690" y1="410" x2="840" y2="370" />
-        <line x1="840" y1="370" x2="970" y2="420" />
-      </g>
-      <g fill="#38BDF8">
-        <circle cx="200" cy="120" r="2.5" />
-        <circle cx="350" cy="80" r="3" />
-        <circle cx="520" cy="130" r="3" />
-        <circle cx="680" cy="90" r="2.5" />
-        <circle cx="850" cy="140" r="3.5" />
-        <circle cx="980" cy="100" r="2.5" />
-        <circle cx="280" cy="260" r="3" />
-        <circle cx="420" cy="220" r="3" />
-        <circle cx="600" cy="270" r="3.5" />
-        <circle cx="760" cy="230" r="3" />
-        <circle cx="920" cy="280" r="3" />
-        <circle cx="360" cy="400" r="2.5" />
-        <circle cx="500" cy="380" r="3" />
-        <circle cx="690" cy="410" r="3" />
-        <circle cx="840" cy="370" r="3.5" />
-        <circle cx="970" cy="420" r="2.5" />
-      </g>
-    </svg>
-  </div>
-
   <div class="lp-inner" style="position:relative;z-index:2;">
-    <span class="section-label">Real Testimonials</span>
-    <h2 class="section-title">Loved by Creators Across India</h2>
+    <span class="section-label">Testimonials</span>
+    <h2 class="section-title">Loved by creators across India</h2>
     <p class="section-sub">Here is what our happy creators, digital agencies, and resellers say about GETXH (getxh.in).</p>
 
     <div class="reviews-outer">
@@ -2101,66 +1868,66 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 <!-- ════ FREQUENTLY ASKED QUESTIONS (FAQ) ════ -->
 <section class="lp-section" id="faq">
   <div class="lp-inner">
-    <span class="section-label">Got Questions?</span>
-    <h2 class="section-title">Frequently Asked Questions</h2>
+    <span class="section-label">Got questions?</span>
+    <h2 class="section-title">Frequently asked questions</h2>
     <p class="section-sub">Everything you need to know about GETXH SMM Panel, delivery times, account safety, and payment options.</p>
 
     <div class="faq-list">
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
+        <button type="button" class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">
           <span>What is GETXH (getxh.in)?</span>
-          <span class="faq-icon">▾</span>
-        </div>
+          <span class="faq-icon" aria-hidden="true">▾</span>
+        </button>
         <div class="faq-a">
           GETXH (getxh.in) is India's leading automated Social Media Marketing (SMM) platform. We provide creators, businesses, and resellers with top-quality Instagram followers, likes, comments, reels views, YouTube subscribers, watch hours, Telegram members, and Facebook marketing services at the lowest wholesale rates in India.
         </div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
+        <button type="button" class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">
           <span>Why is GETXH the cheapest SMM panel in India?</span>
-          <span class="faq-icon">▾</span>
-        </div>
+          <span class="faq-icon" aria-hidden="true">▾</span>
+        </button>
         <div class="faq-a">
           Unlike ordinary reseller websites, GETXH operates direct automated server nodes. By removing middleman markups, we deliver wholesale pricing starting at ₹0.10/1K without compromising on quality or retention.
         </div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
+        <button type="button" class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">
           <span>Is it safe to buy followers and views from GETXH?</span>
-          <span class="faq-icon">▾</span>
-        </div>
+          <span class="faq-icon" aria-hidden="true">▾</span>
+        </button>
         <div class="faq-a">
           Yes, 100% safe. GETXH strictly adheres to privacy standards and never requests your social media passwords or private account access. All deliveries use natural rate-limiting to ensure compliance and account security.
         </div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
+        <button type="button" class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">
           <span>How fast will my order start after payment?</span>
-          <span class="faq-icon">▾</span>
-        </div>
+          <span class="faq-icon" aria-hidden="true">▾</span>
+        </button>
         <div class="faq-a">
           Our systems are 100% automated. Over 95% of orders start within 0 to 60 seconds after submission. You can monitor live progress and order status anytime from your GETXH dashboard.
         </div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
+        <button type="button" class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">
           <span>Which payment methods are accepted on GETXH?</span>
-          <span class="faq-icon">▾</span>
-        </div>
+          <span class="faq-icon" aria-hidden="true">▾</span>
+        </button>
         <div class="faq-a">
           We accept all Indian UPI options including Google Pay, PhonePe, Paytm, BHIM, BharatPe QR codes, as well as Debit Cards, Credit Cards, and Net Banking with instant automated wallet balance credits.
         </div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
+        <button type="button" class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">
           <span>Can I place bulk or multiple orders at once on GETXH?</span>
-          <span class="faq-icon">▾</span>
-        </div>
+          <span class="faq-icon" aria-hidden="true">▾</span>
+        </button>
         <div class="faq-a">
           Yes! You can easily place single orders or bulk orders directly from your GETXH dashboard 24/7. All orders are processed automatically with instant live tracking and refill guarantees.
         </div>
@@ -2173,22 +1940,21 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 <div class="cta-section">
   <div class="cta-inner">
     <div class="cta-text-wrap">
-      <div class="cta-title">Ready to Supercharge</div>
-      <div class="cta-sub">10K+ Creators already using</div>
+      <div class="cta-title">Start with 10,000 free views</div>
+      <div class="cta-sub">10K+ creators already use GETXH</div>
     </div>
     <div class="cta-btns">
       <a href="/register" class="cta-btn-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
         </svg>
-        Create Free Account
+        Create free account
       </a>
-      <a href="/" class="cta-btn-secondary">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          <polyline points="9 12 11 14 15 10"/>
+      <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>document.getElementById('email')?.focus({preventScroll:true}),400);return false;" class="cta-btn-secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
         </svg>
-        Sign In
+        Sign in
       </a>
     </div>
   </div>
@@ -2199,7 +1965,7 @@ a,button,input,.card,.feat-icon,.link-acc,.link-dim{
 <footer class="site-footer">
   <div class="footer-bottom">
     <div>&copy; 2026 GETXH™ (getxh.in). All rights reserved.</div>
-    <div>100% Secure Payments • Instant Delivery</div>
+    <div>100% secure payments · instant delivery</div>
   </div>
 </footer>
 
@@ -2279,7 +2045,8 @@ document.addEventListener('click', function(e){
 
 function toggleFaq(el){
   const item = el.closest('.faq-item');
-  item.classList.toggle('open');
+  const open = item.classList.toggle('open');
+  el.setAttribute('aria-expanded', open ? 'true' : 'false');
 }
 
 /* Reviews Slider */
