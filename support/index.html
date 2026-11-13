@@ -558,8 +558,9 @@ main section[style*="background:#152234"] p[style*="rgba(148,163,184,0.55)"] { c
   font-size: 13px;
   font-weight: 600;
 }
-#submitTicketBtn, #ticketModal button[id="sendReplyBtn" onclick="sendMessage()"] {
+#submitTicketBtn, #messageComposeArea button {
   background: #2563eb !important;
+  color: #fff !important;
   box-shadow: none !important;
   border-radius: 10px;
   font-weight: 600;
@@ -700,9 +701,9 @@ main section[style*="background:#152234"] p[style*="rgba(148,163,184,0.55)"] { c
     <div id="formNotice" role="status" class="mb-4 hidden rounded-2xl px-4 py-3 text-sm font-semibold"></div>
 
     <div class="mb-4">
-      <p class="mb-2 text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Category</p>
+      <p id="categoryLabel" class="support-field-label">Category</p>
       <div class="custom-select">
-        <button type="button" class="select-btn" id="categoryBtn" onclick="toggleDropdown('categoryDropdown','categoryBtn')">
+        <button type="button" class="select-btn" id="categoryBtn" aria-labelledby="categoryLabel categoryBtnText" onclick="toggleDropdown('categoryDropdown','categoryBtn')">
           <span id="categoryBtnText" class="text-slate-400">Select category</span>
           <span class="material-symbols-outlined text-slate-500 text-[18px]">expand_more</span>
         </button>
@@ -712,11 +713,11 @@ main section[style*="background:#152234"] p[style*="rgba(148,163,184,0.55)"] { c
 
     <div id="subCategoryWrap" class="mb-4 hidden">
       <div class="mb-2 flex items-center justify-between gap-3">
-        <p class="text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Subcategory</p>
-        <span id="subCategoryHint" class="hidden text-[10px] font-black uppercase tracking-[0.12em] text-sky-400">Auto selected</span>
+        <p id="subCategoryLabel" class="support-field-label" style="margin-bottom:0">Subcategory</p>
+        <span id="subCategoryHint" class="hidden text-xs font-medium text-sky-400">Selected for you</span>
       </div>
       <div class="custom-select">
-        <button type="button" class="select-btn" id="subCategoryBtn" onclick="toggleDropdown('subCategoryDropdown','subCategoryBtn')">
+        <button type="button" class="select-btn" id="subCategoryBtn" aria-labelledby="subCategoryLabel subCategoryBtnText" onclick="toggleDropdown('subCategoryDropdown','subCategoryBtn')">
           <span id="subCategoryBtnText" class="text-slate-400">Select subcategory</span>
           <span class="material-symbols-outlined text-slate-500 text-[18px]">expand_more</span>
         </button>
@@ -726,16 +727,19 @@ main section[style*="background:#152234"] p[style*="rgba(148,163,184,0.55)"] { c
 
     <div id="orderWrap" class="mb-4 hidden">
       <label for="orderIdInput" class="support-field-label">Order ID</label>
-      <input id="orderIdInput" class="field" type="text" placeholder="Enter your Order ID"/>
+      <input id="orderIdInput" class="field" type="text" autocomplete="off" placeholder="e.g. 4271451" aria-describedby="orderIdHelp"/>
+      <p id="orderIdHelp" class="field-help">Copy it from the Orders page.</p>
+      <p id="orderIdError" class="field-error hidden" role="alert"></p>
     </div>
 
     <div class="mb-4">
-      <p class="mb-2 text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">Message</p>
-      <textarea id="ticketMessageInput" aria-label="Describe your issue" maxlength="300" placeholder="Describe your issue clearly"></textarea>
+      <label for="ticketMessageInput" class="support-field-label">Message</label>
+      <textarea id="ticketMessageInput" maxlength="300" placeholder="Describe your issue clearly"></textarea>
+      <p id="ticketMessageError" class="field-error hidden" role="alert"></p>
     </div>
 
-    <button id="submitTicketBtn" onclick="createTicket()" class="w-full rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-4 text-sm font-black text-white shadow-none transition" style="box-shadow:none !important;">
-      Submit Ticket
+    <button id="submitTicketBtn" onclick="createTicket()" class="w-full rounded-2xl px-4 py-4 text-sm text-white">
+      Create ticket
     </button>
   </section>
 
@@ -765,14 +769,14 @@ main section[style*="background:#152234"] p[style*="rgba(148,163,184,0.55)"] { c
         <input id="messageInput" aria-label="Reply" type="text" maxlength="300" placeholder="Type a message..."
           class="flex-1 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition focus:border-sky-400/60"
           onkeydown="if(event.key==='Enter')sendMessage()"/>
-        <button onclick="sendMessage()" aria-label="Send message" class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-400 text-white shadow-[0_8px_20px_rgba(14,165,233,0.28)] transition active:scale-[0.95]">
+        <button onclick="sendMessage()" aria-label="Send message" class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl text-white">
           <span class="material-symbols-outlined text-[20px]">send</span>
         </button>
       </div>
       <div class="flex items-center justify-between gap-3">
         <span id="modalStatusBadge" class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em]">Open</span>
-        <button id="closeTicketAction" onclick="closeCurrentTicket()" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-200 transition active:scale-[0.98]">
-          Close Ticket
+        <button id="closeTicketAction" onclick="closeCurrentTicket()" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-200">
+          Close ticket
         </button>
       </div>
     </div>
@@ -1088,6 +1092,30 @@ function hideNotice(id) {
   document.getElementById(id).classList.add('hidden');
 }
 
+// Error under the field it belongs to (read out by screen readers, cleared on edit)
+function showFieldError(inputId, errorId, message) {
+  const input = document.getElementById(inputId);
+  const err = document.getElementById(errorId);
+  err.textContent = message;
+  err.classList.remove('hidden');
+  input.setAttribute('aria-invalid', 'true');
+  const ids = (input.getAttribute('aria-describedby') || '').split(' ').filter(Boolean);
+  if (!ids.includes(errorId)) input.setAttribute('aria-describedby', ids.concat(errorId).join(' '));
+  input.focus();
+}
+function clearFieldError(inputId, errorId) {
+  const input = document.getElementById(inputId);
+  const err = document.getElementById(errorId);
+  if (!input || !err) return;
+  err.classList.add('hidden');
+  err.textContent = '';
+  input.removeAttribute('aria-invalid');
+}
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'orderIdInput') clearFieldError('orderIdInput', 'orderIdError');
+  if (e.target.id === 'ticketMessageInput') clearFieldError('ticketMessageInput', 'ticketMessageError');
+});
+
 function markInvalid(id) {
   const el = document.getElementById(id);
   el.classList.add('field-invalid');
@@ -1322,6 +1350,7 @@ function openTicketModal(ticketId) {
     shell.classList.add('ticket-push-in');
   }
   document.body.style.overflow = 'hidden';
+  document.body.classList.add('ticket-open');
   if (window.startActiveTicketListener) {
     window.startActiveTicketListener(ticketId);
   }
@@ -1337,6 +1366,7 @@ function closeTicketModal() {
   const shell = modal.querySelector('.ticket-modal-shell');
   // Page scroll unlocks right away so the list is ready behind the sliding chat
   document.body.style.overflow = '';
+  document.body.classList.remove('ticket-open');
   if (shell) {
     shell.classList.remove('ticket-push-in');
     shell.classList.add('ticket-push-out');
@@ -1436,6 +1466,8 @@ let currentUser = null;
 
 window.createTicket = async function () {
   hideNotice('formNotice');
+  clearFieldError('orderIdInput', 'orderIdError');
+  clearFieldError('ticketMessageInput', 'ticketMessageError');
 
   if (!currentCategory) {
     showNotice('formNotice', 'Please select a category.');
@@ -1457,12 +1489,12 @@ window.createTicket = async function () {
   const needsOrder = currentCategory === 'Orders';
 
   if (needsOrder && !orderIdValue) {
-    showNotice('formNotice', 'Order ID is required for order tickets.');
+    showFieldError('orderIdInput', 'orderIdError', 'Enter the Order ID of the order you need help with.');
     markInvalid('orderIdInput');
     return;
   }
   if (needsOrder && !validOrderIds.has(orderIdValue)) {
-    showNotice('formNotice', 'Please enter a valid Order ID from your orders section.');
+    showFieldError('orderIdInput', 'orderIdError', 'This Order ID isn’t in your orders. Check it on the Orders page.');
     markInvalid('orderIdInput');
     return;
   }
@@ -1472,18 +1504,18 @@ window.createTicket = async function () {
       !['closed','resolved'].includes(String(ticket.status || '').toLowerCase())
     );
     if (duplicateOpenTicket) {
-      showNotice('formNotice', 'Ticket already submitted for this Order ID. Please close the current ticket or enter another ID.');
+      showFieldError('orderIdInput', 'orderIdError', 'You already have an open ticket for this order. Reply there, or close it first.');
       markInvalid('orderIdInput');
       return;
     }
   }
   if (!message || message.length < 4) {
-    showNotice('formNotice', 'Please enter a proper ticket message.');
+    showFieldError('ticketMessageInput', 'ticketMessageError', 'Describe the issue in a few words.');
     markInvalid('ticketMessageInput');
     return;
   }
   if (message.length > MESSAGE_MAX_LENGTH) {
-    showNotice('formNotice', 'Message must be 300 characters or less.');
+    showFieldError('ticketMessageInput', 'ticketMessageError', 'Keep the message under 300 characters.');
     markInvalid('ticketMessageInput');
     return;
   }
@@ -1494,7 +1526,7 @@ window.createTicket = async function () {
 
   const submitBtn = document.getElementById('submitTicketBtn');
   submitBtn.disabled = true;
-  submitBtn.innerHTML = '<span class="support-spinner"></span> Submitting...';
+  submitBtn.innerHTML = '<span class="support-spinner"></span> Creating…';
 
   try {
     lastTicketSubmitAt = Date.now();
@@ -1553,24 +1585,25 @@ window.createTicket = async function () {
     }
   } finally {
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Submit Ticket';
+    submitBtn.textContent = 'Create ticket';
   }
 };
 
 window.closeCurrentTicket = async function () {
   if (!activeTicketDoc || !currentUser) return;
+  if (!window.confirm('Close this ticket? You will not be able to reply to it after closing.')) return;
   const closeBtn = document.getElementById('closeTicketAction');
   closeBtn.disabled = true;
-  closeBtn.textContent = 'Closing...';
+  closeBtn.textContent = 'Closing…';
   try {
     await updateDoc(doc(db, 'tickets', activeTicketDoc), {
       status: 'closed'
     });
   } catch (_) {
-    showNotice('pageNotice', 'Unable to close ticket right now.');
+    showNotice('replyNotice', 'Couldn’t close the ticket. Try again.');
   } finally {
     closeBtn.disabled = false;
-    closeBtn.textContent = 'Close Ticket';
+    closeBtn.textContent = 'Close ticket';
   }
 };
 
@@ -1775,6 +1808,24 @@ onAuthStateChanged(auth, user => {
 :is(#sideMenu, .desktop-sidebar) :is(a, button)[style*="rgba(33,150,243"] {
   background: #182c46 !important;
 }
+</style>
+<style>
+/* Flat background: no glow, noise or grid behind the content */
+body { background-image: none !important; }
+.ticket-modal-messages { background-image: none !important; }
+.desktop-sidebar, .desktop-sidebar > div:first-child { background: #0b1220 !important; box-shadow: none !important; }
+/* Help and errors right under their field */
+.field-help { margin-top: 6px; color: #94a3b8; font-size: 12px; }
+.field-error { margin-top: 6px; color: #fca5a5; font-size: 12px; font-weight: 500; }
+[aria-invalid="true"] { border-color: rgba(248,113,113,0.7) !important; }
+/* Plain primary buttons: no gradient, shadow or bounce */
+#submitTicketBtn, #messageComposeArea button { transition: background-color .15s ease !important; transform: none !important; }
+#submitTicketBtn:hover, #messageComposeArea button:hover { background: #1d4ed8 !important; }
+#submitTicketBtn:disabled { opacity: .6; cursor: default; }
+/* Closing a ticket is final: shown apart from the back arrow, in red */
+#closeTicketAction { color: #fca5a5 !important; border-color: rgba(248,113,113,0.35) !important; }
+/* While a conversation is open the bottom tabs would cover the reply box */
+body.ticket-open .bnav { display: none !important; }
 </style>
 </body>
 </html>
