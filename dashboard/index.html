@@ -1058,7 +1058,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 
         <!-- CUSTOM COMMENTS BOX (shown only for Custom comment services) -->
         <div id="customCommentsWrap" class="hidden mb-4">
-          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2 flex items-center gap-1">
+          <p class="text-xs font-medium text-gray-400 mb-2 flex items-center gap-1">
             Custom Comments
             <span class="text-gray-500 normal-case font-normal text-xs">(1 line = 1 comment)</span>
           </p>
@@ -1112,7 +1112,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 
         <!-- DELIVERY TIME -->
         <div class="mb-3">
-          <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1.5 flex items-center gap-1">
+          <p class="text-xs font-medium text-gray-400 mb-1.5 flex items-center gap-1">
             Delivery Time
             <span class="material-symbols-outlined text-gray-500" style="font-size:13px">info</span>
           </p>
@@ -1255,17 +1255,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
     class="w-full text-center shadow-2xl scale-75 opacity-0 transition-all duration-300"
     style="max-width:380px;background:linear-gradient(160deg,#0d1525 0%,#111d33 100%);border:1px solid rgba(255,255,255,0.08);border-radius:28px;padding:32px 24px 24px;box-shadow:0 40px 100px rgba(0,0,0,0.7)">
 
-    <!-- Animated check -->
-    <div class="order-check-ring">
-      <svg viewBox="0 0 80 80">
-        <circle class="o-circle" cx="40" cy="40" r="34"/>
-        <polyline class="o-tick" points="25,40 35,50 55,28"/>
-      </svg>
-    </div>
-
-    <p style="font-size:.65rem;color:#22c55e;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px">Order Confirmed</p>
-    <h3 style="font-size:1.4rem;font-weight:900;color:#fff;letter-spacing:-.02em;margin-bottom:4px">Your order is live!</h3>
-    <p style="font-size:.78rem;color:#6b7280;margin-bottom:22px">Delivery has started. Track progress below.</p>
+    <h3 class="order-confirm-title">Order placed</h3>
 
     <!-- Order details rows -->
     <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:4px 16px;margin-bottom:20px;text-align:left">
@@ -4245,7 +4235,7 @@ const _OTP  = "https://backend-for-email-verification-code-vwip.onrender.com";
 </div>
 
 
-<script src="/assets/ai-assistant.js?v=3" defer></script>
+<script src="/assets/ai-assistant.js?v=4" defer></script>
 
 <style id="dashboard-reference-theme">
 body { background: #0a1221 !important; }
@@ -4518,6 +4508,48 @@ main { padding:20px 12px 110px !important; }
       .dashboard-scroll-area > main { position: relative; }
     }
   }
+}
+</style>
+<style>
+:is(#sideMenu, .desktop-sidebar) [style*="linear-gradient"] {
+  background: #1b283a !important;
+}
+:is(#sideMenu, .desktop-sidebar) :is(a,button)[style*="rgba(33,150,243"] {
+  background: #182c46 !important;
+}
+.aia-card { background: #111c2c; border-radius: 12px; }
+.aia-card::after { content: none; }
+.aia-card .aia-card-ic {
+  background: transparent;
+  border: 0;
+  color: #aebbd0;
+}
+.aia-card-ic .material-symbols-outlined { font-size: 24px; }
+.welcome-card > div:first-child button,
+#newOrderSection .tab-new-order-badge {
+  background: #2563d9 !important;
+  color: #fff !important;
+}
+#catIconWelcome, #catBtn [style*="linear-gradient"] {
+  background: #293649 !important;
+}
+#successModal #successModalBox {
+  background: #111c2c !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+  padding: 24px !important;
+}
+.order-confirm-title {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 600;
+}
+#successModal #viewOrdersBtn {
+  background: #2563d9 !important;
+  box-shadow: none !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  font-weight: 600 !important;
 }
 </style>
 </body>

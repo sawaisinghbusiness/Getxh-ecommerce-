@@ -63,8 +63,8 @@
     var card = document.createElement('div');
     card.className = 'aia-card';
     card.innerHTML =
-      '<div class="aia-card-ic"><span class="material-symbols-outlined">auto_awesome</span></div>' +
-      '<div class="aia-card-tx"><b>AI Assistant</b><span>Not sure how to order? Tell it what you need.</span></div>' +
+      '<div class="aia-card-ic"><span class="material-symbols-outlined">chat_bubble_outline</span></div>' +
+      '<div class="aia-card-tx"><b>AI Assistant</b><span>Need help placing an order?</span></div>' +
       '<button type="button" class="aia-btn">Chat</button>';
     anchor.parentNode.insertBefore(card, anchor);
     card.querySelector('button').addEventListener('click', open);
