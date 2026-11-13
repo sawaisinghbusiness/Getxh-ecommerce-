@@ -673,6 +673,31 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 <link rel="stylesheet" href="/assets/sidebar-theme.css">
 <link rel="stylesheet" href="/assets/ai-assistant.css?v=3">
 <script src="/assets/referral-invite.js"></script>
+<style>
+@keyframes dashboard-header-tuck {
+  0% { opacity: 1; transform: translateY(0); }
+  85% { opacity: 0; visibility: visible; }
+  100% { opacity: 0; transform: translateY(26px); visibility: hidden; }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .dashboard-header {
+      position: sticky;
+      top: 0;
+      z-index: 0;
+      animation: dashboard-header-tuck linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0px 120px;
+    }
+
+    .dashboard-header + main .welcome-card {
+      position: relative;
+      z-index: 1;
+    }
+  }
+}
+</style>
 </head>
 
 <body class="bg-[#0b1220] text-white">
