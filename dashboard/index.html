@@ -153,6 +153,7 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   overflow-x: hidden;
+  overflow-x: clip;
   overscroll-behavior-y: none;
   background-image: 
     radial-gradient(ellipse 90% 50% at 50% 0%, rgba(18, 30, 55, 0.5) 0%, transparent 70%),
@@ -4368,7 +4369,9 @@ main { padding:20px 12px 110px !important; }
   function updateCard(card, next) {
     const height = card.offsetHeight;
     const nextTop = next.getBoundingClientRect().top;
-    const opacity = height ? Math.max(0, Math.min(1, nextTop / height)) : 1;
+    const cardTop = card.getBoundingClientRect().top;
+    const covered = Math.max(0, cardTop + height - nextTop);
+    const opacity = height ? Math.max(0, 1 - covered / height) : 1;
     card.style.setProperty('--dashboard-card-opacity', opacity);
     card.toggleAttribute('data-scroll-covered', opacity === 0);
   }
