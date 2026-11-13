@@ -10,22 +10,29 @@
 <style>
 * { box-sizing: border-box; }
 body { margin: 0; background: #0a1221; color: #f4f7ff; font: 15px Inter, system-ui, sans-serif; }
-main { max-width: 640px; margin: auto; padding: 20px 16px 40px; }
-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-header a { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: #142238; border: 1px solid #263650; color: #dbe7fb; text-decoration: none; font-size: 22px; }
+main { max-width: 640px; margin: auto; padding: 16px 16px 40px; }
+header { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid #24334b; }
+header a { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: #142238; color: #dbe7fb; text-decoration: none; font-size: 22px; }
 header a:hover { background: #1c304c; }
 a:focus-visible { outline: 2px solid #75aaff; outline-offset: 3px; }
 h1 { margin: 0; font-size: 22px; font-weight: 700; }
+h2 { margin: 22px 0 8px; color: #afc0da; font-size: 12px; font-weight: 600; }
 #status { color: #aebdd0; line-height: 1.5; }
-#notifications { margin: 0; padding: 0; list-style: none; border: 1px solid #263650; border-radius: 16px; background: #101c2e; }
-#notifications:empty { display: none; }
-#notifications li + li { border-top: 1px solid #263650; }
-#notifications .gxn-card { width: 100%; padding: 15px 14px; gap: 12px; background: transparent; border: 0; border-radius: 0; box-shadow: none; color: #f4f7ff; }
-#notifications .gxn-icon { width: 36px; height: 36px; border-radius: 10px; background: #1a2c47; color: #8bb8ff; }
-#notifications .gxn-tag, #notifications time { font-size: 11px; color: #a6b8d2; }
-#notifications .notification-meta { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 2px 12px; margin-bottom: 3px; }
-#notifications .gxn-title { color: #f4f7ff; }
-#notifications .gxn-msg { color: #aebdd0; display: block; }
+#notifications, .notification-day { margin: 0; padding: 0; list-style: none; }
+.notification-day { background: #101c2e; border: 1px solid #24334b; border-radius: 14px; }
+.notification-day li + li { border-top: 1px solid #24334b; }
+#notifications .gxn-card { width: 100%; padding: 14px 12px; gap: 12px; background: transparent; border: 0; border-radius: 0; box-shadow: none; color: #f4f7ff; }
+#notifications .gxn-icon { width: 38px; height: 38px; border-radius: 50%; background: #1a2c47; color: #8bb8ff; }
+#notifications [data-kind="success"] .gxn-icon,
+#notifications [data-kind="credit"] .gxn-icon { background: #12352f; color: #79dfb6; }
+#notifications [data-kind="warning"] .gxn-icon,
+#notifications [data-kind="debit"] .gxn-icon { background: #382a26; color: #ffc396; }
+#notifications .gxn-tag { display: none; }
+#notifications .notification-meta { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
+#notifications time { flex: none; font-size: 11px; color: #a6b8d2; }
+#notifications .gxn-row { margin-top: 0; }
+#notifications .gxn-title { color: #f4f7ff; font-size: 14px; }
+#notifications .gxn-msg { color: #aebdd0; display: block; margin-top: 3px; }
 #notifications .gxn-cta, #notifications .gxn-amount { color: #8bb8ff; }
 #notifications .gxn-close { display: none; }
 </style>
@@ -55,7 +62,8 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const list = document.getElementById('notifications');
 const status = document.getElementById('status');
-const formatDate = new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+const formatDate = new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium' });
+const formatTime = new Intl.DateTimeFormat('en-IN', { timeStyle: 'short' });
 
 onAuthStateChanged(auth, async user => {
   list.replaceChildren();
@@ -77,24 +85,48 @@ onAuthStateChanged(auth, async user => {
     .sort((a, b) => Number(b.ts) - Number(a.ts))
     .slice(0, 50);
 
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const todayLabel = formatDate.format(today);
+  const yesterdayLabel = formatDate.format(yesterday);
+  let dayList;
+  let previousDay;
   for (const item of items) {
     const row = document.createElement('li');
     const time = document.createElement('time');
     const date = new Date(Number(item.ts));
     time.dateTime = date.toISOString();
-    time.textContent = formatDate.format(date);
+    const day = formatDate.format(date);
+    if (day !== previousDay) {
+      const group = document.createElement('li');
+      const heading = document.createElement('h2');
+      heading.textContent = day === todayLabel ? 'Today' : day === yesterdayLabel ? 'Yesterday' : day;
+      dayList = document.createElement('ul');
+      dayList.className = 'notification-day';
+      group.append(heading, dayList);
+      list.append(group);
+      previousDay = day;
+    }
+    time.textContent = formatTime.format(date);
     const card = window.gxNotify.createCard({
       ...item,
       cta: item.cta || (item.ctaUrl ? { label: item.ctaLabel, url: item.ctaUrl } : null)
     });
     card.removeAttribute('role');
-    const tag = card.querySelector('.gxn-tag');
+    card.dataset.kind = item.kind || 'info';
+    const title = card.querySelector('.gxn-row');
     const meta = document.createElement('div');
     meta.className = 'notification-meta';
-    tag.replaceWith(meta);
-    meta.append(tag, time);
+    if (title) {
+      title.replaceWith(meta);
+      meta.append(title, time);
+    } else {
+      card.querySelector('.gxn-body').prepend(meta);
+      meta.append(time);
+    }
     row.append(card);
-    list.append(row);
+    dayList.append(row);
   }
   status.textContent = feeds.some(feed => feed.status === 'rejected')
     ? 'Some notifications could not be loaded. Refresh to try again.'
