@@ -4336,5 +4336,64 @@ main { padding:20px 12px 110px !important; }
   #userName { max-width:145px !important; }
 }
 </style>
+<style>
+@media (prefers-reduced-motion: no-preference) {
+  .dashboard-scroll-stack .welcome-card,
+  .dashboard-scroll-stack .aia-card {
+    position: sticky;
+    top: 0;
+    opacity: var(--dashboard-card-opacity, 1);
+  }
+
+  .dashboard-scroll-stack .welcome-card { z-index: 1; }
+  .dashboard-scroll-stack .aia-card { z-index: 2; }
+  .dashboard-scroll-stack #newOrderSection { position: relative; z-index: 3; }
+
+  .dashboard-scroll-stack [data-scroll-covered] { visibility: hidden; }
+}
+</style>
+<script>
+(() => {
+  const motion = matchMedia('(prefers-reduced-motion: no-preference)');
+  const order = document.getElementById('newOrderSection');
+  const welcome = document.querySelector('.welcome-card');
+  if (!order || !welcome) return;
+
+  const container = order.parentElement;
+  const main = order.closest('main');
+  if (!main) return;
+
+  let frame = 0;
+
+  function updateCard(card, next) {
+    const height = card.offsetHeight;
+    const nextTop = next.getBoundingClientRect().top;
+    const opacity = height ? Math.max(0, Math.min(1, nextTop / height)) : 1;
+    card.style.setProperty('--dashboard-card-opacity', opacity);
+    card.toggleAttribute('data-scroll-covered', opacity === 0);
+  }
+
+  function update() {
+    frame = 0;
+    main.classList.toggle('dashboard-scroll-stack', motion.matches);
+    if (!motion.matches) return;
+
+    const assistant = container.querySelector('.aia-card');
+    updateCard(welcome, assistant || order);
+    if (assistant) updateCard(assistant, order);
+  }
+
+  function scheduleUpdate() {
+    if (!frame) frame = requestAnimationFrame(update);
+  }
+
+  addEventListener('scroll', scheduleUpdate, { passive: true });
+  addEventListener('resize', scheduleUpdate);
+  motion.addEventListener('change', scheduleUpdate);
+  new MutationObserver(scheduleUpdate).observe(container, { childList: true });
+  new ResizeObserver(scheduleUpdate).observe(container);
+  update();
+})();
+</script>
 </body>
 </html>
