@@ -809,6 +809,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
 <span id="walletBalanceTop" class="hidden"></span>
 
 <!-- MAIN CONTENT -->
+<div class="dashboard-scroll-area">
 <header class="dashboard-header">
   <a href="/dashboard" class="dashboard-logo" aria-label="GETXH dashboard"><img src="/logo.png" alt="GETXH" width="1069" height="425" style="display:block;width:96px;height:auto"></a>
   <div class="dashboard-header-actions">
@@ -1322,6 +1323,7 @@ aside.desktop-sidebar > div:last-child { flex-shrink: 0; padding: 16px 20px; }
   </div>
 </div>
 </main>
+</div>
 
 <!-- BOTTOM NAV -->
 <style>
@@ -4379,7 +4381,7 @@ main { padding:20px 12px 110px !important; }
 </style>
 <script>
 (() => {
-  const motion = matchMedia('(prefers-reduced-motion: no-preference)');
+  const motion = matchMedia('(min-width: 1024px) and (prefers-reduced-motion: no-preference)');
   const order = document.getElementById('newOrderSection');
   const welcome = document.querySelector('.welcome-card');
   if (!order || !welcome) return;
@@ -4520,5 +4522,24 @@ main { padding:20px 12px 110px !important; }
   document.addEventListener('touchcancel', () => finish(true), { passive: true });
 })();
 </script>
+<style>
+@media (max-width: 1023px) {
+  html, body { overflow: hidden; }
+  .dashboard-scroll-area {
+    position: fixed;
+    inset: 0 0 72px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+  }
+
+  .dashboard-scroll-area .dashboard-header {
+    position: static;
+    animation: none;
+  }
+
+  .dashboard-scroll-area > main { padding-bottom: 24px !important; }
+}
+</style>
 </body>
 </html>
