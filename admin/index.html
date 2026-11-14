@@ -1948,6 +1948,8 @@
                 class="adm-field w-full text-xs"></textarea>
             </div>
 
+            <fieldset class="rounded-xl border border-white/8 p-4 space-y-3"><legend class="px-2 text-sm font-semibold">Search appearance</legend><div><label for="adminBlogSeoTitle" class="block text-sm mb-1">SEO title</label><input id="adminBlogSeoTitle" class="adm-field w-full" maxlength="70" aria-describedby="blogHintSeoTitle"><p id="blogHintSeoTitle" class="mt-1 text-xs text-slate-400">Defaults to the post title.</p></div><div><label for="adminBlogSeoDescription" class="block text-sm mb-1">Meta description</label><input id="adminBlogSeoDescription" class="adm-field w-full" maxlength="170" aria-describedby="blogHintSeoDescription"><p id="blogHintSeoDescription" class="mt-1 text-xs text-slate-400">Defaults to the excerpt.</p></div><div><label for="adminBlogFocusKeyword" class="block text-sm mb-1">Target keyword</label><input id="adminBlogFocusKeyword" class="adm-field w-full" maxlength="100" aria-describedby="blogHintFocusKeyword"><p id="blogHintFocusKeyword" class="mt-1 text-xs text-slate-400">Editorial reference. Use it naturally in the article where relevant.</p></div></fieldset>
+
             <!-- Cover Image Section -->
             <div class="rounded-xl border border-white/8 bg-white/3 p-4">
               <label class="mb-2 block text-xs font-bold text-white">Header / Cover Image</label>
@@ -6228,6 +6230,9 @@
       document.getElementById('adminBlogTitle').value = '';
       document.getElementById('adminBlogCategory').value = '';
       document.getElementById('adminBlogExcerpt').value = '';
+      document.getElementById('adminBlogFocusKeyword').value = '';
+      document.getElementById('adminBlogSeoDescription').value = '';
+      document.getElementById('adminBlogSeoTitle').value = '';
       document.getElementById('adminBlogCoverImage').value = '';
       document.getElementById('adminBlogFileInput').value = '';
       document.getElementById('adminBlogBody').value = '';
@@ -6248,6 +6253,9 @@
       document.getElementById('adminBlogTitle').value = post.title || '';
       document.getElementById('adminBlogCategory').value = post.category || '';
       document.getElementById('adminBlogExcerpt').value = post.excerpt || '';
+      document.getElementById('adminBlogFocusKeyword').value = post.focusKeyword || '';
+      document.getElementById('adminBlogSeoDescription').value = post.seoDescription || '';
+      document.getElementById('adminBlogSeoTitle').value = post.seoTitle || '';
       document.getElementById('adminBlogCoverImage').value = post.coverImage || '';
       document.getElementById('adminBlogFileInput').value = '';
       document.getElementById('adminBlogBody').value = post.body || '';
@@ -6354,6 +6362,9 @@
         body,
         category: category || 'General',
         coverImage: coverImage || '',
+        seoTitle: document.getElementById('adminBlogSeoTitle').value.trim(),
+        seoDescription: document.getElementById('adminBlogSeoDescription').value.trim(),
+        focusKeyword: document.getElementById('adminBlogFocusKeyword').value.trim(),
         published: isPublished
       };
 
