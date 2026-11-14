@@ -74,9 +74,7 @@
 .order-card {
   transition: transform var(--dur-1) var(--ease-out) !important;
 }
-.order-card:active {
-  transform: scale(0.98) !important;
-}
+
 .order-card.motion-card-stagger {
   animation: cardEnter var(--dur-2) var(--ease-out) both;
   animation-delay: calc(var(--i) * 40ms);
@@ -368,6 +366,23 @@ body { font-feature-settings: "tnum" 1; -webkit-font-smoothing: antialiased; }
 #ordersList .order-summary > div { display:grid; gap:4px; border:0 !important; padding:0 !important; }
 .order-disclosure summary { min-height:40px; padding:10px 0; color:#a8c9ff; font-size:13px; cursor:pointer; }
 .order-disclosure summary:focus-visible { outline:2px solid #8ab8ff; outline-offset:2px; }
+</style>
+<style>
+.order-details-close,
+.order-disclosure[open] .order-details-open { display: none; }
+.order-disclosure[open] .order-details-close { display: inline; }
+
+@supports (interpolate-size: allow-keywords) and selector(::details-content) {
+  @media (prefers-reduced-motion: no-preference) {
+    .order-disclosure::details-content {
+      interpolate-size: allow-keywords;
+      block-size: 0;
+      overflow: clip;
+      transition: block-size 220ms ease, content-visibility 220ms allow-discrete;
+    }
+    .order-disclosure[open]::details-content { block-size: auto; }
+  }
+}
 </style>
 </head>
 
@@ -1206,7 +1221,7 @@ function renderOrders(orders) {
         
         </div>
         <details class="order-disclosure" data-details-id="${eid}" ${expandedOrders.has(eid) ? 'open' : ''}>
-          <summary>View details</summary>
+          <summary><span class="order-details-open">View details</span><span class="order-details-close">Show less</span></summary>
           <div class="space-y-2 pt-3">
           <div class="flex items-center justify-between"
              style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:8px;">
