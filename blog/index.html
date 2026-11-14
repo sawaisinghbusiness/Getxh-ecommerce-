@@ -417,6 +417,12 @@ body::before{
   font-size:13px;color:var(--muted);font-weight:500;
 }
 </style>
+<style>
+.post-body { overflow-wrap:anywhere; }
+.post-body :is(table,pre) { display:block; max-width:100%; overflow-x:auto; }
+.article-list-link { margin-top:24px; }
+.article-list-link a { color:#1d4ed8; text-decoration:underline; }
+</style>
 </head>
 <body>
 
@@ -627,6 +633,7 @@ async function loadPost() {
       <h1 class="post-title">${escHtml(post.title || 'Untitled')}</h1>
       ${post.excerpt ? `<div class="post-excerpt">${escHtml(post.excerpt)}</div>` : ''}
       <div class="post-body">${renderBody(post.body || '')}</div>
+      <p class="article-list-link"><a href="/blogs/">Browse all articles</a></p>
       <div class="blog-cta-card">
         <h3>Ready to Boost Your Social Media Presence?</h3>
         <p>Join thousands of influencers, agencies, and brands using GETXH™ for instant, high-quality growth.</p>
