@@ -348,6 +348,26 @@ body::before{
   .blog-card-img, .blog-card-img-placeholder { height: auto; aspect-ratio: 16 / 9; }
 }
 </style>
+<style>
+:root { --purple:#2455a4; --grad:#2455a4; --shadow:none; --shadow-hover:none; }
+body { background:#fafaf9; }
+body::before { content:none; }
+.navbar, .nav-drawer { background:#fafaf9; box-shadow:none; border-image:none; backdrop-filter:none; }
+.nav-btn, .nav-btn:hover { box-shadow:none; transform:none; }
+:where(a, button, input, summary):focus-visible { outline:2px solid #2455a4; outline-offset:3px; }
+.blog-hero { max-width: 1160px; margin:auto; text-align:left; padding:36px 32px 12px; }
+.blog-hero p { margin:0; max-width:60ch; }
+.blog-card, .blog-card:hover { border:0; border-radius:0; background:transparent; box-shadow:none; transform:none; }
+.blog-card { border-bottom:1px solid #dbe0e8; }
+.blog-card-img { background:#e9eef5; border-radius:8px; }
+.blog-card-img-placeholder { display:none; }
+.blog-card-body { padding:12px 0 16px; }
+.blog-card-category { background:none; padding:0; color:#2455a4; font-size:12px; letter-spacing:normal; text-transform:none; }
+.blog-card:hover .blog-card-title { text-decoration:underline; text-underline-offset:3px; }
+.blog-card:hover .blog-card-read svg { transform:none; }
+.empty-state { box-shadow:none; }
+@media(max-width:760px) { .blog-hero { padding:24px 16px 8px; } }
+</style>
 </head>
 <body>
 
@@ -379,8 +399,8 @@ body::before{
 <div class="page">
   <!-- HERO -->
   <div class="blog-hero">
-    <div class="blog-hero-eyebrow">GETXH BLOG</div>
-    <h1>Tips, Guides &amp; Updates</h1>
+    
+    <h1>GETXH Blog</h1>
     <p>Learn how to grow your social media presence. Guides, tips and latest news from GETXH.</p>
     <div class="all-posts-pill">All Posts</div>
   </div>

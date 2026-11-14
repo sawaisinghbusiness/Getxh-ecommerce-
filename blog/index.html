@@ -446,6 +446,26 @@ body::before{
   .blog-cta-card { padding: 20px 16px; }
 }
 </style>
+<style>
+:root { --purple:#2455a4; --grad:#2455a4; --shadow:none; --shadow-hover:none; }
+body { background:#fafaf9; }
+body::before { content:none; }
+.navbar, .nav-drawer { background:#fafaf9; box-shadow:none; border-image:none; backdrop-filter:none; }
+.nav-btn, .nav-btn:hover { box-shadow:none; transform:none; }
+:where(a, button, input, summary):focus-visible { outline:2px solid #2455a4; outline-offset:3px; }
+.back-link:hover { transform:none; }
+.cover-wrap { border:0; box-shadow:none; }
+.post-category { background:none; color:#2455a4; padding:0; text-transform:none; letter-spacing:normal; }
+.post-meta { flex-wrap:wrap; row-gap:4px; }
+.post-body h2::after { content:none; }
+.post-body :is(table, details, pre, img), .post-body details:hover { box-shadow:none; }
+.post-body blockquote, .post-body .callout, .post-body .note { background:#eef2f7; border-left:2px solid #7c90ad; }
+.blog-cta-card { background:transparent; box-shadow:none; text-align:left; color:#172033; border-top:1px solid #dbe0e8; border-radius:0; padding:20px 0 0; }
+.blog-cta-card h3 { color:#172033; }
+.blog-cta-card p { color:#475569; margin:6px 0 12px; }
+.blog-cta-card a, .blog-cta-card a:hover { color:#2455a4; background:transparent; box-shadow:none; padding:0; transform:none; text-decoration:underline; }
+.not-found, .not-found a { box-shadow:none; }
+</style>
 </head>
 <body>
 
@@ -663,9 +683,8 @@ async function loadPost() {
       <div class="post-body">${renderBody(post.body || '')}</div>
       <p class="article-list-link"><a href="/blogs/">Browse all articles</a></p>
       <div class="blog-cta-card">
-        <h3>Ready to Boost Your Social Media Presence?</h3>
-        <p>Join thousands of influencers, agencies, and brands using GETXH™ for instant, high-quality growth.</p>
-        <a href="/register">Get Started Now — Register →</a>
+        <h3>Create a GETXH account</h3>
+        <a href="/register">Register</a>
       </div>
     `;
   } catch (err) {
