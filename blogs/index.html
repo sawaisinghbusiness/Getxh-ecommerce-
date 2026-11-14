@@ -375,6 +375,7 @@ body::before{
 
   <!-- MAIN CONTENT -->
   <div class="container">
+    <label id="blogSearchLabel" hidden style="margin-bottom:16px">Search articles <input id="blogSearch" type="search" style="border:1px solid #cbd5e1;border-radius:8px;padding:10px" placeholder="Title or topic"></label>
     <div class="blog-grid" id="blogGrid">
       <!-- Skeleton cards -->
       <div class="sk-card">
@@ -421,7 +422,7 @@ body::before{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClO8clBVgSHKx8jarNwC38oMtWRK0W8KE",
@@ -464,7 +465,7 @@ function escHtml(str) {
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
-function renderCards(posts) {
+function renderCards(posts, searching = false) {
   const grid = document.getElementById('blogGrid');
   if (!posts || !posts.length) {
     grid.innerHTML = `
@@ -475,16 +476,16 @@ function renderCards(posts) {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
             d="M14 4v5h5M9 13h6M9 17h4"/>
         </svg>
-        <h3>No blog posts published yet</h3>
-        <p>Check back soon for new guides and social media marketing tips.</p>
+        <h3>${searching ? 'No matching articles' : 'No blog posts published yet'}</h3>
+        <p>${searching ? 'Try a different title or topic.' : 'Check back soon for new guides.'}</p>
       </div>`;
     return;
   }
 
   grid.innerHTML = posts.map(post => {
     const imgHtml = post.coverImage
-      ? `<img class="blog-card-img" src="${escHtml(post.coverImage)}" alt="${escHtml(post.title)}" onerror="this.parentElement.innerHTML='<div class=blog-card-img-placeholder>📝</div>'"/>`
-      : `<div class="blog-card-img-placeholder">📝</div>`;
+      ? `<img class="blog-card-img" src="${escHtml(post.coverImage)}" alt="${escHtml(post.title)}" loading="lazy" decoding="async" onerror="this.outerHTML='<div class=blog-card-img-placeholder></div>'"/>`
+      : `<div class="blog-card-img-placeholder"></div>`;
 
     const readTime = estimateReadTime(post.body);
     const dateStr = formatDate(post.publishedAt || post.createdAt);
@@ -512,7 +513,7 @@ function renderCards(posts) {
 
 async function loadBlogs() {
   try {
-    const snap = await getDocs(collection(db, 'blogs'));
+    const snap = await getDocs(query(collection(db, 'blogs'), where('published', '==', true)));
     const posts = snap.docs
       .map(d => ({ id: d.id, ...d.data() }))
       .filter(p => p.published === true)
@@ -522,9 +523,19 @@ async function loadBlogs() {
         return tb - ta;
       });
     renderCards(posts);
+    const search = document.getElementById('blogSearch');
+    document.getElementById('blogSearchLabel').hidden = posts.length === 0;
+    search.oninput = () => {
+      const term = search.value.trim().toLowerCase();
+      renderCards(posts.filter(post =>
+        [post.title, post.excerpt, post.category].some(value => String(value || '').toLowerCase().includes(term))
+      ), Boolean(term));
+    };
   } catch (err) {
     console.error('[blogs]', err.code, err.message);
-    renderCards([]);
+    const grid = document.getElementById('blogGrid');
+    grid.innerHTML = '<div class="empty-state"><p>Couldn’t load articles.</p><button type="button">Try again</button></div>';
+    grid.querySelector('button').addEventListener('click', loadBlogs, { once: true });
   }
 }
 
