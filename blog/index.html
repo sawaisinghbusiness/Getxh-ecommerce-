@@ -423,6 +423,11 @@ body::before{
 .article-list-link { margin-top:24px; }
 .article-list-link a { color:#1d4ed8; text-decoration:underline; }
 </style>
+<style>
+.blog-inline-image { margin: 24px 0; }
+.blog-inline-image img { display: block; max-width: 100%; height: auto; }
+.blog-inline-image figcaption { margin-top: 8px; font-size: 0.875em; }
+</style>
 </head>
 <body>
 
@@ -548,6 +553,11 @@ function renderBody(content) {
   let html = String(content).trim();
 
   // If content does not contain HTML tags, format standard markdown syntax to HTML without escaping tags
+  const inlineFigures = [];
+  html = html.replace(/<figure class="blog-inline-image">[\s\S]*?<\/figure>/g, figure => {
+    const index = inlineFigures.push(figure) - 1;
+    return '\n\nGETXH_INLINE_FIGURE_' + index + '\n\n';
+  });
   if (!/<[a-z][\s\S]*>/i.test(html)) {
     html = html.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
     html = html
@@ -569,7 +579,7 @@ function renderBody(content) {
     }).join('\n');
   }
 
-  return html;
+  return html.replace(/(?:<p>)?GETXH_INLINE_FIGURE_(\d+)(?:<\/p>)?/g, (token, index) => inlineFigures[index] ?? token);
 }
 
 function showNotFound() {
