@@ -336,6 +336,18 @@ body::before{
   font-size:13px;color:var(--muted);font-weight:500;
 }
 </style>
+<style>
+.blog-hero { padding: 36px 16px 20px; }
+.blog-hero h1 { font-size: clamp(24px, 4vw, 36px); font-weight: 700; line-height: 1.25; }
+.blog-hero p { font-size: 15px; line-height: 1.55; margin-bottom: 16px; }
+.blog-card-body { padding: 16px; }
+.blog-card-title { font-size: 17px; font-weight: 600; }
+@media (max-width: 640px) {
+  .container { padding-inline: 16px; }
+  .blog-grid { gap: 16px; }
+  .blog-card-img, .blog-card-img-placeholder { height: auto; aspect-ratio: 16 / 9; }
+}
+</style>
 </head>
 <body>
 

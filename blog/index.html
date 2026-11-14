@@ -428,6 +428,24 @@ body::before{
 .blog-inline-image img { display: block; max-width: 100%; height: auto; }
 .blog-inline-image figcaption { margin-top: 8px; font-size: 0.875em; }
 </style>
+<style>
+.article { max-width: 720px; padding: 20px 24px 56px; }
+.post-title { font-size: clamp(25px, 4vw, 36px); font-weight: 700; line-height: 1.24; margin-bottom: 12px; }
+.post-excerpt { font-size: 16px; line-height: 1.6; margin-bottom: 20px; }
+.post-body { max-width: 66ch; margin-inline: auto; font-size: 17px; line-height: 1.65; }
+.post-body p { margin-bottom: 16px; }
+.post-body h2 { font-size: 22px; font-weight: 650; line-height: 1.3; margin: 28px 0 10px; }
+.post-body h3 { font-size: 18px; font-weight: 650; line-height: 1.35; margin: 24px 0 8px; }
+.cover-wrap { margin-bottom: 20px; box-shadow: none; border-radius: 12px; }
+.blog-inline-image { margin: 20px 0; }
+.blog-cta-card h3 { font-size: 20px; line-height: 1.3; }
+@media (max-width: 640px) {
+  .article { padding: 16px 16px 40px; }
+  .post-body { font-size: 16px; }
+  .post-body h2 { font-size: 20px; }
+  .blog-cta-card { padding: 20px 16px; }
+}
+</style>
 </head>
 <body>
 
