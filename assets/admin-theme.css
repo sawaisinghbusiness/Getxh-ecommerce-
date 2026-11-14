@@ -352,7 +352,7 @@ body button.adm-primary {
 }
 body #gateUnlockBtn:hover, body #otpVerifyBtn:hover,
 body .bal-btn:hover, body .user-manage-btn:hover, body .rp-btn:hover,
-body button[style*="linear-gradient"]:hover { background: #0EA5E9 !important; }
+body button[style*="linear-gradient"]:hover { background: #2563eb !important; }
 body #gateUnlockBtn:disabled, body #otpVerifyBtn:disabled { opacity: .6 !important; }
 body button[style*="linear-gradient"] .material-symbols-outlined,
 body .bal-btn .material-symbols-outlined, body .user-manage-btn .material-symbols-outlined { color: #04121f !important; }
@@ -396,3 +396,53 @@ body [class*="shadow-\[0_4px_18px"], body [class*="shadow-\[0_4px_14px"] { box-s
 /* password / OTP boxes: a plain border (the page's own focus:border-red class matched the red-border reset) */
 body #gatePasswordInput, body #otpInput { border-color: var(--a-border) !important; }
 body #gatePasswordInput:focus, body #otpInput:focus { border-color: #38BDF8 !important; }
+
+/* Shared hierarchy across admin sections. */
+:root {
+  --a-page: #0b1220;
+  --a-card: #111c2c;
+  --a-inner: #0d1624;
+  --a-raised: #182537;
+  --a-border: #2c394c;
+  --a-border-2: #40516a;
+  --a-muted: #abb8cc;
+  --a-faint: #94a3ba;
+}
+:is(#adminPanel, #passwordGate, #otpGate) .font-black {
+  font-weight: 600 !important;
+}
+:is(#adminPanel, #passwordGate, #otpGate) .uppercase {
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+#adminPanel :is(.order-card, .user-card, .ticket-item, .stat-card, .rp-card) {
+  border-radius: 12px !important;
+}
+:is(#adminPanel, #passwordGate, #otpGate) [class*="bg-gradient-to"] {
+  background-image: none !important;
+  background-color: var(--a-card);
+}
+:is(#adminPanel, #passwordGate, #otpGate) button[class*="bg-gradient-to"] {
+  background: #2563eb !important;
+}
+:is(#adminPanel, #passwordGate, #otpGate) [class*="shadow-"] {
+  box-shadow: none !important;
+}
+body :is(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid #93bdff !important;
+  outline-offset: 2px;
+}
+#adminPanel .rp-live i,
+#adminPanel .rp-skel {
+  animation: none;
+  box-shadow: none;
+}
+#adminPanel .rp-skel { background: var(--a-card); }
+#adminPanel :is(.rp-tiles, .rp-row, .rp-chart-head) { gap: 8px 16px; }
+#adminPanel .rp-tr > span { min-width: 0; overflow-wrap: anywhere; }
+#adminPanel :is(input, textarea)::placeholder { color: var(--a-faint) !important; }
+@media (max-width: 767px) {
+  #adminPanel .rp-month button { width: 44px; height: 44px; }
+  #adminPanel .rp-tr { padding-inline: 10px; }
+  #adminPanel .rp-note span.t { min-width: 0; }
+}
