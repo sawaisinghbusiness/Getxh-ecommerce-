@@ -6,7 +6,6 @@
 <title>Blog Post | GETXH™ – SMM Panel India</title>
 <meta name="description" content="Read in-depth guides and tips on Instagram followers, YouTube watch time, and social media marketing on GETXH."/>
 <meta name="robots" content="index, follow"/>
-<link rel="canonical" href="https://getxh.in/blog/"/>
 
 <!-- Open Graph -->
 <meta property="og:title" content="Blog Post | GETXH – SMM Panel India"/>
@@ -568,6 +567,7 @@ function renderBody(content) {
 }
 
 function showNotFound() {
+  document.querySelector('meta[name="robots"]').content = 'noindex';
   document.getElementById('articleContent').innerHTML = `
     <div class="not-found">
       <svg width="64" height="64" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -587,20 +587,27 @@ async function loadPost() {
 
   try {
     const snap = await getDoc(doc(db, 'blogs', id));
-    if (!snap.exists() || snap.data().published === false) { showNotFound(); return; }
+    if (!snap.exists() || snap.data().published !== true) { showNotFound(); return; }
 
     const post = { id: snap.id, ...snap.data() };
 
     // Update page title and meta
-    document.title = `${post.title || 'Article'} | GETXH Blog`;
-    if (post.excerpt) {
+    document.title = post.seoTitle || `${post.title || 'Article'} | GETXH Blog`;
+    const canonical = document.createElement('link');
+    canonical.rel = 'canonical';
+    const postUrl = new URL('/blog/', 'https://getxh.in');
+    postUrl.searchParams.set('id', snap.id);
+    canonical.href = postUrl.href;
+    document.head.appendChild(canonical);
+    const description = post.seoDescription || post.excerpt;
+    if (description) {
       let desc = document.querySelector('meta[name="description"]');
       if (!desc) {
         desc = document.createElement('meta');
         desc.name = 'description';
         document.head.appendChild(desc);
       }
-      desc.content = post.excerpt;
+      desc.content = description;
     }
 
     const imgHtml = post.coverImage
