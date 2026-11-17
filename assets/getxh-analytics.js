@@ -6,10 +6,10 @@
   panel.hidden = true;
   panel.setAttribute('aria-label', 'Analytics preferences');
   const label = document.createElement('p');
-  label.textContent = 'Allow Google Analytics to measure visits to GETXH public pages?';
+  label.textContent = 'Allow Google Analytics to measure visits and Microsoft Clarity to record interactions on GETXH public pages?';
   panel.append(label);
   let loaded = false;
-  const key = 'getxh-analytics-consent';
+  const key = 'getxh-analytics-consent-v2';
   function start() {
     if (loaded) return;
     loaded = true;
@@ -26,6 +26,17 @@
     script.async = true;
     script.src = 'https://www.googletagmanager.com/gtag/js?id=G-9ZZ27CSQVJ';
     document.head.append(script);
+
+    if (location.search || location.hash) return;
+    document.body.setAttribute('data-clarity-mask', 'true');
+    window.clarity = window.clarity || function () {
+      (window.clarity.q = window.clarity.q || []).push(arguments);
+    };
+    window.clarity('consentv2', { ad_Storage: 'denied', analytics_Storage: 'granted' });
+    const clarityScript = document.createElement('script');
+    clarityScript.async = true;
+    clarityScript.src = 'https://www.clarity.ms/tag/zew78wjn1u';
+    document.head.append(clarityScript);
   }
   for (const [title, choice] of [['Allow analytics', 'yes'], ['Decline analytics', 'no']]) {
     const action = document.createElement('button');
@@ -37,6 +48,9 @@
       if (choice === 'yes') start();
       else if (loaded) {
         window['ga-disable-G-9ZZ27CSQVJ'] = true;
+        if (window.clarity) {
+          window.clarity('consentv2', { ad_Storage: 'denied', analytics_Storage: 'denied' });
+        }
         location.reload();
       }
     };
